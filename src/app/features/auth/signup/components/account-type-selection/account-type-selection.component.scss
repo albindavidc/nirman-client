@@ -1,0 +1,220 @@
+.signup-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: var(--md-sys-color-background);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(233, 193, 108, 0.15) 0%,
+      rgba(233, 193, 108, 0.05) 40%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+
+  .logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(
+      circle,
+      rgba(233, 193, 108, 0.3) 0%,
+      transparent 70%
+    );
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  .logo {
+    width: 100px;
+    height: 100px;
+    color: var(--md-sys-color-primary);
+    filter: drop-shadow(0 0 20px rgba(233, 193, 108, 0.3));
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-name {
+    font-family: "Outfit", "Inter", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--md-sys-color-primary);
+    margin: 16px 0 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .tagline {
+    font-size: 1rem;
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0;
+  }
+}
+
+.selection-card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--md-sys-color-outline-variant);
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .step-indicator {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(
+        135deg,
+        var(--md-sys-color-primary),
+        var(--md-sys-color-secondary)
+      );
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      .step-number {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--md-sys-color-on-primary);
+      }
+    }
+
+    .header-content {
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--md-sys-color-on-surface);
+        margin: 0 0 4px;
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: var(--md-sys-color-on-surface-variant);
+        margin: 0;
+      }
+    }
+  }
+
+  .divider {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--md-sys-color-primary),
+      var(--md-sys-color-secondary),
+      transparent
+    );
+    margin-bottom: 24px;
+    border-radius: 1px;
+  }
+}
+
+.account-types {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.account-card {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+
+  &:hover {
+    background: var(--md-sys-color-surface-container-highest);
+    border-color: var(--md-sys-color-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  &:focus {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  &.selected {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-primary-container);
+  }
+
+  .card-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+
+  .card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+    margin: 0 0 4px;
+  }
+
+  .card-subtitle {
+    font-size: 0.8125rem;
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0 0 16px;
+    line-height: 1.4;
+  }
+
+  .features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8125rem;
+      color: var(--md-sys-color-on-surface-variant);
+      padding: 4px 0;
+
+      .check-icon {
+        color: var(--md-sys-color-primary);
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    }
+  }
+}

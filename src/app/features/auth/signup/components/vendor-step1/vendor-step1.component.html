@@ -1,0 +1,121 @@
+<div class="signup-container" @fadeInUp>
+  <!-- Logo Section -->
+  <div class="logo-section">
+    <div class="logo-glow"></div>
+    <img src="assets/logo.svg" alt="Nirman Logo" class="logo" />
+    <h1 class="brand-name">Nirman</h1>
+    <p class="tagline">Revolutionize your construction workflow</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card" @slideIn>
+    <div class="card-header">
+      <h2>Company Representative Information</h2>
+      <p>Complete this section with company contact person information.</p>
+    </div>
+    
+    <div class="divider"></div>
+
+    <!-- Error Message -->
+    @if (error$ | async; as error) {
+      <div class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" placeholder="John">
+          @if (form.get('firstName')?.hasError('required') && form.get('firstName')?.touched) {
+            <mat-error>First name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" placeholder="Doe">
+          @if (form.get('lastName')?.hasError('required') && form.get('lastName')?.touched) {
+            <mat-error>Last name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Email Address</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="john.doe@example.com">
+          <mat-hint>We'll send your work schedule here</mat-hint>
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Mobile Phone</mat-label>
+          <input matInput type="tel" formControlName="phoneNumber" placeholder="+1 234 567 8900">
+          <mat-hint>For daily site communications</mat-hint>
+          @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
+            <mat-error>Phone number is required</mat-error>
+          }
+          @if (form.get('phoneNumber')?.hasError('pattern') && form.get('phoneNumber')?.touched) {
+            <mat-error>Please enter a valid phone number</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" 
+                 formControlName="password" placeholder="Create a strong password">
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>Min 8 characters, 1 uppercase, 1 number, 1 special</mat-hint>
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (form.get('password')?.hasError('pattern') && form.get('password')?.touched) {
+            <mat-error>Password doesn't meet requirements</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" 
+                 formControlName="confirmPassword" placeholder="Re-enter password">
+          <button mat-icon-button matSuffix type="button" (click)="toggleConfirmPasswordVisibility()">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.get('confirmPassword')?.hasError('required') && form.get('confirmPassword')?.touched) {
+            <mat-error>Please confirm your password</mat-error>
+          }
+          @if (form.get('confirmPassword')?.hasError('passwordMismatch') && form.get('confirmPassword')?.touched) {
+            <mat-error>Passwords don't match</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="login-link">
+        <span>Already have account ?</span>
+        <a routerLink="/auth/login">Login</a>
+      </div>
+
+      <div class="form-actions">
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="loading$ | async">
+          @if (loading$ | async) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Add Company Details
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

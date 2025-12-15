@@ -1,0 +1,127 @@
+<div class="signup-container" @fadeInUp>
+  <!-- Logo Section -->
+  <div class="logo-section">
+    <div class="logo-glow"></div>
+    <img src="assets/logo.svg" alt="Nirman Logo" class="logo" />
+    <h1 class="brand-name">Nirman</h1>
+    <p class="tagline">Revolutionize your construction workflow</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card" @slideIn>
+    <div class="card-header">
+      <h2>Company Information</h2>
+      <p>Complete this section with company information</p>
+    </div>
+    
+    <div class="divider"></div>
+
+    <!-- Error Message -->
+    @if (error$ | async; as error) {
+      <div class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Company Name -->
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Company Name</mat-label>
+        <input matInput formControlName="companyName" placeholder="Your Company Inc.">
+        @if (form.get('companyName')?.hasError('required') && form.get('companyName')?.touched) {
+          <mat-error>Company name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Company Registration Number</mat-label>
+          <input matInput formControlName="registrationNumber" placeholder="REG-12345">
+          @if (form.get('registrationNumber')?.hasError('required') && form.get('registrationNumber')?.touched) {
+            <mat-error>Registration number is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Tax Number</mat-label>
+          <input matInput formControlName="taxNumber" placeholder="XX-XXXXXXX">
+          <mat-hint>Employer Identification Number</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Business Type</mat-label>
+          <mat-select formControlName="businessType">
+            <mat-option value="" disabled>Select business type</mat-option>
+            @for (type of businessTypes; track type.value) {
+              <mat-option [value]="type.value">{{ type.label }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('businessType')?.hasError('required') && form.get('businessType')?.touched) {
+            <mat-error>Business type is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Years in Business</mat-label>
+          <input matInput type="number" formControlName="yearsInBusiness" placeholder="5" min="0">
+          @if (form.get('yearsInBusiness')?.hasError('required') && form.get('yearsInBusiness')?.touched) {
+            <mat-error>Years in business is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Business Address Section -->
+      <div class="section-label">Business Address</div>
+      
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Street Address</mat-label>
+        <input matInput formControlName="addressStreet" placeholder="Street address">
+      </mat-form-field>
+
+      <div class="form-row-three">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>City</mat-label>
+          <input matInput formControlName="addressCity" placeholder="City">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>State</mat-label>
+          <input matInput formControlName="addressState" placeholder="State">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>ZIP Code</mat-label>
+          <input matInput formControlName="addressZipCode" placeholder="ZIP Code">
+        </mat-form-field>
+      </div>
+
+      <!-- Products/Services -->
+      <div class="section-label">Products/Services Offered (Separated by comma)</div>
+      
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Products/Services</mat-label>
+        <textarea matInput formControlName="productsServices" 
+                  placeholder="Describe what your company provides..." 
+                  rows="4"></textarea>
+      </mat-form-field>
+
+      <div class="login-link">
+        <span>Already have account ?</span>
+        <a routerLink="/auth/login">Login</a>
+      </div>
+
+      <div class="form-actions">
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="loading$ | async">
+          @if (loading$ | async) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Send Verification Code
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

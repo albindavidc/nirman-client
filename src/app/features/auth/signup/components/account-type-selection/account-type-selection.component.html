@@ -1,0 +1,49 @@
+<div class="signup-container" @fadeInUp>
+  <!-- Logo Section -->
+  <div class="logo-section">
+    <div class="logo-glow"></div>
+    <img src="assets/logo.svg" alt="Nirman Logo" class="logo" />
+    <h1 class="brand-name">Nirman</h1>
+    <p class="tagline">Revolutionize your construction workflow</p>
+  </div>
+
+  <!-- Account Type Selection Card -->
+  <div class="selection-card">
+    <div class="card-header">
+      <div class="step-indicator">
+        <span class="step-number">1</span>
+      </div>
+      <div class="header-content">
+        <h2>Choose Account Type</h2>
+        <p>Select the role that best describes you</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="account-types" @staggerCards>
+      @for (account of accountTypes; track account.type) {
+      <div
+        class="account-card"
+        [class.selected]="false"
+        (click)="selectAccountType(account.type)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'Select ' + account.title"
+      >
+        <div class="card-icon">{{ account.icon }}</div>
+        <h3 class="card-title">{{ account.title }}</h3>
+        <p class="card-subtitle">{{ account.subtitle }}</p>
+        <ul class="features-list">
+          @for (feature of account.features; track feature) {
+          <li>
+            <span class="check-icon">✓</span>
+            {{ feature }}
+          </li>
+          }
+        </ul>
+      </div>
+      }
+    </div>
+  </div>
+</div>

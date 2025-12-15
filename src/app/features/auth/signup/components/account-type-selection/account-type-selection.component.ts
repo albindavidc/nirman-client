@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
@@ -18,7 +18,7 @@ import * as SignupActions from '../../store/signup.actions';
 @Component({
   selector: 'app-account-type-selection',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule],
+  imports: [MatCardModule, MatIconModule],
   templateUrl: './account-type-selection.component.html',
   styleUrl: './account-type-selection.component.scss',
   animations: [

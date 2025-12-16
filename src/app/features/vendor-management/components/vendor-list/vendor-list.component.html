@@ -1,0 +1,145 @@
+<div class="vendor-management-page" @fadeInUp>
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Vendor Management</h1>
+      <p class="page-subtitle">Review and approve vendor applications</p>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  @if (stats$ | async; as stats) {
+    <div class="stats-grid" @staggerIn>
+      @for (card of statCards; track card.label) {
+        <div class="stat-card" [class]="card.color">
+          <div class="stat-icon">
+            <mat-icon>{{ card.icon }}</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ card.getValue(stats) }}</div>
+            <div class="stat-label">{{ card.label }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+    <div class="card-header">
+      <h2>All Vendors</h2>
+      <div class="header-actions">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search vendors..." />
+        </mat-form-field>
+        <button mat-flat-button color="primary" class="add-btn" (click)="openVendorModal()">
+          <mat-icon>add</mat-icon>
+          Add Vendor
+        </button>
+      </div>
+    </div>
+
+    @if (isLoading$ | async) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading vendors...</span>
+      </div>
+    } @else if (error$ | async; as error) {
+      <div class="error-container">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="(vendors$ | async) || []" class="vendor-table">
+          <!-- Vendor Column -->
+          <ng-container matColumnDef="vendor">
+            <th mat-header-cell *matHeaderCellDef>VENDOR</th>
+            <td mat-cell *matCellDef="let vendor" @tableRowAnimation>
+              <div class="vendor-info">
+                <div class="vendor-avatar">
+                  {{ vendor.companyName?.charAt(0) | uppercase }}
+                </div>
+                <div class="vendor-details">
+                  <span class="vendor-name">{{ vendor.companyName }}</span>
+                  <span class="vendor-code">{{ getVendorCode(vendor) }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Contact Column -->
+          <ng-container matColumnDef="contact">
+            <th mat-header-cell *matHeaderCellDef>CONTACT</th>
+            <td mat-cell *matCellDef="let vendor">
+              <div class="contact-info">
+                <span class="contact-name">{{ vendor.contactName || 'N/A' }}</span>
+                <span class="contact-email">{{ vendor.contactEmail || 'N/A' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>CATEGORY</th>
+            <td mat-cell *matCellDef="let vendor">
+              <span class="category-badge">{{ vendor.productsServices?.[0] || 'General' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>STATUS</th>
+            <td mat-cell *matCellDef="let vendor">
+              <span class="status-badge" [class]="getStatusClass(vendor.vendorStatus)">
+                <mat-icon class="status-icon">{{ getStatusIcon(vendor.vendorStatus) }}</mat-icon>
+                {{ vendor.vendorStatus | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-header">ACTIONS</th>
+            <td mat-cell *matCellDef="let vendor">
+              <div class="action-buttons">
+                @if (vendor.vendorStatus === 'pending') {
+                  <button mat-flat-button class="approve-btn" (click)="approveVendor(vendor)">
+                    <mat-icon>check_circle</mat-icon>
+                    Approve
+                  </button>
+                  <button mat-stroked-button class="reject-btn" (click)="rejectVendor(vendor)">
+                    <mat-icon>cancel</mat-icon>
+                    Reject
+                  </button>
+                }
+                <button mat-icon-button class="edit-btn" (click)="openVendorModal(vendor)" matTooltip="Edit vendor">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="vendor-row"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="(total$ | async) || 0"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+
+      @if ((vendors$ | async)?.length === 0) {
+        <div class="empty-state">
+          <mat-icon>inventory_2</mat-icon>
+          <h3>No vendors yet</h3>
+          <p>Vendors will appear here once they register.</p>
+        </div>
+      }
+    }
+  </div>
+</div>

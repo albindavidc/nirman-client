@@ -1,0 +1,156 @@
+.edit-vendor-modal {
+  padding: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  margin: 0 0 24px;
+}
+
+.form-field {
+  margin-bottom: 12px;
+
+  .field-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 6px;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+
+  .form-field {
+    flex: 1;
+  }
+}
+
+// Material Form Field Dark Theme Overrides
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-input-element,
+    .mat-mdc-select-value {
+      color: var(--md-sys-color-on-surface) !important;
+    }
+
+    textarea.mat-mdc-input-element {
+      resize: none;
+    }
+
+    .mat-mdc-input-element::placeholder {
+      color: var(--md-sys-color-on-surface-variant) !important;
+      opacity: 0.6;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      height: 4px;
+    }
+
+    .mdc-text-field--outlined {
+      background: var(--md-sys-color-surface-container);
+      border-radius: 8px;
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--md-sys-color-outline-variant) !important;
+        border-width: 1px;
+      }
+
+      .mdc-notched-outline__leading {
+        border-radius: 8px 0 0 8px !important;
+      }
+
+      .mdc-notched-outline__trailing {
+        border-radius: 0 8px 8px 0 !important;
+      }
+    }
+
+    .mdc-text-field--focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--md-sys-color-primary) !important;
+        border-width: 2px !important;
+      }
+    }
+  }
+
+  .mat-mdc-select-panel {
+    background: var(--md-sys-color-surface-container-high);
+  }
+
+  .mat-mdc-option {
+    color: var(--md-sys-color-on-surface);
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-highest);
+    }
+
+    &.mdc-list-item--selected {
+      background: var(--md-sys-color-surface-variant);
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.cancel-btn {
+  border-color: var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface);
+  border-radius: 24px;
+  padding: 0 24px;
+}
+
+.save-btn {
+  background: linear-gradient(
+    135deg,
+    var(--md-sys-color-primary) 0%,
+    var(--md-extended-color-success-color) 100%
+  );
+  color: var(--md-sys-color-on-primary);
+  border-radius: 24px;
+  padding: 0 24px;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    opacity: 0.7;
+  }
+
+  mat-spinner {
+    ::ng-deep circle {
+      stroke: var(--md-sys-color-on-primary);
+    }
+  }
+}
+
+// Global dialog styling
+::ng-deep .dark-dialog {
+  .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      background: var(--md-sys-color-surface-container-high);
+      border-radius: 16px;
+    }
+  }
+}

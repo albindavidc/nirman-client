@@ -38,12 +38,32 @@ export class LoginEffects {
           // Store user in localStorage for persistence on page refresh
           // Note: Token is stored in HTTP-only cookie by the server
           localStorage.setItem('user', JSON.stringify(response.user));
-          // Navigate to home/dashboard
-          this.router.navigate(['/']);
+
+          // Role-based navigation
+          const route = this.getRouteByRole(response.user.role);
+          this.router.navigate([route]);
         })
       ),
     { dispatch: false }
   );
+
+  /**
+   * Returns the default route for each user role
+   */
+  private getRouteByRole(role: string): string {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return '/vendor-management';
+      case 'professional':
+        return '/dashboard/professional';
+      case 'vendor':
+        return '/dashboard/vendor';
+      case 'worker':
+        return '/dashboard/worker';
+      default:
+        return '/dashboard';
+    }
+  }
 
   // Validate session with backend after hydrating from localStorage
   validateSession$ = createEffect(() =>

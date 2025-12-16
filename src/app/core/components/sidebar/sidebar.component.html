@@ -1,0 +1,72 @@
+<aside class="sidebar" [class.collapsed]="layoutService.isSidebarCollapsed()">
+  <!-- Toggle Button -->
+  <button class="toggle-btn" mat-icon-button (click)="toggleSidebar()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Navigation -->
+  <nav class="nav-menu">
+    @for (item of navItems; track item.label) {
+      @if (item.children) {
+        <!-- Parent with children (Popup Menu) -->
+        <div class="nav-group">
+          <button
+            class="nav-item parent"
+            [matMenuTriggerFor]="submenu"
+            #menuTrigger="matMenuTrigger"
+          >
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            @if (!layoutService.isSidebarCollapsed()) {
+              <span class="nav-label">{{ item.label }}</span>
+              <mat-icon class="chevron">
+                {{ menuTrigger.menuOpen ? 'expand_less' : 'expand_more' }}
+              </mat-icon>
+            }
+          </button>
+
+          <!-- Popup Menu -->
+          <mat-menu #submenu="matMenu" class="sidebar-submenu-popup">
+            @for (child of item.children; track child.label) {
+              <a
+                mat-menu-item
+                [routerLink]="child.route"
+                routerLinkActive="active"
+                class="submenu-item"
+              >
+                <mat-icon>{{ child.icon }}</mat-icon>
+                <span>{{ child.label }}</span>
+              </a>
+            }
+          </mat-menu>
+        </div>
+      } @else {
+        <!-- Simple nav item -->
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+        >
+          <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+          @if (!layoutService.isSidebarCollapsed()) {
+            <span class="nav-label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    }
+  </nav>
+
+  <!-- User Profile -->
+  @if (user$ | async; as user) {
+    <div class="user-profile">
+      <div class="avatar">
+        {{ getInitials(user.firstName, user.lastName) }}
+      </div>
+      @if (!layoutService.isSidebarCollapsed()) {
+        <div class="user-info">
+          <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+          <span class="user-role">{{ user.role | titlecase }}</span>
+        </div>
+      }
+    </div>
+  }
+</aside>

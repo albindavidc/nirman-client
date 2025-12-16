@@ -1,0 +1,198 @@
+<div class="edit-vendor-modal text-white">
+  <h2 class="modal-title">{{ isAddMode ? 'Add New Vendor' : 'Edit Vendor' }}</h2>
+
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    @if (isAddMode) {
+      <div class="user-details-section">
+        <h3 class="section-title">User Account Details</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">First Name *</label>
+            <mat-form-field appearance="outline">
+              <mat-icon matPrefix>person</mat-icon>
+              <input matInput formControlName="firstName" placeholder="First Name" />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <label class="field-label">Last Name *</label>
+            <mat-form-field appearance="outline">
+              <mat-icon matPrefix>person</mat-icon>
+              <input matInput formControlName="lastName" placeholder="Last Name" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Login Email *</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput formControlName="email" placeholder="Login Email" type="email" />
+          </mat-form-field>
+        </div>
+        <div class="divider"></div>
+      </div>
+    }
+
+    <h3 class="section-title" *ngIf="isAddMode">Vendor Details</h3>
+
+    <!-- Vendor Name -->
+    <div class="form-field">
+      <label class="field-label">Vendor Name *</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>business</mat-icon>
+        <input matInput formControlName="companyName" placeholder="Company name" />
+      </mat-form-field>
+    </div>
+
+    <!-- Vendor Code -->
+    <div class="form-field">
+      <label class="field-label">Vendor Code *</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>badge</mat-icon>
+        <input matInput formControlName="registrationNumber" placeholder="e.g., V-001" />
+      </mat-form-field>
+    </div>
+
+    <!-- Years In Business -->
+    <div class="form-field">
+      <label class="field-label">Years In Business</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>history</mat-icon>
+        <input matInput type="number" formControlName="yearsInBusiness" placeholder="0" />
+      </mat-form-field>
+    </div>
+
+    <!-- Contact Phone -->
+    <div class="form-field">
+      <label class="field-label">Contact Phone *</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>phone_outline</mat-icon>
+        <input matInput formControlName="contactPhone" placeholder="+91 98765 43210" />
+      </mat-form-field>
+    </div>
+
+    <!-- Contact Email -->
+    <div class="form-field">
+      <label class="field-label">Contact Email *</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>mail_outline</mat-icon>
+        <input
+          matInput
+          formControlName="contactEmail"
+          placeholder="contact@vendor.com"
+          type="email"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Address -->
+    <div class="form-field">
+      <label class="field-label">Address *</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>location_on</mat-icon>
+        <textarea
+          matInput
+          formControlName="addressStreet"
+          placeholder="Complete business address"
+          rows="2"
+        ></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <!-- City -->
+      <div class="form-field">
+        <label class="field-label">City</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>location_city</mat-icon>
+          <input matInput formControlName="addressCity" placeholder="City" />
+        </mat-form-field>
+      </div>
+
+      <!-- State -->
+      <div class="form-field">
+        <label class="field-label">State</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>map</mat-icon>
+          <input matInput formControlName="addressState" placeholder="State" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Zip Code -->
+    <div class="form-field">
+      <label class="field-label">Zip Code</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>pin_drop</mat-icon>
+        <input matInput formControlName="addressZipCode" placeholder="Zip Code" />
+      </mat-form-field>
+    </div>
+
+    <!-- Tax Registration Number -->
+    <div class="form-field">
+      <label class="field-label">Tax Registration Number</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>receipt_long</mat-icon>
+        <input matInput formControlName="taxNumber" placeholder="GST/VAT number" />
+      </mat-form-field>
+    </div>
+
+    <!-- Website URL -->
+    <div class="form-field">
+      <label class="field-label">Website URL</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>language</mat-icon>
+        <input matInput formControlName="websiteUrl" placeholder="https://example.com" />
+      </mat-form-field>
+    </div>
+
+    <!-- Products/Services -->
+    <div class="form-field">
+      <label class="field-label">Products/Services (Comma separated)</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>category</mat-icon>
+        <input matInput formControlName="productsServices" placeholder="e.g., HVAC, Electrical, Plumbing" />
+      </mat-form-field>
+    </div>
+
+    <!-- Default Currency -->
+    <div class="form-field">
+      <label class="field-label">Default Currency</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>currency_rupee</mat-icon>
+        <input matInput value="INR" readonly />
+      </mat-form-field>
+    </div>
+
+    <!-- Status -->
+    <div class="form-field">
+      <label class="field-label">Status</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>verified</mat-icon>
+        <mat-select formControlName="vendorStatus">
+          @for (option of statusOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        type="submit"
+        class="save-btn"
+        [disabled]="editForm.invalid || (isUpdating$ | async)"
+      >
+        @if (isUpdating$ | async) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          {{ isAddMode ? 'Create Vendor' : 'Save Changes' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

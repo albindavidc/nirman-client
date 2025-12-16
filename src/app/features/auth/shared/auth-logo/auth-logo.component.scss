@@ -28,8 +28,8 @@
     height: 100px;
     background: linear-gradient(
       145deg,
-      rgba(60, 60, 60, 0.9) 0%,
-      rgba(40, 40, 40, 0.95) 100%
+      var(--md-sys-color-surface-container-high) 0%,
+      var(--md-sys-color-surface-container) 100%
     );
     border-radius: 24px;
     display: flex;
@@ -38,15 +38,17 @@
     position: relative;
     z-index: 1;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+      0 0 60px rgba(233, 193, 108, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--md-sys-color-outline-variant);
     animation: floatLogo 3s ease-in-out infinite;
+    // Set color for SVG with currentColor
+    color: var(--md-sys-color-primary);
   }
 
   .logo {
     width: 60px;
     height: 60px;
-    filter: brightness(0) invert(0.85);
+    // No filter needed - SVG uses currentColor from parent
   }
 
   .brand-name {
@@ -65,14 +67,14 @@
   }
 }
 
-// Floating animation for the logo
+// Smooth floating animation for the logo
 @keyframes floatLogo {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-10px);
   }
 }
 
@@ -84,7 +86,7 @@
     transform: translate(-50%, -60%) scale(1);
   }
   50% {
-    opacity: 0.7;
-    transform: translate(-50%, -60%) scale(1.1);
+    opacity: 0.6;
+    transform: translate(-50%, -60%) scale(1.15);
   }
 }

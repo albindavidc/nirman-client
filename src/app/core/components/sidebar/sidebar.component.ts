@@ -43,6 +43,7 @@ export class SidebarComponent {
       icon: 'folder_open',
       children: [
         { label: 'Projects', icon: 'work', route: '/projects' },
+        { label: 'Project Members', icon: 'group', route: '/project-members' },
         { label: 'Tasks', icon: 'task', route: '/tasks' },
       ],
     },
@@ -54,8 +55,6 @@ export class SidebarComponent {
         { label: 'Attendance', icon: 'schedule', route: '/attendance' },
       ],
     },
-    { label: 'Communication', icon: 'chat', route: '/communication' },
-    { label: 'Progress & Reports', icon: 'trending_up', route: '/reports' },
     {
       label: 'Finance & Procurement',
       icon: 'attach_money',

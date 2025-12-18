@@ -29,6 +29,20 @@ export const routes: Routes = [
             (m) => m.dashboardRoutes
           ),
       },
+      {
+        path: 'project-members',
+        loadChildren: () =>
+          import('./features/project-members/project-members.routes').then(
+            (m) => m.PROJECT_MEMBERS_ROUTES
+          ),
+      },
+      {
+        path: 'settings',
+        loadChildren: () =>
+          import('./features/settings/settings.routes').then(
+            (m) => m.settingsRoutes
+          ),
+      },
       // Other protected routes will go here
     ],
   },

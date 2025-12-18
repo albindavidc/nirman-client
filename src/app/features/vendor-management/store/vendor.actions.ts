@@ -80,6 +80,11 @@ export const rejectVendor = createAction(
   props<{ id: string }>()
 );
 
+export const blacklistVendor = createAction(
+  '[Vendor] Blacklist Vendor',
+  props<{ id: string }>()
+);
+
 // Load Stats
 export const loadVendorStats = createAction('[Vendor] Load Stats');
 

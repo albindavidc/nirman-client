@@ -1,0 +1,165 @@
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0;
+
+  h2 {
+    margin: 0;
+    color: var(--md-sys-color-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .close-btn {
+    color: var(--md-sys-color-on-surface-variant);
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-highest);
+    }
+  }
+}
+
+.modal-content {
+  padding-top: 24px !important;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .full-width {
+    grid-column: span 2;
+  }
+
+  .section-title {
+    color: var(--md-sys-color-on-surface);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+}
+
+// Dialog container and surface styling
+:host {
+  ::ng-deep .mat-mdc-dialog-container {
+    --mdc-dialog-container-color: var(--md-sys-color-surface-container-high);
+  }
+}
+
+// Comprehensive form field styling
+::ng-deep {
+  .mat-mdc-dialog-surface {
+    background-color: var(--md-sys-color-surface-container-high) !important;
+  }
+
+  .mat-mdc-dialog-content {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--md-sys-color-surface-container) !important;
+    border-radius: 12px;
+  }
+
+  // Outline styling
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--md-sys-color-outline-variant) !important;
+  }
+
+  .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+  .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+  .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+    border-color: var(--md-sys-color-outline) !important;
+  }
+
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+    border-color: var(--md-sys-color-primary) !important;
+  }
+
+  // Label styling
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    color: var(--md-sys-color-on-surface-variant) !important;
+  }
+
+  .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+  .mat-mdc-form-field.mat-focused .mdc-floating-label {
+    color: var(--md-sys-color-primary) !important;
+  }
+
+  // Input text
+  .mat-mdc-input-element,
+  input.mat-mdc-input-element {
+    color: var(--md-sys-color-on-surface) !important;
+    caret-color: var(--md-sys-color-primary);
+
+    &::placeholder {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+  }
+
+  // Select styling
+  .mat-mdc-select {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .mat-mdc-select-value-text {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .mat-mdc-select-arrow {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .mat-mdc-select-placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  // Error state
+  .mat-mdc-form-field-error {
+    color: var(--md-sys-color-error);
+  }
+}
+
+// Button styling
+.cancel-btn {
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: 24px;
+
+  &:hover {
+    background: var(--md-sys-color-surface-container-highest);
+  }
+}
+
+button[type="submit"] {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-radius: 24px;
+  padding: 0 24px;
+  height: 44px;
+  font-weight: 500;
+
+  &:disabled {
+    background-color: var(--md-sys-color-surface-container-highest) !important;
+    color: var(--md-sys-color-outline) !important;
+  }
+}
+
+// Dialog actions styling
+::ng-deep .mat-mdc-dialog-actions {
+  padding: 16px 24px 24px;
+  gap: 12px;
+}

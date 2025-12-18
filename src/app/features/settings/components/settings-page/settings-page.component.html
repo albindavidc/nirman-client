@@ -1,0 +1,209 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1>Settings</h1>
+    <p class="subtitle">Manage your account settings and preferences</p>
+  </div>
+
+  <div class="settings-content">
+    <!-- Main Content -->
+    <div class="main-section">
+      <!-- Profile Information Card -->
+      <mat-card class="settings-card">
+        <div class="card-header">
+          <div class="header-icon profile-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="header-text">
+            <h2>Profile Information</h2>
+            <p>Update your personal details</p>
+          </div>
+        </div>
+
+        <mat-card-content>
+          <!-- Profile Picture Section -->
+          <div class="profile-picture-section">
+            <p class="label">Profile Picture</p>
+            <div class="avatar-container">
+              <div class="avatar">{{ getInitials() || 'JD' }}</div>
+              <button mat-stroked-button color="primary">
+                <mat-icon>upload</mat-icon>
+                Upload
+              </button>
+              <button mat-stroked-button color="warn">
+                <mat-icon>delete</mat-icon>
+                Remove
+              </button>
+            </div>
+            <p class="hint">PNG, JPEG under 5MB</p>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Profile Form -->
+          <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" placeholder="John">
+                <mat-error *ngIf="profileForm.get('firstName')?.hasError('required')">
+                  First name is required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" placeholder="Doe">
+                <mat-error *ngIf="profileForm.get('lastName')?.hasError('required')">
+                  Last name is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <mat-icon matPrefix>email</mat-icon>
+              <input matInput formControlName="email" placeholder="john@example.com">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <mat-icon matPrefix>phone</mat-icon>
+              <input matInput formControlName="phoneNumber" placeholder="(555) 123-4567">
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-flat-button color="primary" type="submit" [disabled]="updating$ | async">
+                <mat-icon>check</mat-icon>
+                Update Profile
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Security Card -->
+      <mat-card class="settings-card">
+        <div class="card-header">
+          <div class="header-icon security-icon">
+            <mat-icon>lock</mat-icon>
+          </div>
+          <div class="header-text">
+            <h2>Security</h2>
+            <p>Manage your password and security settings</p>
+          </div>
+        </div>
+
+        <mat-card-content>
+          <form [formGroup]="passwordForm" (ngSubmit)="onUpdatePassword()" class="password-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Current Password</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
+              <input matInput 
+                     [type]="hideCurrentPassword ? 'password' : 'text'" 
+                     formControlName="currentPassword" 
+                     placeholder="Enter current password">
+              <button mat-icon-button matSuffix type="button"
+                      (click)="hideCurrentPassword = !hideCurrentPassword">
+                <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                Current password is required
+              </mat-error>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>New Password</mat-label>
+                <mat-icon matPrefix>lock</mat-icon>
+                <input matInput 
+                       [type]="hideNewPassword ? 'password' : 'text'" 
+                       formControlName="newPassword" 
+                       placeholder="Enter new password">
+                <button mat-icon-button matSuffix type="button"
+                        (click)="hideNewPassword = !hideNewPassword">
+                  <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                  New password is required
+                </mat-error>
+                <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                  Password must be at least 8 characters
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Confirm Password</mat-label>
+                <mat-icon matPrefix>lock</mat-icon>
+                <input matInput 
+                       [type]="hideConfirmPassword ? 'password' : 'text'" 
+                       formControlName="confirmPassword" 
+                       placeholder="Confirm new password">
+                <button mat-icon-button matSuffix type="button"
+                        (click)="hideConfirmPassword = !hideConfirmPassword">
+                  <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                  Please confirm your password
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <p class="password-hint" *ngIf="passwordForm.errors?.['passwordMismatch']">
+              <mat-icon>warning</mat-icon>
+              Passwords do not match
+            </p>
+
+            <p class="password-requirements">
+              Password must be at least 8 characters with uppercase, lowercase, and numbers.
+            </p>
+
+            <div class="form-actions">
+              <button mat-flat-button color="warn" type="submit" 
+                      [disabled]="(updating$ | async) || passwordForm.invalid">
+                <mat-icon>lock_reset</mat-icon>
+                Update Password
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Notifications Card -->
+      <mat-card class="settings-card sidebar-card">
+        <div class="card-header">
+          <div class="header-icon notification-icon">
+            <mat-icon>notifications</mat-icon>
+          </div>
+          <div class="header-text">
+            <h2>Notifications</h2>
+            <p>Manage your alerts</p>
+          </div>
+        </div>
+        <mat-card-content>
+          <p class="coming-soon">Coming soon...</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Session Card -->
+      <mat-card class="settings-card sidebar-card">
+        <div class="card-header-simple">
+          <h3>Session</h3>
+        </div>
+        <mat-card-content>
+          <button mat-flat-button color="warn" class="logout-btn">
+            <mat-icon>logout</mat-icon>
+            Logout
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" *ngIf="loading$ | async">
+  <mat-spinner diameter="48"></mat-spinner>
+</div>

@@ -174,6 +174,10 @@ export class VendorListComponent implements OnInit {
     this.store.dispatch(VendorActions.rejectVendor({ id: vendor.id }));
   }
 
+  blacklistVendor(vendor: Vendor): void {
+    this.store.dispatch(VendorActions.blacklistVendor({ id: vendor.id }));
+  }
+
   getStatusClass(status: string): string {
     return `status-${status}`;
   }
@@ -186,6 +190,8 @@ export class VendorListComponent implements OnInit {
         return 'cancel';
       case 'pending':
         return 'hourglass_empty';
+      case 'blacklisted':
+        return 'block';
       default:
         return 'help_outline';
     }

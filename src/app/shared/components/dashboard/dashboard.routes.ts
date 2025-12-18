@@ -7,7 +7,7 @@ export const dashboardRoutes: Routes = [
       import('./dashboard.component').then((m) => m.DashboardComponent),
   },
   {
-    path: 'professional',
+    path: 'supervisor',
     loadComponent: () =>
       import('./dashboard.component').then((m) => m.DashboardComponent),
   },

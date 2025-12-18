@@ -1,0 +1,180 @@
+<div class="member-management-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+        <div class="icon-wrapper">
+            <mat-icon>group</mat-icon>
+        </div>
+        <div>
+            <h1>Project Members</h1>
+            <p class="subtitle">Manage team members and their roles</p>
+        </div>
+    </div>
+    <button mat-flat-button color="primary" class="add-btn" (click)="openAddModal()">
+      <mat-icon>person_add</mat-icon>
+      Add Member
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon members">
+        <mat-icon>groups</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="value">{{ (totalMembers$ | async) || 0 }}</span>
+        <span class="label">Total Members</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon active">
+         <mat-icon>engineering</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="value">{{ (workerCount$ | async) || 0 }}</span>
+        <span class="label">Workers</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon roles">
+        <mat-icon>school</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="value">{{ (supervisorCount$ | async) || 0 }}</span>
+        <span class="label">Supervisors</span>
+      </div>
+    </div>
+    
+     <div class="stat-card">
+      <div class="stat-icon hours">
+         <mat-icon>how_to_reg</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="value">{{ (activeCount$ | async) || 0 }}</span>
+        <span class="label">Active Members</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Members Table Section -->
+  <div class="table-container mat-elevation-z8">
+      <div class="table-header">
+          <h3>All Team Members</h3>
+          <div class="filters">
+              <mat-form-field appearance="outline" class="search-field">
+                  <mat-icon matPrefix>search</mat-icon>
+                  <input matInput [formControl]="searchControl" placeholder="Search members...">
+              </mat-form-field>
+              
+               <mat-form-field appearance="outline" class="role-filter">
+                  <mat-select [formControl]="roleControl" placeholder="All Roles">
+                      <mat-option value="">All Roles</mat-option>
+                      <mat-option value="supervisor">Supervisor</mat-option>
+                      <mat-option value="worker">Worker</mat-option>
+                  </mat-select>
+              </mat-form-field>
+          </div>
+      </div>
+
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- Member Column -->
+      <ng-container matColumnDef="member">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> MEMBER </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="member-info">
+             <div class="avatar">{{ row.firstName | slice:0:1 }}{{ row.lastName | slice:0:1 }}</div>
+             <div class="details">
+                 <span class="name">{{ row.firstName }} {{ row.lastName }}</span>
+                 <!-- <span class="role-subtitle">{{ row.role | titlecase }}</span> -->
+                 <!-- Only showing name here as Role has its own column in design -->
+             </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Role Column -->
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> ROLE </th>
+        <td mat-cell *matCellDef="let row"> {{ row.role | titlecase }} </td>
+      </ng-container>
+
+      <!-- Skills Column -->
+      <ng-container matColumnDef="skills">
+        <th mat-header-cell *matHeaderCellDef> SKILLS </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="skills-container">
+            <ng-container *ngIf="row.skills && row.skills.length > 0; else noSkills">
+              <span 
+                *ngFor="let skill of row.skills.slice(0, 3); let i = index" 
+                class="skill-tag"
+                [class.primary]="i % 3 === 0"
+                [class.secondary]="i % 3 === 1"
+                [class.tertiary]="i % 3 === 2"
+              >
+                {{ skill }}
+              </span>
+              <span *ngIf="row.skills.length > 3" class="skill-tag more">
+                +{{ row.skills.length - 3 }}
+              </span>
+            </ng-container>
+            <ng-template #noSkills>
+              <span class="no-skills">-</span>
+            </ng-template>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> EMAIL </th>
+        <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
+      </ng-container>
+      
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef> PHONE </th>
+        <td mat-cell *matCellDef="let row"> {{ row.phoneNumber || '-' }} </td>
+      </ng-container>
+      
+      <!-- Assigned Since Column -->
+      <ng-container matColumnDef="assignedSince">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Joined Date </th>
+        <td mat-cell *matCellDef="let row"> {{ row.createdAt | date:'mediumDate' }} </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> STATUS </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status-badge" [class.active]="row.userStatus === 'active'" [class.blocked]="row.userStatus === 'blocked'">
+            {{ row.userStatus | titlecase }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> ACTIONS </th>
+        <td mat-cell *matCellDef="let row">
+            <button mat-stroked-button class="action-btn" (click)="openEditModal(row)">Edit</button>
+            <button mat-stroked-button class="action-btn remove" *ngIf="row.userStatus !== 'blocked'" (click)="blockMember(row)">Block</button>
+             <button mat-stroked-button class="action-btn active" *ngIf="row.userStatus === 'blocked'" (click)="unblockMember(row)">Unblock</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      
+       <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="7">No data matching the filter "{{searchControl.value}}"</td>
+      </tr>
+    </table>
+
+    <mat-paginator [length]="(totalMembers$ | async)" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of members" (page)="onPageChange($event)"></mat-paginator>
+  </div>
+</div>

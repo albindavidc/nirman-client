@@ -24,7 +24,8 @@
     </div>
   }
 
-    <div class="card-header">
+    <div class="vendor-list-card">
+      <div class="card-header">
       <h2>All Vendors</h2>
       <div class="header-actions">
         <mat-form-field appearance="outline" class="search-field">
@@ -110,6 +111,12 @@
                   <button mat-stroked-button class="reject-btn" (click)="rejectVendor(vendor)">
                     <mat-icon>cancel</mat-icon>
                     Reject
+                  </button>
+                }
+                @if (vendor.vendorStatus === 'approved') {
+                  <button mat-stroked-button class="blacklist-btn" (click)="blacklistVendor(vendor)" matTooltip="Blacklist vendor">
+                    <mat-icon>block</mat-icon>
+                    Blacklist
                   </button>
                 }
                 <button mat-icon-button class="edit-btn" (click)="openVendorModal(vendor)" matTooltip="Edit vendor">

@@ -1,20 +1,86 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 @use "material-theme";
 
+// Use dark theme for Material components
 html {
-  @include mat.theme((
-    color: (
-      theme-type: light,
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
-}/* You can add global styles to this file, and also import other style files */
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: mat.$orange-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Global styles */
+html,
+body {
+  height: 100%;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-surface);
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Global Material component text color overrides for dark theme
+.mat-mdc-form-field {
+  color: var(--md-sys-color-on-surface);
+}
+
+.mat-mdc-select-value {
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.mat-mdc-option {
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.mat-mdc-menu-content {
+  background-color: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.mat-mdc-menu-item {
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.mat-mdc-input-element {
+  color: var(--md-sys-color-on-surface) !important;
+  caret-color: var(--md-sys-color-primary) !important;
+}
+
+.mat-mdc-floating-label,
+.mdc-floating-label {
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+
+// Paginator global styling
+.mat-mdc-paginator {
+  background: transparent !important;
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+// Select panel styling
+.mat-mdc-select-panel {
+  background-color: var(--md-sys-color-surface-container) !important;
+}
+
+// Snackbar styling
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--md-sys-color-inverse-surface);
+  --mdc-snackbar-supporting-text-color: var(--md-sys-color-inverse-on-surface);
+}
+
+// Dialog overlay
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}

@@ -30,12 +30,24 @@
   }
 }
 
-// Stats Grid
+// Stats Grid - Force 5 columns on larger screens, responsive on smaller
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
   margin-bottom: 32px;
+
+  @media (max-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-card {
@@ -138,6 +150,29 @@
       font-weight: 600;
       color: var(--md-sys-color-on-surface);
       margin: 0;
+    }
+  }
+
+  .add-btn {
+    background-color: var(--md-sys-color-primary) !important;
+    color: var(--md-sys-color-on-primary) !important;
+    border-radius: 24px;
+    padding: 0 24px;
+    height: 48px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background-color: var(--md-sys-color-primary-container) !important;
+      color: var(--md-sys-color-on-primary-container) !important;
     }
   }
 }
@@ -303,14 +338,19 @@
     color: var(--md-sys-color-error);
     border: 1px solid rgba(255, 180, 171, 0.2);
   }
+
+  &.status-blacklisted {
+    background: rgba(77, 70, 57, 0.2);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
 }
 
-  .action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: flex-end;
-  }
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .mat-column-actions {
@@ -374,6 +414,25 @@
       color: var(--md-sys-color-primary);
     }
   }
+
+  .blacklist-btn {
+    color: var(--md-sys-color-on-surface-variant);
+    border-color: var(--md-sys-color-outline-variant);
+    border-radius: 20px;
+    height: 36px;
+    padding: 0 16px;
+    font-size: 0.8125rem;
+
+    mat-icon {
+      margin-right: 6px;
+      font-size: 18px;
+    }
+
+    &:hover {
+      background: rgba(77, 70, 57, 0.1);
+      border-color: var(--md-sys-color-outline);
+    }
+  }
 }
 
 // Loading & Empty States
@@ -412,4 +471,62 @@
 .error-container mat-icon {
   color: var(--md-sys-color-error);
   opacity: 1;
+}
+
+// Paginator Theming - Align with Material Design Theme
+.mat-mdc-paginator {
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+
+  .mat-mdc-paginator-container {
+    padding: 16px 0;
+  }
+
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .mat-mdc-select-value {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .mat-mdc-paginator-navigation-previous,
+  .mat-mdc-paginator-navigation-next,
+  .mat-mdc-paginator-navigation-first,
+  .mat-mdc-paginator-navigation-last {
+    color: var(--md-sys-color-primary);
+
+    &:disabled {
+      color: var(--md-sys-color-outline);
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--md-sys-color-primary-container);
+      border-radius: 50%;
+    }
+  }
+
+  .mat-mdc-icon-button {
+    color: var(--md-sys-color-primary);
+
+    &:disabled {
+      color: var(--md-sys-color-outline);
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(233, 193, 108, 0.1);
+    }
+  }
+
+  // Select dropdown styling
+  .mat-mdc-select {
+    .mat-mdc-select-trigger {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .mat-mdc-select-arrow {
+      color: var(--md-sys-color-primary);
+    }
+  }
 }

@@ -126,6 +126,24 @@ export class VendorEffects {
     )
   );
 
+  blacklistVendor$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(VendorActions.blacklistVendor),
+      exhaustMap(({ id }) =>
+        this.vendorService.blacklistVendor(id).pipe(
+          map((vendor) => VendorActions.updateVendorSuccess({ vendor })),
+          catchError((error) =>
+            of(
+              VendorActions.updateVendorFailure({
+                error: error.error?.message || 'Failed to blacklist vendor',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   loadStats$ = createEffect(() =>
     this.actions$.pipe(
       ofType(VendorActions.loadVendorStats),

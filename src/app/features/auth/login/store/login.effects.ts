@@ -54,8 +54,8 @@ export class LoginEffects {
     switch (role.toLowerCase()) {
       case 'admin':
         return '/vendor-management';
-      case 'professional':
-        return '/dashboard/professional';
+      case 'supervisor':
+        return '/dashboard/supervisor';
       case 'vendor':
         return '/dashboard/vendor';
       case 'worker':

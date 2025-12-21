@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 let isRefreshing = false;
 
@@ -30,7 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         // Try to refresh the token
         return http
           .post<{ message: string }>(
-            'http://localhost:3000/auth/refresh',
+            `${environment.apiUrl}/auth/refresh`,
             {},
             { withCredentials: true }
           )

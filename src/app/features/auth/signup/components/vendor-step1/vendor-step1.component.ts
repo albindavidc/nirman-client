@@ -79,7 +79,7 @@ export class VendorStep1Component implements OnInit {
         email: ['', [Validators.required, Validators.email]],
         phoneNumber: [
           '',
-          [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
+          [Validators.required, Validators.pattern(/^\d{10}$/)],
         ],
         password: [
           '',

@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,11 +32,17 @@ import { AuthLogoComponent } from '../../../shared/auth-logo/auth-logo.component
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
+  private readonly route = inject(ActivatedRoute);
 
   hidePassword = signal(true);
+  isVendor = signal(false);
+
+  get signupRoute(): string {
+    return this.isVendor() ? '/auth/signup/vendor/step1' : '/auth/signup';
+  }
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -46,6 +52,12 @@ export class LoginComponent {
 
   isLoading$ = this.store.select(LoginSelectors.selectIsLoading);
   error$ = this.store.select(LoginSelectors.selectError);
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.isVendor.set(params['role'] === 'vendor');
+    });
+  }
 
   togglePasswordVisibility(): void {
     this.hidePassword.update((v) => !v);

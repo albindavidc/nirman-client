@@ -173,9 +173,14 @@ export class SignupEffects {
         ofType(SignupActions.selectAccountType),
         tap(({ accountType }) => {
           if (accountType === 'vendor') {
-            this.router.navigate(['/auth/signup/vendor/step1']);
+            // Vendor goes to login with role param (for vendor-specific signup link)
+            this.router.navigate(['/auth/login'], {
+              queryParams: { role: 'vendor' },
+            });
+          } else {
+            // Labor and Supervisor go to regular login
+            this.router.navigate(['/auth/login']);
           }
-          // Add other account type routes as needed
         })
       ),
     { dispatch: false }

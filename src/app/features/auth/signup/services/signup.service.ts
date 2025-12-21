@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 import {
   VendorUserData,
   VendorCompanyData,
@@ -23,8 +24,8 @@ interface OtpVerifyResponse {
 })
 export class SignupService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/auth/vendor/signup';
-  private readonly otpUrl = 'http://localhost:3000/auth/otp';
+  private readonly apiUrl = `${environment.apiUrl}/auth/vendor/signup`;
+  private readonly otpUrl = `${environment.apiUrl}/auth/otp`;
 
   submitStep1(data: VendorUserData): Observable<Step1Response> {
     return this.http.post<Step1Response>(`${this.apiUrl}/step1`, {

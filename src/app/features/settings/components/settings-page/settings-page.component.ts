@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe, NgIf } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -37,6 +37,8 @@ import * as SettingsSelectors from '../../store/settings.selectors';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDividerModule,
+    AsyncPipe,
+    NgIf,
   ],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.scss',

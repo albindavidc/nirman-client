@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -15,10 +15,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Store } from '@ngrx/store';
 import { ProfileService } from '../../services/profile.service';
 import { Profile } from '../../models/profile.model';
 import { environment } from '../../../../../environments/environment';
 import { ImageUploadModalComponent } from '../../../../shared/components/image-upload-modal/image-upload-modal.component';
+import * as LoginActions from '../../../auth/login/store/login.actions';
 
 @Component({
   selector: 'app-profile-page',
@@ -35,11 +37,14 @@ import { ImageUploadModalComponent } from '../../../../shared/components/image-u
     MatSnackBarModule,
     MatDividerModule,
     MatDialogModule,
+    TitleCasePipe,
   ],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss',
 })
 export class ProfilePageComponent implements OnInit {
+  private readonly store = inject(Store);
+
   profile: Profile | null = null;
   isLoading = true;
   isSaving = false;
@@ -122,6 +127,12 @@ export class ProfilePageComponent implements OnInit {
           .subscribe({
             next: (updatedProfile) => {
               this.profile = updatedProfile;
+              // Dispatch action to update user in store (syncs to sidebar)
+              this.store.dispatch(
+                LoginActions.updateUserProfile({
+                  user: { profilePhotoUrl: updatedProfile.profilePhotoUrl },
+                })
+              );
               this.snackBar.open('Profile photo updated', 'Close', {
                 duration: 3000,
               });
@@ -151,6 +162,15 @@ export class ProfilePageComponent implements OnInit {
     this.profileService.updateProfile(this.profileForm.value).subscribe({
       next: (updatedProfile) => {
         this.profile = updatedProfile;
+        // Dispatch action to update user in store (syncs firstName/lastName to sidebar)
+        this.store.dispatch(
+          LoginActions.updateUserProfile({
+            user: {
+              firstName: updatedProfile.firstName,
+              lastName: updatedProfile.lastName,
+            },
+          })
+        );
         this.snackBar.open('Profile updated successfully', 'Close', {
           duration: 3000,
         });

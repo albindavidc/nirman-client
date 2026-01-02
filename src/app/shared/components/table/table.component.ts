@@ -10,7 +10,12 @@ import {
   TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule,
+  UpperCasePipe,
+  DatePipe,
+  CurrencyPipe,
+} from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import {
   MatPaginator,
@@ -34,6 +39,9 @@ import { TableColumn } from './table.models';
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    UpperCasePipe,
+    DatePipe,
+    CurrencyPipe,
   ],
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],

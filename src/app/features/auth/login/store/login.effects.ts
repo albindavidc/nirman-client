@@ -96,6 +96,15 @@ export class LoginEffects {
       exhaustMap(() =>
         this.loginService.getMe().pipe(
           map((user) => LoginActions.validateSessionSuccess({ user })),
+          tap(({ user }) => {
+            // Update localStorage with fresh data (e.g. including new profile photo)
+            // merge with existing to avoid losing other fields if API returns partial
+            const existing = JSON.parse(localStorage.getItem('user') || '{}');
+            localStorage.setItem(
+              'user',
+              JSON.stringify({ ...existing, ...user })
+            );
+          }),
           catchError(() => of(LoginActions.validateSessionFailure()))
         )
       )

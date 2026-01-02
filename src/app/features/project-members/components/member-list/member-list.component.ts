@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule,
+  TitleCasePipe,
+  SlicePipe,
+  AsyncPipe,
+} from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -41,6 +46,9 @@ import {
     MatSelectModule,
     ReactiveFormsModule,
     TableComponent,
+    TitleCasePipe,
+    SlicePipe,
+    AsyncPipe,
   ],
   templateUrl: './member-list.component.html',
   styleUrl: './member-list.component.scss',

@@ -4,7 +4,7 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { GuestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, canActivate: [GuestGuard] },
   {
     path: 'auth',
     canActivate: [GuestGuard],

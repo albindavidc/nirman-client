@@ -21,7 +21,7 @@ export const GuestGuard: CanActivateFn = (route, state) => {
         targetRoute = '/auth/pending-approval';
       }
     } else if (role === 'admin') {
-      targetRoute = '/vendor-management';
+      targetRoute = '/dashboard';
     } else if (role === 'supervisor') {
       targetRoute = '/dashboard/supervisor';
     } else if (role === 'worker') {
@@ -29,7 +29,7 @@ export const GuestGuard: CanActivateFn = (route, state) => {
     }
 
     router.navigate([targetRoute]);
-    return true;
+    return false;
   }
 
   return true;

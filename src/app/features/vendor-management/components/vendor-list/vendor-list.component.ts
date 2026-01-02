@@ -1,5 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  CommonModule,
+  UpperCasePipe,
+  TitleCasePipe,
+  AsyncPipe,
+} from '@angular/common';
 import { Store } from '@ngrx/store';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,6 +60,9 @@ import {
     MatSelectModule,
     ReactiveFormsModule,
     TableComponent,
+    UpperCasePipe,
+    TitleCasePipe,
+    AsyncPipe,
   ],
   templateUrl: './vendor-list.component.html',
   styleUrl: './vendor-list.component.scss',
@@ -149,6 +157,10 @@ export class VendorListComponent implements OnInit {
     this.statusFilter.valueChanges.subscribe(() => {
       this.loadData(0); // Reset to first page on filter change
     });
+  }
+
+  onSearchChange(searchValue: any) {
+    // let search = searchValue.
   }
 
   loadData(pageIndex = 0, pageSize = this.pageSize): void {

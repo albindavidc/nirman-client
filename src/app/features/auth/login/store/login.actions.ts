@@ -32,7 +32,7 @@ export const validateSession = createAction('[Login] Validate Session');
 
 export const validateSessionSuccess = createAction(
   '[Login] Validate Session Success',
-  props<{ user: { id: string; email: string; role: string } }>()
+  props<{ user: any }>()
 );
 
 export const validateSessionFailure = createAction(
@@ -108,4 +108,10 @@ export const clearError = createAction('[Login] Clear Error');
 
 export const resetForgotPasswordFlow = createAction(
   '[Login] Reset Forgot Password Flow'
+);
+
+// Profile Update Action - updates user in store when profile is modified
+export const updateUserProfile = createAction(
+  '[Login] Update User Profile',
+  props<{ user: Partial<LoginResponse['user']> }>()
 );

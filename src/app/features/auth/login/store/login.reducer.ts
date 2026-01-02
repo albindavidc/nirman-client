@@ -40,10 +40,8 @@ export const loginReducer = createReducer(
     isLoggedIn: true,
     user: {
       ...state.user,
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    } as typeof state.user,
+      ...user, // Merge all fields from backend user (including profilePhotoUrl)
+    },
   })),
 
   on(LoginActions.validateSessionFailure, (state) => ({
@@ -151,5 +149,11 @@ export const loginReducer = createReducer(
     resetPasswordLoading: false,
     resetPasswordSuccess: false,
     error: null,
+  })),
+
+  // Update User Profile - sync profile changes (including photo) across the app
+  on(LoginActions.updateUserProfile, (state, { user }) => ({
+    ...state,
+    user: state.user ? { ...state.user, ...user } : null,
   }))
 );

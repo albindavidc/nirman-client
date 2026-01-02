@@ -43,6 +43,7 @@
           appearance="outline"
           class="search-field"
           subscriptSizing="dynamic"
+          (keyup)="onSearchChange($event)"
         >
           <mat-icon matPrefix>search</mat-icon>
           <input matInput placeholder="Search vendors..." />

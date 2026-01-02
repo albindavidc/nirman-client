@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { RoleGuard } from '../../../core/guards/role.guard';
+import { VendorStatusGuard } from '../../../core/guards/vendor-status.guard';
 
 export const dashboardRoutes: Routes = [
   {
@@ -16,7 +17,7 @@ export const dashboardRoutes: Routes = [
   },
   {
     path: 'vendor',
-    canActivate: [RoleGuard],
+    canActivate: [RoleGuard, VendorStatusGuard],
     data: { roles: ['vendor'] },
     loadComponent: () =>
       import('./dashboard.component').then((m) => m.DashboardComponent),

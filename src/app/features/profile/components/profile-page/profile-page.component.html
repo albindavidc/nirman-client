@@ -68,19 +68,41 @@
               <mat-label>First Name</mat-label>
               <input matInput formControlName="firstName" />
               <mat-icon matPrefix>person</mat-icon>
+              @if (profileForm.get('firstName')?.hasError('required') &&
+              profileForm.get('firstName')?.touched) {
+              <mat-error>First name is required</mat-error>
+              } @else if (profileForm.get('firstName')?.hasError('minlength') &&
+              profileForm.get('firstName')?.touched) {
+              <mat-error>First name must be at least 2 characters</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Last Name</mat-label>
               <input matInput formControlName="lastName" />
               <mat-icon matPrefix>person</mat-icon>
+              @if (profileForm.get('lastName')?.hasError('required') &&
+              profileForm.get('lastName')?.touched) {
+              <mat-error>Last name is required</mat-error>
+              } @else if (profileForm.get('lastName')?.hasError('minlength') &&
+              profileForm.get('lastName')?.touched) {
+              <mat-error>Last name must be at least 2 characters</mat-error>
+              }
             </mat-form-field>
           </div>
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Phone Number</mat-label>
-            <input matInput formControlName="phoneNumber" />
+            <input
+              matInput
+              formControlName="phoneNumber"
+              placeholder="1234567890"
+            />
             <mat-icon matPrefix>phone</mat-icon>
+            @if (profileForm.get('phoneNumber')?.hasError('pattern') &&
+            profileForm.get('phoneNumber')?.touched) {
+            <mat-error>Please enter a valid 10-digit phone number</mat-error>
+            }
           </mat-form-field>
 
           <div class="form-actions">
@@ -132,6 +154,10 @@
                 hideCurrentPassword ? "visibility_off" : "visibility"
               }}</mat-icon>
             </button>
+            @if (passwordForm.get('currentPassword')?.hasError('required') &&
+            passwordForm.get('currentPassword')?.touched) {
+            <mat-error>Current password is required</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -152,7 +178,23 @@
                 hideNewPassword ? "visibility_off" : "visibility"
               }}</mat-icon>
             </button>
-            <mat-hint>Minimum 8 characters</mat-hint>
+            @if (passwordForm.get('newPassword')?.hasError('required') &&
+            passwordForm.get('newPassword')?.touched) {
+            <mat-error>New password is required</mat-error>
+            } @else if (passwordForm.get('newPassword')?.hasError('minlength')
+            && passwordForm.get('newPassword')?.touched) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+            } @else if (passwordForm.get('newPassword')?.hasError('pattern') &&
+            passwordForm.get('newPassword')?.touched) {
+            <mat-error
+              >Password must include uppercase, lowercase, number, and special
+              character</mat-error
+            >
+            }
+            <mat-hint
+              >Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special
+              (@$!%*?&)</mat-hint
+            >
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -173,7 +215,24 @@
                 hideConfirmPassword ? "visibility_off" : "visibility"
               }}</mat-icon>
             </button>
+            @if (passwordForm.get('confirmPassword')?.hasError('required') &&
+            passwordForm.get('confirmPassword')?.touched) {
+            <mat-error>Please confirm your password</mat-error>
+            }
           </mat-form-field>
+
+          @if (passwordForm.hasError('passwordMismatch') &&
+          passwordForm.get('confirmPassword')?.touched) {
+          <p
+            class="field-error"
+            style="color: #f44336; margin-top: -16px; font-size: 12px"
+          >
+            <mat-icon style="vertical-align: middle; font-size: 16px"
+              >warning</mat-icon
+            >
+            Passwords do not match
+          </p>
+          }
 
           <div class="form-actions">
             <button

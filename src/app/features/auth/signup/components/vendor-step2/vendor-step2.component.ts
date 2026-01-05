@@ -21,6 +21,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import * as SignupActions from '../../store/signup.actions';
 import * as SignupSelectors from '../../store/signup.selectors';
 import { AuthLogoComponent } from '../../../shared/auth-logo/auth-logo.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-vendor-step2',
@@ -91,14 +92,24 @@ export class VendorStep2Component implements OnInit {
     });
 
     this.form = this.fb.group({
-      companyName: ['', [Validators.required, Validators.minLength(2)]],
+      companyName: [
+        '',
+        [Validators.required, CustomValidators.nameValidator(2)],
+      ],
       registrationNumber: ['', [Validators.required]],
       taxNumber: [''],
-      yearsInBusiness: ['', [Validators.required, Validators.min(0)]],
+      yearsInBusiness: [
+        '',
+        [
+          Validators.required,
+          Validators.min(0),
+          CustomValidators.experienceYears(),
+        ],
+      ],
       addressStreet: [''],
       addressCity: [''],
       addressState: [''],
-      addressZipCode: [''],
+      addressZipCode: ['', [CustomValidators.zipCode()]],
     });
   }
 

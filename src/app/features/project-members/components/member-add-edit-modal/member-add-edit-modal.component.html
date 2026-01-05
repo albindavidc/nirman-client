@@ -17,6 +17,9 @@
           <mat-error *ngIf="form.get('firstName')?.hasError('required')"
             >Required</mat-error
           >
+          <mat-error *ngIf="form.get('firstName')?.hasError('minlength')"
+            >Min 2 characters</mat-error
+          >
         </mat-form-field>
       </div>
       <div class="form-field">
@@ -26,6 +29,9 @@
           <input matInput formControlName="lastName" placeholder="Last Name" />
           <mat-error *ngIf="form.get('lastName')?.hasError('required')"
             >Required</mat-error
+          >
+          <mat-error *ngIf="form.get('lastName')?.hasError('minlength')"
+            >Min 2 characters</mat-error
           >
         </mat-form-field>
       </div>
@@ -61,6 +67,9 @@
           />
           <mat-error *ngIf="form.get('phone')?.hasError('required')"
             >Required</mat-error
+          >
+          <mat-error *ngIf="form.get('phone')?.hasError('pattern')"
+            >Please enter a valid 10-digit number</mat-error
           >
         </mat-form-field>
       </div>

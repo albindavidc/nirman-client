@@ -23,6 +23,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import * as SettingsActions from '../../store/settings.actions';
 import * as SettingsSelectors from '../../store/settings.selectors';
 
+// Validators
+import { CustomValidators } from '../../../../shared/validators/custom-validators';
+
 @Component({
   selector: 'app-settings-page',
   standalone: true,
@@ -129,26 +132,28 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 
   private initForms(): void {
     this.profileForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
+      lastName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
       email: [{ value: '', disabled: true }],
-      phoneNumber: [''],
+      phoneNumber: ['', [CustomValidators.phoneNumber()]],
     });
 
     this.passwordForm = this.fb.group(
       {
         currentPassword: ['', Validators.required],
-        newPassword: ['', [Validators.required, Validators.minLength(8)]],
+        newPassword: [
+          '',
+          [Validators.required, CustomValidators.passwordStrength()],
+        ],
         confirmPassword: ['', Validators.required],
       },
-      { validators: this.passwordMatchValidator }
+      {
+        validators: CustomValidators.passwordMatch(
+          'newPassword',
+          'confirmPassword'
+        ),
+      }
     );
-  }
-
-  private passwordMatchValidator(form: FormGroup) {
-    const newPassword = form.get('newPassword')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-    return newPassword === confirmPassword ? null : { passwordMismatch: true };
   }
 
   getInitials(): string {

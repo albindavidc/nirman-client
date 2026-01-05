@@ -15,10 +15,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatIconModule } from '@angular/material/icon'; // Added MatIconModule
+import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import { Member } from '../../models/member.model';
 import * as MemberActions from '../../store/member.actions';
+import { CustomValidators } from '../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-member-add-edit-modal',
@@ -50,19 +51,19 @@ export class MemberAddEditModalComponent implements OnInit {
   ) {
     this.mode = data.mode;
     this.form = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
+      lastName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, CustomValidators.phoneNumber()]],
       role: ['worker', Validators.required],
       // Professional fields
       professionalTitle: [''],
-      experienceYears: [0],
+      experienceYears: [0, [CustomValidators.experienceYears()]],
       skills: [''], // Comma separated string for simplicity in form
       addressStreet: [''],
       addressCity: [''],
       addressState: [''],
-      addressZipCode: [''],
+      addressZipCode: ['', [CustomValidators.zipCode()]],
     });
   }
 

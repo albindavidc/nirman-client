@@ -54,16 +54,23 @@ export class VendorEditModalComponent implements OnInit {
     email: ['', [Validators.email]],
 
     // Vendor Details
-    companyName: ['', [Validators.required]],
+    companyName: ['', [Validators.required, Validators.minLength(2)]],
     registrationNumber: ['', [Validators.required]],
     taxNumber: [''],
     yearsInBusiness: [0, [Validators.min(0)]],
     addressStreet: ['', [Validators.required]],
     addressCity: [''],
     addressState: [''],
-    addressZipCode: [''],
-    websiteUrl: [''],
-    contactPhone: ['', [Validators.required]],
+    addressZipCode: ['', [Validators.pattern(/^[\dA-Za-z\s\-]{4,10}$/)]],
+    websiteUrl: [
+      '',
+      [
+        Validators.pattern(
+          /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i
+        ),
+      ],
+    ],
+    contactPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     contactEmail: ['', [Validators.required, Validators.email]],
     vendorStatus: ['approved' as VendorStatus],
     productsServices: [''],

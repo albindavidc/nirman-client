@@ -24,14 +24,17 @@
       <div class="form-field">
         <label class="field-label">Email Address</label>
         <mat-form-field appearance="outline">
-          <mat-icon matPrefix>mail_outline</mat-icon>
+          <mat-icon matPrefix>email_outline</mat-icon>
           <input
             matInput
             formControlName="email"
             placeholder="you@example.com"
             type="email"
           />
-          @if (loginForm.get('email')?.hasError('email') &&
+          @if (loginForm.get('email')?.hasError('required') &&
+          loginForm.get('email')?.touched) {
+          <mat-error>Email is required</mat-error>
+          } @else if (loginForm.get('email')?.hasError('email') &&
           loginForm.get('email')?.touched) {
           <mat-error>Please enter a valid email address</mat-error>
           }
@@ -59,6 +62,13 @@
               hidePassword() ? "visibility_off" : "visibility"
             }}</mat-icon>
           </button>
+          @if (loginForm.get('password')?.hasError('required') &&
+          loginForm.get('password')?.touched) {
+          <mat-error>Password is required</mat-error>
+          } @else if (loginForm.get('password')?.hasError('minlength') &&
+          loginForm.get('password')?.touched) {
+          <mat-error>Password must be at least 6 characters</mat-error>
+          }
         </mat-form-field>
       </div>
 

@@ -33,6 +33,9 @@
           @if (form.get('companyName')?.hasError('required') &&
           form.get('companyName')?.touched) {
           <mat-error>Company name is required</mat-error>
+          } @else if (form.get('companyName')?.hasError('minlength') &&
+          form.get('companyName')?.touched) {
+          <mat-error>Company name must be at least 2 characters</mat-error>
           }
         </mat-form-field>
       </div>
@@ -85,6 +88,9 @@
           @if (form.get('yearsInBusiness')?.hasError('required') &&
           form.get('yearsInBusiness')?.touched) {
           <mat-error>Years in business is required</mat-error>
+          } @else if (form.get('yearsInBusiness')?.hasError('min') &&
+          form.get('yearsInBusiness')?.touched) {
+          <mat-error>Years in business cannot be negative</mat-error>
           }
         </mat-form-field>
       </div>

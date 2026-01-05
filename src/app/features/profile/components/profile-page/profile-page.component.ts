@@ -21,6 +21,7 @@ import { Profile } from '../../models/profile.model';
 import { environment } from '../../../../../environments/environment';
 import { ImageUploadModalComponent } from '../../../../shared/components/image-upload-modal/image-upload-modal.component';
 import * as LoginActions from '../../../auth/login/store/login.actions';
+import { CustomValidators } from '../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-profile-page',
@@ -67,16 +68,27 @@ export class ProfilePageComponent implements OnInit {
     private dialog: MatDialog
   ) {
     this.profileForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      phoneNumber: [''],
+      firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
+      lastName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
+      phoneNumber: ['', [CustomValidators.phoneNumber()]],
     });
 
-    this.passwordForm = this.fb.group({
-      currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required],
-    });
+    this.passwordForm = this.fb.group(
+      {
+        currentPassword: ['', Validators.required],
+        newPassword: [
+          '',
+          [Validators.required, CustomValidators.passwordStrength()],
+        ],
+        confirmPassword: ['', Validators.required],
+      },
+      {
+        validators: CustomValidators.passwordMatch(
+          'newPassword',
+          'confirmPassword'
+        ),
+      }
+    );
   }
 
   ngOnInit(): void {

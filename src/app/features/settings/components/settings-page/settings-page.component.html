@@ -24,7 +24,7 @@
           <div class="profile-picture-section">
             <p class="label">Profile Picture</p>
             <div class="avatar-container">
-              <div class="avatar">{{ getInitials() || 'JD' }}</div>
+              <div class="avatar">{{ getInitials() || "JD" }}</div>
               <button mat-stroked-button color="primary">
                 <mat-icon>upload</mat-icon>
                 Upload
@@ -40,21 +40,43 @@
           <mat-divider></mat-divider>
 
           <!-- Profile Form -->
-          <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
+          <form
+            [formGroup]="profileForm"
+            (ngSubmit)="onUpdateProfile()"
+            class="profile-form"
+          >
             <div class="form-row">
               <mat-form-field appearance="outline">
                 <mat-label>First Name</mat-label>
-                <input matInput formControlName="firstName" placeholder="John">
-                <mat-error *ngIf="profileForm.get('firstName')?.hasError('required')">
+                <input
+                  matInput
+                  formControlName="firstName"
+                  placeholder="John"
+                />
+                <mat-error
+                  *ngIf="profileForm.get('firstName')?.hasError('required')"
+                >
                   First name is required
+                </mat-error>
+                <mat-error
+                  *ngIf="profileForm.get('firstName')?.hasError('minlength')"
+                >
+                  First name must be at least 2 characters
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Last Name</mat-label>
-                <input matInput formControlName="lastName" placeholder="Doe">
-                <mat-error *ngIf="profileForm.get('lastName')?.hasError('required')">
+                <input matInput formControlName="lastName" placeholder="Doe" />
+                <mat-error
+                  *ngIf="profileForm.get('lastName')?.hasError('required')"
+                >
                   Last name is required
+                </mat-error>
+                <mat-error
+                  *ngIf="profileForm.get('lastName')?.hasError('minlength')"
+                >
+                  Last name must be at least 2 characters
                 </mat-error>
               </mat-form-field>
             </div>
@@ -62,17 +84,35 @@
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email Address</mat-label>
               <mat-icon matPrefix>email</mat-icon>
-              <input matInput formControlName="email" placeholder="john@example.com">
+              <input
+                matInput
+                formControlName="email"
+                placeholder="john@example.com"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Phone Number</mat-label>
               <mat-icon matPrefix>phone</mat-icon>
-              <input matInput formControlName="phoneNumber" placeholder="(555) 123-4567">
+              <input
+                matInput
+                formControlName="phoneNumber"
+                placeholder="(555) 123-4567"
+              />
+              <mat-error
+                *ngIf="profileForm.get('phoneNumber')?.hasError('pattern')"
+              >
+                Please enter a valid 10-digit phone number
+              </mat-error>
             </mat-form-field>
 
             <div class="form-actions">
-              <button mat-flat-button color="primary" type="submit" [disabled]="updating$ | async">
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="updating$ | async"
+              >
                 <mat-icon>check</mat-icon>
                 Update Profile
               </button>
@@ -94,19 +134,35 @@
         </div>
 
         <mat-card-content>
-          <form [formGroup]="passwordForm" (ngSubmit)="onUpdatePassword()" class="password-form">
+          <form
+            [formGroup]="passwordForm"
+            (ngSubmit)="onUpdatePassword()"
+            class="password-form"
+          >
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Current Password</mat-label>
               <mat-icon matPrefix>lock</mat-icon>
-              <input matInput 
-                     [type]="hideCurrentPassword ? 'password' : 'text'" 
-                     formControlName="currentPassword" 
-                     placeholder="Enter current password">
-              <button mat-icon-button matSuffix type="button"
-                      (click)="hideCurrentPassword = !hideCurrentPassword">
-                <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              <input
+                matInput
+                [type]="hideCurrentPassword ? 'password' : 'text'"
+                formControlName="currentPassword"
+                placeholder="Enter current password"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideCurrentPassword = !hideCurrentPassword"
+              >
+                <mat-icon>{{
+                  hideCurrentPassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
               </button>
-              <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+              <mat-error
+                *ngIf="
+                  passwordForm.get('currentPassword')?.hasError('required')
+                "
+              >
                 Current password is required
               </mat-error>
             </mat-form-field>
@@ -115,18 +171,30 @@
               <mat-form-field appearance="outline">
                 <mat-label>New Password</mat-label>
                 <mat-icon matPrefix>lock</mat-icon>
-                <input matInput 
-                       [type]="hideNewPassword ? 'password' : 'text'" 
-                       formControlName="newPassword" 
-                       placeholder="Enter new password">
-                <button mat-icon-button matSuffix type="button"
-                        (click)="hideNewPassword = !hideNewPassword">
-                  <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                <input
+                  matInput
+                  [type]="hideNewPassword ? 'password' : 'text'"
+                  formControlName="newPassword"
+                  placeholder="Enter new password"
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="hideNewPassword = !hideNewPassword"
+                >
+                  <mat-icon>{{
+                    hideNewPassword ? "visibility_off" : "visibility"
+                  }}</mat-icon>
                 </button>
-                <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                <mat-error
+                  *ngIf="passwordForm.get('newPassword')?.hasError('required')"
+                >
                   New password is required
                 </mat-error>
-                <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                <mat-error
+                  *ngIf="passwordForm.get('newPassword')?.hasError('minlength')"
+                >
                   Password must be at least 8 characters
                 </mat-error>
               </mat-form-field>
@@ -134,32 +202,52 @@
               <mat-form-field appearance="outline">
                 <mat-label>Confirm Password</mat-label>
                 <mat-icon matPrefix>lock</mat-icon>
-                <input matInput 
-                       [type]="hideConfirmPassword ? 'password' : 'text'" 
-                       formControlName="confirmPassword" 
-                       placeholder="Confirm new password">
-                <button mat-icon-button matSuffix type="button"
-                        (click)="hideConfirmPassword = !hideConfirmPassword">
-                  <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                <input
+                  matInput
+                  [type]="hideConfirmPassword ? 'password' : 'text'"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm new password"
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="hideConfirmPassword = !hideConfirmPassword"
+                >
+                  <mat-icon>{{
+                    hideConfirmPassword ? "visibility_off" : "visibility"
+                  }}</mat-icon>
                 </button>
-                <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                <mat-error
+                  *ngIf="
+                    passwordForm.get('confirmPassword')?.hasError('required')
+                  "
+                >
                   Please confirm your password
                 </mat-error>
               </mat-form-field>
             </div>
 
-            <p class="password-hint" *ngIf="passwordForm.errors?.['passwordMismatch']">
+            <p
+              class="password-hint"
+              *ngIf="passwordForm.errors?.['passwordMismatch']"
+            >
               <mat-icon>warning</mat-icon>
               Passwords do not match
             </p>
 
             <p class="password-requirements">
-              Password must be at least 8 characters with uppercase, lowercase, and numbers.
+              Password must be at least 8 characters with uppercase, lowercase,
+              and numbers.
             </p>
 
             <div class="form-actions">
-              <button mat-flat-button color="warn" type="submit" 
-                      [disabled]="(updating$ | async) || passwordForm.invalid">
+              <button
+                mat-flat-button
+                color="warn"
+                type="submit"
+                [disabled]="(updating$ | async) || passwordForm.invalid"
+              >
                 <mat-icon>lock_reset</mat-icon>
                 Update Password
               </button>

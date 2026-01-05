@@ -18,6 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as SignupActions from '../../store/signup.actions';
 import * as SignupSelectors from '../../store/signup.selectors';
 import { AuthLogoComponent } from '../../../shared/auth-logo/auth-logo.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-vendor-step1',
@@ -74,42 +75,32 @@ export class VendorStep1Component implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group(
       {
-        firstName: ['', [Validators.required, Validators.minLength(2)]],
-        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        firstName: [
+          '',
+          [Validators.required, CustomValidators.nameValidator(2)],
+        ],
+        lastName: [
+          '',
+          [Validators.required, CustomValidators.nameValidator(2)],
+        ],
         email: ['', [Validators.required, Validators.email]],
         phoneNumber: [
           '',
-          [Validators.required, Validators.pattern(/^\d{10}$/)],
+          [Validators.required, CustomValidators.phoneNumber()],
         ],
         password: [
           '',
-          [
-            Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-            ),
-          ],
+          [Validators.required, CustomValidators.passwordStrength()],
         ],
         confirmPassword: ['', [Validators.required]],
       },
-      { validators: this.passwordMatchValidator }
+      {
+        validators: CustomValidators.passwordMatch(
+          'password',
+          'confirmPassword'
+        ),
+      }
     );
-  }
-
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password');
-    const confirmPassword = form.get('confirmPassword');
-
-    if (
-      password &&
-      confirmPassword &&
-      password.value !== confirmPassword.value
-    ) {
-      confirmPassword.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
-    }
-    return null;
   }
 
   onSubmit(): void {

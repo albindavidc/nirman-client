@@ -44,7 +44,16 @@ export class ResetPasswordComponent {
 
   resetPasswordForm = this.fb.group(
     {
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
+        ],
+      ],
       confirmPassword: ['', [Validators.required]],
     },
     { validators: this.passwordMatchValidator }

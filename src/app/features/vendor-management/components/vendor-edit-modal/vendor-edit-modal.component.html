@@ -59,6 +59,12 @@
           formControlName="companyName"
           placeholder="Company name"
         />
+        <mat-error *ngIf="editForm.get('companyName')?.hasError('required')"
+          >Company name is required</mat-error
+        >
+        <mat-error *ngIf="editForm.get('companyName')?.hasError('minlength')"
+          >Minimum 2 characters</mat-error
+        >
       </mat-form-field>
     </div>
 
@@ -72,6 +78,10 @@
           formControlName="registrationNumber"
           placeholder="e.g., V-001"
         />
+        <mat-error
+          *ngIf="editForm.get('registrationNumber')?.hasError('required')"
+          >Vendor code is required</mat-error
+        >
       </mat-form-field>
     </div>
 
@@ -99,6 +109,12 @@
           formControlName="contactPhone"
           placeholder="+91 98765 43210"
         />
+        <mat-error *ngIf="editForm.get('contactPhone')?.hasError('required')"
+          >Phone number is required</mat-error
+        >
+        <mat-error *ngIf="editForm.get('contactPhone')?.hasError('pattern')"
+          >Enter a valid phone (7-15 digits)</mat-error
+        >
       </mat-form-field>
     </div>
 
@@ -113,6 +129,12 @@
           placeholder="contact@vendor.com"
           type="email"
         />
+        <mat-error *ngIf="editForm.get('contactEmail')?.hasError('required')"
+          >Email is required</mat-error
+        >
+        <mat-error *ngIf="editForm.get('contactEmail')?.hasError('email')"
+          >Enter a valid email</mat-error
+        >
       </mat-form-field>
     </div>
 
@@ -229,7 +251,7 @@
         mat-flat-button
         type="submit"
         class="save-btn"
-        [disabled]="editForm.invalid || (isUpdating$ | async)"
+        [disabled]="isUpdating$ | async"
       >
         @if (isUpdating$ | async) {
         <mat-spinner diameter="20"></mat-spinner>

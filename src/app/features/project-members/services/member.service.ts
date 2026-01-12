@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Member } from '../models/member.model';
+import { Member, MemberListResponse } from '../models/member.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,25 +16,20 @@ export class MemberService {
     limit: number = 10,
     role?: string,
     search?: string
-  ): Observable<{
-    data: Member[];
-    total: number;
-    page: number;
-    limit: number;
-  }> {
+  ): Observable<MemberListResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    if (role) params = params.set('role', role);
-    if (search) params = params.set('search', search);
+    if (role) {
+      params = params.set('role', role);
+    }
 
-    return this.http.get<{
-      data: Member[];
-      total: number;
-      page: number;
-      limit: number;
-    }>(this.apiUrl, { params });
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<MemberListResponse>(this.apiUrl, { params });
   }
 
   addMember(member: Partial<Member>): Observable<Member> {

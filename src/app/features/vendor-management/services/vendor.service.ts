@@ -17,19 +17,15 @@ export class VendorService {
   private readonly apiUrl = `${environment.apiUrl}/vendors`;
 
   getVendors(filters?: VendorFilters): Observable<VendorListResponse> {
-    let params = new HttpParams();
+    let params = new HttpParams()
+      .set('page', (filters?.page || 1).toString())
+      .set('limit', (filters?.limit || 10).toString());
 
     if (filters?.status) {
       params = params.set('status', filters.status);
     }
     if (filters?.search) {
       params = params.set('search', filters.search);
-    }
-    if (filters?.page) {
-      params = params.set('page', filters.page.toString());
-    }
-    if (filters?.limit) {
-      params = params.set('limit', filters.limit.toString());
     }
 
     return this.http.get<VendorListResponse>(this.apiUrl, { params });
@@ -48,7 +44,7 @@ export class VendorService {
   }
 
   approveVendor(id: string): Observable<Vendor> {
-    return this.updateVendor(id, { vendorStatus: 'approved' });
+    return this.http.patch<Vendor>(`${this.apiUrl}/${id}/approve`, {});
   }
 
   rejectVendor(id: string, reason: string): Observable<Vendor> {
@@ -60,7 +56,7 @@ export class VendorService {
   }
 
   blacklistVendor(id: string): Observable<Vendor> {
-    return this.updateVendor(id, { vendorStatus: 'blacklisted' });
+    return this.http.patch<Vendor>(`${this.apiUrl}/${id}/blacklist`, {});
   }
 
   unblacklistVendor(id: string): Observable<Vendor> {

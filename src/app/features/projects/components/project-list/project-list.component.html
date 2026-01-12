@@ -1,0 +1,103 @@
+<div class="projects-container">
+  <!-- Header Section -->
+  <header class="page-header" [@fadeInUp]>
+    <div class="header-content">
+      <div class="header-text">
+        <div class="title-row">
+          <mat-icon class="title-icon">folder_open</mat-icon>
+          <h1 class="page-title">Projects</h1>
+        </div>
+        <p class="page-subtitle">Manage all construction projects</p>
+      </div>
+      <button
+        mat-flat-button
+        color="primary"
+        class="create-btn"
+        (click)="openCreateProjectModal()"
+      >
+        <mat-icon>add</mat-icon>
+        Create Project
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" [@staggerIn]>
+    @for (card of statCards; track card.label) {
+    <div class="stat-card" [class]="card.color">
+      <div class="stat-icon">
+        <mat-icon>{{ card.icon }}</mat-icon>
+      </div>
+      <div class="stat-change" [class.positive]="card.getChange() > 0">
+        <mat-icon>{{
+          card.getChange() > 0 ? "trending_up" : "trending_down"
+        }}</mat-icon>
+        {{ card.getChange() > 0 ? "+" : "" }}{{ card.getChange() }}%
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ card.getValue() }}</span>
+        <span class="stat-label">{{ card.label }}</span>
+        <span class="stat-sublabel">{{ card.sublabel }}</span>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Projects Grid -->
+  <div class="projects-grid" [@staggerIn]>
+    @for (project of projects; track project.id) {
+    <div class="project-card" (click)="openProjectDetails(project)">
+      <div class="card-header">
+        <div class="project-icon" [class]="getStatusClass(project.status)">
+          <mat-icon>{{ project.icon }}</mat-icon>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(project.status)">
+          {{ project.status | titlecase }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <h3 class="project-name">{{ project.name }}</h3>
+        <p class="project-description">{{ project.description }}</p>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-bar" [class]="getProgressColor(project.progress)">
+          <div class="progress-fill" [style.width.%]="project.progress"></div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="dates">
+          <div class="date-item">
+            <mat-icon>event</mat-icon>
+            <span>Started: {{ project.startDate | date : "MMM d, yyyy" }}</span>
+          </div>
+          <div class="date-item">
+            <mat-icon>flag</mat-icon>
+            <span>Due: {{ project.dueDate | date : "MMM d, yyyy" }}</span>
+          </div>
+        </div>
+
+        <div class="team-avatars">
+          @for (member of getVisibleMembers(project.teamMembers); track
+          member.id) {
+          <div class="avatar" [matTooltip]="member.name">
+            {{ member.initials }}
+          </div>
+          } @if (getRemainingCount(project.teamMembers) > 0) {
+          <div
+            class="avatar more"
+            [matTooltip]="
+              '+' + getRemainingCount(project.teamMembers) + ' more members'
+            "
+          >
+            +{{ getRemainingCount(project.teamMembers) }}
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

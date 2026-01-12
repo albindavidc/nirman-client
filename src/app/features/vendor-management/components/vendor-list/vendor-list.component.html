@@ -1,10 +1,10 @@
-<div class="vendor-management-page" @fadeInUp>
-  <!-- Header -->
-  <header class="page-header">
+<div class="vendor-list-container">
+  <!-- Header Section -->
+  <header class="page-header" [@fadeInUp]>
     <div class="header-content">
-      <div>
+      <div class="header-text">
         <h1 class="page-title">Vendor Management</h1>
-        <p class="page-subtitle">Review and approve vendor applications</p>
+        <p class="page-subtitle">Overview of all vendors and their status</p>
       </div>
       <button
         mat-flat-button
@@ -19,45 +19,30 @@
   </header>
 
   <!-- Stats Cards -->
-  @if (stats$ | async; as stats) {
-  <div class="stats-grid" @staggerIn>
-    @for (card of statCards; track card.label) {
-    <div class="stat-card" [class]="card.color">
+  <div class="stats-grid" [@staggerIn] *ngIf="stats$ | async as stats">
+    <div class="stat-card" *ngFor="let card of statCards" [class]="card.color">
       <div class="stat-icon">
         <mat-icon>{{ card.icon }}</mat-icon>
       </div>
       <div class="stat-content">
-        <div class="stat-value">{{ card.getValue(stats) }}</div>
-        <div class="stat-label">{{ card.label }}</div>
+        <span class="stat-value">{{ card.getValue(stats) }}</span>
+        <span class="stat-label">{{ card.label }}</span>
       </div>
     </div>
-    }
   </div>
-  }
 
-  <div class="vendor-list-card">
+  <!-- Content Card -->
+  <div class="content-card">
     <div class="card-header">
       <h2>All Vendors</h2>
-      <div class="header-actions">
-        <mat-form-field
-          appearance="outline"
-          class="search-field"
-          subscriptSizing="dynamic"
-          (keyup)="onSearchChange($event)"
-        >
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput placeholder="Search vendors..." />
-        </mat-form-field>
+      <div class="toolbar">
+        <app-search-bar
+          placeholder="Search vendors..."
+          (search)="onSearch($event)"
+        ></app-search-bar>
 
-        <mat-form-field
-          appearance="outline"
-          class="filter-field"
-          subscriptSizing="dynamic"
-        >
-          <mat-select
-            [formControl]="statusFilter"
-            placeholder="Filter by Status"
-          >
+        <mat-form-field appearance="outline" class="toolbar-field">
+          <mat-select [formControl]="statusFilter" placeholder="All Statuses">
             <mat-option value="">All Statuses</mat-option>
             <mat-option value="approved">Approved</mat-option>
             <mat-option value="pending">Pending</mat-option>
@@ -65,15 +50,15 @@
             <mat-option value="blacklisted">Blacklisted</mat-option>
           </mat-select>
         </mat-form-field>
+
+        <button mat-stroked-button class="toolbar-btn" (click)="loadData()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
       </div>
     </div>
 
-    @if (error$ | async; as error) {
-    <div class="error-container">
-      <mat-icon>error_outline</mat-icon>
-      <span>{{ error }}</span>
-    </div>
-    } @else {
+    <!-- Table -->
     <app-table
       [data]="(vendors$ | async) || []"
       [columns]="columns"
@@ -91,93 +76,116 @@
       (pageChange)="onPageChange($event)"
     >
     </app-table>
-
-    <!-- Templates -->
-    <ng-template #vendorTemplate let-row>
-      <div class="vendor-info">
-        <div class="vendor-avatar">
-          {{ row.companyName?.charAt(0) | uppercase }}
-        </div>
-        <div class="vendor-details">
-          <span class="vendor-name">{{ row.companyName }}</span>
-          <span class="vendor-code">{{ getVendorCode(row) }}</span>
-        </div>
-      </div>
-    </ng-template>
-
-    <ng-template #contactTemplate let-row>
-      <div class="contact-info">
-        <span class="contact-name">{{ row.contactName || "N/A" }}</span>
-        <span class="contact-email">{{ row.contactEmail || "N/A" }}</span>
-      </div>
-    </ng-template>
-
-    <ng-template #categoryTemplate let-row>
-      <span
-        class="category-badge"
-        >{{ row.productsServices?.[0] || 'General' }}</span
-      >
-    </ng-template>
-
-    <ng-template #statusTemplate let-row>
-      <span class="status-badge" [class]="getStatusClass(row.vendorStatus)">
-        <mat-icon class="status-icon">{{
-          getStatusIcon(row.vendorStatus)
-        }}</mat-icon>
-        {{ row.vendorStatus | titlecase }}
-      </span>
-    </ng-template>
-
-    <ng-template #actionsTemplate let-row>
-      <div class="action-buttons">
-        @if (row.vendorStatus === 'pending') {
-        <button
-          mat-flat-button
-          class="approve-btn"
-          (click)="approveVendor(row)"
-        >
-          <mat-icon>check_circle</mat-icon>
-          Approve
-        </button>
-        <button
-          mat-stroked-button
-          class="reject-btn"
-          (click)="rejectVendor(row)"
-        >
-          <mat-icon>cancel</mat-icon>
-          Reject
-        </button>
-        } @if (row.vendorStatus === 'approved') {
-        <button
-          mat-stroked-button
-          class="blacklist-btn"
-          (click)="blacklistVendor(row)"
-          matTooltip="Blacklist vendor"
-        >
-          <mat-icon>block</mat-icon>
-          Blacklist
-        </button>
-        } @if (row.vendorStatus === 'blacklisted') {
-        <button
-          mat-stroked-button
-          class="unblacklist-btn"
-          (click)="unblacklistVendor(row)"
-          matTooltip="Unblacklist vendor"
-        >
-          <mat-icon>published_with_changes</mat-icon>
-          Unblacklist
-        </button>
-        }
-        <button
-          mat-icon-button
-          class="edit-btn"
-          (click)="openVendorModal(row)"
-          matTooltip="Edit vendor"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
-      </div>
-    </ng-template>
-    }
   </div>
 </div>
+
+<!-- Templates -->
+<ng-template #vendorTemplate let-row>
+  <div class="vendor-cell">
+    <div class="vendor-avatar">
+      {{ row.companyName?.charAt(0) | uppercase }}
+    </div>
+    <div class="vendor-details">
+      <span class="vendor-name">{{ row.companyName }}</span>
+      <span class="vendor-code">{{ getVendorCode(row) }}</span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #contactTemplate let-row>
+  <div class="contact-cell">
+    @if (row.contactEmail && row.contactEmail.trim()) {
+    <span class="contact-email">{{ row.contactEmail }}</span>
+    } @else {
+    <span class="contact-email muted">—</span>
+    } @if (row.contactPhone && row.contactPhone.trim()) {
+    <span class="contact-phone">{{ row.contactPhone }}</span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #categoryTemplate let-row>
+  <div class="category-cell">
+    @if (row.productsServices?.length) {
+    <div class="category-tags">
+      @for (item of row.productsServices.slice(0, 2); track item) {
+      <span class="category-tag">{{ item }}</span>
+      } @if (row.productsServices.length > 2) {
+      <span
+        class="category-tag more"
+        [matTooltip]="row.productsServices.slice(2).join(', ')"
+      >
+        +{{ row.productsServices.length - 2 }}
+      </span>
+      }
+    </div>
+    } @else {
+    <span class="no-data">—</span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #statusTemplate let-row>
+  <span class="status-badge" [ngClass]="getStatusClass(row.vendorStatus)">
+    <mat-icon class="status-icon">{{
+      getStatusIcon(row.vendorStatus)
+    }}</mat-icon>
+    {{ row.vendorStatus | titlecase }}
+  </span>
+</ng-template>
+
+<ng-template #actionsTemplate let-row>
+  <div class="action-buttons">
+    <!-- Edit -->
+    <button
+      mat-stroked-button
+      class="action-btn edit"
+      (click)="openVendorModal(row); $event.stopPropagation()"
+    >
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
+
+    <!-- Approve (only for pending) -->
+    @if (row.vendorStatus === 'pending') {
+    <button
+      mat-stroked-button
+      class="action-btn approve"
+      (click)="approveVendor(row); $event.stopPropagation()"
+    >
+      <mat-icon>check_circle</mat-icon>
+      Approve
+    </button>
+
+    <button
+      mat-stroked-button
+      class="action-btn reject"
+      (click)="rejectVendor(row); $event.stopPropagation()"
+    >
+      <mat-icon>cancel</mat-icon>
+      Reject
+    </button>
+    }
+
+    <!-- Blacklist/Unblacklist -->
+    @if (row.vendorStatus !== 'blacklisted') {
+    <button
+      mat-stroked-button
+      class="action-btn blacklist"
+      (click)="blacklistVendor(row); $event.stopPropagation()"
+    >
+      <mat-icon>block</mat-icon>
+      Blacklist
+    </button>
+    } @else {
+    <button
+      mat-stroked-button
+      class="action-btn unblacklist"
+      (click)="unblacklistVendor(row); $event.stopPropagation()"
+    >
+      <mat-icon>restore</mat-icon>
+      Unblacklist
+    </button>
+    }
+  </div>
+</ng-template>

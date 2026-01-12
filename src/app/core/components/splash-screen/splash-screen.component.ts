@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   trigger,
   state,
@@ -11,33 +11,34 @@ import {
 @Component({
   selector: 'app-splash-screen',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
+    @if (showSplash()) {
     <div
       class="splash-container"
       [@fadeOut]="isLoading() ? 'visible' : 'hidden'"
-      *ngIf="showSplash()"
     >
       <div class="glow-background"></div>
       <div class="glow-accent"></div>
-      
+
       <div class="logo-wrapper" [@pulse]="'active'">
         <div class="logo-box">
           <img src="assets/logo.svg" alt="Nirman" class="logo" />
         </div>
       </div>
-      
+
       <div class="brand-text" [@slideUp]="'active'">
         <h1>Nirman</h1>
         <p>Building Tomorrow</p>
       </div>
     </div>
+    }
   `,
   styleUrl: './splash-screen.component.scss',
   animations: [
     trigger('fadeOut', [
-      state('visible', style({ opacity: 1 })),
-      state('hidden', style({ opacity: 0, pointerEvents: 'none' })),
+      state('visible', style({ opacity: 1, visibility: 'visible' })),
+      state('hidden', style({ opacity: 0, visibility: 'hidden' })),
       transition('visible => hidden', animate('500ms ease-out')),
     ]),
     trigger('pulse', [

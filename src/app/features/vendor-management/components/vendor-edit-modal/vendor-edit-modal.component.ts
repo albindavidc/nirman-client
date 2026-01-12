@@ -58,19 +58,15 @@ export class VendorEditModalComponent implements OnInit {
     registrationNumber: ['', [Validators.required]],
     taxNumber: [''],
     yearsInBusiness: [0, [Validators.min(0)]],
-    addressStreet: ['', [Validators.required]],
+    addressStreet: [''],
     addressCity: [''],
     addressState: [''],
-    addressZipCode: ['', [Validators.pattern(/^[\dA-Za-z\s\-]{4,10}$/)]],
-    websiteUrl: [
+    addressZipCode: [''],
+    websiteUrl: [''],
+    contactPhone: [
       '',
-      [
-        Validators.pattern(
-          /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i
-        ),
-      ],
+      [Validators.required, Validators.pattern(/^[\d\s\-+()]{7,15}$/)],
     ],
-    contactPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     contactEmail: ['', [Validators.required, Validators.email]],
     vendorStatus: ['approved' as VendorStatus],
     productsServices: [''],
@@ -109,63 +105,79 @@ export class VendorEditModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.editForm.valid) {
-      const formValue = this.editForm.value;
-      const productsServices =
-        typeof formValue.productsServices === 'string'
-          ? formValue.productsServices
-              .split(',')
-              .map((s: string) => s.trim())
-              .filter((s: string) => s)
-          : [];
-
-      if (this.isAddMode) {
-        // Create Logic
-        const createData = {
-          email: formValue.email,
-          firstName: formValue.firstName,
-          lastName: formValue.lastName,
-          phone: formValue.contactPhone, // Reuse contact phone for user phone
-          companyName: formValue.companyName,
-          registrationNumber: formValue.registrationNumber,
-          taxNumber: formValue.taxNumber,
-          yearsInBusiness: formValue.yearsInBusiness,
-          addressStreet: formValue.addressStreet,
-          addressCity: formValue.addressCity,
-          addressState: formValue.addressState,
-          addressZipCode: formValue.addressZipCode,
-          productsServices: productsServices,
-          websiteUrl: formValue.websiteUrl,
-          contactEmail: formValue.contactEmail,
-          contactPhone: formValue.contactPhone,
-          vendorStatus: formValue.vendorStatus,
-        };
-        this.store.dispatch(VendorActions.createVendor({ data: createData }));
-      } else if (this.data?.vendor) {
-        // Update Logic
-        this.store.dispatch(
-          VendorActions.updateVendor({
-            id: this.data.vendor.id,
-            data: {
-              companyName: formValue.companyName!,
-              registrationNumber: formValue.registrationNumber!,
-              taxNumber: formValue.taxNumber!,
-              yearsInBusiness: formValue.yearsInBusiness!,
-              addressStreet: formValue.addressStreet!,
-              addressCity: formValue.addressCity!,
-              addressState: formValue.addressState!,
-              addressZipCode: formValue.addressZipCode!,
-              websiteUrl: formValue.websiteUrl!,
-              productsServices: productsServices,
-              contactPhone: formValue.contactPhone!,
-              contactEmail: formValue.contactEmail!,
-              vendorStatus: formValue.vendorStatus as VendorStatus,
-            },
-          })
-        );
-      }
-      this.dialogRef.close(true);
+    // Mark all fields as touched to show validation errors
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      console.log('Form is invalid. Errors:', this.getFormValidationErrors());
+      return;
     }
+
+    const formValue = this.editForm.value;
+    const productsServices =
+      typeof formValue.productsServices === 'string'
+        ? formValue.productsServices
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter((s: string) => s)
+        : [];
+
+    if (this.isAddMode) {
+      // Create Logic
+      const createData = {
+        email: formValue.email,
+        firstName: formValue.firstName,
+        lastName: formValue.lastName,
+        phone: formValue.contactPhone, // Reuse contact phone for user phone
+        companyName: formValue.companyName,
+        registrationNumber: formValue.registrationNumber,
+        taxNumber: formValue.taxNumber,
+        yearsInBusiness: formValue.yearsInBusiness,
+        addressStreet: formValue.addressStreet,
+        addressCity: formValue.addressCity,
+        addressState: formValue.addressState,
+        addressZipCode: formValue.addressZipCode,
+        productsServices: productsServices,
+        websiteUrl: formValue.websiteUrl,
+        contactEmail: formValue.contactEmail,
+        contactPhone: formValue.contactPhone,
+        vendorStatus: formValue.vendorStatus,
+      };
+      this.store.dispatch(VendorActions.createVendor({ data: createData }));
+    } else if (this.data?.vendor) {
+      // Update Logic
+      this.store.dispatch(
+        VendorActions.updateVendor({
+          id: this.data.vendor.id,
+          data: {
+            companyName: formValue.companyName!,
+            registrationNumber: formValue.registrationNumber!,
+            taxNumber: formValue.taxNumber!,
+            yearsInBusiness: formValue.yearsInBusiness!,
+            addressStreet: formValue.addressStreet!,
+            addressCity: formValue.addressCity!,
+            addressState: formValue.addressState!,
+            addressZipCode: formValue.addressZipCode!,
+            websiteUrl: formValue.websiteUrl!,
+            productsServices: productsServices,
+            contactPhone: formValue.contactPhone!,
+            contactEmail: formValue.contactEmail!,
+            vendorStatus: formValue.vendorStatus as VendorStatus,
+          },
+        })
+      );
+    }
+    this.dialogRef.close(true);
+  }
+
+  getFormValidationErrors(): { [key: string]: string[] } {
+    const errors: { [key: string]: string[] } = {};
+    Object.keys(this.editForm.controls).forEach((key) => {
+      const control = this.editForm.get(key);
+      if (control?.errors) {
+        errors[key] = Object.keys(control.errors);
+      }
+    });
+    return errors;
   }
 
   onCancel(): void {

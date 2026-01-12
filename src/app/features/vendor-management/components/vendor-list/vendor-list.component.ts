@@ -10,7 +10,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
@@ -34,6 +33,7 @@ import { Vendor } from '../../models/vendor.models';
 import { VendorEditModalComponent } from '../vendor-edit-modal/vendor-edit-modal.component';
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { TableColumn } from '../../../../shared/components/table/table.models';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -60,6 +60,7 @@ import {
     MatSelectModule,
     ReactiveFormsModule,
     TableComponent,
+    SearchBarComponent,
     UpperCasePipe,
     TitleCasePipe,
     AsyncPipe,
@@ -108,6 +109,7 @@ export class VendorListComponent implements OnInit {
   pageSize = 10;
   pageSizeOptions = [5, 10, 25, 50];
   statusFilter = new FormControl('');
+  searchTerm = '';
 
   columns: TableColumn[] = [
     { key: 'vendor', header: 'Vendor', type: 'template' },
@@ -159,14 +161,18 @@ export class VendorListComponent implements OnInit {
     });
   }
 
-  onSearchChange(searchValue: any) {
-    // let search = searchValue.
+  onSearch(term: string): void {
+    this.searchTerm = term;
+    this.loadData(0);
   }
 
   loadData(pageIndex = 0, pageSize = this.pageSize): void {
     const filters: any = { page: pageIndex + 1, limit: pageSize };
     if (this.statusFilter.value) {
       filters.status = this.statusFilter.value;
+    }
+    if (this.searchTerm) {
+      filters.search = this.searchTerm;
     }
 
     this.store.dispatch(

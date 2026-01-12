@@ -5,4 +5,7 @@ export const environment = {
   get apiUrl(): string {
     return `${this.apiBaseUrl}/api/${this.apiVersion}`;
   },
+  // AWS S3 Configuration
+  awsRegion: 'eu-north-1',
+  s3BucketName: 'nirman-dev',
 };

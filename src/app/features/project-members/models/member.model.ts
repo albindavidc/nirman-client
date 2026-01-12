@@ -26,3 +26,10 @@ export interface MemberState {
   page: number;
   limit: number;
 }
+
+export interface MemberListResponse {
+  data: Member[];
+  total: number;
+  page: number;
+  limit: number;
+}

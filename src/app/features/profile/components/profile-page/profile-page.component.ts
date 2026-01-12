@@ -133,7 +133,7 @@ export class ProfilePageComponent implements OnInit {
     this.isUploadingPhoto = true;
     this.profileService.uploadProfilePhoto(file).subscribe({
       next: (response) => {
-        // Update profile with new photo URL
+        // Update profile with S3 URL
         this.profileService
           .updateProfile({ profilePhotoUrl: response.url })
           .subscribe({
@@ -241,10 +241,7 @@ export class ProfilePageComponent implements OnInit {
 
   getProfilePhotoUrl(): string | null {
     if (!this.profile?.profilePhotoUrl) return null;
-    // If it's a relative URL, prepend the API base
-    if (this.profile.profilePhotoUrl.startsWith('/')) {
-      return `${this.apiBaseUrl}${this.profile.profilePhotoUrl}`;
-    }
+    // S3 URLs are already absolute, return as-is
     return this.profile.profilePhotoUrl;
   }
 }

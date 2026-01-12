@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  CommonModule,
-  TitleCasePipe,
-  SlicePipe,
-  AsyncPipe,
-} from '@angular/common';
+import { CommonModule, TitleCasePipe, AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -29,6 +24,11 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component'; // Added SearchBarComponent import
+import { MatTableModule } from '@angular/material/table'; // Added MatTableModule
+import { MatPaginatorModule } from '@angular/material/paginator'; // Added MatPaginatorModule
+import { MatSortModule } from '@angular/material/sort'; // Added MatSortModule
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // Added MatProgressSpinnerModule
 
 @Component({
   selector: 'app-member-list',
@@ -47,8 +47,12 @@ import {
     ReactiveFormsModule,
     TableComponent,
     TitleCasePipe,
-    SlicePipe,
     AsyncPipe,
+    SearchBarComponent, // Added SearchBarComponent
+    MatTableModule, // Added MatTableModule
+    MatPaginatorModule, // Added MatPaginatorModule
+    MatSortModule, // Added MatSortModule
+    MatProgressSpinnerModule, // Added MatProgressSpinnerModule
   ],
   templateUrl: './member-list.component.html',
   styleUrl: './member-list.component.scss',
@@ -72,11 +76,12 @@ export class MemberListComponent implements OnInit {
   supervisorCount$: Observable<number>;
   activeCount$: Observable<number>;
 
-  searchControl = new FormControl('');
+  // searchControl = new FormControl(''); // Removed in favor of SearchBar
   roleControl = new FormControl('');
 
   pageSize = 10;
   pageIndex = 0;
+  searchTerm = '';
 
   constructor(private store: Store, private dialog: MatDialog) {
     this.totalMembers$ = this.store.select(MemberSelectors.selectMemberTotal);
@@ -108,17 +113,16 @@ export class MemberListComponent implements OnInit {
   ngOnInit(): void {
     this.loadMembers();
 
-    this.searchControl.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => {
-        this.pageIndex = 0;
-        this.loadMembers();
-      });
-
     this.roleControl.valueChanges.subscribe(() => {
       this.pageIndex = 0;
       this.loadMembers();
     });
+  }
+
+  onSearch(term: string): void {
+    this.searchTerm = term;
+    this.pageIndex = 0;
+    this.loadMembers();
   }
 
   loadMembers() {
@@ -126,7 +130,7 @@ export class MemberListComponent implements OnInit {
       MemberActions.loadMembers({
         page: this.pageIndex + 1,
         limit: this.pageSize,
-        search: this.searchControl.value || '',
+        search: this.searchTerm || '',
         role: this.roleControl.value || '',
       })
     );
@@ -186,5 +190,9 @@ export class MemberListComponent implements OnInit {
         this.store.dispatch(MemberActions.unblockMember({ id: member.id }));
       }
     });
+  }
+
+  getSkillsTooltip(skills: string[] | undefined): string {
+    return skills ? skills.slice(2).join(', ') : '';
   }
 }

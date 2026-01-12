@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import {
   Profile,
   UpdateProfileDto,
   UpdatePasswordDto,
 } from '../models/profile.model';
 import { environment } from '../../../../environments/environment';
+
+interface PresignedUrlResponse {
+  uploadUrl: string; // URL for PUT request
+  viewUrl: string; // URL for viewing request
+  key: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -29,14 +35,60 @@ export class ProfileService {
     return this.http.put<{ message: string }>(`${this.apiUrl}/password`, dto);
   }
 
-  uploadProfilePhoto(
-    file: File
-  ): Observable<{ url: string; filename: string }> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<{ url: string; filename: string }>(
-      `${this.uploadUrl}/profile-photo`,
-      formData
+  /**
+   * Upload profile photo to S3 using presigned URL.
+   * Flow:
+   * 1. Get presigned URL from backend
+   * 2. Upload file directly to S3
+   * 3. Return the S3 key for saving to profile
+   */
+  uploadProfilePhoto(file: File): Observable<{ url: string; key: string }> {
+    // Step 1: Get presigned URL from backend
+    return this.getPresignedUrl(file.name, file.type).pipe(
+      switchMap((presignedResponse) => {
+        // Step 2: Upload file directly to S3 using uploadUrl
+        return new Observable<{ url: string; key: string }>((observer) => {
+          fetch(presignedResponse.uploadUrl, {
+            method: 'PUT',
+            body: file,
+            headers: {
+              'Content-Type': file.type,
+            },
+          })
+            .then((response) => {
+              if (response.ok) {
+                // Step 3: Return the viewUrl for the uploaded file
+                observer.next({
+                  url: presignedResponse.viewUrl,
+                  key: presignedResponse.key,
+                });
+                observer.complete();
+              } else {
+                observer.error(new Error('Failed to upload to S3'));
+              }
+            })
+            .catch((error) => {
+              observer.error(error);
+            });
+        });
+      })
+    );
+  }
+
+  /**
+   * Get presigned URL from backend for S3 upload.
+   */
+  private getPresignedUrl(
+    fileName: string,
+    fileType: string
+  ): Observable<PresignedUrlResponse> {
+    return this.http.post<PresignedUrlResponse>(
+      `${this.uploadUrl}/presigned-url`,
+      {
+        fileName,
+        fileType,
+        uploadType: 'profile',
+      }
     );
   }
 }

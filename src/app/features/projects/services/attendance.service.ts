@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ConfigService } from '../../../core/services/config.service';
 import { Observable } from 'rxjs';
 
 export interface AttendanceRecord {
@@ -38,9 +39,14 @@ export interface AttendanceStats {
   providedIn: 'root',
 })
 export class AttendanceService {
-  private apiUrl = 'http://localhost:3000/projects';
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+  ) {}
 
-  constructor(private http: HttpClient) {}
+  private get apiUrl(): string {
+    return `${this.configService.apiBaseUrl}/projects`;
+  }
 
   checkIn(
     projectId: string,

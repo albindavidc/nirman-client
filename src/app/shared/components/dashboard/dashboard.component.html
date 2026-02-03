@@ -1,0 +1,19 @@
+<div class="dashboard-container">
+  <div class="dashboard-card">
+    <div class="icon-wrapper">
+      <mat-icon>dashboard</mat-icon>
+    </div>
+    <h1>Welcome to Nirman</h1>
+    @if (user$ | async; as user) {
+      <p class="welcome-text">
+        Hello, {{ user.firstName }} {{ user.lastName }}!
+      </p>
+      <p class="role-badge">{{ user.role | titlecase }}</p>
+    }
+    <p class="description">Your dashboard is being set up. Check back soon!</p>
+    <button mat-flat-button class="logout-btn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </div>
+</div>

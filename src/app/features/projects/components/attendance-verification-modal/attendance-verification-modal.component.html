@@ -1,0 +1,129 @@
+<app-shared-modal title="Verify Attendance" (close)="dialogRef.close()">
+  <!-- User Info -->
+  <div
+    class="user-info flex items-center gap-4 mb-6 bg-[#1e1e1e] p-4 rounded-lg"
+  >
+    <div
+      class="avatar bg-yellow-500 text-black font-bold h-12 w-12 rounded-full flex items-center justify-center text-lg"
+    >
+      {{ record.user?.firstName?.charAt(0)
+      }}{{ record.user?.lastName?.charAt(0) }}
+    </div>
+    <div>
+      <h3 class="font-bold text-lg mb-0">
+        {{ record.user?.firstName }} {{ record.user?.lastName }}
+      </h3>
+      <p class="text-gray-400 text-sm">
+        {{ record.user?.role }} • ID: {{ record.userId | slice: 0 : 8 }}
+      </p>
+      <span
+        class="inline-block mt-1 px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-500 text-xs border border-yellow-900"
+      >
+        {{ record.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Details Grid -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="detail-box bg-[#1e1e1e] p-4 rounded-lg border border-gray-800">
+      <div class="flex items-center gap-2 mb-2 text-green-500">
+        <mat-icon class="text-sm">schedule</mat-icon>
+        <span class="text-sm font-bold">Check-In</span>
+      </div>
+      <div class="text-sm">
+        <p class="text-gray-400 mb-1">
+          Time:
+          <span class="text-white">{{
+            record.checkIn | date: "shortTime"
+          }}</span>
+        </p>
+        <p class="text-gray-400 mb-1">
+          Method: <span class="text-white">{{ record.method }}</span>
+        </p>
+        <p class="text-gray-400 flex items-center gap-1">
+          <mat-icon class="text-xs text-blue-400">verified</mat-icon> Photo
+          Verified
+        </p>
+      </div>
+    </div>
+
+    <div class="detail-box bg-[#1e1e1e] p-4 rounded-lg border border-gray-800">
+      <div class="flex items-center gap-2 mb-2 text-red-500">
+        <mat-icon class="text-sm">schedule</mat-icon>
+        <span class="text-sm font-bold">Check-Out</span>
+      </div>
+      <div class="text-sm">
+        <p class="text-gray-400 mb-1" *ngIf="record.checkOut">
+          Time:
+          <span class="text-white">{{
+            record.checkOut | date: "shortTime"
+          }}</span>
+        </p>
+        <p class="text-gray-400 italic" *ngIf="!record.checkOut">
+          Worker has not checked out yet
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Hours -->
+  <div
+    class="bg-blue-900/20 border border-blue-900 rounded-lg p-4 flex justify-between items-center mb-6"
+  >
+    <div class="flex items-center gap-2 text-blue-400">
+      <mat-icon>show_chart</mat-icon>
+      <span class="font-bold">Total Hours</span>
+    </div>
+    <div *ngIf="record.workHours" class="text-2xl font-bold">
+      {{ record.workHours }}h
+    </div>
+    <div *ngIf="!record.workHours" class="text-lg text-yellow-500 font-bold">
+      In Progress
+    </div>
+  </div>
+
+  <!-- Supervisor Notes -->
+  <div class="mb-2">
+    <div class="flex items-center gap-2 mb-2 text-gray-400">
+      <mat-icon class="text-sm">comment</mat-icon>
+      <span class="text-sm">Supervisor Notes</span>
+    </div>
+    <mat-form-field appearance="outline" class="w-full text-area-dark">
+      <textarea
+        matInput
+        [formControl]="notesControl"
+        placeholder="Add any notes or comments about this attendance record..."
+        rows="3"
+      ></textarea>
+    </mat-form-field>
+  </div>
+
+  <!-- Actions -->
+  <div actions class="flex justify-end gap-3 p-0 w-full">
+    <button
+      mat-stroked-button
+      color="basic"
+      (click)="dialogRef.close()"
+      class="w-32 py-6 border-gray-600 text-white"
+    >
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      color="warn"
+      (click)="verify(false)"
+      class="w-32 py-6 bg-red-900/80 text-red-200"
+    >
+      <mat-icon>block</mat-icon> Reject
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="verify(true)"
+      class="w-32 py-6 bg-green-600 text-white"
+    >
+      <mat-icon>check_circle</mat-icon> Approve
+    </button>
+  </div>
+</app-shared-modal>

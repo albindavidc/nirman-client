@@ -1,0 +1,70 @@
+@if (project$ | async; as project) {
+  <div class="project-detail-container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-icon">
+        <mat-icon>business</mat-icon>
+      </div>
+      <div class="header-content">
+        <h1 class="project-title">{{ project.name }}</h1>
+        <p class="project-meta">
+          Project ID: PRJ-{{ project.id.substring(0, 8).toUpperCase() }} •
+          Created on {{ project.createdAt | date: "MMM d, yyyy" }}
+        </p>
+      </div>
+    </div>
+    <!-- Navigation Tabs -->
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="nav-tabs">
+      <a
+        mat-tab-link
+        routerLink="overview"
+        routerLinkActive
+        #rla1="routerLinkActive"
+        [active]="rla1.isActive"
+        class="tab-link"
+      >
+        <mat-icon class="tab-icon">dashboard</mat-icon>
+        <span class="tab-text">Project Overview</span>
+      </a>
+      <a
+        mat-tab-link
+        routerLink="members"
+        routerLinkActive
+        #rla2="routerLinkActive"
+        [active]="rla2.isActive"
+        class="tab-link"
+      >
+        <mat-icon class="tab-icon">groups</mat-icon>
+        <span class="tab-text">Attendance Tracking</span>
+        @if (project.members?.length) {
+          <span class="tab-badge">{{ project.members?.length }}</span>
+        }
+      </a>
+      <a
+        mat-tab-link
+        routerLink="materials"
+        routerLinkActive
+        #rla3="routerLinkActive"
+        [active]="rla3.isActive"
+        class="tab-link"
+      >
+        <mat-icon class="tab-icon">inventory_2</mat-icon>
+        <span class="tab-text">Material Management</span>
+      </a>
+      <a
+        mat-tab-link
+        routerLink="phases"
+        routerLinkActive
+        #rla4="routerLinkActive"
+        [active]="rla4.isActive"
+        class="tab-link"
+      >
+        <mat-icon class="tab-icon">timeline</mat-icon>
+        <span class="tab-text">Project Phases</span>
+      </a>
+    </nav>
+    <mat-tab-nav-panel #tabPanel class="tab-panel">
+      <router-outlet></router-outlet>
+    </mat-tab-nav-panel>
+  </div>
+}

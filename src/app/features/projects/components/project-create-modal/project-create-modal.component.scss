@@ -1,0 +1,303 @@
+.create-project-modal {
+  padding: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.header-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: var(--md-sys-color-primary);
+}
+
+.header-text {
+  flex: 1;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--md-sys-color-primary);
+  margin: 0;
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 4px 0 0;
+}
+
+.modal-divider {
+  height: 1px;
+  background: var(--md-sys-color-outline-variant);
+  margin-bottom: 20px;
+}
+
+.form-field {
+  margin-bottom: 12px;
+
+  .field-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: 6px;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+
+  .form-field {
+    flex: 1;
+  }
+}
+
+.section-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 12px;
+}
+
+.location-section {
+  margin-top: 12px;
+}
+
+// Member Chips
+.member-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 12px;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface);
+
+  .chip-text {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chip-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50%;
+    color: var(--md-sys-color-on-surface-variant);
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-highest);
+      color: var(--md-sys-color-error);
+    }
+  }
+}
+
+// Map Container
+.map-container {
+  width: 100%;
+  height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  margin-top: 12px;
+  display: block;
+}
+
+// Google Map sizing
+google-map {
+  width: 100%;
+  height: 250px;
+  display: block;
+}
+
+// Autocomplete option styling
+.option-email {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+// Material Form Field Dark Theme Overrides
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-input-element,
+    .mat-mdc-select-value {
+      color: var(--md-sys-color-on-surface) !important;
+    }
+
+    textarea.mat-mdc-input-element {
+      resize: none;
+    }
+
+    .mat-mdc-input-element::placeholder {
+      color: var(--md-sys-color-on-surface-variant) !important;
+      opacity: 0.6;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      height: 4px;
+    }
+
+    .mdc-text-field--outlined {
+      background: var(--md-sys-color-surface-container);
+      border-radius: 8px;
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--md-sys-color-outline-variant) !important;
+        border-width: 1px;
+      }
+
+      .mdc-notched-outline__leading {
+        border-radius: 8px 0 0 8px !important;
+      }
+
+      .mdc-notched-outline__trailing {
+        border-radius: 0 8px 8px 0 !important;
+      }
+    }
+
+    .mdc-text-field--focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--md-sys-color-primary) !important;
+        border-width: 2px !important;
+      }
+    }
+  }
+
+  .mat-mdc-select-panel {
+    background: var(--md-sys-color-surface-container-high);
+  }
+
+  .mat-mdc-option {
+    color: var(--md-sys-color-on-surface);
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-highest);
+    }
+
+    &.mdc-list-item--selected {
+      background: var(--md-sys-color-surface-variant);
+    }
+  }
+
+  .mat-mdc-autocomplete-panel {
+    background: var(--md-sys-color-surface-container-high);
+    border-radius: 8px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .mat-datepicker-content {
+    background: var(--md-sys-color-surface-container-high);
+
+    .mat-calendar {
+      background: transparent;
+    }
+  }
+
+  .mat-datepicker-toggle {
+    button {
+      color: var(--md-sys-color-primary) !important;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.cancel-btn {
+  border-color: var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface);
+  border-radius: 24px;
+  padding: 0 24px;
+}
+
+.create-btn {
+  background: linear-gradient(135deg, #e8c574 0%, #d4a847 100%);
+  color: #1a1a1a;
+  border-radius: 24px;
+  padding: 0 24px;
+  min-width: 160px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+
+  &:disabled {
+    opacity: 0.7;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px; // Ensure consistent line height
+    vertical-align: middle;
+    margin-right: 4px; // Add slight spacing explicitly
+  }
+
+  mat-spinner {
+    ::ng-deep circle {
+      stroke: #1a1a1a;
+    }
+  }
+}
+
+// Global dialog styling
+::ng-deep .dark-dialog {
+  .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      background: var(--md-sys-color-surface-container-high);
+      border-radius: 16px;
+    }
+  }
+}

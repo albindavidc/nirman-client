@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { SharedModalComponent } from '../shared-modal/shared-modal.component';
 
 export interface ConfirmDialogData {
   title: string;
@@ -18,33 +19,9 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
-  template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
-      <p>{{ data.message }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">
-        {{ data.cancelButtonText || 'Cancel' }}
-      </button>
-      <button
-        mat-flat-button
-        [color]="data.confirmButtonColor || 'primary'"
-        (click)="onConfirm()"
-      >
-        {{ data.confirmButtonText || 'Confirm' }}
-      </button>
-    </mat-dialog-actions>
-  `,
-  styles: [
-    `
-      mat-dialog-content p {
-        margin: 0;
-        color: var(--mat-dialog-supporting-text-color);
-      }
-    `,
-  ],
+  imports: [MatDialogModule, MatButtonModule, SharedModalComponent],
+  templateUrl: './confirm-dialog.component.html',
+  styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
   readonly dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);

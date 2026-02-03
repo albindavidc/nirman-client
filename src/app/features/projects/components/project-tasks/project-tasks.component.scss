@@ -1,0 +1,105 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+// Tasks Header - Title Left, Button Right
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 8px;
+  margin-bottom: 16px;
+}
+
+.tasks-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+.create-task-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px !important;
+  overflow: hidden;
+  padding: 8px 16px !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+// Override Material button styles to ensure rounded corners
+::ng-deep .create-task-btn.mat-mdc-button-base {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+// Table Styles
+::ng-deep .mat-mdc-table {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-header-row {
+  height: 48px !important;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  vertical-align: middle;
+  padding: 0 16px;
+}
+
+::ng-deep .mat-mdc-row {
+  height: 56px !important; // Consistent row height
+}
+
+::ng-deep .mat-mdc-cell {
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+  vertical-align: middle;
+  padding: 0 16px;
+  height: 56px; // Match row height
+}
+
+// Icon Alignment
+.icon-sm {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  vertical-align: middle;
+}
+
+// Priority Column specific
+::ng-deep .mat-column-priority .mat-mdc-cell {
+  display: flex;
+  align-items: center;
+}
+
+// Assignee Column specific
+::ng-deep .mat-column-assignee .mat-mdc-cell {
+  display: flex;
+  align-items: center;
+}
+
+// Progress Column specific
+::ng-deep .mat-column-progress .mat-mdc-cell {
+  display: flex;
+  align-items: center;
+}
+
+// Actions Column
+::ng-deep .mat-column-actions {
+  width: 60px;
+  text-align: right;
+}

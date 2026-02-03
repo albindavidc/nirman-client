@@ -65,7 +65,7 @@
       <div class="toolbar">
         <app-search-bar
           placeholder="Search members..."
-          (search)="onSearch($event)"
+          (searchChange)="onSearch($event)"
         ></app-search-bar>
 
         <mat-form-field appearance="outline" class="toolbar-field">
@@ -86,27 +86,27 @@
 
     <!-- Table -->
     @if (loading$ | async) {
-    <div class="loading-state">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
     } @else {
-    <app-table
-      [data]="(members$ | async) || []"
-      [columns]="columns"
-      [total]="(totalMembers$ | async) || 0"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 25, 50]"
-      [columnTemplates]="{
-        member: memberTemplate,
-        role: roleTemplate,
-        skills: skillsTemplate,
-        email: emailTemplate,
-        status: statusTemplate,
-        actions: actionsTemplate
-      }"
-      (pageChange)="onPageChange($event)"
-    >
-    </app-table>
+      <app-table
+        [data]="(members$ | async) || []"
+        [columns]="columns"
+        [total]="(totalMembers$ | async) || 0"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [columnTemplates]="{
+          member: memberTemplate,
+          role: roleTemplate,
+          skills: skillsTemplate,
+          email: emailTemplate,
+          status: statusTemplate,
+          actions: actionsTemplate,
+        }"
+        (pageChange)="onPageChange($event)"
+      >
+      </app-table>
     }
   </div>
 </div>
@@ -135,15 +135,20 @@
 
 <ng-template #skillsTemplate let-row>
   <div class="skills-cell">
-    @if (row.skills?.length) { @for (skill of row.skills.slice(0, 2); track
-    skill) {
-    <span class="skill-tag">{{ skill }}</span>
-    } @if (row.skills.length > 2) {
-    <span class="skill-tag more" [matTooltip]="getSkillsTooltip(row.skills)">
-      +{{ row.skills.length - 2 }}
-    </span>
-    } } @else {
-    <span class="no-skills">—</span>
+    @if (row.skills?.length) {
+      @for (skill of row.skills.slice(0, 2); track skill) {
+        <span class="skill-tag">{{ skill }}</span>
+      }
+      @if (row.skills.length > 2) {
+        <span
+          class="skill-tag more"
+          [matTooltip]="getSkillsTooltip(row.skills)"
+        >
+          +{{ row.skills.length - 2 }}
+        </span>
+      }
+    } @else {
+      <span class="no-skills">—</span>
     }
   </div>
 </ng-template>
@@ -168,24 +173,24 @@
       <mat-icon>edit</mat-icon>
     </button>
 
-    @if (row.userStatus === 'active') {
-    <button
-      mat-icon-button
-      class="action-btn block"
-      matTooltip="Block"
-      (click)="blockMember(row); $event.stopPropagation()"
-    >
-      <mat-icon>block</mat-icon>
-    </button>
+    @if (row.userStatus === "active") {
+      <button
+        mat-icon-button
+        class="action-btn block"
+        matTooltip="Block"
+        (click)="blockMember(row); $event.stopPropagation()"
+      >
+        <mat-icon>block</mat-icon>
+      </button>
     } @else {
-    <button
-      mat-icon-button
-      class="action-btn unblock"
-      matTooltip="Unblock"
-      (click)="unblockMember(row); $event.stopPropagation()"
-    >
-      <mat-icon>check_circle</mat-icon>
-    </button>
+      <button
+        mat-icon-button
+        class="action-btn unblock"
+        matTooltip="Unblock"
+        (click)="unblockMember(row); $event.stopPropagation()"
+      >
+        <mat-icon>check_circle</mat-icon>
+      </button>
     }
   </div>
 </ng-template>

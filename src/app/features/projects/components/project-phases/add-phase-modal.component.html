@@ -1,0 +1,75 @@
+<app-shared-modal title="Add New Phase" (close)="onCancel()">
+  <form [formGroup]="phaseForm" (ngSubmit)="onSubmit()">
+    <div class="flex flex-col gap-4">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Phase Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g. Foundation" />
+        @if (phaseForm.get("name")?.hasError("required")) {
+          <mat-error> Name is required </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Phase details..."
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="grid grid-cols-2 gap-4">
+        <mat-form-field appearance="outline">
+          <mat-label>Planned Start Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="startPicker"
+            formControlName="plannedStartDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="startPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Planned End Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="endPicker"
+            formControlName="plannedEndDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="endPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Sequence</mat-label>
+        <input matInput type="number" formControlName="sequence" />
+        @if (phaseForm.get("sequence")?.hasError("required")) {
+          <mat-error> Sequence is required </mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div actions>
+    <button mat-button type="button" (click)="onCancel()" class="text-gray-400">
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="phaseForm.invalid"
+    >
+      Add Phase
+    </button>
+  </div>
+</app-shared-modal>

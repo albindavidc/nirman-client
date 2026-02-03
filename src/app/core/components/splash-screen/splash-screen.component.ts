@@ -12,28 +12,7 @@ import {
   selector: 'app-splash-screen',
   standalone: true,
   imports: [],
-  template: `
-    @if (showSplash()) {
-    <div
-      class="splash-container"
-      [@fadeOut]="isLoading() ? 'visible' : 'hidden'"
-    >
-      <div class="glow-background"></div>
-      <div class="glow-accent"></div>
-
-      <div class="logo-wrapper" [@pulse]="'active'">
-        <div class="logo-box">
-          <img src="assets/logo.svg" alt="Nirman" class="logo" />
-        </div>
-      </div>
-
-      <div class="brand-text" [@slideUp]="'active'">
-        <h1>Nirman</h1>
-        <p>Building Tomorrow</p>
-      </div>
-    </div>
-    }
-  `,
+  templateUrl: './splash-screen.component.html',
   styleUrl: './splash-screen.component.scss',
   animations: [
     trigger('fadeOut', [
@@ -53,7 +32,7 @@ import {
         style({ transform: 'translateY(20px)', opacity: 0 }),
         animate(
           '600ms 300ms ease-out',
-          style({ transform: 'translateY(0)', opacity: 1 })
+          style({ transform: 'translateY(0)', opacity: 1 }),
         ),
       ]),
     ]),

@@ -1,0 +1,147 @@
+@if (project$ | async; as project) {
+  <div class="overview-container">
+    <!-- Stats Grid -->
+    <!-- Stats Grid defined below with Async Pipe -->
+    @if (stats$ | async; as stats) {
+      <div class="stats-grid">
+        <!-- Progress Card -->
+        <div class="stat-card">
+          <div class="stat-icon primary">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ project.progress }}%</span>
+            <span class="stat-label">Overall Progress</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" [style.width.%]="project.progress"></div>
+          </div>
+          <div class="stat-sublabel">
+            {{ getCompletedPhases(project.phases) }} completed,
+            {{ getPendingPhases(project.phases) }} pending
+          </div>
+        </div>
+        <!-- Active Phases -->
+        <div class="stat-card">
+          <div class="stat-icon secondary">
+            <mat-icon>analytics</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{
+              activePhasesCount(project.phases)
+            }}</span>
+            <span class="stat-label">Active Phases</span>
+          </div>
+          <div class="stat-sublabel">
+            Out of {{ project.phases?.length || 0 }} total
+          </div>
+        </div>
+        <!-- Tasks Completed -->
+        <div class="stat-card">
+          <div class="stat-icon success">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value"
+              >{{ stats.completedTasks }}/{{ stats.totalTasks }}</span
+            >
+            <span class="stat-label">Tasks Completed</span>
+          </div>
+          <div class="stat-sublabel">
+            {{ stats.tasksProgress }}% progress, {{ stats.completedTasks }} done
+          </div>
+        </div>
+        <!-- Team Members -->
+        <div class="stat-card">
+          <div class="stat-icon warning">
+            <mat-icon>groups</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ project.members?.length || 0 }}</span>
+            <span class="stat-label">Team Members</span>
+          </div>
+          <div class="stat-sublabel">
+            {{ stats.activeMembersToday }} active today
+          </div>
+        </div>
+      </div>
+    }
+    <!-- Project Details Section -->
+    <div class="details-section">
+      <h2 class="section-title">Project Details</h2>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">STATUS</span>
+          <span class="status-badge" [ngClass]="getStatusClass(project.status)">
+            {{ project.status | titlecase }}
+          </span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">PROJECT MANAGER</span>
+          <span class="detail-value">John Doe</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">START DATE</span>
+          <span class="detail-value">{{
+            project.startDate | date: "MMM d, yyyy"
+          }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">END DATE</span>
+          <span class="detail-value">{{
+            project.dueDate | date: "MMM d, yyyy"
+          }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">BUDGET</span>
+          <span class="detail-value">₹{{ formatBudget(project.budget) }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">SPENT</span>
+          <span class="detail-value"
+            >₹{{ formatBudget(project.spent) }} ({{
+              getSpentPercentage(project)
+            }}%)</span
+          >
+        </div>
+      </div>
+      <div class="description-section">
+        <span class="detail-label">DESCRIPTION</span>
+        <p class="description-text">{{ project.description }}</p>
+      </div>
+      @if (project.latitude && project.longitude) {
+        <div class="location-section">
+          <span class="detail-label">LOCATION</span>
+          <a
+            class="location-link"
+            [href]="getGoogleMapsLink(project.latitude, project.longitude)"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <mat-icon>open_in_new</mat-icon>
+            <span>Open in Google Maps</span>
+          </a>
+          <div class="map-container">
+            <google-map
+              height="300px"
+              width="100%"
+              [center]="{ lat: project.latitude, lng: project.longitude }"
+              [zoom]="15"
+              [options]="darkMapOptions"
+            >
+              <map-marker
+                [position]="{
+                  lat: project.latitude,
+                  lng: project.longitude,
+                }"
+              ></map-marker>
+            </google-map>
+          </div>
+          <div class="location-coords">
+            Lat: {{ project.latitude }}, Lng: {{ project.longitude }}
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

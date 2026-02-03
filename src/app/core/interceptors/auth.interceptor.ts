@@ -3,13 +3,14 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { ConfigService } from '../services/config.service';
 
 let isRefreshing = false;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
   const router = inject(Router);
+  const configService = inject(ConfigService);
 
   // Clone request with credentials for cookie handling
   const authReq = req.clone({
@@ -33,7 +34,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         // Try to refresh the token
         return http
           .post<{ message: string }>(
-            `${environment.apiUrl}/auth/refresh`,
+            `${configService.apiUrl}/auth/refresh`,
             {},
             { withCredentials: true }
           )

@@ -100,8 +100,47 @@ body {
   --mdc-snackbar-container-color: #0277bd;
   --mdc-snackbar-supporting-text-color: #ffffff;
 }
-
 .snackbar-warn {
   --mdc-snackbar-container-color: #f9a825;
   --mdc-snackbar-supporting-text-color: #000000;
+}
+
+// Global Custom Scrollbar for Dark Theme
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-container);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline);
+  border-radius: 5px;
+  border: 2px solid var(--md-sys-color-surface-container); // Create a padding effect
+
+  &:hover {
+    background: var(--md-sys-color-outline-variant);
+  }
+}
+
+// Fix for Chrome Autocomplete background color
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--md-sys-color-surface-container) inset !important;
+  -webkit-text-fill-color: var(--md-sys-color-on-surface) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--md-sys-color-on-surface) !important;
+}
+
+// Global Text Selection Color
+::selection {
+  background-color: var(
+    --md-sys-color-tertiary
+  ); /* Using tertiary (cyan) for contrast or primary for harmony */
+  color: var(--md-sys-color-on-tertiary);
 }

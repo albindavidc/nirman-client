@@ -1,0 +1,388 @@
+.overview-container {
+  padding: 0;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+}
+
+.stat-icon.primary {
+  background: rgba(233, 193, 108, 0.1);
+  color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.stat-icon.secondary {
+  background: rgba(139, 208, 239, 0.1);
+  color: var(--md-sys-color-secondary);
+  border-color: var(--md-sys-color-secondary);
+}
+
+.stat-icon.success {
+  background: rgba(161, 211, 154, 0.1);
+  color: var(--md-extended-color-success-color);
+  border-color: var(--md-extended-color-success-color);
+}
+
+.stat-icon.warning {
+  background: rgba(255, 183, 134, 0.1);
+  color: var(--md-extended-color-warning-color);
+  border-color: var(--md-extended-color-warning-color);
+}
+
+.stat-icon mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 2px;
+}
+
+.stat-sublabel {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+}
+
+.progress-bar-container {
+  height: 6px;
+  background: var(--md-sys-color-surface-container-highest);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--md-sys-color-primary),
+    var(--md-sys-color-primary-container)
+  );
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Details Section */
+.details-section {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--md-sys-color-primary);
+  margin: 0 0 24px 0;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  width: fit-content;
+}
+
+.status-badge.status-active {
+  background: rgba(161, 211, 154, 0.15);
+  color: var(--md-extended-color-success-color);
+  border: 1px solid rgba(161, 211, 154, 0.3);
+}
+
+.status-badge.status-paused {
+  background: rgba(212, 175, 55, 0.15);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.status-badge.status-completed {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  border: 1px solid var(--md-sys-color-tertiary);
+}
+
+.status-badge.status-on-hold {
+  background: rgba(158, 158, 158, 0.15);
+  color: #9e9e9e;
+  border: 1px solid rgba(158, 158, 158, 0.3);
+}
+
+.description-section {
+  margin-bottom: 24px;
+}
+
+.description-text {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+.location-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-sys-color-on-surface);
+}
+
+.location-info mat-icon {
+  color: var(--md-sys-color-primary);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.location-coords {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+.map-container {
+  margin: 12px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.map-container google-map {
+  border-radius: 16px;
+}
+
+/* Google Maps Control Styling */
+::ng-deep .gm-style .gm-style-mtc {
+  /* Map type control (Map/Satellite) */
+  margin-right: 8px !important;
+}
+
+::ng-deep .gm-style .gm-style-mtc > button {
+  background: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  border: 1px solid rgba(233, 193, 108, 0.3) !important;
+  border-radius: 8px !important;
+  font-family: inherit !important;
+  margin: 0 2px !important;
+}
+
+::ng-deep .gm-style .gm-style-mtc > button:hover {
+  background: #2a2a2a !important;
+}
+
+::ng-deep .gm-style .gm-style-mtc ul {
+  background: #1e1e1e !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(233, 193, 108, 0.3) !important;
+}
+
+::ng-deep .gm-style .gm-style-mtc ul li {
+  color: #e0e0e0 !important;
+  background: #1e1e1e !important;
+}
+
+::ng-deep .gm-style .gm-style-mtc ul li:hover {
+  background: #2a2a2a !important;
+}
+
+/* Terrain checkbox */
+::ng-deep .gm-style .gm-style-mtc-bbw {
+  background: #1e1e1e !important;
+}
+
+/* Zoom controls */
+::ng-deep .gm-style .gm-bundled-control {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .gm-style .gm-bundled-control > div {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .gm-style .gm-bundled-control > div > div {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .gm-style .gm-bundled-control button {
+  background: #1e1e1e !important;
+  border: 1px solid rgba(233, 193, 108, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .gm-style .gm-bundled-control button:hover {
+  background: #2a2a2a !important;
+}
+
+::ng-deep .gm-style .gm-bundled-control button img {
+  filter: invert(0.85) sepia(0.3) hue-rotate(10deg) saturate(1.5);
+}
+
+/* Street view pegman container */
+::ng-deep .gm-style .gm-svpc {
+  background: #1e1e1e !important;
+  border: 1px solid rgba(233, 193, 108, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+/* Fullscreen control */
+::ng-deep .gm-style button.gm-fullscreen-control {
+  background: #1e1e1e !important;
+  border: 1px solid rgba(233, 193, 108, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .gm-style button.gm-fullscreen-control:hover {
+  background: #2a2a2a !important;
+}
+
+::ng-deep .gm-style button.gm-fullscreen-control img {
+  filter: invert(0.85) sepia(0.3) hue-rotate(10deg) saturate(1.5);
+}
+
+/* Remove all white backgrounds and box shadows from controls */
+::ng-deep .gm-style > div > div {
+  background-color: transparent !important;
+}
+
+/* Map type control background removal */
+::ng-deep .gm-style .gm-style-mtc-bbw {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .gm-style div[style*="background-color: white"] {
+  background-color: transparent !important;
+}
+
+::ng-deep .gm-style div[style*="background-color: rgb(255, 255, 255)"] {
+  background-color: transparent !important;
+}
+
+.location-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  margin: 8px 0 12px 0;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.location-link:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.location-link mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

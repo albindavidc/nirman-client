@@ -1,0 +1,36 @@
+.stats-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.status-chip {
+  min-height: 24px !important;
+  font-size: 12px;
+}
+
+::ng-deep .mat-mdc-table {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+::ng-deep .mat-mdc-cell {
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.small-btn {
+  line-height: 24px;
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+}

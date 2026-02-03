@@ -1,21 +1,15 @@
-import {
-  Directive,
-  ElementRef,
-  Input,
-  OnInit,
-  OnDestroy,
-  Renderer2,
-} from '@angular/core';
+import { Directive, ElementRef, Input, OnInit, OnDestroy, Renderer2, inject } from '@angular/core';
 
 @Directive({
   selector: 'img[appLazyLoad]', // Targeted at images
   standalone: true,
 })
 export class LazyLoadDirective implements OnInit, OnDestroy {
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+
   @Input() appLazyLoad: string | undefined;
   private observer: IntersectionObserver | undefined;
-
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit() {
     this.initObserver();

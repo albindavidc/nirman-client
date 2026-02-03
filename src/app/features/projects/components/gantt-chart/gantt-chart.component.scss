@@ -1,0 +1,270 @@
+/* DHTMLX GANTT OVERRIDES */
+@import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
+
+.gantt-wrapper {
+  background: var(--md-sys-color-surface-container); /* Warm dark background */
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex-direction: column;
+}
+
+.gantt-controls {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--md-sys-color-surface-container-high);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+
+  .left-controls {
+    display: flex;
+    gap: 12px;
+  }
+
+  .right-controls {
+    width: 300px;
+  }
+
+  button {
+    color: var(--md-sys-color-on-surface-variant) !important;
+    border-color: var(--md-sys-color-outline-variant) !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+
+    &.active-view {
+      background: rgba(233, 193, 108, 0.1) !important; /* Primary tint */
+      border-color: var(--md-sys-color-primary) !important;
+      color: var(--md-sys-color-primary) !important;
+    }
+
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+.gantt-chart-container {
+  padding: 0;
+  min-height: 600px;
+  height: 600px;
+  background: var(--md-sys-color-surface-container);
+  position: relative;
+
+  .gantt-div {
+    width: 100%;
+    height: 100%;
+    background: var(--md-sys-color-surface-container);
+  }
+}
+
+/* --- Dark Theme Overrides for DHTMLX Gantt --- */
+
+/* General Backgrounds */
+.gantt_task,
+.gantt_layout_cell,
+.gantt_container,
+.gantt_grid,
+.gantt_grid_scale,
+.gantt_task_scale {
+  background-color: var(--md-sys-color-surface-container) !important;
+  font-family: "Inter", "Roboto", sans-serif;
+}
+
+/* Header Scales */
+.gantt_grid_scale,
+.gantt_task_scale {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant) !important;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.gantt_scale_line {
+  border-bottom: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+
+.gantt_grid_head_cell,
+.gantt_scale_cell {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  border-right: none !important;
+  font-size: 12px;
+}
+
+/* Horizontal Grid Lines */
+.gantt_row,
+.gantt_task_row {
+  background-color: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant) !important;
+  transition: background-color 0.2s;
+
+  &.gantt_selected,
+  &:hover {
+    background-color: var(--md-sys-color-surface-container-high) !important;
+  }
+}
+
+/* Vertical Grid Lines */
+.gantt_task_cell {
+  border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+.gantt_grid_column {
+  border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+
+/* --- Content Styling --- */
+
+/* Cell Content */
+.gantt_cell {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+}
+
+.gantt-cell-content {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px;
+  width: 100%;
+  gap: 12px;
+
+  .drag-handle {
+    color: var(--md-sys-color-outline);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    padding-top: 2px;
+
+    .material-icons {
+      font-size: 16px;
+    }
+  }
+
+  .task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .task-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+
+    .phase-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: var(--md-sys-color-surface-container-highest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .dot {
+      font-size: 8px;
+      color: var(--md-sys-color-outline);
+    }
+  }
+}
+
+/* Tree Icon - Hide default or style it */
+.gantt_tree_icon {
+  display: none !important;
+}
+
+/* --- Task Bars --- */
+
+.gantt_task_line {
+  border: none !important;
+  border-radius: 4px !important;
+  margin-top: 12px;
+}
+
+.gantt_task_content {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--md-sys-color-on-primary) !important;
+  text-align: center;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 100% / Completed Bars -> Tertiary (Greenish) */
+.gantt-task-completed {
+  background-color: var(--md-sys-color-tertiary) !important;
+  color: var(--md-sys-color-on-tertiary) !important;
+
+  .gantt_task_progress {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+  .gantt_task_content {
+    color: var(--md-sys-color-on-tertiary) !important;
+  }
+}
+
+.gantt-task-progress {
+  background-color: var(--md-sys-color-tertiary) !important;
+}
+
+/* Pending/Delayed Bars -> Primary (Gold) */
+.gantt-task-pending,
+.gantt-task-delayed {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+/* --- Scrollbars --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-container);
+  border-left: 1px solid var(--md-sys-color-outline-variant);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline);
+  border-radius: 5px;
+  border: 2px solid var(--md-sys-color-surface-container); /* Creates padding effect */
+
+  &:hover {
+    background: var(--md-sys-color-outline-variant);
+  }
+}
+
+/* Search Field styling */
+.search-field {
+  width: 100%;
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-color: transparent;
+    --mdc-outlined-text-field-outline-color: var(
+      --md-sys-color-outline-variant
+    );
+    --mdc-outlined-text-field-focus-outline-color: var(--md-sys-color-primary);
+    --mdc-outlined-text-field-input-text-color: var(--md-sys-color-on-surface);
+    --mdc-outlined-text-field-caret-color: var(--md-sys-color-primary);
+    --mdc-outlined-text-field-label-text-color: var(
+      --md-sys-color-on-surface-variant
+    );
+  }
+
+  mat-icon {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+}

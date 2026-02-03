@@ -47,21 +47,21 @@ import { TableColumn } from './table.models';
   styleUrls: ['./table.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class TableComponent implements OnChanges, AfterViewInit {
-  @Input() data: any[] = [];
+export class TableComponent<T> implements OnChanges, AfterViewInit {
+  @Input() data: T[] = [];
   @Input() columns: TableColumn[] = [];
-  @Input() total: number = 0;
-  @Input() isLoading: boolean = false;
-  @Input() pageSize: number = 10;
+  @Input() total = 0;
+  @Input() isLoading = false;
+  @Input() pageSize = 10;
   @Input() pageSizeOptions: number[] = [5, 10, 25, 100];
-  @Input() columnTemplates: { [key: string]: TemplateRef<any> } = {};
-  @Input() actionTemplate?: TemplateRef<any>;
+  @Input() columnTemplates: Record<string, TemplateRef<unknown>> = {};
+  @Input() actionTemplate?: TemplateRef<unknown>;
 
   @Output() pageChange = new EventEmitter<PageEvent>();
   @Output() sortChange = new EventEmitter<Sort>();
-  @Output() rowClick = new EventEmitter<any>();
+  @Output() rowClick = new EventEmitter<T>();
 
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<T>([]);
   displayedColumns: string[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -96,7 +96,7 @@ export class TableComponent implements OnChanges, AfterViewInit {
     this.sortChange.emit(sort);
   }
 
-  onRowClick(row: any) {
+  onRowClick(row: T) {
     this.rowClick.emit(row);
   }
 }

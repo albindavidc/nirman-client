@@ -1,0 +1,27 @@
+<app-shared-modal
+  [title]="'Request Approval for ' + data.phaseName"
+  (close)="onCancel()"
+>
+  <form [formGroup]="form" class="flex flex-col gap-4">
+    <p class="text-zinc-400">
+      Are you sure you want to request approval for this phase? Once requested,
+      the phase status will change to "Review Pending".
+    </p>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Comments (Optional)</mat-label>
+      <textarea
+        matInput
+        formControlName="comments"
+        rows="4"
+        placeholder="Add any notes for the approver..."
+      ></textarea>
+    </mat-form-field>
+  </form>
+
+  <div actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onSubmit()">
+      Submit Request
+    </button>
+  </div>
+</app-shared-modal>

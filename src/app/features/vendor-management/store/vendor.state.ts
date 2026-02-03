@@ -1,16 +1,11 @@
-import { Vendor, VendorFilters } from '../models/vendor.models';
+import { Vendor, VendorFilters, VendorStats } from '../models/vendor.models';
 
 export interface VendorState {
   vendors: Vendor[];
   selectedVendor: Vendor | null;
   total: number;
   filters: VendorFilters;
-  stats: {
-    total: number;
-    active: number;
-    avgRating: number;
-    onTimeDelivery: number;
-  };
+  stats: VendorStats;
   isLoading: boolean;
   isUpdating: boolean;
   error: string | null;
@@ -27,6 +22,9 @@ export const initialVendorState: VendorState = {
   stats: {
     total: 0,
     active: 0,
+    pending: 0,
+    rejected: 0,
+    blacklisted: 0,
     avgRating: 0,
     onTimeDelivery: 0,
   },

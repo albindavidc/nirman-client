@@ -1,0 +1,27 @@
+<app-shared-modal [title]="data.title" (close)="onDismiss()">
+  <div class="flex flex-col items-center text-center p-4">
+    <div
+      class="rounded-full p-3 mb-4 bg-opacity-10"
+      [class.bg-red-500]="data.confirmColor === 'warn'"
+      [class.text-red-500]="data.confirmColor === 'warn'"
+      [class.bg-indigo-500]="data.confirmColor !== 'warn'"
+      [class.text-indigo-500]="data.confirmColor !== 'warn'"
+    >
+      <mat-icon class="scale-150">{{ data.icon || "warning" }}</mat-icon>
+    </div>
+    <p class="text-gray-300">{{ data.message }}</p>
+  </div>
+
+  <div actions>
+    <button mat-button (click)="onDismiss()" class="mr-2">
+      {{ data.cancelText || "Cancel" }}
+    </button>
+    <button
+      mat-flat-button
+      [color]="data.confirmColor || 'primary'"
+      (click)="onConfirm()"
+    >
+      {{ data.confirmText || "Confirm" }}
+    </button>
+  </div>
+</app-shared-modal>

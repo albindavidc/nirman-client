@@ -29,7 +29,7 @@ import {
 
 import * as VendorActions from '../../store/vendor.actions';
 import * as VendorSelectors from '../../store/vendor.selectors';
-import { Vendor } from '../../models/vendor.models';
+import { Vendor, VendorStats } from '../../models/vendor.models';
 import { VendorEditModalComponent } from '../vendor-edit-modal/vendor-edit-modal.component';
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { TableColumn } from '../../../../shared/components/table/table.models';
@@ -73,7 +73,7 @@ import {
         style({ opacity: 0, transform: 'translateY(20px)' }),
         animate(
           '400ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
+          style({ opacity: 1, transform: 'translateY(0)' }),
         ),
       ]),
     ]),
@@ -86,11 +86,11 @@ import {
             stagger(100, [
               animate(
                 '300ms ease-out',
-                style({ opacity: 1, transform: 'translateY(0)' })
+                style({ opacity: 1, transform: 'translateY(0)' }),
               ),
             ]),
           ],
-          { optional: true }
+          { optional: true },
         ),
       ]),
     ]),
@@ -124,31 +124,31 @@ export class VendorListComponent implements OnInit {
       label: 'Total Vendors',
       icon: 'store',
       color: 'primary',
-      getValue: (stats: any) => stats.total,
+      getValue: (stats: VendorStats) => stats.total,
     },
     {
       label: 'Pending Approval',
       icon: 'hourglass_empty',
       color: 'warning',
-      getValue: (stats: any) => stats.pending,
+      getValue: (stats: VendorStats) => stats.pending,
     },
     {
       label: 'Active Vendors',
       icon: 'check_circle',
       color: 'success',
-      getValue: (stats: any) => stats.active,
+      getValue: (stats: VendorStats) => stats.active,
     },
     {
       label: 'Rejected',
       icon: 'cancel',
       color: 'error',
-      getValue: (stats: any) => stats.rejected,
+      getValue: (stats: VendorStats) => stats.rejected,
     },
     {
       label: 'Blacklisted',
       icon: 'block',
       color: 'tertiary',
-      getValue: (stats: any) => stats.blacklisted,
+      getValue: (stats: VendorStats) => stats.blacklisted,
     },
   ];
 
@@ -178,7 +178,7 @@ export class VendorListComponent implements OnInit {
     this.store.dispatch(
       VendorActions.loadVendors({
         filters,
-      })
+      }),
     );
   }
 
@@ -189,7 +189,7 @@ export class VendorListComponent implements OnInit {
 
   openVendorModal(vendor?: Vendor): void {
     this.store.dispatch(
-      VendorActions.setSelectedVendor({ vendor: vendor || null })
+      VendorActions.setSelectedVendor({ vendor: vendor || null }),
     );
     this.dialog.open(VendorEditModalComponent, {
       width: '600px',
@@ -230,7 +230,7 @@ export class VendorListComponent implements OnInit {
     dialogRef.afterClosed().subscribe((reason) => {
       if (reason) {
         this.store.dispatch(
-          VendorActions.rejectVendor({ id: vendor.id, reason })
+          VendorActions.rejectVendor({ id: vendor.id, reason }),
         );
       }
     });

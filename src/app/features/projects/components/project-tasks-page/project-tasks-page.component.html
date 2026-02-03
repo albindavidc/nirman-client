@@ -1,0 +1,194 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-group">
+      <button mat-icon-button (click)="goBack()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <mat-icon class="page-icon">assignment</mat-icon>
+      <div class="text">
+        <h1>All Tasks</h1>
+        <p>Track and manage project tasks</p>
+      </div>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      class="create-btn"
+      (click)="navigateToCreate()"
+    >
+      <mat-icon>add</mat-icon> Create Task
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  @if (stats$ | async; as stats) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="icon-box gold">
+          <mat-icon>description</mat-icon>
+        </div>
+        <div class="info">
+          <span class="value">{{ stats.total }}</span>
+          <span class="label">Total Tasks</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box green">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="info">
+          <span class="value">{{ stats.completed }}</span>
+          <span class="label">Completed</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box blue">
+          <mat-icon>sync</mat-icon>
+        </div>
+        <div class="info">
+          <span class="value">{{ stats.inProgress }}</span>
+          <span class="label">In Progress</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon-box red">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="info">
+          <span class="value">{{ stats.delayed }}</span>
+          <span class="label">Delayed</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="mt-6">
+    <!-- Custom View Switcher -->
+    <div class="view-switcher-container">
+      <div class="view-switcher">
+        <button
+          class="switcher-btn"
+          [class.active]="viewMode === 'list'"
+          (click)="viewMode = 'list'"
+        >
+          <mat-icon>list</mat-icon>
+          List View
+        </button>
+        <button
+          class="switcher-btn"
+          [class.active]="viewMode === 'gantt'"
+          (click)="viewMode = 'gantt'"
+        >
+          <mat-icon>calendar_view_week</mat-icon>
+          Gantt View
+        </button>
+      </div>
+    </div>
+
+    @if (viewMode === "list") {
+      <!-- Tasks List Section -->
+      <div class="list-section mt-4">
+        <div class="list-header">
+          <h2 class="section-title">All Tasks</h2>
+
+          <div class="filters">
+            <div class="search-box">
+              <mat-icon>search</mat-icon>
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                [formControl]="searchControl"
+              />
+            </div>
+
+            <select class="custom-select" [formControl]="statusControl">
+              <option value="All Status">All Status</option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Delayed">Delayed</option>
+            </select>
+
+            <select class="custom-select" [formControl]="phaseControl">
+              <option value="All Phases">All Phases</option>
+              @for (phase of phases; track phase.id) {
+                <option [value]="phase.id">{{ phase.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Table Header -->
+        <div class="table-header-row">
+          <div class="col name">TASK NAME</div>
+          <div class="col phase">PHASE</div>
+          <div class="col assigned">ASSIGNED TO</div>
+          <div class="col status">STATUS</div>
+          <div class="col progress">PROGRESS</div>
+          <div class="col date">DUE DATE</div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="table-body">
+          @for (task of filteredTasks$ | async; track task.id) {
+            <div class="table-row" (click)="openTask(task)">
+              <div class="col name font-medium">{{ task.name }}</div>
+              <div class="col phase text-muted">
+                {{ getPhaseName(task.phaseId) }}
+              </div>
+              <div class="col assigned">
+                @if (task.assignee) {
+                  <div class="avatar-cell">
+                    <div class="avatar">
+                      {{ task.assignee.firstName[0]
+                      }}{{ task.assignee.lastName[0] }}
+                    </div>
+                    <span
+                      >{{ task.assignee.firstName }}
+                      {{ task.assignee.lastName.slice(0, 1) }}.</span
+                    >
+                  </div>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </div>
+              <div class="col status">
+                <span class="badge" [ngClass]="getStatusClass(task.status)">{{
+                  task.status
+                }}</span>
+              </div>
+              <div class="col progress">
+                <div class="progress-bar-wrapper">
+                  <div class="progress-track">
+                    <div
+                      class="progress-fill"
+                      [style.width.%]="task.progress"
+                      [class.fill-green]="task.status === 'Completed'"
+                      [class.fill-blue]="task.status === 'In Progress'"
+                      [class.fill-red]="task.status === 'Delayed'"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col date text-muted">
+                {{ formatDate(task.plannedEndDate) }}
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="mt-4">
+        <!-- Gantt View -->
+        <app-gantt-chart
+          *ngIf="filteredTasks$ | async as tasks"
+          [tasks]="tasks"
+          [dependencies]="(dependencies$ | async) || []"
+          [phases]="phases"
+          (taskClick)="openTask($event)"
+        ></app-gantt-chart>
+      </div>
+    }
+  </div>
+</div>

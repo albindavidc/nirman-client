@@ -13,247 +13,273 @@
   </div>
 
   @if (isLoading) {
-  <div class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
   } @else if (profile) {
-  <div class="profile-content">
-    <!-- Profile Card -->
-    <mat-card class="profile-card">
-      <mat-card-content>
-        <div class="profile-header">
-          <!-- Clickable Avatar -->
-          <div class="avatar-upload-wrapper" (click)="openUploadModal()">
-            @if (getProfilePhotoUrl()) {
-            <img
-              [src]="getProfilePhotoUrl()"
-              alt="Profile Photo"
-              class="avatar-large avatar-image"
-            />
-            } @else {
-            <div class="avatar-large">
-              {{ getInitials() }}
-            </div>
-            }
-            <div class="avatar-overlay">
-              @if (isUploadingPhoto) {
-              <mat-spinner diameter="24" color="primary"></mat-spinner>
+    <div class="profile-content">
+      <!-- Profile Card -->
+      <mat-card class="profile-card">
+        <mat-card-content>
+          <div class="profile-header">
+            <!-- Clickable Avatar -->
+            <div class="avatar-upload-wrapper" (click)="openUploadModal()">
+              @if (getProfilePhotoUrl()) {
+                <img
+                  [src]="getProfilePhotoUrl()"
+                  alt="Profile Photo"
+                  class="avatar-large avatar-image"
+                />
               } @else {
-              <mat-icon>camera_alt</mat-icon>
+                <div class="avatar-large">
+                  {{ getInitials() }}
+                </div>
               }
+              <div class="avatar-overlay">
+                @if (isUploadingPhoto) {
+                  <mat-spinner diameter="24" color="primary"></mat-spinner>
+                } @else {
+                  <mat-icon>camera_alt</mat-icon>
+                }
+              </div>
+            </div>
+
+            <div class="profile-meta">
+              <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+              <span class="role-badge">{{ profile.role | titlecase }}</span>
+              <p class="email">{{ profile.email }}</p>
             </div>
           </div>
+        </mat-card-content>
+      </mat-card>
 
-          <div class="profile-meta">
-            <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
-            <span class="role-badge">{{ profile.role | titlecase }}</span>
-            <p class="email">{{ profile.email }}</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+      <!-- Edit Profile Form -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>edit</mat-icon>
+            Edit Profile
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" />
+                <mat-icon matPrefix>person</mat-icon>
+                @if (
+                  profileForm.get("firstName")?.hasError("required") &&
+                  profileForm.get("firstName")?.touched
+                ) {
+                  <mat-error>First name is required</mat-error>
+                } @else if (
+                  profileForm.get("firstName")?.hasError("minlength") &&
+                  profileForm.get("firstName")?.touched
+                ) {
+                  <mat-error
+                    >First name must be at least 2 characters</mat-error
+                  >
+                }
+              </mat-form-field>
 
-    <!-- Edit Profile Form -->
-    <mat-card class="form-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>edit</mat-icon>
-          Edit Profile
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()">
-          <div class="form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>First Name</mat-label>
-              <input matInput formControlName="firstName" />
-              <mat-icon matPrefix>person</mat-icon>
-              @if (profileForm.get('firstName')?.hasError('required') &&
-              profileForm.get('firstName')?.touched) {
-              <mat-error>First name is required</mat-error>
-              } @else if (profileForm.get('firstName')?.hasError('minlength') &&
-              profileForm.get('firstName')?.touched) {
-              <mat-error>First name must be at least 2 characters</mat-error>
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" />
+                <mat-icon matPrefix>person</mat-icon>
+                @if (
+                  profileForm.get("lastName")?.hasError("required") &&
+                  profileForm.get("lastName")?.touched
+                ) {
+                  <mat-error>Last name is required</mat-error>
+                } @else if (
+                  profileForm.get("lastName")?.hasError("minlength") &&
+                  profileForm.get("lastName")?.touched
+                ) {
+                  <mat-error>Last name must be at least 2 characters</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input
+                matInput
+                formControlName="phoneNumber"
+                placeholder="1234567890"
+              />
+              <mat-icon matPrefix>phone</mat-icon>
+              @if (
+                profileForm.get("phoneNumber")?.hasError("phoneNumber") &&
+                profileForm.get("phoneNumber")?.touched
+              ) {
+                <mat-error
+                  >Please enter a valid 10-digit phone number</mat-error
+                >
               }
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Last Name</mat-label>
-              <input matInput formControlName="lastName" />
-              <mat-icon matPrefix>person</mat-icon>
-              @if (profileForm.get('lastName')?.hasError('required') &&
-              profileForm.get('lastName')?.touched) {
-              <mat-error>Last name is required</mat-error>
-              } @else if (profileForm.get('lastName')?.hasError('minlength') &&
-              profileForm.get('lastName')?.touched) {
-              <mat-error>Last name must be at least 2 characters</mat-error>
+            <div class="form-actions">
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="profileForm.invalid || isSaving"
+              >
+                @if (isSaving) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                } @else {
+                  <ng-container>
+                    <mat-icon>save</mat-icon>
+                    Save Changes
+                  </ng-container>
+                }
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Change Password Form -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Current Password</mat-label>
+              <input
+                matInput
+                formControlName="currentPassword"
+                [type]="hideCurrentPassword ? 'password' : 'text'"
+              />
+              <mat-icon matPrefix>lock</mat-icon>
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideCurrentPassword = !hideCurrentPassword"
+              >
+                <mat-icon>{{
+                  hideCurrentPassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              @if (
+                passwordForm.get("currentPassword")?.hasError("required") &&
+                passwordForm.get("currentPassword")?.touched
+              ) {
+                <mat-error>Current password is required</mat-error>
               }
             </mat-form-field>
-          </div>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Phone Number</mat-label>
-            <input
-              matInput
-              formControlName="phoneNumber"
-              placeholder="1234567890"
-            />
-            <mat-icon matPrefix>phone</mat-icon>
-            @if (profileForm.get('phoneNumber')?.hasError('pattern') &&
-            profileForm.get('phoneNumber')?.touched) {
-            <mat-error>Please enter a valid 10-digit phone number</mat-error>
-            }
-          </mat-form-field>
-
-          <div class="form-actions">
-            <button
-              mat-flat-button
-              color="primary"
-              type="submit"
-              [disabled]="profileForm.invalid || isSaving"
-            >
-              @if (isSaving) {
-              <mat-spinner diameter="20"></mat-spinner>
-              } @else {
-              <ng-container>
-                <mat-icon>save</mat-icon>
-                Save Changes
-              </ng-container>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>New Password</mat-label>
+              <input
+                matInput
+                formControlName="newPassword"
+                [type]="hideNewPassword ? 'password' : 'text'"
+              />
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideNewPassword = !hideNewPassword"
+              >
+                <mat-icon>{{
+                  hideNewPassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              @if (
+                passwordForm.get("newPassword")?.hasError("required") &&
+                passwordForm.get("newPassword")?.touched
+              ) {
+                <mat-error>New password is required</mat-error>
+              } @else if (
+                passwordForm.get("newPassword")?.hasError("minlength") &&
+                passwordForm.get("newPassword")?.touched
+              ) {
+                <mat-error>Password must be at least 8 characters</mat-error>
+              } @else if (
+                passwordForm.get("newPassword")?.hasError("pattern") &&
+                passwordForm.get("newPassword")?.touched
+              ) {
+                <mat-error
+                  >Password must include uppercase, lowercase, number, and
+                  special character</mat-error
+                >
               }
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
+              <mat-hint
+                >Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special
+                (@$!%*?&)</mat-hint
+              >
+            </mat-form-field>
 
-    <!-- Change Password Form -->
-    <mat-card class="form-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>lock</mat-icon>
-          Change Password
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Current Password</mat-label>
-            <input
-              matInput
-              formControlName="currentPassword"
-              [type]="hideCurrentPassword ? 'password' : 'text'"
-            />
-            <mat-icon matPrefix>lock</mat-icon>
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hideCurrentPassword = !hideCurrentPassword"
-            >
-              <mat-icon>{{
-                hideCurrentPassword ? "visibility_off" : "visibility"
-              }}</mat-icon>
-            </button>
-            @if (passwordForm.get('currentPassword')?.hasError('required') &&
-            passwordForm.get('currentPassword')?.touched) {
-            <mat-error>Current password is required</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>New Password</mat-label>
-            <input
-              matInput
-              formControlName="newPassword"
-              [type]="hideNewPassword ? 'password' : 'text'"
-            />
-            <mat-icon matPrefix>lock_outline</mat-icon>
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hideNewPassword = !hideNewPassword"
-            >
-              <mat-icon>{{
-                hideNewPassword ? "visibility_off" : "visibility"
-              }}</mat-icon>
-            </button>
-            @if (passwordForm.get('newPassword')?.hasError('required') &&
-            passwordForm.get('newPassword')?.touched) {
-            <mat-error>New password is required</mat-error>
-            } @else if (passwordForm.get('newPassword')?.hasError('minlength')
-            && passwordForm.get('newPassword')?.touched) {
-            <mat-error>Password must be at least 8 characters</mat-error>
-            } @else if (passwordForm.get('newPassword')?.hasError('pattern') &&
-            passwordForm.get('newPassword')?.touched) {
-            <mat-error
-              >Password must include uppercase, lowercase, number, and special
-              character</mat-error
-            >
-            }
-            <mat-hint
-              >Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special
-              (@$!%*?&)</mat-hint
-            >
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Confirm New Password</mat-label>
-            <input
-              matInput
-              formControlName="confirmPassword"
-              [type]="hideConfirmPassword ? 'password' : 'text'"
-            />
-            <mat-icon matPrefix>lock_outline</mat-icon>
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hideConfirmPassword = !hideConfirmPassword"
-            >
-              <mat-icon>{{
-                hideConfirmPassword ? "visibility_off" : "visibility"
-              }}</mat-icon>
-            </button>
-            @if (passwordForm.get('confirmPassword')?.hasError('required') &&
-            passwordForm.get('confirmPassword')?.touched) {
-            <mat-error>Please confirm your password</mat-error>
-            }
-          </mat-form-field>
-
-          @if (passwordForm.hasError('passwordMismatch') &&
-          passwordForm.get('confirmPassword')?.touched) {
-          <p
-            class="field-error"
-            style="color: #f44336; margin-top: -16px; font-size: 12px"
-          >
-            <mat-icon style="vertical-align: middle; font-size: 16px"
-              >warning</mat-icon
-            >
-            Passwords do not match
-          </p>
-          }
-
-          <div class="form-actions">
-            <button
-              mat-flat-button
-              color="warn"
-              type="submit"
-              [disabled]="passwordForm.invalid || isChangingPassword"
-            >
-              @if (isChangingPassword) {
-              <mat-spinner diameter="20"></mat-spinner>
-              } @else {
-              <ng-container>
-                <mat-icon>vpn_key</mat-icon>
-                Change Password
-              </ng-container>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm New Password</mat-label>
+              <input
+                matInput
+                formControlName="confirmPassword"
+                [type]="hideConfirmPassword ? 'password' : 'text'"
+              />
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideConfirmPassword = !hideConfirmPassword"
+              >
+                <mat-icon>{{
+                  hideConfirmPassword ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              @if (
+                passwordForm.get("confirmPassword")?.hasError("required") &&
+                passwordForm.get("confirmPassword")?.touched
+              ) {
+                <mat-error>Please confirm your password</mat-error>
               }
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
+            </mat-form-field>
+
+            @if (
+              passwordForm.hasError("passwordMismatch") &&
+              passwordForm.get("confirmPassword")?.touched
+            ) {
+              <p
+                class="field-error"
+                style="color: #f44336; margin-top: -16px; font-size: 12px"
+              >
+                <mat-icon style="vertical-align: middle; font-size: 16px"
+                  >warning</mat-icon
+                >
+                Passwords do not match
+              </p>
+            }
+
+            <div class="form-actions">
+              <button
+                mat-flat-button
+                color="warn"
+                type="submit"
+                [disabled]="passwordForm.invalid || isChangingPassword"
+              >
+                @if (isChangingPassword) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                } @else {
+                  <ng-container>
+                    <mat-icon>vpn_key</mat-icon>
+                    Change Password
+                  </ng-container>
+                }
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
   }
 </div>

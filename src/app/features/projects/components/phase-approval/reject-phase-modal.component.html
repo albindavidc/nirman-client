@@ -1,0 +1,43 @@
+<app-shared-modal title="Reject Phase" (close)="onCancel()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="phase-info mb-4">
+      <span
+        class="label text-zinc-400 block text-xs uppercase tracking-wider mb-1"
+        >Phase</span
+      >
+      <span class="value text-white text-lg font-medium">{{
+        data.phaseName
+      }}</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width w-full">
+      <mat-label>Manager Comments *</mat-label>
+      <textarea
+        matInput
+        formControlName="comments"
+        placeholder="Explain the reason for rejection..."
+        rows="4"
+        class="bg-transparent text-white"
+      ></textarea>
+      @if (form.get("comments")?.hasError("required")) {
+        <mat-error> Comments are required when rejecting a phase </mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  <div actions>
+    <button mat-button type="button" (click)="onCancel()" class="text-gray-400">
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      type="submit"
+      class="reject-btn bg-red-600 text-white hover:bg-red-700"
+      [disabled]="form.invalid || isSubmitting"
+      (click)="onSubmit()"
+    >
+      <mat-icon class="mr-2">close</mat-icon>
+      <span>Submit Rejection</span>
+    </button>
+  </div>
+</app-shared-modal>

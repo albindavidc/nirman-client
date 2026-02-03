@@ -1,0 +1,19 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <div class="header-content">
+      <h2>{{ title }}</h2>
+      <p *ngIf="subtitle" class="subtitle">{{ subtitle }}</p>
+    </div>
+    <button mat-icon-button (click)="onClose()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <ng-content></ng-content>
+  </div>
+
+  <div class="modal-actions" *ngIf="hasActions">
+    <ng-content select="[actions]"></ng-content>
+  </div>
+</div>

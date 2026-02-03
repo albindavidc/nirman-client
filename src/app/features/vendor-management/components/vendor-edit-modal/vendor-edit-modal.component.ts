@@ -13,6 +13,8 @@ import { Store } from '@ngrx/store';
 import { Vendor, VendorStatus } from '../../models/vendor.models';
 import * as VendorActions from '../../store/vendor.actions';
 import * as VendorSelectors from '../../store/vendor.selectors';
+import { CustomValidators } from '../../../../shared/validators/custom-validators';
+import { SharedModalComponent } from '../../../../shared/components/shared-modal/shared-modal.component';
 
 @Component({
   selector: 'app-vendor-edit-modal',
@@ -26,6 +28,7 @@ import * as VendorSelectors from '../../store/vendor.selectors';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    SharedModalComponent,
   ],
   templateUrl: './vendor-edit-modal.component.html',
   styleUrl: './vendor-edit-modal.component.scss',
@@ -61,12 +64,9 @@ export class VendorEditModalComponent implements OnInit {
     addressStreet: [''],
     addressCity: [''],
     addressState: [''],
-    addressZipCode: [''],
-    websiteUrl: [''],
-    contactPhone: [
-      '',
-      [Validators.required, Validators.pattern(/^[\d\s\-+()]{7,15}$/)],
-    ],
+    addressZipCode: ['', [CustomValidators.zipCode()]],
+    websiteUrl: ['', [CustomValidators.urlValidator()]],
+    contactPhone: ['', [Validators.required, CustomValidators.phoneNumber()]],
     contactEmail: ['', [Validators.required, Validators.email]],
     vendorStatus: ['approved' as VendorStatus],
     productsServices: [''],
@@ -124,23 +124,22 @@ export class VendorEditModalComponent implements OnInit {
     if (this.isAddMode) {
       // Create Logic
       const createData = {
-        email: formValue.email,
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        phone: formValue.contactPhone, // Reuse contact phone for user phone
-        companyName: formValue.companyName,
-        registrationNumber: formValue.registrationNumber,
-        taxNumber: formValue.taxNumber,
-        yearsInBusiness: formValue.yearsInBusiness,
-        addressStreet: formValue.addressStreet,
-        addressCity: formValue.addressCity,
-        addressState: formValue.addressState,
-        addressZipCode: formValue.addressZipCode,
+        email: formValue.email!,
+        firstName: formValue.firstName!,
+        lastName: formValue.lastName!,
+        companyName: formValue.companyName!,
+        registrationNumber: formValue.registrationNumber!,
+        taxNumber: formValue.taxNumber || undefined,
+        yearsInBusiness: formValue.yearsInBusiness || undefined,
+        addressStreet: formValue.addressStreet || undefined,
+        addressCity: formValue.addressCity || undefined,
+        addressState: formValue.addressState || undefined,
+        addressZipCode: formValue.addressZipCode || undefined,
         productsServices: productsServices,
-        websiteUrl: formValue.websiteUrl,
-        contactEmail: formValue.contactEmail,
-        contactPhone: formValue.contactPhone,
-        vendorStatus: formValue.vendorStatus,
+        websiteUrl: formValue.websiteUrl || undefined,
+        contactEmail: formValue.contactEmail!,
+        contactPhone: formValue.contactPhone!,
+        vendorStatus: formValue.vendorStatus || undefined,
       };
       this.store.dispatch(VendorActions.createVendor({ data: createData }));
     } else if (this.data?.vendor) {
@@ -163,14 +162,14 @@ export class VendorEditModalComponent implements OnInit {
             contactEmail: formValue.contactEmail!,
             vendorStatus: formValue.vendorStatus as VendorStatus,
           },
-        })
+        }),
       );
     }
     this.dialogRef.close(true);
   }
 
-  getFormValidationErrors(): { [key: string]: string[] } {
-    const errors: { [key: string]: string[] } = {};
+  getFormValidationErrors(): Record<string, string[]> {
+    const errors: Record<string, string[]> = {};
     Object.keys(this.editForm.controls).forEach((key) => {
       const control = this.editForm.get(key);
       if (control?.errors) {

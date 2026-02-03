@@ -60,3 +60,30 @@ export interface UpdateVendorDto {
   websiteUrl?: string;
   vendorStatus?: VendorStatus;
 }
+export interface CreateVendorDto {
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyName: string;
+  registrationNumber: string;
+  taxNumber?: string;
+  yearsInBusiness?: number;
+  addressStreet?: string;
+  addressCity?: string;
+  addressState?: string;
+  addressZipCode?: string;
+  productsServices?: string[];
+  contactEmail: string;
+  contactPhone: string;
+  websiteUrl?: string;
+  vendorStatus?: VendorStatus;
+}
+export interface VendorStats {
+  total: number;
+  active: number;
+  pending: number;
+  rejected: number;
+  blacklisted: number;
+  avgRating?: number;
+  onTimeDelivery?: number;
+}

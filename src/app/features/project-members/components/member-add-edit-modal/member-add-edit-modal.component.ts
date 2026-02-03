@@ -1,5 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+
 import {
   FormBuilder,
   FormGroup,
@@ -25,30 +25,33 @@ import { CustomValidators } from '../../../../shared/validators/custom-validator
   selector: 'app-member-add-edit-modal',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatIconModule,
-  ],
+    MatIconModule
+],
   templateUrl: './member-add-edit-modal.component.html',
   styleUrl: './member-add-edit-modal.component.scss',
 })
 export class MemberAddEditModalComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
+  dialogRef = inject<MatDialogRef<MemberAddEditModalComponent>>(MatDialogRef);
+  data = inject<{
+    mode: 'add' | 'edit';
+    member?: Member;
+}>(MAT_DIALOG_DATA);
+
   form: FormGroup;
   mode: 'add' | 'edit' = 'add';
   isProfessional = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private store: Store,
-    public dialogRef: MatDialogRef<MemberAddEditModalComponent>,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { mode: 'add' | 'edit'; member?: Member }
-  ) {
+  constructor() {
+    const data = this.data;
+
     this.mode = data.mode;
     this.form = this.fb.group({
       firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],

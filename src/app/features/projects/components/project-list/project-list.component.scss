@@ -217,8 +217,20 @@
   .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .status-badge {
+    margin-left: auto;
+    margin-right: 8px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .project-icon {

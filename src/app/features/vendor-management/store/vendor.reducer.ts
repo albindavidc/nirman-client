@@ -98,9 +98,9 @@ export const vendorReducer = createReducer(
   })),
 
   // Stats
-  on(VendorActions.loadVendorStatsSuccess, (state, stats) => ({
+  on(VendorActions.loadVendorStatsSuccess, (state, { type, ...stats }) => ({
     ...state,
-    stats,
+    stats: stats,
   })),
 
   // UI
@@ -117,5 +117,5 @@ export const vendorReducer = createReducer(
   on(VendorActions.clearError, (state) => ({
     ...state,
     error: null,
-  }))
+  })),
 );

@@ -11,9 +11,10 @@ export const RoleGuard: CanActivateFn = (route, state) => {
   }
 
   const user = JSON.parse(userJson);
-  const expectedRoles = route.data['roles'] as Array<string>;
+  const expectedRoles = route.data['roles'] as string[];
+  const userRole = user.role?.toLowerCase();
 
-  if (expectedRoles.includes(user.role)) {
+  if (expectedRoles.map((r) => r.toLowerCase()).includes(userRole)) {
     return true;
   }
 

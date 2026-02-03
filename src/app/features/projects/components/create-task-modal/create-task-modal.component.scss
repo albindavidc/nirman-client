@@ -1,0 +1,131 @@
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px; /* Increased gap for better separation */
+  padding: 16px; /* Added internal padding */
+  max-width: 100%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+
+  h2 {
+    margin: 0;
+    font-size: 1.75rem; /* Larger title */
+    font-weight: 700;
+    color: var(--md-sys-color-primary); /* Use Primary color for emphasis */
+    letter-spacing: -0.5px;
+  }
+
+  .close-btn {
+    color: var(--md-sys-color-on-surface-variant);
+    transform: scale(1.2); /* Slightly larger close icon */
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--md-sys-color-error);
+    }
+  }
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px; /* Increased grid gap */
+  align-items: start;
+}
+
+.full-width {
+  width: 100%;
+
+  /* Ensure inputs have enough breathing room */
+  margin-bottom: 8px;
+}
+
+/* Material Form Field Overrides for "Premium" Look */
+::ng-deep .mat-mdc-form-field {
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-container-shape: 12px; /* Weaker rounded corners */
+    background-color: rgba(255, 255, 255, 0.03); /* Subtle background fill */
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-width: 1px;
+    border-color: var(--md-sys-color-outline-variant);
+  }
+
+  /* Focused State */
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-width: 2px;
+      border-color: var(--md-sys-color-primary) !important;
+    }
+
+    .mdc-floating-label {
+      color: var(--md-sys-color-primary) !important;
+      font-weight: 500;
+    }
+  }
+
+  /* Hover State */
+  &:hover:not(.mat-focused) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--md-sys-color-outline) !important;
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+
+  button {
+    min-width: 140px;
+    padding: 24px 32px; /* Larger, more tappable buttons */
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .cancel-btn {
+    border: 1px solid var(--md-sys-color-outline);
+    color: var(--md-sys-color-on-surface-variant);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: var(--md-sys-color-on-surface);
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  .create-btn {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(233, 193, 108, 0.3); /* Subtle glow effect */
+      opacity: 0.95;
+    }
+
+    &:disabled {
+      background-color: var(--md-sys-color-surface-variant);
+      color: var(--md-sys-color-outline);
+      box-shadow: none;
+    }
+  }
+}

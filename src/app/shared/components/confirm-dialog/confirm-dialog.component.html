@@ -1,0 +1,16 @@
+<app-shared-modal [title]="data.title" (close)="onCancel()">
+  <p class="text-gray-300">{{ data.message }}</p>
+
+  <div actions>
+    <button mat-button (click)="onCancel()" class="mr-2">
+      {{ data.cancelButtonText || "Cancel" }}
+    </button>
+    <button
+      mat-flat-button
+      [color]="data.confirmButtonColor || 'primary'"
+      (click)="onConfirm()"
+    >
+      {{ data.confirmButtonText || "Confirm" }}
+    </button>
+  </div>
+</app-shared-modal>

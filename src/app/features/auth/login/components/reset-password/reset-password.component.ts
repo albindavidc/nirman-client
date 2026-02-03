@@ -74,7 +74,7 @@ export class ResetPasswordComponent {
 
   passwordMatchValidator(
     control: AbstractControl
-  ): { [key: string]: boolean } | null {
+  ): Record<string, boolean> | null {
     const password = control.get('newPassword');
     const confirmPassword = control.get('confirmPassword');
 

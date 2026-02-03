@@ -1,0 +1,134 @@
+<app-shared-modal title="Create New Task" (close)="dialogRef.close()">
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <!-- Task Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Task Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="E.g., Install HVAC Unit"
+      />
+      <mat-error *ngIf="taskForm.get('name')?.hasError('required')">
+        Task name is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        placeholder="Details about the task..."
+      ></textarea>
+    </mat-form-field>
+
+    <!-- Phase & Priority -->
+    <div class="grid-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phase</mat-label>
+        <mat-select formControlName="phaseId">
+          <mat-option *ngFor="let phase of phases" [value]="phase.id">
+            {{ phase.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="taskForm.get('phaseId')?.hasError('required')">
+          Phase is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option value="Low">Low</mat-option>
+          <mat-option value="Medium">Medium</mat-option>
+          <mat-option value="High">High</mat-option>
+          <mat-option value="Critical">Critical</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Status & Assigned To -->
+    <div class="grid-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="Not Started">Not Started</mat-option>
+          <mat-option value="In Progress">In Progress</mat-option>
+          <mat-option value="Completed">Completed</mat-option>
+          <mat-option value="Delayed">Delayed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Assigned To</mat-label>
+        <mat-select formControlName="assignedTo">
+          <mat-option [value]="null">Unassigned</mat-option>
+          <mat-option
+            *ngFor="let member of projectMembers"
+            [value]="member.user?.id"
+          >
+            {{ member.user?.firstName }} {{ member.user?.lastName }} ({{
+              member.role
+            }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Dates -->
+    <div class="grid-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Start Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerStart"
+          formControlName="plannedStartDate"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerStart"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerStart></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Due Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerEnd"
+          formControlName="plannedEndDate"
+          [min]="taskForm.get('plannedStartDate')?.value"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerEnd"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerEnd></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Actions -->
+    <div actions>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="dialogRef.close()"
+        class="cancel-btn"
+      >
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        type="submit"
+        [disabled]="taskForm.invalid || isSubmitting"
+        class="create-btn"
+      >
+        <mat-icon *ngIf="!isSubmitting">add</mat-icon>
+        <span *ngIf="!isSubmitting">Create Task</span>
+        <span *ngIf="isSubmitting">Creating...</span>
+      </button>
+    </div>
+  </form>
+</app-shared-modal>

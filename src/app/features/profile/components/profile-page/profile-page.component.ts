@@ -18,7 +18,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ProfileService } from '../../services/profile.service';
 import { Profile } from '../../models/profile.model';
-import { environment } from '../../../../../environments/environment';
+import { ConfigService } from '../../../../core/services/config.service';
 import { ImageUploadModalComponent } from '../../../../shared/components/image-upload-modal/image-upload-modal.component';
 import * as LoginActions from '../../../auth/login/store/login.actions';
 import { CustomValidators } from '../../../../shared/validators/custom-validators';
@@ -44,6 +44,11 @@ import { CustomValidators } from '../../../../shared/validators/custom-validator
   styleUrl: './profile-page.component.scss',
 })
 export class ProfilePageComponent implements OnInit {
+  private profileService = inject(ProfileService);
+  private fb = inject(FormBuilder);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+
   private readonly store = inject(Store);
 
   profile: Profile | null = null;
@@ -59,14 +64,10 @@ export class ProfilePageComponent implements OnInit {
   hideNewPassword = true;
   hideConfirmPassword = true;
 
-  readonly apiBaseUrl = environment.apiUrl.replace('/api/v1', '');
+  private readonly configService = inject(ConfigService);
+  readonly apiBaseUrl = this.configService.apiBaseUrl;
 
-  constructor(
-    private profileService: ProfileService,
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog
-  ) {
+  constructor() {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
       lastName: ['', [Validators.required, CustomValidators.nameValidator(2)]],

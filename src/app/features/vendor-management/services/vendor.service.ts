@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   Vendor,
   VendorListResponse,
   VendorFilters,
   UpdateVendorDto,
+  CreateVendorDto,
+  VendorStats,
 } from '../models/vendor.models';
 
 @Injectable({
@@ -14,7 +16,8 @@ import {
 })
 export class VendorService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/vendors`;
+  private readonly configService = inject(ConfigService);
+  private readonly apiUrl = `${this.configService.apiUrl}/vendors`;
 
   getVendors(filters?: VendorFilters): Observable<VendorListResponse> {
     let params = new HttpParams()
@@ -39,7 +42,7 @@ export class VendorService {
     return this.http.patch<Vendor>(`${this.apiUrl}/${id}`, data);
   }
 
-  createVendor(data: any): Observable<Vendor> {
+  createVendor(data: CreateVendorDto): Observable<Vendor> {
     return this.http.post<Vendor>(this.apiUrl, data);
   }
 
@@ -67,17 +70,7 @@ export class VendorService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getVendorStats(): Observable<{
-    total: number;
-    active: number;
-    avgRating: number;
-    onTimeDelivery: number;
-  }> {
-    return this.http.get<{
-      total: number;
-      active: number;
-      avgRating: number;
-      onTimeDelivery: number;
-    }>(`${this.apiUrl}/stats`);
+  getVendorStats(): Observable<VendorStats> {
+    return this.http.get<VendorStats>(`${this.apiUrl}/stats`);
   }
 }

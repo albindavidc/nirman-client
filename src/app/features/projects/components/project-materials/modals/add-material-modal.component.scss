@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+mat-form-field {
+  width: 100%;
+}
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.flex-1 {
+  flex: 1;
+}

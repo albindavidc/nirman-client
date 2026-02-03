@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
+import { ConfigService } from '../../../core/services/config.service';
 import {
   Profile,
   UpdateProfileDto,
   UpdatePasswordDto,
 } from '../models/profile.model';
-import { environment } from '../../../../environments/environment';
 
 interface PresignedUrlResponse {
   uploadUrl: string; // URL for PUT request
@@ -18,10 +18,11 @@ interface PresignedUrlResponse {
   providedIn: 'root',
 })
 export class ProfileService {
-  private readonly apiUrl = `${environment.apiUrl}/profile`;
-  private readonly uploadUrl = `${environment.apiUrl}/upload`;
+  private readonly http = inject(HttpClient);
+  private readonly configService = inject(ConfigService);
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = `${this.configService.apiUrl}/profile`;
+  private readonly uploadUrl = `${this.configService.apiUrl}/upload`;
 
   getProfile(): Observable<Profile> {
     return this.http.get<Profile>(this.apiUrl);

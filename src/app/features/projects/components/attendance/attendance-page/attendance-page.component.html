@@ -1,0 +1,192 @@
+<div class="p-6 space-y-6 bg-[#1a1a1a] min-h-screen text-white">
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl font-bold">Attendance - Labor Worker</h1>
+    <p class="text-gray-400">Clock in and out, view your attendance history</p>
+  </div>
+
+  <!-- Check In / Out Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Check In Card -->
+    <div
+      class="bg-[#2a2a2a] rounded-lg p-8 flex flex-col items-center justify-center border border-gray-700 relative overflow-hidden group"
+    >
+      <div class="text-center z-10">
+        <h2 class="text-xl font-semibold mb-2">Check In</h2>
+        <div class="text-4xl font-bold text-[#E6D5B8] mb-1">
+          {{ currentTime | date: "hh:mm a" }}
+        </div>
+        <p class="text-gray-400 text-sm mb-6">
+          {{ currentDate | date: "EEEE, MMMM d, y" }}
+        </p>
+
+        <button
+          (click)="onCheckIn()"
+          [disabled]="isCheckedIn"
+          [class.opacity-50]="isCheckedIn"
+          class="w-32 h-32 rounded-full bg-[#10B981] hover:bg-[#059669] transition-all duration-300 flex flex-col items-center justify-center shadow-lg hover:shadow-[#10B981]/50 group-hover:scale-105 active:scale-95 disabled:hover:scale-100 disabled:cursor-not-allowed"
+        >
+          <span class="material-icons text-4xl mb-1">login</span>
+          <span class="font-bold">CHECK IN</span>
+        </button>
+
+        <p
+          class="mt-6 text-xs text-gray-500 flex items-center justify-center gap-1"
+        >
+          <span class="material-icons text-sm">location_on</span>
+          <span>{{ currentLocation || "Fetching location..." }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Check Out Card -->
+    <div
+      class="bg-[#2a2a2a] rounded-lg p-8 flex flex-col items-center justify-center border border-gray-700 relative overflow-hidden"
+    >
+      <div class="text-center z-10">
+        <h2 class="text-xl font-semibold mb-2">Check Out</h2>
+        <div class="text-4xl font-bold text-gray-500 mb-1" *ngIf="!isCheckedIn">
+          -- : --
+        </div>
+        <div class="text-4xl font-bold text-[#E6D5B8] mb-1" *ngIf="isCheckedIn">
+          {{ checkInTime | date: "hh:mm a" }}
+        </div>
+        <p class="text-gray-400 text-sm mb-6">Click below to check out</p>
+
+        <button
+          (click)="onCheckOut()"
+          [disabled]="!isCheckedIn"
+          [class.opacity-50]="!isCheckedIn"
+          class="w-32 h-32 rounded-full bg-[#EF4444] hover:bg-[#DC2626] transition-all duration-300 flex flex-col items-center justify-center shadow-lg hover:shadow-[#EF4444]/50 hover:scale-105 active:scale-95 disabled:hover:scale-100 disabled:cursor-not-allowed"
+        >
+          <span class="material-icons text-4xl mb-1">logout</span>
+          <span class="font-bold">CHECK OUT</span>
+        </button>
+
+        <p
+          class="mt-6 text-xs text-gray-500 flex items-center justify-center gap-1"
+        >
+          <span class="material-icons text-sm">schedule</span>
+          <span>Hours Today: {{ hoursToday | number: "1.1-1" }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- This Week -->
+    <div
+      class="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700 flex justify-between items-start"
+    >
+      <div>
+        <div class="text-2xl font-bold text-white">
+          {{ stats?.hoursThisWeek || 0 }}h
+        </div>
+        <div class="text-xs text-gray-400">This Week</div>
+      </div>
+      <div class="p-2 bg-[#10B981]/20 rounded text-[#10B981]">
+        <span class="material-icons text-sm">schedule</span>
+      </div>
+    </div>
+
+    <!-- This Month -->
+    <div
+      class="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700 flex justify-between items-start"
+    >
+      <div>
+        <div class="text-2xl font-bold text-white">
+          {{ stats?.hoursThisMonth || 0 }}h
+        </div>
+        <div class="text-xs text-gray-400">This Month</div>
+      </div>
+      <div class="p-2 bg-[#3B82F6]/20 rounded text-[#3B82F6]">
+        <span class="material-icons text-sm">calendar_today</span>
+      </div>
+    </div>
+
+    <!-- Attendance Rate -->
+    <div
+      class="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700 flex justify-between items-start"
+    >
+      <div>
+        <div class="text-2xl font-bold text-white">
+          {{ stats?.attendanceRate || 0 }}%
+        </div>
+        <div class="text-xs text-gray-400">Attendance Rate</div>
+      </div>
+      <div class="p-2 bg-[#F59E0B]/20 rounded text-[#F59E0B]">
+        <span class="material-icons text-sm">trending_up</span>
+      </div>
+    </div>
+
+    <!-- Late Arrivals -->
+    <div
+      class="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700 flex justify-between items-start"
+    >
+      <div>
+        <div class="text-2xl font-bold text-white">
+          {{ stats?.lateArrivals || 0 }}
+        </div>
+        <div class="text-xs text-gray-400">Late Arrivals</div>
+      </div>
+      <div class="p-2 bg-[#EF4444]/20 rounded text-[#EF4444]">
+        <span class="material-icons text-sm">warning</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Attendance Table -->
+  <div class="bg-[#2a2a2a] rounded-lg border border-gray-700 overflow-hidden">
+    <div class="p-4 border-b border-gray-700">
+      <h3 class="text-lg font-semibold">Recent Attendance</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="text-xs text-gray-400 uppercase bg-[#333]">
+          <tr>
+            <th class="px-6 py-3">Date</th>
+            <th class="px-6 py-3">Check In</th>
+            <th class="px-6 py-3">Check Out</th>
+            <th class="px-6 py-3">Hours</th>
+            <th class="px-6 py-3">Location</th>
+            <th class="px-6 py-3">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let record of recentHistory"
+            class="border-b border-gray-700 hover:bg-[#333]"
+          >
+            <td class="px-6 py-4">{{ record.date | date: "MMM d, y" }}</td>
+            <td class="px-6 py-4">
+              {{ record.checkIn ? (record.checkIn | date: "hh:mm a") : "-" }}
+            </td>
+            <td class="px-6 py-4">
+              {{ record.checkOut ? (record.checkOut | date: "hh:mm a") : "-" }}
+            </td>
+            <td class="px-6 py-4">{{ record.workHours || "-" }}h</td>
+            <td class="px-6 py-4">{{ record.location || "Unknown" }}</td>
+            <td class="px-6 py-4">
+              <span
+                class="px-2 py-1 rounded text-xs bg-[#10B981]/20 text-[#10B981]"
+                *ngIf="record.status === 'Present'"
+                >On Time</span
+              >
+              <span
+                class="px-2 py-1 rounded text-xs bg-[#EF4444]/20 text-[#EF4444]"
+                *ngIf="record.status !== 'Present'"
+                >{{ record.status }}</span
+              >
+            </td>
+          </tr>
+          <tr *ngIf="recentHistory.length === 0">
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+              No recent attendance records found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

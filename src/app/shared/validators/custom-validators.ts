@@ -53,7 +53,7 @@ export class CustomValidators {
    */
   static passwordMatch(
     passwordField: string,
-    confirmPasswordField: string
+    confirmPasswordField: string,
   ): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.get(passwordField);
@@ -102,7 +102,7 @@ export class CustomValidators {
    * Validates name fields (letters, spaces, hyphens, apostrophes only).
    * @param minLength - Minimum length for the name (default: 2)
    */
-  static nameValidator(minLength: number = 2): ValidatorFn {
+  static nameValidator(minLength = 2): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
       if (!value) {
@@ -133,7 +133,7 @@ export class CustomValidators {
 
       // Simple URL pattern validation
       const urlPattern =
-        /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+        /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
       const isValid = urlPattern.test(value);
 
       return isValid ? null : { urlFormat: { value: control.value } };
@@ -152,7 +152,7 @@ export class CustomValidators {
       }
 
       // Supports: 12345, 123456, 12345-6789, A1B 2C3 (Canadian), etc.
-      const isValid = /^[\dA-Za-z\s\-]{4,10}$/.test(value);
+      const isValid = /^[\dA-Za-z\s-]{4,10}$/.test(value);
 
       return isValid ? null : { zipCode: { value: control.value } };
     };

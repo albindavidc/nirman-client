@@ -1,0 +1,36 @@
+<div class="gantt-wrapper">
+  <!-- Controls Header -->
+  <div class="gantt-controls">
+    <div class="left-controls">
+      <button mat-stroked-button (click)="zoomIn()">
+        <mat-icon>zoom_in</mat-icon>
+        Zoom in
+      </button>
+      <button mat-stroked-button (click)="zoomOut()">
+        <mat-icon>zoom_out</mat-icon>
+        Zoom out
+      </button>
+      <button mat-stroked-button (click)="fitToProject()">
+        <mat-icon>fit_screen</mat-icon>
+        Zoom to fit
+      </button>
+      <button
+        mat-stroked-button
+        (click)="changeViewMode('Day')"
+        [class.active-view]="currentViewMode === 'Day'"
+      >
+        <mat-icon>calendar_view_day</mat-icon>
+        Daily View
+      </button>
+    </div>
+
+    <div class="right-controls">
+      <!-- Search removed as per request -->
+    </div>
+  </div>
+
+  <!-- Gantt Container -->
+  <div class="gantt-chart-container">
+    <div #ganttContainer class="gantt-div"></div>
+  </div>
+</div>

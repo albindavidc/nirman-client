@@ -1,0 +1,26 @@
+<div class="auth-page">
+  <app-auth-logo></app-auth-logo>
+  <mat-card class="auth-card">
+    <mat-card-content class="text-center">
+      <div class="status-icon pending">
+        <mat-icon>hourglass_empty</mat-icon>
+      </div>
+      <h2 class="auth-title">Application Under Review</h2>
+      <p class="auth-subtitle">
+        Your vendor application has been submitted and is currently being
+        reviewed by our admin team.
+      </p>
+      <div class="info-box">
+        <p>
+          This process typically takes 1-2 business days. You will receive an
+          email notification once your account status changes.
+        </p>
+      </div>
+      <div class="actions">
+        <button mat-button color="primary" (click)="onLogout()">
+          Back to Login
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

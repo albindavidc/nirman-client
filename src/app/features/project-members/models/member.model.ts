@@ -21,7 +21,7 @@ export interface Member {
 export interface MemberState {
   members: Member[];
   loading: boolean;
-  error: any;
+  error: string | null;
   total: number;
   page: number;
   limit: number;

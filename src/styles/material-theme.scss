@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 :root {
   --md-sys-color-primary: rgb(233 193 108);
@@ -361,7 +361,7 @@
 }
 
 .light-high-contrast {
-  --md-sys-color-primary: rgb(58 41 0);
+  --md-sys-color-primary: rgb(119 90 11);
   --md-sys-color-surface-tint: rgb(119 90 11);
   --md-sys-color-on-primary: rgb(255 255 255);
   --md-sys-color-primary-container: rgb(94 69 0);
@@ -418,4 +418,299 @@
   --md-extended-color-warning-on-color: rgb(255 255 255);
   --md-extended-color-warning-color-container: rgb(113 59 16);
   --md-extended-color-warning-on-color-container: rgb(255 255 255);
+}
+
+/* ============================================= */
+/* Global Material Dialog & Form Theming        */
+/* ============================================= */
+
+/* Dialog Container */
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: var(--md-sys-color-surface-container);
+  --mdc-dialog-subhead-color: var(--md-sys-color-on-surface);
+  --mdc-dialog-supporting-text-color: var(--md-sys-color-on-surface-variant);
+
+  .mdc-dialog__surface {
+    background: var(--md-sys-color-surface-container) !important;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Dialog Title */
+.mat-mdc-dialog-title {
+  color: var(--md-sys-color-on-surface) !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  padding: 24px 24px 16px !important;
+  margin: 0 !important;
+}
+
+/* Dialog Content */
+.mat-mdc-dialog-content {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  padding: 8px 24px 0 !important;
+}
+
+/* Dialog Actions */
+.mat-mdc-dialog-actions {
+  padding: 16px 24px 24px !important;
+  gap: 12px;
+}
+
+/* Form Fields in Dialogs */
+.mat-mdc-dialog-container {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  /* Outlined Form Field Styling */
+  .mat-mdc-form-field-appearance-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--md-sys-color-outline-variant) !important;
+    }
+
+    &:hover .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--md-sys-color-outline) !important;
+      }
+    }
+
+    &.mat-focused .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--md-sys-color-primary) !important;
+        border-width: 2px !important;
+      }
+    }
+  }
+
+  /* Form Field Labels */
+  .mat-mdc-form-field-label,
+  .mdc-floating-label {
+    color: var(--md-sys-color-on-surface-variant) !important;
+  }
+
+  .mat-mdc-form-field.mat-focused .mdc-floating-label {
+    color: var(--md-sys-color-primary) !important;
+  }
+
+  /* Input Text */
+  .mat-mdc-input-element {
+    color: var(--md-sys-color-on-surface) !important;
+    caret-color: var(--md-sys-color-primary) !important;
+
+    &::placeholder {
+      color: var(--md-sys-color-outline) !important;
+    }
+  }
+
+  /* Textarea */
+  textarea.mat-mdc-input-element {
+    color: var(--md-sys-color-on-surface) !important;
+  }
+
+  /* Select */
+  .mat-mdc-select {
+    color: var(--md-sys-color-on-surface) !important;
+
+    .mat-mdc-select-arrow {
+      color: var(--md-sys-color-on-surface-variant) !important;
+    }
+  }
+
+  .mat-mdc-select-panel {
+    background: var(--md-sys-color-surface-container-high) !important;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 8px !important;
+  }
+
+  .mat-mdc-option {
+    color: var(--md-sys-color-on-surface) !important;
+
+    &:hover:not(.mdc-list-item--disabled) {
+      background: var(--md-sys-color-surface-container-highest) !important;
+    }
+
+    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background: var(--md-sys-color-primary-container) !important;
+      color: var(--md-sys-color-on-primary-container) !important;
+    }
+  }
+}
+
+/* Select Panel (Outside Dialog) */
+.mat-mdc-select-panel {
+  background: var(--md-sys-color-surface-container-high) !important;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 8px !important;
+}
+
+.mat-mdc-option {
+  color: var(--md-sys-color-on-surface) !important;
+
+  &:hover:not(.mdc-list-item--disabled) {
+    background: var(--md-sys-color-surface-container-highest) !important;
+  }
+
+  &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    background: var(--md-sys-color-primary-container) !important;
+    color: var(--md-sys-color-on-primary-container) !important;
+  }
+}
+
+/* Dialog Buttons */
+.mat-mdc-dialog-actions {
+  /* Cancel Button */
+  .mat-mdc-button:not(.mat-mdc-button-disabled) {
+    color: var(--md-sys-color-on-surface-variant) !important;
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-high) !important;
+    }
+  }
+
+  /* Primary Button */
+  .mat-mdc-unelevated-button.mat-primary,
+  .mat-mdc-raised-button.mat-primary {
+    background: var(--md-sys-color-primary) !important;
+    color: var(--md-sys-color-on-primary) !important;
+    border-radius: 8px !important;
+
+    &:hover:not(.mat-mdc-button-disabled) {
+      opacity: 0.9;
+    }
+
+    &.mat-mdc-button-disabled {
+      background: var(--md-sys-color-surface-container-high) !important;
+      color: var(--md-sys-color-outline) !important;
+    }
+  }
+}
+
+/* Datepicker Theming */
+.mat-datepicker-content {
+  background: var(--md-sys-color-surface-container) !important;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px !important;
+  color: var(--md-sys-color-on-surface) !important;
+
+  .mat-calendar {
+    background: transparent;
+  }
+
+  .mat-calendar-header {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .mat-calendar-body-label,
+  .mat-calendar-period-button {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .mat-calendar-table-header th {
+    color: var(--md-sys-color-outline);
+  }
+
+  .mat-calendar-body-cell-content {
+    color: var(--md-sys-color-on-surface);
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-high);
+    }
+  }
+
+  .mat-calendar-body-selected {
+    background: var(--md-sys-color-primary) !important;
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: var(--md-sys-color-primary) !important;
+  }
+}
+
+/* Datepicker Toggle Icon */
+.mat-datepicker-toggle {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Menu Theming */
+.mat-mdc-menu-panel {
+  background: var(--md-sys-color-surface-container-high) !important;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 8px !important;
+}
+
+.mat-mdc-menu-item {
+  color: var(--md-sys-color-on-surface) !important;
+
+  .mat-icon {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  &:hover:not([disabled]) {
+    background: var(--md-sys-color-surface-container-highest) !important;
+  }
+}
+
+/* Paginator Theming */
+.mat-mdc-paginator {
+  background: transparent !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .mat-mdc-select {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .mat-mdc-icon-button:not([disabled]) {
+    color: var(--md-sys-color-on-surface-variant);
+
+    &:hover {
+      background: var(--md-sys-color-surface-container-high);
+    }
+  }
+
+  .mat-mdc-icon-button[disabled] {
+    color: var(--md-sys-color-outline-variant);
+  }
+}
+
+/* Snackbar Theming */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--md-sys-color-inverse-surface);
+  --mdc-snackbar-supporting-text-color: var(--md-sys-color-inverse-on-surface);
+  --mat-snack-bar-button-color: var(--md-sys-color-inverse-primary);
+}
+
+/* Tab Theming */
+.mat-mdc-tab-group {
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled) {
+    .mdc-tab__text-label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    &.mdc-tab--active .mdc-tab__text-label {
+      color: var(--md-sys-color-primary);
+    }
+  }
+
+  .mat-mdc-tab-header {
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .mdc-tab-indicator__content--underline {
+    border-color: var(--md-sys-color-primary);
+  }
 }

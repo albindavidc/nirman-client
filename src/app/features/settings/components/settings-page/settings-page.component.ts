@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule, AsyncPipe, NgIf } from '@angular/common';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -40,13 +40,16 @@ import { CustomValidators } from '../../../../shared/validators/custom-validator
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDividerModule,
-    AsyncPipe,
-    NgIf,
-  ],
+    AsyncPipe
+],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.scss',
 })
 export class SettingsPageComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
+  private snackBar = inject(MatSnackBar);
+
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
   hideCurrentPassword = true;
@@ -62,11 +65,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private fb: FormBuilder,
-    private store: Store,
-    private snackBar: MatSnackBar
-  ) {
+  constructor() {
     this.profile$ = this.store.select(SettingsSelectors.selectProfile);
     this.loading$ = this.store.select(SettingsSelectors.selectLoading);
     this.updating$ = this.store.select(SettingsSelectors.selectUpdating);

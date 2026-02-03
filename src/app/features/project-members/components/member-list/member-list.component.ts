@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, TitleCasePipe, AsyncPipe } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule, TitleCasePipe, AsyncPipe, UpperCasePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +16,7 @@ import * as MemberActions from '../../store/member.actions';
 import * as MemberSelectors from '../../store/member.selectors';
 import { MemberAddEditModalComponent } from '../member-add-edit-modal/member-add-edit-modal.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { TableColumn } from '../../../../shared/components/table/table.models';
 import { PageEvent } from '@angular/material/paginator';
@@ -24,11 +24,19 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component'; // Added SearchBarComponent import
-import { MatTableModule } from '@angular/material/table'; // Added MatTableModule
-import { MatPaginatorModule } from '@angular/material/paginator'; // Added MatPaginatorModule
-import { MatSortModule } from '@angular/material/sort'; // Added MatSortModule
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // Added MatProgressSpinnerModule
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  trigger,
+  transition,
+  style,
+  animate,
+  query,
+  stagger,
+} from '@angular/animations';
 
 @Component({
   selector: 'app-member-list',
@@ -48,16 +56,48 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; /
     TableComponent,
     TitleCasePipe,
     AsyncPipe,
-    SearchBarComponent, // Added SearchBarComponent
-    MatTableModule, // Added MatTableModule
-    MatPaginatorModule, // Added MatPaginatorModule
-    MatSortModule, // Added MatSortModule
-    MatProgressSpinnerModule, // Added MatProgressSpinnerModule
+    UpperCasePipe,
+    SearchBarComponent,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './member-list.component.html',
   styleUrl: './member-list.component.scss',
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate(
+          '300ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
+      ]),
+    ]),
+    trigger('staggerIn', [
+      transition(':enter', [
+        query(
+          ':enter',
+          [
+            style({ opacity: 0, transform: 'translateY(15px)' }),
+            stagger('50ms', [
+              animate(
+                '300ms ease-out',
+                style({ opacity: 1, transform: 'translateY(0)' })
+              ),
+            ]),
+          ],
+          { optional: true }
+        ),
+      ]),
+    ]),
+  ],
 })
 export class MemberListComponent implements OnInit {
+  private store = inject(Store);
+  private dialog = inject(MatDialog);
+
   columns: TableColumn[] = [
     { key: 'member', header: 'Member', type: 'template', sortable: true },
     { key: 'role', header: 'Role', type: 'template', sortable: true },
@@ -83,7 +123,7 @@ export class MemberListComponent implements OnInit {
   pageIndex = 0;
   searchTerm = '';
 
-  constructor(private store: Store, private dialog: MatDialog) {
+  constructor() {
     this.totalMembers$ = this.store.select(MemberSelectors.selectMemberTotal);
     this.loading$ = this.store.select(MemberSelectors.selectMemberLoading);
     this.members$ = this.store.select(MemberSelectors.selectAllMembers);

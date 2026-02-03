@@ -13,29 +13,34 @@
 
     <!-- Error Message -->
     @if (error$ | async; as error) {
-    <div class="error-message">
-      <mat-icon>error_outline</mat-icon>
-      <span>{{ error }}</span>
-    </div>
+      <div class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
     }
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <!-- Company Name -->
       <div class="form-field full-width">
-        <label class="field-label">Company Name</label>
+        <label class="field-label" for="companyName">Company Name</label>
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>business</mat-icon>
           <input
             matInput
+            id="companyName"
             formControlName="companyName"
             placeholder="Your Company Inc."
           />
-          @if (form.get('companyName')?.hasError('required') &&
-          form.get('companyName')?.touched) {
-          <mat-error>Company name is required</mat-error>
-          } @else if (form.get('companyName')?.hasError('minlength') &&
-          form.get('companyName')?.touched) {
-          <mat-error>Company name must be at least 2 characters</mat-error>
+          @if (
+            form.get("companyName")?.hasError("required") &&
+            form.get("companyName")?.touched
+          ) {
+            <mat-error>Company name is required</mat-error>
+          } @else if (
+            form.get("companyName")?.hasError("minlength") &&
+            form.get("companyName")?.touched
+          ) {
+            <mat-error>Company name must be at least 2 characters</mat-error>
           }
         </mat-form-field>
       </div>
@@ -43,17 +48,22 @@
       <div class="form-row">
         <!-- Registration Number -->
         <div class="form-field">
-          <label class="field-label">Company Registration Number</label>
+          <label class="field-label" for="registrationNumber"
+            >Company Registration Number</label
+          >
           <mat-form-field appearance="outline">
             <mat-icon matPrefix>badge</mat-icon>
             <input
               matInput
+              id="registrationNumber"
               formControlName="registrationNumber"
               placeholder="REG-12345"
             />
-            @if (form.get('registrationNumber')?.hasError('required') &&
-            form.get('registrationNumber')?.touched) {
-            <mat-error>Registration number is required</mat-error>
+            @if (
+              form.get("registrationNumber")?.hasError("required") &&
+              form.get("registrationNumber")?.touched
+            ) {
+              <mat-error>Registration number is required</mat-error>
             }
           </mat-form-field>
         </div>
@@ -85,12 +95,16 @@
             placeholder="5"
             min="0"
           />
-          @if (form.get('yearsInBusiness')?.hasError('required') &&
-          form.get('yearsInBusiness')?.touched) {
-          <mat-error>Years in business is required</mat-error>
-          } @else if (form.get('yearsInBusiness')?.hasError('min') &&
-          form.get('yearsInBusiness')?.touched) {
-          <mat-error>Years in business cannot be negative</mat-error>
+          @if (
+            form.get("yearsInBusiness")?.hasError("required") &&
+            form.get("yearsInBusiness")?.touched
+          ) {
+            <mat-error>Years in business is required</mat-error>
+          } @else if (
+            form.get("yearsInBusiness")?.hasError("min") &&
+            form.get("yearsInBusiness")?.touched
+          ) {
+            <mat-error>Years in business cannot be negative</mat-error>
           }
         </mat-form-field>
       </div>
@@ -100,11 +114,12 @@
 
       <!-- Street Address -->
       <div class="form-field full-width">
-        <label class="field-label">Street Address</label>
+        <label class="field-label" for="addressStreet">Street Address</label>
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>location_on</mat-icon>
           <input
             matInput
+            id="addressStreet"
             formControlName="addressStreet"
             placeholder="Street address"
           />
@@ -114,20 +129,26 @@
       <div class="form-row">
         <!-- City -->
         <div class="form-field">
-          <label class="field-label">City</label>
+          <label class="field-label" for="addressCity">City</label>
           <mat-form-field appearance="outline">
             <mat-icon matPrefix>location_city</mat-icon>
-            <input matInput formControlName="addressCity" placeholder="City" />
+            <input
+              matInput
+              id="addressCity"
+              formControlName="addressCity"
+              placeholder="City"
+            />
           </mat-form-field>
         </div>
 
         <!-- State -->
         <div class="form-field">
-          <label class="field-label">State</label>
+          <label class="field-label" for="addressState">State</label>
           <mat-form-field appearance="outline">
             <mat-icon matPrefix>map</mat-icon>
             <input
               matInput
+              id="addressState"
               formControlName="addressState"
               placeholder="State"
             />
@@ -137,11 +158,12 @@
 
       <!-- ZIP Code -->
       <div class="form-field full-width">
-        <label class="field-label">ZIP Code</label>
+        <label class="field-label" for="addressZipCode">ZIP Code</label>
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>pin</mat-icon>
           <input
             matInput
+            id="addressZipCode"
             formControlName="addressZipCode"
             placeholder="ZIP Code"
           />
@@ -152,21 +174,24 @@
       <div class="section-label">Products/Services Offered</div>
 
       <div class="form-field full-width">
-        <label class="field-label">Products/Services</label>
+        <label class="field-label" for="productsServices"
+          >Products/Services</label
+        >
         <mat-form-field appearance="outline" class="chips-field">
           <mat-icon matPrefix>inventory_2</mat-icon>
           <mat-chip-grid #chipGrid aria-label="Products and services">
             @for (product of productsServices; track product) {
-            <mat-chip-row (removed)="removeProduct(product)">
-              {{ product }}
-              <button matChipRemove aria-label="Remove product">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip-row>
+              <mat-chip-row (removed)="removeProduct(product)">
+                {{ product }}
+                <button matChipRemove aria-label="Remove product">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
             }
           </mat-chip-grid>
           <input
             matInput
+            id="productsServices"
             placeholder="Type and press Enter to add..."
             [matChipInputFor]="chipGrid"
             [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
@@ -190,8 +215,10 @@
           [disabled]="loading$ | async"
         >
           @if (loading$ | async) {
-          <mat-spinner diameter="20"></mat-spinner>
-          } @else { Send Verification Code }
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Send Verification Code
+          }
         </button>
       </div>
     </form>

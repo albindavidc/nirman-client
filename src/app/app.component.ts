@@ -6,10 +6,7 @@ import { SplashScreenComponent } from './core/components/splash-screen/splash-sc
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, SplashScreenComponent],
-  template: `
-    <app-splash-screen></app-splash-screen>
-    <router-outlet></router-outlet>
-  `,
+  templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {

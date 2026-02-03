@@ -5,14 +5,14 @@ import { vendorReducer } from './store/vendor.reducer';
 import { VendorEffects } from './store/vendor.effects';
 import { RoleGuard } from '../../core/guards/role.guard';
 
-export const vendorManagementRoutes: Routes = [
+export const VENDOR_MANAGEMENT_ROUTES: Routes = [
   {
     path: '',
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },
     loadComponent: () =>
       import('./components/vendor-list/vendor-list.component').then(
-        (m) => m.VendorListComponent
+        (m) => m.VendorListComponent,
       ),
     providers: [
       provideState('vendorManagement', vendorReducer),

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 import { Member, MemberListResponse } from '../models/member.model';
 
 @Injectable({
@@ -9,11 +9,12 @@ import { Member, MemberListResponse } from '../models/member.model';
 })
 export class MemberService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/members`;
+  private configService = inject(ConfigService);
+  private apiUrl = `${this.configService.apiUrl}/members`;
 
   getMembers(
-    page: number = 1,
-    limit: number = 10,
+    page = 1,
+    limit = 10,
     role?: string,
     search?: string
   ): Observable<MemberListResponse> {

@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { RoleGuard } from '../../../core/guards/role.guard';
 import { VendorStatusGuard } from '../../../core/guards/vendor-status.guard';
 
-export const dashboardRoutes: Routes = [
+export const DASHBOARD_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>

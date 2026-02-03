@@ -1,0 +1,329 @@
+<app-shared-modal
+  [title]="isEditing ? 'Edit Project' : 'Create New Project'"
+  [subtitle]="
+    isEditing ? 'Update project details' : 'Set up a new construction project'
+  "
+  (close)="onCancel()"
+>
+  <form
+    [formGroup]="projectForm"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-6"
+  >
+    <!-- Project Name -->
+    <div class="form-field">
+      <label
+        class="block text-sm font-medium text-gray-300 mb-1"
+        for="projectName"
+        >Project Name</label
+      >
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          id="projectName"
+          formControlName="name"
+          placeholder="Enter project name"
+        />
+        @if (projectForm.get("name")?.hasError("required")) {
+          <mat-error> Project name is required </mat-error>
+        }
+        @if (projectForm.get("name")?.hasError("minlength")) {
+          <mat-error> Minimum 2 characters </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Project Manager -->
+      <div class="form-field">
+        <label
+          class="block text-sm font-medium text-gray-300 mb-1"
+          for="projectManager"
+          >Project Manager</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            id="projectManager"
+            [formControl]="managerSearchControl"
+            [matAutocomplete]="managerAuto"
+            placeholder="Select project manager"
+          />
+          <mat-autocomplete
+            #managerAuto="matAutocomplete"
+            (optionSelected)="selectManager($event.option.value)"
+          >
+            @for (manager of filteredManagers$ | async; track manager.id) {
+              <mat-option [value]="manager">
+                {{ manager.name }}
+                <span class="text-xs text-gray-400 ml-2">{{
+                  manager.email
+                }}</span>
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <!-- Status -->
+      <div class="form-field">
+        <label
+          class="block text-sm font-medium text-gray-300 mb-1"
+          for="projectStatus"
+          >Status</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select id="projectStatus" formControlName="status">
+            @for (option of statusOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-field">
+      <label
+        class="block text-sm font-medium text-gray-300 mb-1"
+        for="description"
+        >Description</label
+      >
+      <mat-form-field appearance="outline" class="w-full">
+        <textarea
+          matInput
+          id="description"
+          formControlName="description"
+          placeholder="Enter project description"
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Start Date -->
+      <div class="form-field">
+        <label
+          class="block text-sm font-medium text-gray-300 mb-1"
+          for="startDate"
+          >Start Date</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            id="startDate"
+            [matDatepicker]="startPicker"
+            formControlName="startDate"
+            placeholder="dd-mm-yyyy"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="startPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- End Date -->
+      <div class="form-field">
+        <label
+          class="block text-sm font-medium text-gray-300 mb-1"
+          for="endDate"
+          >End Date</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            id="endDate"
+            [matDatepicker]="endPicker"
+            formControlName="endDate"
+            placeholder="dd-mm-yyyy"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="endPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Budget -->
+      <div class="form-field">
+        <label class="block text-sm font-medium text-gray-300 mb-1" for="budget"
+          >Budget ($)</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            id="budget"
+            type="number"
+            formControlName="budget"
+            placeholder="0.00"
+          />
+        </mat-form-field>
+      </div>
+
+      <!-- Initial Progress -->
+      <div class="form-field">
+        <label
+          class="block text-sm font-medium text-gray-300 mb-1"
+          for="progress"
+          >Initial Progress (%)</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            id="progress"
+            type="number"
+            formControlName="progress"
+            placeholder="0"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Add People -->
+    <div class="form-field">
+      <label
+        class="block text-sm font-medium text-gray-300 mb-1"
+        for="addPeople"
+        >Add people*</label
+      >
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          id="addPeople"
+          [formControl]="memberSearchControl"
+          [matAutocomplete]="memberAuto"
+          placeholder="Search"
+        />
+        <mat-autocomplete
+          #memberAuto="matAutocomplete"
+          (optionSelected)="addMember($event.option.value)"
+        >
+          @for (member of filteredMembers$ | async; track member.id) {
+            <mat-option [value]="member">
+              {{ member.name }}
+              <span class="text-xs text-gray-400 ml-2">{{ member.email }}</span>
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <!-- Selected Members Chips -->
+      @if (selectedMembers.length > 0) {
+        <div class="flex flex-wrap gap-2 mt-2">
+          @for (member of selectedMembers; track member.id) {
+            <div
+              class="flex items-center bg-zinc-800 rounded-full px-3 py-1 border border-zinc-700"
+            >
+              <span class="text-sm text-gray-200">{{ member.name }}</span>
+              <button
+                type="button"
+                class="ml-2 text-gray-400 hover:text-white"
+                (click)="removeMember(member)"
+              >
+                <mat-icon
+                  class="text-base w-4 h-4 flex items-center justify-center"
+                  >close</mat-icon
+                >
+              </button>
+            </div>
+          }
+        </div>
+      }
+      @if (
+        projectForm.get("members")?.touched &&
+        projectForm.get("members")?.hasError("required")
+      ) {
+        <mat-error class="mt-2 text-xs">
+          At least one member is required
+        </mat-error>
+      }
+    </div>
+
+    <!-- Location Section -->
+    <div class="location-section">
+      <h3 class="text-lg font-medium text-white mb-2">Location</h3>
+
+      <!-- Map Search -->
+      <div class="form-field mb-4">
+        <label
+          class="block text-sm font-medium text-gray-300 mb-1"
+          for="mapSearch"
+          >Search in map</label
+        >
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            id="mapSearch"
+            [formControl]="mapSearchControl"
+            [matAutocomplete]="locationAuto"
+            placeholder="Search"
+            (keyup.enter)="searchLocation()"
+          />
+          <button
+            matSuffix
+            mat-icon-button
+            type="button"
+            (click)="searchLocation()"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+          <mat-autocomplete
+            #locationAuto="matAutocomplete"
+            [displayWith]="displayLocation"
+            (optionSelected)="onLocationSelected($event.option.value)"
+          >
+            @for (
+              location of filteredLocations$ | async;
+              track location.place_id
+            ) {
+              <mat-option [value]="location">
+                {{ location.description }}
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <!-- Map Container -->
+      <google-map
+        class="block w-full h-[300px] rounded-lg overflow-hidden border border-zinc-700"
+        [center]="center"
+        [zoom]="zoom"
+        [options]="mapOptions"
+        (mapClick)="onMapClick($event)"
+      >
+        <map-marker
+          [position]="markerPosition"
+          [options]="markerOptions"
+          (mapDragend)="onMarkerDragEnd($event)"
+        ></map-marker>
+      </google-map>
+    </div>
+  </form>
+
+  <div actions>
+    <button mat-stroked-button type="button" (click)="onCancel()">
+      Cancel
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="isCreating$ | async"
+    >
+      @if (isCreating$ | async) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <div class="flex items-center gap-2">
+          <mat-icon>{{ isEditing ? "save" : "add" }}</mat-icon>
+          <span>{{ isEditing ? "Save Changes" : "Create Project" }}</span>
+        </div>
+      }
+    </button>
+  </div>
+</app-shared-modal>

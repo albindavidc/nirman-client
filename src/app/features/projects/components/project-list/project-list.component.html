@@ -23,81 +23,139 @@
 
   <!-- Stats Cards -->
   <div class="stats-grid" [@staggerIn]>
-    @for (card of statCards; track card.label) {
-    <div class="stat-card" [class]="card.color">
-      <div class="stat-icon">
-        <mat-icon>{{ card.icon }}</mat-icon>
-      </div>
-      <div class="stat-change" [class.positive]="card.getChange() > 0">
-        <mat-icon>{{
-          card.getChange() > 0 ? "trending_up" : "trending_down"
-        }}</mat-icon>
-        {{ card.getChange() > 0 ? "+" : "" }}{{ card.getChange() }}%
-      </div>
-      <div class="stat-content">
-        <span class="stat-value">{{ card.getValue() }}</span>
-        <span class="stat-label">{{ card.label }}</span>
-        <span class="stat-sublabel">{{ card.sublabel }}</span>
-      </div>
-    </div>
+    @if (dashboardStats$ | async; as stats) {
+      @for (card of stats; track card.label) {
+        <div class="stat-card" [class]="card.color">
+          <div class="stat-icon">
+            <mat-icon>{{ card.icon }}</mat-icon>
+          </div>
+          <div class="stat-change" [class.positive]="card.change >= 0">
+            <mat-icon>{{
+              card.change >= 0 ? "trending_up" : "trending_down"
+            }}</mat-icon>
+            {{ card.change >= 0 ? "+" : "" }}{{ card.change }}%
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ card.value }}</span>
+            <span class="stat-label">{{ card.label }}</span>
+            <span class="stat-sublabel">{{ card.sublabel }}</span>
+          </div>
+        </div>
+      }
     }
   </div>
 
   <!-- Projects Grid -->
   <div class="projects-grid" [@staggerIn]>
-    @for (project of projects; track project.id) {
-    <div class="project-card" (click)="openProjectDetails(project)">
-      <div class="card-header">
-        <div class="project-icon" [class]="getStatusClass(project.status)">
-          <mat-icon>{{ project.icon }}</mat-icon>
-        </div>
-        <span class="status-badge" [ngClass]="getStatusClass(project.status)">
-          {{ project.status | titlecase }}
-        </span>
-      </div>
-
-      <div class="card-body">
-        <h3 class="project-name">{{ project.name }}</h3>
-        <p class="project-description">{{ project.description }}</p>
-      </div>
-
-      <div class="progress-section">
-        <div class="progress-bar" [class]="getProgressColor(project.progress)">
-          <div class="progress-fill" [style.width.%]="project.progress"></div>
-        </div>
-      </div>
-
-      <div class="card-footer">
-        <div class="dates">
-          <div class="date-item">
-            <mat-icon>event</mat-icon>
-            <span>Started: {{ project.startDate | date : "MMM d, yyyy" }}</span>
+    @for (project of projects$ | async; track project.id) {
+      <div
+        class="project-card"
+        (click)="openProjectDetails(project)"
+        (keyup.enter)="openProjectDetails(project)"
+        tabindex="0"
+      >
+        <div class="card-header">
+          <div class="header-left">
+            <div class="project-icon" [class]="getStatusClass(project.status)">
+              <mat-icon>{{ project.icon || "folder" }}</mat-icon>
+            </div>
           </div>
-          <div class="date-item">
-            <mat-icon>flag</mat-icon>
-            <span>Due: {{ project.dueDate | date : "MMM d, yyyy" }}</span>
-          </div>
-        </div>
-
-        <div class="team-avatars">
-          @for (member of getVisibleMembers(project.teamMembers); track
-          member.id) {
-          <div class="avatar" [matTooltip]="member.name">
-            {{ member.initials }}
-          </div>
-          } @if (getRemainingCount(project.teamMembers) > 0) {
-          <div
-            class="avatar more"
-            [matTooltip]="
-              '+' + getRemainingCount(project.teamMembers) + ' more members'
-            "
+          <span
+            class="status-badge"
+            [ngClass]="getStatusClass(project.status)"
+            >{{ project.status | titlecase }}</span
           >
-            +{{ getRemainingCount(project.teamMembers) }}
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            (click)="$event.stopPropagation()"
+            class="more-btn"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="openEditProjectModal(project, $event)"
+            >
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
+
+        <div class="card-body">
+          <h3 class="project-name">{{ project.name }}</h3>
+          <p class="project-description">{{ project.description }}</p>
+        </div>
+
+        <div class="progress-section">
+          <div
+            class="progress-bar"
+            [class]="getProgressColor(project.progress)"
+          >
+            <div class="progress-fill" [style.width.%]="project.progress"></div>
           </div>
-          }
+        </div>
+
+        <div class="card-footer">
+          <div class="dates">
+            <div class="date-item">
+              <mat-icon>event</mat-icon>
+              <span
+                >Started: {{ project.startDate | date: "MMM d, yyyy" }}</span
+              >
+            </div>
+            <div class="date-item">
+              <mat-icon>flag</mat-icon>
+              <span>Due: {{ project.dueDate | date: "MMM d, yyyy" }}</span>
+            </div>
+          </div>
+
+          <div class="team-avatars">
+            @if (project.members && project.members.length > 0) {
+              @for (
+                member of project.members.slice(0, 3);
+                track member.userId
+              ) {
+                <div class="avatar">
+                  <!-- TODO: Show initials or avatar when user data is available -->
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px"
+                    >person</mat-icon
+                  >
+                </div>
+              }
+              @if (project.members.length > 3) {
+                <div
+                  class="avatar more"
+                  [matTooltip]="
+                    '+' + (project.members.length - 3) + ' more members'
+                  "
+                >
+                  +{{ project.members.length - 3 }}
+                </div>
+              }
+            }
+          </div>
         </div>
       </div>
-    </div>
+    } @empty {
+      <div class="no-projects">
+        <mat-icon>folder_off</mat-icon>
+        <h3>No projects found</h3>
+        <p>Create your first project to get started</p>
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="openCreateProjectModal()"
+        >
+          Create Project
+        </button>
+      </div>
     }
   </div>
 </div>

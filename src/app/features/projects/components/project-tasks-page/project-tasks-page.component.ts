@@ -11,11 +11,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { Observable, combineLatest, map, startWith } from 'rxjs';
+import {
+  Observable,
+  combineLatest,
+  map,
+  startWith,
+  BehaviorSubject,
+} from 'rxjs';
 import { format } from 'date-fns';
 import { GanttChartComponent } from '../gantt-chart/gantt-chart.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskModalComponent } from '../create-task-modal/create-task-modal.component';
+import { EditTaskModalComponent } from '../edit-task-modal/edit-task-modal.component';
 
 @Component({
   selector: 'app-project-tasks-page',
@@ -217,6 +224,28 @@ export class ProjectTasksPageComponent implements OnInit {
 
   openTask(task: Task) {
     this.router.navigate(['../tasks', task.id], { relativeTo: this.route });
+  }
+
+  /**
+   * Opens edit task modal when clicking on task in Gantt chart
+   * @param task The task to edit
+   */
+  openEditTaskModal(task: Task): void {
+    const dialogRef = this.dialog.open(EditTaskModalComponent, {
+      width: '650px',
+      data: {
+        task: task,
+        projectId: this.projectId,
+      },
+      panelClass: 'custom-dialog-container',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Refresh tasks after successful update
+        this.ngOnInit();
+      }
+    });
   }
 
   goBack() {

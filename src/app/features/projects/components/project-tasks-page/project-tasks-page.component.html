@@ -186,7 +186,7 @@
           [tasks]="tasks"
           [dependencies]="(dependencies$ | async) || []"
           [phases]="phases"
-          (taskClick)="openTask($event)"
+          (taskClick)="openEditTaskModal($event)"
         ></app-gantt-chart>
       </div>
     }

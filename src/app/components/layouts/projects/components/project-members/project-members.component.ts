@@ -1,0 +1,241 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { ProjectService } from '../../services/project.service';
+import { Observable, switchMap, map, shareReplay } from 'rxjs';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  AddMemberModalComponent,
+  AddMemberDialogData,
+} from '../add-member-modal/add-member-modal.component';
+import {
+  EditMemberModalComponent,
+  EditMemberDialogData,
+} from '../edit-member-modal/edit-member-modal.component';
+import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { AttendanceRecord } from '../../models/project.models';
+
+interface AttendanceStats {
+  rate: number;
+  present: number;
+  late: number;
+  absent: number;
+}
+
+@Component({
+  selector: 'app-project-members',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatChipsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatTooltipModule,
+    MatPaginatorModule,
+  ],
+  templateUrl: './project-members.component.html',
+  styleUrl: './project-members.component.scss',
+})
+export class ProjectMembersComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private projectService = inject(ProjectService);
+  private dialog = inject(MatDialog);
+
+  displayedColumns: string[] = [
+    'slNo',
+    'name',
+    'role',
+    'site',
+    'checkIn',
+    'checkOut',
+    'hours',
+    'status',
+    'verified',
+    'actions',
+  ];
+
+  attendance$: Observable<AttendanceRecord[]> | undefined;
+  stats$: Observable<AttendanceStats> | undefined;
+
+  // Pagination
+  currentPage = 0;
+  pageSize = 10;
+  totalRecords = 0;
+
+  today = new Date();
+
+  ngOnInit(): void {
+    this.refreshData();
+  }
+
+  getStatusClass(status: string): string {
+    const s = status.toLowerCase().replace(' ', '-').replace('_', '-');
+    return s;
+  }
+
+  formatStatus(status: string): string {
+    return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+  }
+
+  getInitials(name: string): string {
+    return name
+      .split(' ')
+      .map((n) => n.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
+
+  getAvatarColor(name: string): string {
+    const colors = [
+      '#e9c16c', // gold
+      '#4caf50', // green
+      '#2196f3', // blue
+      '#ff9800', // orange
+      '#9c27b0', // purple
+      '#00bcd4', // cyan
+      '#e91e63', // pink
+    ];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  }
+
+  openAddMemberModal(): void {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    const dialogRef = this.dialog.open(AddMemberModalComponent, {
+      data: {
+        projectId: projectId,
+        projectName: 'Project',
+      } as AddMemberDialogData,
+      panelClass: 'custom-dialog-container',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.refreshData();
+      }
+    });
+  }
+
+  editWorker(worker: AttendanceRecord): void {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    const dialogRef = this.dialog.open(EditMemberModalComponent, {
+      data: {
+        projectId,
+        userId: worker.workerId,
+        userName: worker.workerName,
+        currentRole: worker.workerRole,
+      } as EditMemberDialogData,
+      panelClass: 'custom-dialog-container',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.refreshData();
+      }
+    });
+  }
+
+  exportReport(): void {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    this.projectService.exportAttendanceReport(projectId).subscribe((blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `attendance-report-${
+        new Date().toISOString().split('T')[0]
+      }.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    });
+  }
+
+  removeWorker(worker: AttendanceRecord): void {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: 'Remove Member',
+        message: `Are you sure you want to remove ${worker.workerName} from this project?`,
+        confirmText: 'Remove',
+        confirmColor: 'warn',
+        icon: 'person_remove',
+      },
+      panelClass: 'custom-dialog-container',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.projectService
+          .removeProjectMember(projectId, worker.workerId)
+          .subscribe(() => {
+            this.refreshData();
+          });
+      }
+    });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.refreshData();
+  }
+
+  private refreshData(): void {
+    this.attendance$ = this.route.parent?.paramMap.pipe(
+      map((params) => params.get('id')),
+      switchMap((id) => {
+        if (!id) return [];
+        return this.projectService.getProjectAttendance(id);
+      }),
+      map((records) => {
+        this.totalRecords = records.length;
+        const start = this.currentPage * this.pageSize;
+        return records.slice(start, start + this.pageSize);
+      }),
+      shareReplay(1),
+    );
+
+    this.stats$ = this.route.parent?.paramMap.pipe(
+      map((params) => params.get('id')),
+      switchMap((id) => {
+        if (!id) return [];
+        return this.projectService.getProjectAttendance(id);
+      }),
+      map((records) => {
+        const total = records.length;
+        if (total === 0) return { rate: 0, present: 0, late: 0, absent: 0 };
+
+        const present = records.filter(
+          (r) => r.status === 'on_time' || r.status === 'late',
+        ).length;
+        const late = records.filter((r) => r.status === 'late').length;
+        const absent = records.filter(
+          (r) => r.status === 'absent' || r.status === 'on_leave',
+        ).length;
+
+        const rate = Math.round((present / total) * 100);
+
+        return { rate, present, late, absent };
+      }),
+      shareReplay(1),
+    );
+  }
+}

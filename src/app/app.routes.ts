@@ -9,13 +9,15 @@ export const routes: Routes = [
     path: 'auth',
     canActivate: [GuestGuard],
     loadChildren: () =>
-      import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+      import('./components/layouts/auth/auth.routes').then(
+        (m) => m.AUTH_ROUTES,
+      ),
   },
   {
     path: 'auth/pending-approval',
     canActivate: [AuthGuard],
     loadComponent: () =>
-      import('./features/auth/pages/pending-approval/pending-approval.component').then(
+      import('./components/layouts/auth/pages/pending-approval/pending-approval.component').then(
         (m) => m.PendingApprovalComponent,
       ),
   },
@@ -23,7 +25,7 @@ export const routes: Routes = [
     path: 'auth/application-rejected',
     canActivate: [AuthGuard],
     loadComponent: () =>
-      import('./features/auth/pages/application-rejected/application-rejected.component').then(
+      import('./components/layouts/auth/pages/application-rejected/application-rejected.component').then(
         (m) => m.ApplicationRejectedComponent,
       ),
   },
@@ -39,7 +41,7 @@ export const routes: Routes = [
       {
         path: 'vendor-management',
         loadChildren: () =>
-          import('./features/vendor-management/vendor-management.routes').then(
+          import('./components/vendor/vendor-management.routes').then(
             (m) => m.VENDOR_MANAGEMENT_ROUTES,
           ),
       },
@@ -51,38 +53,43 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'project-members',
-        loadChildren: () =>
-          import('./features/project-members/project-members.routes').then(
-            (m) => m.PROJECT_MEMBERS_ROUTES,
-          ),
-      },
-      {
         path: 'settings',
         loadChildren: () =>
-          import('./features/settings/settings.routes').then(
+          import('./components/layouts/settings/settings.routes').then(
             (m) => m.SETTINGS_ROUTES,
           ),
       },
       {
         path: 'profile',
         loadChildren: () =>
-          import('./features/profile/profile.routes').then(
+          import('./components/layouts/profile/profile.routes').then(
             (m) => m.PROFILE_ROUTES,
           ),
       },
       {
-        path: 'projects',
+        path: 'worker',
         loadChildren: () =>
-          import('./features/projects/projects.routes').then(
-            (m) => m.PROJECTS_ROUTES,
+          import('./components/worker/worker.routes').then(
+            (m) => m.WORKER_ROUTES,
           ),
       },
       {
         path: 'my-tasks',
         loadComponent: () =>
-          import('./features/projects/components/my-tasks/my-tasks.component').then(
+          import('./components/layouts/projects/components/my-tasks/my-tasks.component').then(
             (m) => m.MyTasksComponent,
+          ),
+      },
+      {
+        path: 'admin',
+        loadChildren: () =>
+          import('./components/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+      },
+      {
+        path: 'supervisor',
+        loadChildren: () =>
+          import('./components/supervisor/supervisor.routes').then(
+            (m) => m.SUPERVISOR_ROUTES,
           ),
       },
       // Other protected routes will go here

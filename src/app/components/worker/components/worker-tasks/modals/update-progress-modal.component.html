@@ -1,0 +1,60 @@
+<app-shared-modal
+  title="Update Task Progress"
+  subtitle="Update the progress of your assigned task"
+  (close)="dialogRef.close()"
+>
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label class="form-label">Task Name</label>
+      <input class="form-input readonly" [value]="data.task.name" readonly />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Progress (%)</label>
+      <input
+        type="number"
+        class="form-input"
+        formControlName="progress"
+        min="0"
+        max="100"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <div class="select-wrapper">
+        <select class="form-select" formControlName="status">
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+          <option value="Delayed">Delayed</option>
+        </select>
+        <mat-icon class="trailing-icon">arrow_drop_down</mat-icon>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes / Comments</label>
+      <textarea
+        class="form-textarea"
+        formControlName="notes"
+        placeholder="Add any notes..."
+        rows="4"
+      ></textarea>
+    </div>
+  </form>
+
+  <div actions>
+    <button mat-button (click)="dialogRef.close()" class="cancel-btn">
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="submit-btn"
+      (click)="onSubmit()"
+    >
+      <mat-icon>save</mat-icon>
+      Save Progress
+    </button>
+  </div>
+</app-shared-modal>

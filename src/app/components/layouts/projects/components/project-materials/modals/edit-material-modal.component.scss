@@ -1,0 +1,77 @@
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 90vh;
+}
+
+.modal-header {
+  padding: 24px 24px 16px;
+  background-color: var(--md-sys-color-surface-container);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .subtitle {
+    margin: 4px 0 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.875rem;
+  }
+}
+
+.modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding-bottom: 4px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+
+  mat-form-field {
+    flex: 1;
+  }
+
+  &.three-col {
+    mat-form-field {
+      flex: 1;
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container);
+  margin: 0;
+}
+
+/* Ensure inputs utilize full width within form fields */
+mat-form-field {
+  width: 100%;
+}

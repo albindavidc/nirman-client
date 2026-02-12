@@ -1,0 +1,122 @@
+<div class="worker-tasks-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>My Tasks - Labor Worker</h1>
+    <p>View and manage your assigned tasks</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ (tasks$ | async)?.length || 0 }}</span>
+        <span class="stat-label">Total Tasks</span>
+      </div>
+      <div class="stat-icon-wrapper total">
+        <mat-icon>assignment</mat-icon>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ (inProgressCount$ | async) || 0 }}</span>
+        <span class="stat-label">In Progress</span>
+      </div>
+      <div class="stat-icon-wrapper progress">
+        <mat-icon>schedule</mat-icon>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ (completedCount$ | async) || 0 }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+      <div class="stat-icon-wrapper completed">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-content">
+        <span class="stat-value">{{ (highPriorityCount$ | async) || 0 }}</span>
+        <span class="stat-label">High Priority</span>
+      </div>
+      <div class="stat-icon-wrapper priority">
+        <mat-icon>priority_high</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks List -->
+  <div class="tasks-list">
+    @for (task of tasks$ | async; track task.id) {
+      <div class="task-card">
+        <div class="task-header">
+          <h3 class="task-title">{{ task.name }}</h3>
+          <span
+            class="priority-badge"
+            [ngClass]="getPriorityClass(task.priority)"
+            >{{ task.priority }} Priority</span
+          >
+        </div>
+
+        <div class="task-meta">
+          <span class="meta-item">
+            <mat-icon>location_on</mat-icon>
+            Building A - Floor 3
+          </span>
+          <span class="meta-item">
+            <mat-icon>calendar_today</mat-icon>
+            Due: {{ task.plannedEndDate | date: "MMM d, y" }}
+          </span>
+          <span class="meta-item">
+            <mat-icon>schedule</mat-icon>
+            8:00 AM - 5:00 PM
+          </span>
+        </div>
+
+        <p class="task-description">
+          {{ task.description || "No description provided." }}
+        </p>
+
+        <div class="task-footer">
+          <span class="status-badge" [ngClass]="getStatusClass(task.status)">{{
+            task.status
+          }}</span>
+
+          @if (task.status === "Not Started") {
+            <button
+              mat-raised-button
+              class="action-btn start-btn"
+              (click)="openStartModal(task)"
+            >
+              <mat-icon>play_arrow</mat-icon>
+              Start Task
+            </button>
+          } @else if (
+            task.status === "In Progress" || task.status === "Delayed"
+          ) {
+            <button
+              mat-raised-button
+              class="action-btn update-btn"
+              (click)="openUpdateModal(task)"
+            >
+              <mat-icon>edit</mat-icon>
+              Update Progress
+            </button>
+          }
+        </div>
+
+        @if (task.status === "In Progress") {
+          <div class="progress-bar-track">
+            <div
+              class="progress-bar-fill"
+              [style.width.%]="task.progress"
+            ></div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

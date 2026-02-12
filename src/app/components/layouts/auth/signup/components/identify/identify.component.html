@@ -1,0 +1,46 @@
+<div class="identify-container" @fadeInUp>
+  <div class="identify-header">
+    <h2>Find Your Account</h2>
+    <p>
+      Enter the email address associated with your account to receive a
+      verification code.
+    </p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email Address</mat-label>
+      <input
+        matInput
+        formControlName="email"
+        type="email"
+        placeholder="john.doe@example.com"
+      />
+      <mat-icon matPrefix>email</mat-icon>
+      <mat-error *ngIf="form.get('email')?.hasError('required')">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">
+        Please enter a valid email address
+      </mat-error>
+    </mat-form-field>
+
+    <div class="error-message" *ngIf="error$ | async as error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <div class="actions">
+      <button mat-button type="button" routerLink="/auth/signup">Back</button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || (loading$ | async)"
+      >
+        <mat-spinner diameter="20" *ngIf="loading$ | async"></mat-spinner>
+        <span *ngIf="!(loading$ | async)">Send Verification Code</span>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,78 @@
+// ─────────────────────────────────────────────────
+// Start Task Modal — uses MD3 design system tokens
+// ─────────────────────────────────────────────────
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-label {
+  display: block;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  background-color: var(--md-sys-color-surface-container-high);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+  }
+
+  &.readonly {
+    background-color: var(--md-sys-color-surface-container-lowest);
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: not-allowed;
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input-wrapper {
+  position: relative;
+
+  .trailing-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.cancel-btn {
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+
+.submit-btn {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

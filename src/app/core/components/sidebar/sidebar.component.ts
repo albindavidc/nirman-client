@@ -7,7 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { Store } from '@ngrx/store';
 import { LayoutService } from '../../services/layout.service';
-import * as LoginSelectors from '../../../features/auth/login/store/login.selectors';
+import * as LoginSelectors from '../../../components/layouts/auth/login/store/login.selectors';
 import { map } from 'rxjs/operators';
 
 interface NavItem {
@@ -81,6 +81,7 @@ export class SidebarComponent {
       } else if (role === 'worker') {
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/dashboard/worker' },
+          { label: 'My Tasks', icon: 'task_alt', route: '/worker' },
           {
             label: 'Workforce & Labor',
             icon: 'engineering',
@@ -206,26 +207,23 @@ export class SidebarComponent {
           label: 'Project Management',
           icon: 'folder_open',
           children: [
-            { label: 'Projects', icon: 'work', route: '/projects' },
+            { label: 'Projects', icon: 'work', route: '/admin/projects' },
             {
               label: 'Project Members',
               icon: 'group',
-              route: '/project-members',
+              route: '/admin/project-members',
             },
-            { label: 'Phases', icon: 'timelapse', route: '/phases' },
-            {
-              label: 'Phase Approvals',
-              icon: 'verified',
-              route: '/phase-approvals',
-            },
-            { label: 'Tasks', icon: 'task', route: '/tasks' },
           ],
         },
         {
           label: 'Workforce & Labor',
           icon: 'engineering',
           children: [
-            { label: 'Labor Roster', icon: 'group', route: '/workers' },
+            {
+              label: 'Labor Roster',
+              icon: 'group',
+              route: '/admin/labor-roster',
+            },
             {
               label: 'Attendance Tracking',
               icon: 'schedule',
@@ -277,7 +275,7 @@ export class SidebarComponent {
           ],
         },
       ];
-    })
+    }),
   );
 
   expandedMenu: string | null = null;

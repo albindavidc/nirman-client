@@ -1,0 +1,497 @@
+@if (phaseData$ | async; as data) {
+  <div class="approval-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <mat-icon class="title-icon">verified</mat-icon>
+        <div>
+          <h1>Phase Approval Review</h1>
+          <p>Review and approve phase completion submission</p>
+        </div>
+      </div>
+      <button class="export-btn">
+        <mat-icon>download</mat-icon>
+        <span>Download Report</span>
+      </button>
+    </div>
+    <!-- Phase Info Bar -->
+    <div class="info-bar">
+      <div class="info-item">
+        <mat-icon>view_in_ar</mat-icon>
+        <div>
+          <span class="info-label">Phase</span>
+          <span class="info-value">{{ data.phase.name }}</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <mat-icon>calendar_today</mat-icon>
+        <div>
+          <span class="info-label">Submitted By</span>
+          <span class="info-value">{{ getSubmittedBy(data) }}</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <mat-icon>calendar_today</mat-icon>
+        <div>
+          <span class="info-label">Submitted On</span>
+          <span class="info-value">{{
+            today | date: "yyyy-MM-dd h:mm a"
+          }}</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <mat-icon>trending_up</mat-icon>
+        <div>
+          <span class="info-label">Progress</span>
+          <span class="info-value">{{ data.phase.progress }}% Complete</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <mat-icon>schedule</mat-icon>
+        <div>
+          <span class="info-label">Status</span>
+          <span class="info-value status-pending">{{
+            getStatusDisplay(data)
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <mat-tab-group class="approval-tabs">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>dashboard</mat-icon>
+          <span>Overview</span>
+        </ng-template>
+        <div class="tab-content overview-tab">
+          <div class="content-grid">
+            <!-- Left Column -->
+            <div class="left-column">
+              <!-- Timeline Comparison -->
+              <div class="card">
+                <div class="card-header">
+                  <mat-icon>calendar_month</mat-icon>
+                  <h3>Timeline Comparison</h3>
+                </div>
+                <div class="timeline-grid">
+                  <div class="timeline-section">
+                    <h4>Planned Timeline</h4>
+                    <div class="timeline-row">
+                      <span class="label">Start Date:</span>
+                      <span class="value">{{
+                        data.phase.plannedStartDate | date: "yyyy-MM-dd"
+                      }}</span>
+                    </div>
+                    <div class="timeline-row">
+                      <span class="label">End Date:</span>
+                      <span class="value">{{
+                        data.phase.plannedEndDate | date: "yyyy-MM-dd"
+                      }}</span>
+                    </div>
+                    <div class="timeline-row">
+                      <span class="label">Duration:</span>
+                      <span class="value days"
+                        >{{ getPlannedDays(data) }} days</span
+                      >
+                    </div>
+                  </div>
+                  <div class="timeline-section">
+                    <h4>Actual Timeline</h4>
+                    <div class="timeline-row">
+                      <span class="label">Start Date:</span>
+                      <span class="value">{{
+                        data.phase.actualStartDate | date: "yyyy-MM-dd"
+                      }}</span>
+                    </div>
+                    <div class="timeline-row">
+                      <span class="label">End Date:</span>
+                      <span class="value">{{
+                        data.phase.actualEndDate | date: "yyyy-MM-dd"
+                      }}</span>
+                    </div>
+                    <div class="timeline-row">
+                      <span class="label">Duration:</span>
+                      <span class="value" [class.delayed]="isDelayed(data)">
+                        {{ getActualDays(data) }} days
+                        @if (getDaysDiff(data) !== 0) {
+                          <span
+                            >({{ getDaysDiff(data) > 0 ? "+" : ""
+                            }}{{ getDaysDiff(data) }})</span
+                          >
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Budget Analysis -->
+              <div class="card">
+                <div class="card-header">
+                  <mat-icon>bar_chart</mat-icon>
+                  <h3>Budget Analysis</h3>
+                </div>
+                <div class="budget-grid">
+                  <div class="budget-item">
+                    <span class="budget-label">Allocated Budget</span>
+                    <span class="budget-value"
+                      >₹{{ data.project.budget || 0 | number: "1.2-2" }}L</span
+                    >
+                  </div>
+                  <div class="budget-item">
+                    <span class="budget-label">Actual Spent</span>
+                    <span class="budget-value"
+                      >₹{{ data.project.spent || 0 | number: "1.2-2" }}L</span
+                    >
+                  </div>
+                  <div class="budget-item">
+                    <span class="budget-label">Variance</span>
+                    <span
+                      class="budget-value"
+                      [class.under-budget]="
+                        (data.project.budget || 0) >= (data.project.spent || 0)
+                      "
+                    >
+                      {{ getVariance(data) }}%
+                      <span class="variance-status">{{
+                        (data.project.budget || 0) >= (data.project.spent || 0)
+                          ? "Under Budget"
+                          : "Over Budget"
+                      }}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- Tasks Completion -->
+              <div class="card">
+                <div class="card-header">
+                  <mat-icon>check_circle</mat-icon>
+                  <h3>Tasks Completion</h3>
+                </div>
+                <div class="tasks-section">
+                  <div class="progress-row">
+                    <span>Tasks</span>
+                    <span class="task-count"
+                      >{{ data.taskStats.completed }}/{{
+                        data.taskStats.total
+                      }}</span
+                    >
+                    <span class="percentage"
+                      >{{
+                        data.taskStats.total > 0
+                          ? (data.taskStats.completed / data.taskStats.total) *
+                            100
+                          : (0 | number: "1.0-0")
+                      }}%</span
+                    >
+                  </div>
+                  <mat-progress-bar
+                    mode="determinate"
+                    [value]="
+                      data.taskStats.total > 0
+                        ? (data.taskStats.completed / data.taskStats.total) *
+                          100
+                        : 0
+                    "
+                  ></mat-progress-bar>
+                </div>
+              </div>
+            </div>
+            <!-- Right Column - Approval Decision -->
+            <div class="right-column">
+              <div class="card approval-card">
+                <h3>Approval Decision</h3>
+                <div class="action-buttons">
+                  <button class="approve-btn" (click)="openApproveModal(data)">
+                    <mat-icon>thumb_up</mat-icon>
+                    <span>Approve Phase</span>
+                  </button>
+                  <button class="reject-btn" (click)="openRejectModal(data)">
+                    <mat-icon>thumb_down</mat-icon>
+                    <span>Reject Phase</span>
+                  </button>
+                </div>
+                <div class="stats-list">
+                  <!-- Static Stats for Demo/UI Design Match -->
+                  <div class="stat-row">
+                    <span>Quality Checks:</span>
+                    <span class="stat-value">8/8</span>
+                  </div>
+                  <div class="stat-row">
+                    <span>Safety Compliance:</span>
+                    <span class="stat-value">100%</span>
+                  </div>
+                  <div class="stat-row">
+                    <span>Budget Status:</span>
+                    <span
+                      class="stat-value"
+                      [class.under-budget]="
+                        (data.project.budget || 0) >= (data.project.spent || 0)
+                      "
+                    >
+                      {{
+                        (data.project.budget || 0) >= (data.project.spent || 0)
+                          ? "Under Budget"
+                          : "Over Budget"
+                      }}
+                    </span>
+                  </div>
+                  <div class="stat-row">
+                    <span>Timeline:</span>
+                    <span
+                      class="stat-value"
+                      [class.on-time]="!isDelayed(data)"
+                      [class.delayed]="isDelayed(data)"
+                    >
+                      {{
+                        isDelayed(data)
+                          ? "+" + getDaysDiff(data) + " days"
+                          : "On Time"
+                      }}
+                    </span>
+                  </div>
+                </div>
+                <div class="recommendation">
+                  <mat-icon>lightbulb</mat-icon>
+                  <div>
+                    <h4>Recommendation</h4>
+                    <p>
+                      Based on the quality checks, safety compliance, and budget
+                      adherence, this phase is recommended for approval.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Supervisor Comments -->
+          @if (data.approvals.length > 0) {
+            <div class="card comments-card">
+              <div class="card-header">
+                <mat-icon>comment</mat-icon>
+                <h3>Supervisor Comments</h3>
+              </div>
+              @for (approval of data.approvals; track approval) {
+                <div class="comment-content">
+                  <p>{{ approval.comments || "No comments provided." }}</p>
+                  <div class="comment-meta">
+                    <span>{{ approval.approverName }}</span>
+                    <span>{{
+                      approval.approvedAt | date: "yyyy-MM-dd h:mm a"
+                    }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>collections</mat-icon>
+          <span>Evidence</span>
+        </ng-template>
+        <div class="tab-content evidence-tab">
+          <div class="content-grid">
+            <div class="left-column">
+              <!-- Photo Evidence -->
+              <div class="card evidence-section">
+                <div class="card-header">
+                  <mat-icon>photo_library</mat-icon>
+                  <h3>Photo Evidence ({{ getPhotos(data).length }})</h3>
+                </div>
+                @if (getPhotos(data).length > 0) {
+                  <div class="media-grid">
+                    @for (photo of getPhotos(data); track photo.url) {
+                      <div class="media-card">
+                        <div class="media-placeholder">
+                          <mat-icon>image</mat-icon>
+                        </div>
+                        <div class="media-info">
+                          <span class="media-name">{{
+                            photo.name || "Photo"
+                          }}</span>
+                          @if (photo.uploadedAt) {
+                            <span class="media-date">{{
+                              photo.uploadedAt | date: "yyyy-MM-dd"
+                            }}</span>
+                          }
+                          @if (photo.description) {
+                            <span class="media-desc">{{
+                              photo.description
+                            }}</span>
+                          }
+                        </div>
+                        <a
+                          [href]="photo.url"
+                          target="_blank"
+                          class="media-action-btn"
+                        >
+                          <mat-icon>visibility</mat-icon>
+                          <span>View</span>
+                        </a>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="empty-state-inline">No photos uploaded yet.</p>
+                }
+              </div>
+
+              <!-- Video Evidence -->
+              <div class="card evidence-section">
+                <div class="card-header">
+                  <mat-icon>videocam</mat-icon>
+                  <h3>Video Evidence ({{ getVideos(data).length }})</h3>
+                </div>
+                @if (getVideos(data).length > 0) {
+                  <div class="media-grid">
+                    @for (video of getVideos(data); track video.url) {
+                      <div class="media-card">
+                        <div class="media-placeholder video">
+                          <mat-icon>videocam</mat-icon>
+                        </div>
+                        <div class="media-info">
+                          <span class="media-name">{{
+                            video.name || "Video"
+                          }}</span>
+                          @if (video.uploadedAt) {
+                            <span class="media-date">{{
+                              video.uploadedAt | date: "yyyy-MM-dd"
+                            }}</span>
+                          }
+                          @if (video.description) {
+                            <span class="media-desc">{{
+                              video.description
+                            }}</span>
+                          }
+                        </div>
+                        <a
+                          [href]="video.url"
+                          target="_blank"
+                          class="media-action-btn watch"
+                        >
+                          <mat-icon>play_circle</mat-icon>
+                          <span>Watch Video</span>
+                        </a>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="empty-state-inline">No videos uploaded yet.</p>
+                }
+              </div>
+
+              <!-- Supporting Documents -->
+              <div class="card evidence-section">
+                <div class="card-header">
+                  <mat-icon>description</mat-icon>
+                  <h3>
+                    Supporting Documents ({{ getDocuments(data).length }})
+                  </h3>
+                </div>
+                @if (getDocuments(data).length > 0) {
+                  <div class="document-list">
+                    @for (doc of getDocuments(data); track doc.url) {
+                      <div class="document-item">
+                        <div class="doc-icon">
+                          <mat-icon>insert_drive_file</mat-icon>
+                        </div>
+                        <div class="doc-info">
+                          <span class="doc-name">{{
+                            doc.name || "Document"
+                          }}</span>
+                          @if (doc.uploadedAt) {
+                            <span class="doc-date"
+                              >Uploaded:
+                              {{ doc.uploadedAt | date: "yyyy-MM-dd" }}</span
+                            >
+                          }
+                        </div>
+                        <a
+                          [href]="doc.url"
+                          target="_blank"
+                          class="doc-download-btn"
+                        >
+                          <mat-icon>download</mat-icon>
+                          <span>Download</span>
+                        </a>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="empty-state-inline">No documents uploaded yet.</p>
+                }
+              </div>
+            </div>
+
+            <!-- Right column – same Approval Decision panel -->
+            <div class="right-column">
+              <div class="card approval-card">
+                <h3>Approval Decision</h3>
+                <div class="action-buttons">
+                  <button class="approve-btn" (click)="openApproveModal(data)">
+                    <mat-icon>thumb_up</mat-icon>
+                    <span>Approve Phase</span>
+                  </button>
+                  <button class="reject-btn" (click)="openRejectModal(data)">
+                    <mat-icon>thumb_down</mat-icon>
+                    <span>Reject Phase</span>
+                  </button>
+                </div>
+                <div class="stats-list">
+                  <div class="stat-row">
+                    <span>Quality Checks:</span>
+                    <span class="stat-value">8/8</span>
+                  </div>
+                  <div class="stat-row">
+                    <span>Safety Compliance:</span>
+                    <span class="stat-value">100%</span>
+                  </div>
+                  <div class="stat-row">
+                    <span>Budget Status:</span>
+                    <span
+                      class="stat-value"
+                      [class.under-budget]="
+                        (data.project.budget || 0) >= (data.project.spent || 0)
+                      "
+                    >
+                      {{
+                        (data.project.budget || 0) >= (data.project.spent || 0)
+                          ? "Under Budget"
+                          : "Over Budget"
+                      }}
+                    </span>
+                  </div>
+                  <div class="stat-row">
+                    <span>Timeline:</span>
+                    <span
+                      class="stat-value"
+                      [class.on-time]="!isDelayed(data)"
+                      [class.delayed]="isDelayed(data)"
+                    >
+                      {{
+                        isDelayed(data)
+                          ? "+" + getDaysDiff(data) + " days"
+                          : "On Time"
+                      }}
+                    </span>
+                  </div>
+                </div>
+                <div class="recommendation">
+                  <mat-icon>lightbulb</mat-icon>
+                  <div>
+                    <h4>Recommendation</h4>
+                    <p>
+                      Based on the quality checks, safety compliance, and budget
+                      adherence, this phase is recommended for approval.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+}

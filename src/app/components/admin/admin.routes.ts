@@ -20,4 +20,13 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.PROJECT_MEMBERS_ROUTES,
       ),
   },
+  {
+    path: 'phase-approvals',
+    canActivate: [RoleGuard],
+    data: { roles: ['admin'] },
+    loadChildren: () =>
+      import('./phase-approval/phase-approval.routes').then(
+        (m) => m.PHASE_APPROVAL_ROUTES,
+      ),
+  },
 ];

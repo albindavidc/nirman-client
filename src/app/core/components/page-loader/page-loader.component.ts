@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 
@@ -29,31 +29,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ]),
   ],
 })
-export class PageLoaderComponent implements OnInit {
+export class PageLoaderComponent {
   @Input() pageName: string = 'Loading';
-  @Input() progress: number = 0; // 0 for indeterminate, 1-100 for determinate
 
   particles: number[] = Array.from({ length: 12 }, (_, i) => i);
-
-  ngOnInit(): void {
-    // Simulate progress if it's 0 (indeterminate) just for visual effect in demo
-    // In real app, this would be controlled by parent or router events
-    if (this.progress === 0) {
-      this.simulateProgress();
-    }
-  }
-
-  private simulateProgress() {
-    let current = 0;
-    const interval = setInterval(() => {
-      current += Math.random() * 5;
-      if (current > 100) {
-        current = 0;
-      }
-      // Only update if we want to simulate determinate loading.
-      // For now, let's keep it indeterminate via CSS class if progress is 0.
-      // or we can animate it here:
-      // this.progress = Math.min(current, 100);
-    }, 200);
-  }
 }

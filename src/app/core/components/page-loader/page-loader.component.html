@@ -20,34 +20,16 @@
           class="particle"
           [style.left.%]="20 + i * 5"
           [style.top.%]="30 + (i % 3) * 20"
-          [style.background]="i % 2 === 0 ? '#E9C16C' : '#8BD0EF'"
+          [style.background]="
+            i % 2 === 0
+              ? 'var(--md-sys-color-primary)'
+              : 'var(--md-sys-color-secondary)'
+          "
           [style.animation-delay.s]="i * 0.3"
         ></div>
-      </div>
-    </div>
-
-    <!-- Loading Text -->
-    <div class="loading-status">
-      <h2>{{ pageName }}</h2>
-
-      <!-- Progress Bar -->
-      <div class="progress-track">
-        <div
-          class="progress-bar"
-          [style.width.%]="progress"
-          [class.indeterminate]="progress === 0"
-        ></div>
-      </div>
-
-      <!-- Loading Dots -->
-      <div class="loading-dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
       </div>
     </div>
   </div>
 
   <!-- Bottom Text -->
-  <p class="wait-text">Please wait while we prepare your content...</p>
 </div>

@@ -1,9 +1,3 @@
-// Variables
-$gold: #e9c16c;
-$blue: #8bd0ef;
-$bg-dark: #12121c;
-$bg-darker: #191923;
-
 :host {
   display: block;
 }
@@ -17,8 +11,18 @@ $bg-darker: #191923;
   justify-content: center;
   background: linear-gradient(
     135deg,
-    rgba($bg-dark, 0.98) 0%,
-    rgba($bg-darker, 0.98) 100%
+    color-mix(
+        in srgb,
+        var(--md-sys-color-surface-container-lowest),
+        transparent 2%
+      )
+      0%,
+    color-mix(
+        in srgb,
+        var(--md-sys-color-surface-container-low),
+        transparent 2%
+      )
+      100%
   );
   backdrop-filter: blur(20px);
   overflow: hidden;
@@ -44,14 +48,22 @@ $bg-darker: #191923;
 .orb-1 {
   top: 25%;
   left: 25%;
-  background: radial-gradient(circle, rgba($gold, 0.4) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--md-sys-color-primary), transparent 60%) 0%,
+    transparent 70%
+  );
   animation: float-1 8s ease-in-out infinite;
 }
 
 .orb-2 {
   bottom: 25%;
   right: 25%;
-  background: radial-gradient(circle, rgba($blue, 0.4) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--md-sys-color-secondary), transparent 60%) 0%,
+    transparent 70%
+  );
   animation: float-2 10s ease-in-out infinite;
 }
 
@@ -72,15 +84,15 @@ $bg-darker: #191923;
   border-radius: 24px;
   background: linear-gradient(
     135deg,
-    rgba($gold, 0.05) 0%,
-    rgba($blue, 0.05) 100%
+    color-mix(in srgb, var(--md-sys-color-primary), transparent 95%) 0%,
+    color-mix(in srgb, var(--md-sys-color-secondary), transparent 95%) 100%
   );
   backdrop-filter: blur(20px);
-  border: 1px solid rgba($gold, 0.2);
+  border: 1px solid
+    color-mix(in srgb, var(--md-sys-color-primary), transparent 80%);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  animation: card-float 6s ease-in-out infinite;
 
   // Glow behind logo
   &::before {
@@ -90,8 +102,8 @@ $bg-darker: #191923;
     border-radius: 24px;
     background: linear-gradient(
       135deg,
-      rgba($gold, 0.3) 0%,
-      rgba($blue, 0.3) 100%
+      color-mix(in srgb, var(--md-sys-color-primary), transparent 70%) 0%,
+      color-mix(in srgb, var(--md-sys-color-secondary), transparent 70%) 100%
     );
     filter: blur(40px);
     opacity: 0.3;
@@ -112,71 +124,10 @@ $bg-darker: #191923;
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba($gold, 0.5));
+    filter: drop-shadow(
+      0 0 20px color-mix(in srgb, var(--md-sys-color-primary), transparent 50%)
+    );
     animation: logo-scale 2s ease-in-out infinite;
-  }
-}
-
-// Loading Text & Progress
-.loading-status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
-    background: linear-gradient(to right, $gold, $blue);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    letter-spacing: 0.5px;
-  }
-}
-
-.progress-track {
-  width: 250px;
-  height: 4px;
-  background: rgba($gold, 0.1);
-  border-radius: 999px;
-  overflow: hidden;
-  position: relative;
-}
-
-.progress-bar {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, $gold 0%, $blue 100%);
-  box-shadow: 0 0 12px rgba($gold, 0.6);
-  width: 0%;
-  transition: width 0.3s ease-out;
-  // Use animation for indefinite loading or controlled via width style in TS
-  &.indeterminate {
-    width: 30%;
-    animation: progress-indeterminate 1.5s ease-in-out infinite;
-  }
-}
-
-.loading-dots {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, $gold 0%, $blue 100%);
-    opacity: 0.5;
-
-    @for $i from 1 through 3 {
-      &:nth-child(#{$i}) {
-        animation: dot-pulse 1.5s ease-in-out infinite;
-        animation-delay: #{$i * 0.2}s;
-      }
-    }
   }
 }
 
@@ -199,16 +150,6 @@ $bg-darker: #191923;
   animation: particle-rise 3s ease-out infinite;
 }
 
-// Bottom Text
-.wait-text {
-  position: absolute;
-  bottom: 3rem;
-  font-size: 0.875rem;
-  color: var(--md-sys-color-on-surface-variant, #ccc);
-  opacity: 0.7;
-  animation: text-pulse 2s ease-in-out infinite;
-}
-
 // Keyframes
 @keyframes float-1 {
   0%,
@@ -227,22 +168,6 @@ $bg-darker: #191923;
   }
   50% {
     transform: translate(-100px, 50px) scale(1.3);
-  }
-}
-
-@keyframes card-float {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(15px, -10px) rotate(1deg);
-  }
-  50% {
-    transform: translate(-15px, -20px) rotate(-1deg);
-  }
-  75% {
-    transform: translate(-10px, -10px) rotate(0deg);
   }
 }
 
@@ -268,27 +193,6 @@ $bg-darker: #191923;
   }
 }
 
-@keyframes progress-indeterminate {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
-}
-
-@keyframes dot-pulse {
-  0%,
-  100% {
-    transform: scale(0.8);
-    opacity: 0.3;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-}
-
 @keyframes particle-rise {
   0% {
     transform: translateY(0) scale(0);
@@ -301,15 +205,5 @@ $bg-darker: #191923;
   100% {
     transform: translateY(-100px) scale(0);
     opacity: 0;
-  }
-}
-
-@keyframes text-pulse {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
   }
 }

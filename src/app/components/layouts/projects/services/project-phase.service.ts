@@ -39,9 +39,16 @@ export interface PhaseForApproval {
 export interface PhaseApprovalResponse {
   id: string;
   phaseId: string;
+  projectName?: string;
   approvalStatus: string;
   comments: string | null;
   approvedAt: string | null;
+  requestedBy: string;
+  requesterName: string;
+  approvedBy: string | null;
+  approverName: string | null;
+  media: { type: string; url: string }[];
+  createdAt: string;
 }
 
 @Injectable({
@@ -74,6 +81,10 @@ export class ProjectPhaseService {
     return this.http.get<PhaseForApproval>(
       `${this.apiUrl}/_/phases/${phaseId}/approval`,
     );
+  }
+
+  getAllApprovals(): Observable<PhaseApprovalResponse[]> {
+    return this.http.get<PhaseApprovalResponse[]>(`${this.apiUrl}/approvals`);
   }
 
   approvePhase(

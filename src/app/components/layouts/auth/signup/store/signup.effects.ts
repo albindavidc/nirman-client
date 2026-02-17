@@ -138,8 +138,8 @@ export class SignupEffects {
   sendOtp$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SignupActions.sendOtp),
-      exhaustMap(({ email }) =>
-        this.signupService.sendOtp(email).pipe(
+      exhaustMap(({ email, role, isSignup }) =>
+        this.signupService.sendOtp(email, role, isSignup).pipe(
           map(() => {
             this.notification.success('Verification code sent to your email');
             // Navigate to verify OTP page
@@ -233,15 +233,21 @@ export class SignupEffects {
     () =>
       this.actions$.pipe(
         ofType(SignupActions.selectAccountType),
-        tap(({ accountType }) => {
+        tap(({ accountType, redirect }) => {
+          if (redirect === false) {
+            return;
+          }
+
           if (accountType === 'vendor') {
             // Vendor goes to login with role param (for vendor-specific signup link)
             this.router.navigate(['/auth/login'], {
               queryParams: { role: 'vendor' },
             });
           } else if (accountType === 'worker') {
-            // Worker goes to identify page to enter email
-            this.router.navigate(['/auth/signup/identify']);
+            // Worker goes to login page first (to sign in or find signup link)
+            this.router.navigate(['/auth/login'], {
+              queryParams: { role: 'worker' },
+            });
           } else {
             // Supervisor (and others) go to regular login for now
             this.router.navigate(['/auth/login']);

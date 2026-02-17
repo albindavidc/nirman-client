@@ -62,8 +62,16 @@ export class SignupService {
     );
   }
 
-  sendOtp(email: string): Observable<OtpResponse> {
-    return this.http.post<OtpResponse>(`${this.otpUrl}/send`, { email });
+  sendOtp(
+    email: string,
+    role?: string,
+    isSignup?: boolean,
+  ): Observable<OtpResponse> {
+    return this.http.post<OtpResponse>(`${this.otpUrl}/send`, {
+      email,
+      role,
+      isSignup,
+    });
   }
 
   verifyOtp(email: string, otp: string): Observable<OtpVerifyResponse> {

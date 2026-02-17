@@ -115,6 +115,7 @@
             [matDatepicker]="startPicker"
             formControlName="startDate"
             placeholder="dd-mm-yyyy"
+            min={{ new Date() }}
           />
           <mat-datepicker-toggle
             matSuffix
@@ -122,6 +123,15 @@
           ></mat-datepicker-toggle>
           <mat-datepicker #startPicker></mat-datepicker>
         </mat-form-field>
+
+        <div *ngIf="projectForm.get('startDate')?.invalid && projectForm.get('startDate')?.touched">
+          <mat-error *ngIf="projectForm.get('startDate')?.hasError('required')">
+            Start date is required
+          </mat-error>
+          <mat-error *ngIf="projectForm.get('startDate')?.hasError('matDatepickerMin')">
+            Start date cannot be in the past
+          </mat-error>
+        </div>
       </div>
 
       <!-- End Date -->

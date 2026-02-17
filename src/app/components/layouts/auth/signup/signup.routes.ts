@@ -42,6 +42,14 @@ export const SIGNUP_ROUTES: Routes = [
     title: 'Signup Complete - Nirman',
   },
   {
+    path: 'worker/step1',
+    loadComponent: () =>
+      import('./components/worker-step1/worker-step1.component').then(
+        (m) => m.WorkerStep1Component,
+      ),
+    title: 'Worker Signup - Nirman',
+  },
+  {
     path: 'worker/complete',
     component: WorkerSignupComponent,
     title: 'Complete Profile - Nirman',

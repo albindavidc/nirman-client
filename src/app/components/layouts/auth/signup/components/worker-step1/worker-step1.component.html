@@ -1,0 +1,50 @@
+<div class="identify-container" @fadeInUp>
+  <div class="identify-header">
+    <h2>Worker Signup</h2>
+    <p>
+      Enter your email address to create your worker account. We'll send you a
+      verification code.
+    </p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-field">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email Address</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          placeholder="john.doe@example.com"
+        />
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="form.get('email')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">
+          Please enter a valid email address
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="error-message" *ngIf="error$ | async as error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <div class="actions">
+      <a mat-button routerLink="/auth/login" [queryParams]="{ role: 'worker' }"
+        >Back to Login</a
+      >
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || (loading$ | async)"
+      >
+        <mat-spinner diameter="20" *ngIf="loading$ | async"></mat-spinner>
+        <span *ngIf="!(loading$ | async)">Send Verification Code</span>
+      </button>
+    </div>
+  </form>
+</div>

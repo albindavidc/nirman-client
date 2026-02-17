@@ -1,0 +1,53 @@
+<div class="loader-container" @fadeIn @fadeOut>
+  <!-- Animated Background Gradient Orbs -->
+  <div class="orbs-container">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-wrapper" @slideUp>
+    <!-- Logo Container with Glassmorphism -->
+    <div class="logo-card">
+      <div class="logo-wrapper">
+        <img src="assets/logo.svg" alt="Nirman Logo" />
+      </div>
+
+      <!-- Particles -->
+      <div class="particles">
+        <div
+          *ngFor="let i of particles"
+          class="particle"
+          [style.left.%]="20 + i * 5"
+          [style.top.%]="30 + (i % 3) * 20"
+          [style.background]="i % 2 === 0 ? '#E9C16C' : '#8BD0EF'"
+          [style.animation-delay.s]="i * 0.3"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Loading Text -->
+    <div class="loading-status">
+      <h2>{{ pageName }}</h2>
+
+      <!-- Progress Bar -->
+      <div class="progress-track">
+        <div
+          class="progress-bar"
+          [style.width.%]="progress"
+          [class.indeterminate]="progress === 0"
+        ></div>
+      </div>
+
+      <!-- Loading Dots -->
+      <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Text -->
+  <p class="wait-text">Please wait while we prepare your content...</p>
+</div>

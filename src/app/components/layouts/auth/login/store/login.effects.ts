@@ -83,7 +83,7 @@ export class LoginEffects {
       case 'supervisor':
         return '/dashboard/supervisor';
       case 'worker':
-        return '/dashboard/worker';
+        return '/worker';
       default:
         return '/dashboard';
     }

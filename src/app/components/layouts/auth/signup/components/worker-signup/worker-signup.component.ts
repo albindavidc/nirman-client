@@ -16,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
 import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 import { SignupService } from '../../services/signup.service';
+import { NotificationService } from '../../../../../../core/services/notification.service';
 import { catchError, take } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import * as SignupSelectors from '../../store/signup.selectors';
@@ -63,6 +64,7 @@ export class WorkerSignupComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly signupService = inject(SignupService);
+  private readonly notification = inject(NotificationService);
   private readonly store = inject(Store);
 
   form!: FormGroup;
@@ -134,13 +136,19 @@ export class WorkerSignupComponent implements OnInit {
             this.error =
               err.error?.message ||
               'Failed to complete signup. Please try again.';
+            this.loading = false;
             return of(null);
           }),
         )
         .subscribe((response) => {
-          this.loading = false;
+          // Response will be null if catchError handled an error
+          // Response will be the object { success: true ... } if successful
           if (response) {
-            this.success = true;
+            this.loading = false;
+            this.notification.success(
+              'Account activated successfully. Please login with your new password.',
+            );
+            this.router.navigate(['/auth/login']);
           }
         });
     } else {

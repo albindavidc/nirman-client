@@ -209,7 +209,7 @@ export class ProjectCreateModalComponent implements OnInit {
     managerId: [this.data?.managerId || ''],
     status: [this.data?.status || 'active'],
     description: [this.data?.description || ''],
-    startDate: [this.data?.startDate ? new Date(this.data.startDate) : null],
+    startDate: [this.data?.startDate ? new Date(this.data.startDate) : null, [Validators.required]],
     endDate: [this.data?.dueDate ? new Date(this.data.dueDate) : null],
     budget: [this.data?.budget || null, [Validators.min(0)]],
     progress: [

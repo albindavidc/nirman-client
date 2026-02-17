@@ -39,9 +39,12 @@ export class LoginComponent implements OnInit {
 
   hidePassword = signal(true);
   isVendor = signal(false);
+  isWorker = signal(false);
 
   get signupRoute(): string {
-    return this.isVendor() ? '/auth/signup/vendor/step1' : '/auth/signup';
+    if (this.isVendor()) return '/auth/signup/vendor/step1';
+    if (this.isWorker()) return '/auth/signup/worker/step1';
+    return '/auth/signup';
   }
 
   loginForm = this.fb.group({
@@ -56,6 +59,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.isVendor.set(params['role'] === 'vendor');
+      this.isWorker.set(params['role'] === 'worker');
     });
   }
 

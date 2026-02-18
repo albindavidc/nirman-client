@@ -1,62 +1,89 @@
+/* Page Container with Glassmorphism Context */
 .page-container {
-  padding: 24px;
+  padding: 32px; // Increased padding for clearer layout
   color: var(--md-sys-color-on-background);
+  min-height: 100%;
+  // Subtle gradient background to make glass effect visible
+  // Background gradient moved to global styles.scss
+  background: transparent;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .title-group {
   display: flex;
-  align-items: center; // Vertical alignment
-  gap: 16px;
+  align-items: center;
+  gap: 20px;
 
   .back-btn {
-    color: var(--md-sys-color-primary); // Icon color matches title
-    background-color: rgba(233, 193, 108, 0.1); // Subtle gold background
+    color: var(--md-sys-color-primary);
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-primary) 10%,
+      transparent
+    ); // Glassy button
+    border: 1px solid
+      color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+    backdrop-filter: blur(4px);
     border-radius: 50%;
     width: 48px;
     height: 48px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-right: 8px;
-    transition: background-color 0.2s;
+    justify-content: center; // Explicit centering
+    padding: 0; // Reset padding
+    margin-right: 16px; // Increased spacing
+    transition: all 0.2s;
 
     &:hover {
-      background-color: rgba(233, 193, 108, 0.2);
+      background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-primary) 20%,
+        transparent
+      );
+      box-shadow: 0 0 12px
+        color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
     }
 
     mat-icon {
-      font-size: 24px; // Standard icon size inside button
+      font-size: 24px;
       width: 24px;
       height: 24px;
-      margin: 0; // Reset any margins
+      margin: 0;
+      line-height: 1; // Prevent line-height offset
     }
   }
 
-  mat-icon {
-    font-size: 32px; // Icon size of the page icon (assignment)
+  mat-icon.page-icon {
+    font-size: 32px;
     height: 32px;
     width: 32px;
-    color: var(--md-sys-color-primary); // Gold color
+    color: var(--md-sys-color-primary);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); // Depth
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .text {
     h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 28px; // Larger Title
       font-weight: 600;
-      color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-background);
+      letter-spacing: -0.5px;
     }
     p {
       margin: 4px 0 0;
       color: var(--md-sys-color-on-surface-variant);
-      font-size: 14px;
+      font-size: 15px;
     }
   }
 }
@@ -64,118 +91,219 @@
 .create-btn {
   background-color: var(--md-sys-color-primary) !important;
   color: var(--md-sys-color-on-primary) !important;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 500;
+  border-radius: 12px; // Softer corners
+  padding: 10px 24px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px
+    color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent); // Glow
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
-/* Stats */
+/* Stats Grid with Glass Cards */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
 .stat-card {
-  background: var(--md-sys-color-surface-container); // Darker card background
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 12px;
+  // Glassmorphism Base Styling
+  border-radius: 24px; // Increased radius
   padding: 24px;
   display: flex;
-  flex-direction: column;
-  justify-content: center; // Center vertically like design
-  gap: 12px; // Gap between icon and text
-  min-height: 140px; // Ensure explicit height
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; // Center vertically like design
-  gap: 12px; // Gap between icon and text
-  min-height: 140px; // Ensure explicit height
-}
-
-.icon-box {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  min-height: unset;
 
-  // Icon Colors/Backgrounds
-  &.gold {
-    background: rgba(
-      233,
-      193,
-      108,
-      0.1
-    ); // Keep opacity variants for now or use tertiary-container
-    color: var(--md-sys-color-primary);
-  }
-  &.green {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--md-extended-color-success-color);
-  }
-  &.blue {
-    background: rgba(59, 130, 246, 0.1);
-    color: var(--md-sys-color-secondary);
-  }
-  &.red {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--md-sys-color-error);
+  // Glass properties
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); // Soft deep shadow
+
+  // Smooth transitions
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.2);
   }
 
-  mat-icon {
-    font-size: 20px;
-    height: 20px;
-    width: 20px;
+  // Common Icon Styles
+  mat-icon.card-icon {
+    font-size: 36px;
+    height: 36px;
+    width: 36px;
+    opacity: 0.9;
+  }
+
+  // Theme Variations (Using color-mix for glass tints)
+
+  &.card-primary {
+    // Tinted Background using Primary color
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--md-sys-color-primary) 15%, transparent),
+      color-mix(in srgb, var(--md-sys-color-primary) 5%, transparent)
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+
+    .card-icon {
+      color: var(--md-sys-color-primary);
+    }
+    .label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .value {
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  &.card-success {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--md-sys-color-tertiary) 15%, transparent),
+      color-mix(in srgb, var(--md-sys-color-tertiary) 5%, transparent)
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--md-sys-color-tertiary) 20%, transparent);
+
+    .card-icon {
+      color: var(--md-sys-color-tertiary);
+    }
+    .label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .value {
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  &.card-info {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--md-sys-color-secondary) 15%, transparent),
+      color-mix(in srgb, var(--md-sys-color-secondary) 5%, transparent)
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--md-sys-color-secondary) 20%, transparent);
+
+    .card-icon {
+      color: var(--md-sys-color-secondary);
+    }
+    .label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .value {
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  &.card-warning {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--md-sys-color-error) 15%, transparent),
+      color-mix(in srgb, var(--md-sys-color-error) 5%, transparent)
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--md-sys-color-error) 20%, transparent);
+
+    .card-icon {
+      color: var(--md-sys-color-error);
+    }
+    .label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .value {
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+
+  &.card-accent {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .card-icon {
+      color: var(--md-sys-color-on-surface);
+    }
+    .label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .value {
+      color: var(--md-sys-color-on-surface);
+    }
   }
 }
+
+// Removed .icon-box styles as they are no longer needed
 
 .info {
   display: flex;
   flex-direction: column;
+  text-align: right;
+  z-index: 1;
 
   .value {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--md-sys-color-on-surface);
-    line-height: 1.2;
+    font-size: 32px; // Larger value
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .label {
     font-size: 14px;
-    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
     margin-top: 4px;
+    text-transform: uppercase; // Styled label
+    letter-spacing: 0.5px;
+    font-size: 12px;
   }
 }
 
 /* View Switcher */
 .view-switcher-container {
   display: flex;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  justify-content: flex-start; // Align left
+  margin-bottom: 32px;
+  border-bottom: none; // Remove old border
 }
 
 .view-switcher {
   display: flex;
-  gap: 24px;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2); // Glass container
+  padding: 4px;
+  border-radius: 9999px; // Pill shape
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .switcher-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 24px;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 9999px; // Pill shape
   color: var(--md-sys-color-on-surface-variant);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 
   mat-icon {
     font-size: 18px;
@@ -184,65 +312,102 @@
   }
 
   &:hover {
-    color: var(--md-sys-color-primary);
-    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   &.active {
     color: var(--md-sys-color-primary);
-    border-bottom-color: var(--md-sys-color-primary);
+    background: color-mix(
+      in srgb,
+      var(--md-sys-color-primary) 15%,
+      transparent
+    );
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+    border: 1px solid
+      color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+
+    mat-icon {
+      color: var(--md-sys-color-primary);
+    }
   }
 }
 
 /* List Section */
 .list-section {
-  background: var(--md-sys-color-surface-container);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 16px;
+  // Glassmorphism
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--md-sys-color-surface-container) 50%, transparent),
+    color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px; // Increased radius
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .list-header {
-  padding: 20px 24px;
+  padding: 1.25rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.025em;
 }
 
 .filters {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .search-box {
   display: flex;
   align-items: center;
-  background: var(--md-sys-color-surface-container-high); // Inset background
-  border: 1px solid var(--md-sys-color-outline-variant); // Subtle border
-  border-radius: 8px;
-  padding: 8px 12px;
+  gap: 8px; // Explicit gap instead of margin
+  background: rgba(0, 0, 0, 0.2); // Darker glass
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px; // Increased radius
+  padding: 0 1rem; // Adjusted padding
+  height: 40px; // Fixed height for alignment
   width: 240px;
+  transition: all 0.2s;
+
+  &:focus-within {
+    border-color: var(--md-sys-color-primary);
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
+  }
 
   mat-icon {
-    font-size: 18px;
-    margin-right: 8px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
     color: var(--md-sys-color-on-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   input {
     background: transparent;
     border: none;
     color: var(--md-sys-color-on-surface);
-    font-size: 14px;
+    font-size: 0.875rem;
     width: 100%;
+    height: 100%;
+    padding: 0; // Remove default padding
 
     &:focus {
       outline: none;
@@ -253,46 +418,189 @@
   }
 }
 
-.custom-select {
-  background: var(--md-sys-color-surface-container-high);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  color: var(--md-sys-color-on-surface);
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
+/* Glass Form Field & Select Overrides */
+.glass-form-field {
+  width: 160px; // Fixed width
+  font-size: 0.875rem;
 
-  &:focus {
-    outline: none;
-    border-color: var(--md-sys-color-outline);
+  // Remove default padding/margin issues
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  // Target the internal wrapper
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    height: 40px !important; // Match search box height
+    padding: 0 12px !important;
+
+    // Glass Style (Matching .search-box)
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    transition: all 0.2s;
+
+    // Center content vertically
+    display: flex;
+    align-items: center;
+
+    .mat-mdc-form-field-flex {
+      height: 100%;
+      padding: 0 !important;
+      align-items: center;
+    }
+
+    // Aggressively HIDE the default Material Outline and any default borders
+    .mat-mdc-notched-outline,
+    .mat-mdc-notched-outline * {
+      border: none !important;
+      border-width: 0 !important;
+      outline: none !important;
+      display: none !important;
+    }
+
+    // Hide underline (if any variant tries to use it)
+    .mat-mdc-form-field-bottom-align,
+    .mdc-line-ripple {
+      display: none !important;
+    }
+
+    // Hide focus overlay
+    .mat-mdc-form-field-focus-overlay {
+      background-color: transparent !important;
+    }
+  }
+
+  // Hover state
+  &:hover ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: rgba(0, 0, 0, 0.3) !important; // Darker on hover
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  // Focus state
+  &.mat-focused ::ng-deep .mat-mdc-text-field-wrapper {
+    border-color: var(--md-sys-color-primary) !important;
+    box-shadow: 0 0 0 1px var(--md-sys-color-primary); // Focus ring
+  }
+
+  // Select Value Color
+  ::ng-deep .mat-mdc-select-value {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 500;
+  }
+
+  // Arrow Color
+  ::ng-deep .mat-mdc-select-arrow {
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.8;
+  }
+}
+
+/* Global Panel Styling (Must be ::ng-deep or global) */
+/* Global Panel Styling (Must be ::ng-deep or global) */
+::ng-deep .glass-select-panel.mat-mdc-select-panel {
+  background: color-mix(
+    in srgb,
+    var(--md-sys-color-surface-container) 70%,
+    transparent
+  ) !important; // More transparency for glass effect
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  margin-top: 8px; // Spacing from trigger
+
+  .mat-mdc-option {
+    color: var(--md-sys-color-on-surface);
+    background: transparent; // Ensure options are transparent
+    transition: background 0.2s;
+
+    &:hover,
+    &.mat-mdc-option-active {
+      background: rgba(255, 255, 255, 0.1); // Subtle hover
+    }
+
+    &.mat-mdc-option-selected {
+      background: color-mix(
+        in srgb,
+        var(--md-sys-color-primary) 15%,
+        transparent
+      );
+      color: var(--md-sys-color-primary);
+    }
   }
 }
 
 /* Table */
+/* Table */
 .table-header-row {
   display: grid;
-  // Adjusted grid columns to better match content
-  grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1.5fr 1fr;
-  padding: 16px 24px; // Match header padding placement
-  background: var(--md-sys-color-surface-container-low); // Darker header bg
+  // Adjusted grid columns to better match content + Actions
+  grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1.5fr 1fr 100px;
+  padding: 1rem 1.5rem; // Match header padding placement
   color: var(--md-sys-color-on-surface-variant);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px; // Space below header
+  margin-left: 16px; // Align header text with row content
+  margin-right: 16px;
 }
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1.5fr 1fr;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1.5fr 1fr 100px;
+  padding: 1rem 1.5rem;
+  border-radius: 16px; // Rounded rows
+  background: rgba(255, 255, 255, 0.02); // Subtle background
+  border: 1px solid rgba(255, 255, 255, 0.05); // Subtle border
   align-items: center;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 12px; // Increased space between rows
+  margin-left: 16px; // Space from left
+  margin-right: 16px; // Space from right
 
   &:hover {
-    background: var(--md-sys-color-surface-container-high);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px); // Lift effect
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    // Show actions on hover (optional, but keeps UI clean)
+    // .actions { opacity: 1; }
+  }
+}
+
+.col {
+  // text-overflow handling if needed
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.col.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  opacity: 0.8;
+  overflow: visible; // Allow tooltips/ripples
+
+  button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
   }
 }
 
@@ -300,29 +608,32 @@
 
 .name {
   color: var(--md-sys-color-on-surface);
+  font-weight: 500;
 }
 .text-muted {
   color: var(--md-sys-color-on-surface-variant);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .font-medium {
   font-weight: 500;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 /* Avatar */
 .avatar-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 
   .avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(
-      --md-sys-color-primary
-    ); // Use gold for avatar bg for consistency
+    width: 32px;
+    height: 32px;
+    border-radius: 10px; // Squircle
+    background: linear-gradient(
+      135deg,
+      var(--md-sys-color-primary),
+      color-mix(in srgb, var(--md-sys-color-primary) 70%, black)
+    );
     color: var(--md-sys-color-on-primary);
     display: flex;
     align-items: center;
@@ -330,37 +641,64 @@
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
   span {
-    font-size: 14px;
-    color: var(--md-sys-color-outline);
+    font-size: 0.875rem;
+    color: var(--md-sys-color-on-surface);
+    font-weight: 500;
   }
 }
 
 /* Badge */
 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 600;
+  line-height: 1;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
 }
 
 .status-completed {
-  background: rgba(161, 211, 154, 0.2);
+  background: color-mix(
+    in srgb,
+    var(--md-extended-color-success-color) 15%,
+    transparent
+  );
   color: var(--md-extended-color-success-color);
+  border: 1px solid
+    color-mix(in srgb, var(--md-extended-color-success-color) 20%, transparent);
 }
 .status-inprogress {
-  background: rgba(139, 208, 239, 0.2);
+  background: color-mix(
+    in srgb,
+    var(--md-sys-color-secondary) 15%,
+    transparent
+  );
   color: var(--md-sys-color-secondary);
+  border: 1px solid
+    color-mix(in srgb, var(--md-sys-color-secondary) 20%, transparent);
 }
 .status-delayed {
-  background: rgba(239, 68, 68, 0.2);
+  background: color-mix(in srgb, var(--md-sys-color-error) 15%, transparent);
   color: var(--md-sys-color-error);
+  border: 1px solid
+    color-mix(in srgb, var(--md-sys-color-error) 20%, transparent);
 }
 .status-pending {
   background: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
 }
 
 /* Progress Bar */

@@ -35,53 +35,6 @@
       </div>
     </div>
 
-    <!-- Statistics Dashboard Row -->
-    <div class="stats-grid">
-      <!-- Total Tasks -->
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon-wrapper icon-gold">
-            <mat-icon class="stat-icon">grid_view</mat-icon>
-          </div>
-          <div class="stat-value">{{ ganttTasks.length }}</div>
-          <div class="stat-label">Total Tasks</div>
-        </div>
-      </div>
-
-      <!-- Dependencies -->
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon-wrapper icon-blue">
-            <mat-icon class="stat-icon">link</mat-icon>
-          </div>
-          <div class="stat-value">{{ totalDependencies }}</div>
-          <div class="stat-label">Dependencies</div>
-        </div>
-      </div>
-
-      <!-- Total Days -->
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon-wrapper icon-green">
-            <mat-icon class="stat-icon">calendar_today</mat-icon>
-          </div>
-          <div class="stat-value">{{ totalDays }}</div>
-          <div class="stat-label">Total Days</div>
-        </div>
-      </div>
-
-      <!-- Critical Path -->
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon-wrapper icon-gold">
-            <mat-icon class="stat-icon">warning</mat-icon>
-          </div>
-          <div class="stat-value">{{ criticalPathCount }}</div>
-          <div class="stat-label">Critical Path</div>
-        </div>
-      </div>
-    </div>
-
     <!-- Main Gantt Chart Section -->
     <div class="chart-section">
       <!-- Toolbar -->
@@ -126,18 +79,6 @@
             <mat-icon class="icon-sm">calendar_today</mat-icon>
             {{ viewMode === "weekly" ? "Daily View" : "Weekly View" }}
           </button>
-
-          <div class="toolbar-divider"></div>
-
-          <button
-            mat-icon-button
-            (click)="showDependencies = !showDependencies"
-            class="toolbar-icon-btn"
-            [class.active]="showDependencies"
-            matTooltip="Toggle Dependencies"
-          >
-            <mat-icon class="icon-sm">visibility</mat-icon>
-          </button>
         </div>
 
         <div class="toolbar-right">
@@ -151,242 +92,252 @@
               class="search-input"
             />
           </div>
-          <button mat-flat-button class="add-task-btn" (click)="openAddTask()">
-            <mat-icon class="icon-sm">add</mat-icon>
-            Add Task
-          </button>
         </div>
       </div>
 
       <!-- Chart Content -->
       <div class="chart-overflow-container" #timelineRef>
         <div [style.minWidth.px]="getContainerWidth()">
-          <!-- Timeline Header -->
-          <div class="timeline-header">
-            <div class="task-name-header">
-              <div class="header-text">Task Name</div>
-            </div>
+          <div class="gantt-content-flex">
+            <!-- Main Grid Column (Header + Tasks + Legend) -->
+            <div class="gantt-main-column">
+              <!-- Timeline Header -->
+              <div class="timeline-header">
+                <div class="task-name-header">
+                  <div class="header-text">Task Name</div>
+                </div>
 
-            <div class="timeline-dates">
-              <ng-container *ngIf="viewMode === 'weekly'">
-                <!-- Week Start Dates Row -->
-                <div class="weeks-row">
-                  <div *ngFor="let week of weeks" class="week-cell">
-                    <div class="date-text">{{ week.displayDate }}</div>
-                  </div>
-                  <!-- Add Week Button -->
-                  <div
-                    class="week-cell add-week-btn-container"
-                    (click)="addWeek()"
-                    matTooltip="Add Next Week"
-                  >
-                    <mat-icon class="icon-sm">add</mat-icon>
-                  </div>
-                </div>
-                <!-- Day Numbers Row -->
-                <div class="days-row">
-                  <div
-                    *ngFor="let day of allDays"
-                    class="day-cell"
-                    [class.is-weekend]="day.isWeekend"
-                    [style.minWidth.px]="100 / 7"
-                  >
-                    <div class="day-text">{{ day.day }}</div>
-                  </div>
-                </div>
-              </ng-container>
+                <div class="timeline-dates">
+                  <div class="dates-stack">
+                    <ng-container *ngIf="viewMode === 'weekly'">
+                      <!-- Week Start Dates Row -->
+                      <div class="weeks-row">
+                        <div *ngFor="let week of weeks" class="week-cell">
+                          <div class="date-text">{{ week.displayDate }}</div>
+                        </div>
+                      </div>
+                      <!-- Day Numbers Row -->
+                      <div class="days-row">
+                        <div
+                          *ngFor="let day of allDays"
+                          class="day-cell"
+                          [class.is-weekend]="day.isWeekend"
+                          [style.minWidth.px]="100 / 7"
+                        >
+                          <div class="day-text">{{ day.day }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
 
-              <ng-container *ngIf="viewMode === 'daily'">
-                <!-- Month/Year Row -->
-                <div class="weeks-row">
-                  <div
-                    *ngFor="let day of dailyViewData; let i = index"
-                    [class.hidden]="i % 7 !== 0"
-                    class="month-cell"
-                  >
-                    <div class="date-text">{{ day.month }} {{ day.year }}</div>
-                  </div>
-                </div>
-                <!-- Day Numbers Row -->
-                <div class="days-row">
-                  <div
-                    *ngFor="let day of dailyViewData"
-                    class="day-cell daily-mode"
-                    [class.is-weekend]="day.isWeekend"
-                  >
-                    <div class="day-text">{{ day.day }}</div>
-                  </div>
-                </div>
-              </ng-container>
-            </div>
-          </div>
-
-          <!-- Task Rows -->
-          <div
-            class="tasks-container custom-scrollbar"
-            cdkDropList
-            (cdkDropListDropped)="(null)"
-          >
-            <div
-              *ngFor="let task of filteredTasks; let i = index"
-              cdkDrag
-              class="task-row"
-            >
-              <!-- Left Sidebar: Task Info -->
-              <div class="task-info-col">
-                <div class="drag-handle" cdkDragHandle>
-                  <mat-icon class="icon-sm">drag_indicator</mat-icon>
-                </div>
-                <div class="task-details">
-                  <div class="task-name">{{ task.name }}</div>
-                  <div class="task-meta">
-                    <span class="phase-badge">{{ task.phase }}</span>
-                    <span>• {{ task.duration }} days</span>
+                    <ng-container *ngIf="viewMode === 'daily'">
+                      <!-- Month/Year Row -->
+                      <div class="weeks-row">
+                        <div
+                          *ngFor="let day of dailyViewData; let i = index"
+                          [class.hidden]="i % 7 !== 0"
+                          class="month-cell"
+                        >
+                          <div class="date-text">
+                            {{ day.month }} {{ day.year }}
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Day Numbers Row -->
+                      <div class="days-row">
+                        <div
+                          *ngFor="let day of dailyViewData"
+                          class="day-cell daily-mode"
+                          [class.is-weekend]="day.isWeekend"
+                        >
+                          <div class="day-text">{{ day.day }}</div>
+                        </div>
+                      </div>
+                    </ng-container>
                   </div>
                 </div>
               </div>
 
-              <!-- Gantt Bar Area -->
-              <div class="gantt-bar-area">
-                <!-- Grid Lines Background -->
-                <div class="grid-lines">
-                  <div
-                    *ngFor="
-                      let day of viewMode === 'weekly' ? allDays : dailyViewData
-                    "
-                    class="grid-line"
-                    [class.is-weekend]="day.isWeekend"
-                    [style.minWidth]="
-                      viewMode === 'weekly' ? 100 / 7 + 'px' : '50px'
-                    "
-                  ></div>
-                </div>
-
-                <!-- Task Bar -->
+              <!-- Task Rows -->
+              <div
+                class="tasks-container custom-scrollbar"
+                cdkDropList
+                (cdkDropListDropped)="(null)"
+              >
                 <div
-                  class="task-bar-wrapper"
-                  [style.left]="getTaskBarStyle(task).left"
-                  [style.width]="getTaskBarStyle(task).width"
+                  *ngFor="let task of filteredTasks; let i = index"
+                  cdkDrag
+                  class="task-row"
                 >
-                  <!-- Base Bar -->
-                  <div class="base-bar" [ngClass]="task.status"></div>
-
-                  <!-- Progress Fill -->
-                  <div
-                    *ngIf="task.progress && task.progress > 0"
-                    class="progress-bar"
-                    [style.width.%]="task.progress"
-                    [style.backgroundColor]="task.color || '#3b82f6'"
-                    [style.borderColor]="task.color || '#3b82f6'"
-                  >
-                    <div class="progress-shine"></div>
-                  </div>
-
-                  <!-- Left Resize Handle -->
-                  <div
-                    class="resize-handle left"
-                    (mousedown)="onMouseDown($event, task, 'resize-left')"
-                  >
-                    <div class="handle-bar"></div>
-                  </div>
-
-                  <!-- Progress Handle -->
-                  <div
-                    *ngIf="
-                      task.progress && task.progress > 0 && task.progress < 100
-                    "
-                    class="progress-handle"
-                    [style.left.%]="task.progress"
-                    (mousedown)="onMouseDown($event, task, 'progress')"
-                  >
-                    <div class="handle-knob">
-                      <div class="knob-inner"></div>
+                  <!-- Left Sidebar: Task Info -->
+                  <div class="task-info-col">
+                    <div class="drag-handle" cdkDragHandle>
+                      <mat-icon class="icon-sm">drag_indicator</mat-icon>
+                    </div>
+                    <div class="task-details">
+                      <div class="task-name">{{ task.name }}</div>
+                      <div class="task-meta">
+                        <!-- <span class="phase-badge">{{ task.phase }}</span> -->
+                        <span>• {{ task.duration }} days</span>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- Drag Move Handle (The bar itself) -->
-                  <div
-                    class="move-handle"
-                    (mousedown)="onMouseDown($event, task, 'move')"
-                    (click)="openEditTask(task)"
-                  >
-                    <span class="bar-label">
-                      <span *ngIf="task.progress && task.progress > 0"
-                        >{{ task.progress | number: "1.0-0" }}% •
-                      </span>
-                      {{ task.duration }} days
-                    </span>
-                  </div>
+                  <!-- Gantt Bar Area -->
+                  <div class="gantt-bar-area">
+                    <!-- Grid Lines Background -->
+                    <div class="grid-lines">
+                      <div
+                        *ngFor="
+                          let day of viewMode === 'weekly'
+                            ? allDays
+                            : dailyViewData
+                        "
+                        class="grid-line"
+                        [class.is-weekend]="day.isWeekend"
+                        [style.minWidth]="
+                          viewMode === 'weekly' ? 100 / 7 + 'px' : '50px'
+                        "
+                      ></div>
+                    </div>
 
-                  <!-- Right Resize Handle -->
-                  <div
-                    class="resize-handle right"
-                    (mousedown)="onMouseDown($event, task, 'resize-right')"
-                  >
-                    <div class="handle-bar"></div>
+                    <!-- Task Bar -->
+                    <div
+                      class="task-bar-wrapper"
+                      [style.left]="getTaskBarStyle(task).left"
+                      [style.width]="getTaskBarStyle(task).width"
+                    >
+                      <!-- Base Bar -->
+                      <div class="base-bar" [ngClass]="task.status"></div>
+
+                      <!-- Progress Fill -->
+                      <div
+                        *ngIf="task.progress && task.progress > 0"
+                        class="progress-bar"
+                        [style.width.%]="task.progress"
+                        [style.backgroundColor]="task.color || '#3b82f6'"
+                        [style.borderColor]="task.color || '#3b82f6'"
+                      >
+                        <div class="progress-shine"></div>
+                      </div>
+
+                      <!-- Left Resize Handle -->
+                      <div
+                        class="resize-handle left"
+                        (mousedown)="onMouseDown($event, task, 'resize-left')"
+                      >
+                        <div class="handle-bar"></div>
+                      </div>
+
+                      <!-- Progress Handle -->
+                      <div
+                        *ngIf="
+                          task.progress &&
+                          task.progress > 0 &&
+                          task.progress < 100
+                        "
+                        class="progress-handle"
+                        [style.left.%]="task.progress"
+                        (mousedown)="onMouseDown($event, task, 'progress')"
+                      >
+                        <div class="knob-inner"></div>
+                      </div>
+
+                      <!-- Drag Move Handle (The bar itself) -->
+                      <div
+                        class="move-handle"
+                        (mousedown)="onMouseDown($event, task, 'move')"
+                        (click)="openEditTask(task)"
+                      >
+                        <span class="bar-label">
+                          <span *ngIf="task.progress && task.progress > 0"
+                            >{{ task.progress | number: "1.0-0" }}% •
+                          </span>
+                          {{ task.duration }} days
+                        </span>
+                      </div>
+
+                      <!-- Right Resize Handle -->
+                      <div
+                        class="resize-handle right"
+                        (mousedown)="onMouseDown($event, task, 'resize-right')"
+                      >
+                        <div class="handle-bar"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <!-- Global SVG Overlay for Dependencies -->
+                <svg class="dependency-svg">
+                  <defs>
+                    <marker
+                      id="arrowhead"
+                      markerWidth="10"
+                      markerHeight="10"
+                      refX="9"
+                      refY="5"
+                      orient="auto"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3b82f6" />
+                    </marker>
+                    <marker
+                      id="arrowhead-critical"
+                      markerWidth="10"
+                      markerHeight="10"
+                      refX="9"
+                      refY="5"
+                      orient="auto"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#f59e0b" />
+                    </marker>
+                  </defs>
+                  <ng-container *ngFor="let task of filteredTasks">
+                    <ng-container *ngFor="let depId of task.dependencies">
+                      <path
+                        [attr.d]="getDependencyPath(task, depId)"
+                        stroke="#3b82f6"
+                        stroke-width="2.5"
+                        fill="none"
+                        marker-end="url(#arrowhead)"
+                      />
+                    </ng-container>
+                  </ng-container>
+                </svg>
               </div>
             </div>
 
-            <!-- Global SVG Overlay for Dependencies -->
-            <svg class="dependency-svg">
-              <defs>
-                <marker
-                  id="arrowhead"
-                  markerWidth="10"
-                  markerHeight="10"
-                  refX="9"
-                  refY="5"
-                  orient="auto"
-                >
-                  <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3b82f6" />
-                </marker>
-                <marker
-                  id="arrowhead-critical"
-                  markerWidth="10"
-                  markerHeight="10"
-                  refX="9"
-                  refY="5"
-                  orient="auto"
-                >
-                  <path d="M 0 0 L 10 5 L 0 10 Z" fill="#f59e0b" />
-                </marker>
-              </defs>
-              <ng-container *ngFor="let task of filteredTasks">
-                <ng-container *ngFor="let depId of task.dependencies">
-                  <path
-                    [attr.d]="getDependencyPath(task, depId)"
-                    stroke="#3b82f6"
-                    stroke-width="2.5"
-                    fill="none"
-                    marker-end="url(#arrowhead)"
-                  />
-                </ng-container>
-              </ng-container>
-            </svg>
+            <!-- Add Week Strip (Full Height) -->
+            <div
+              class="add-week-strip"
+              *ngIf="viewMode === 'weekly'"
+              (click)="addWeek()"
+              matTooltip="Add Next Week"
+              matTooltipPosition="left"
+            >
+              <mat-icon class="icon-sm">add</mat-icon>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Legend -->
-          <div class="legend-section">
-            <div class="legend-items">
-              <div class="legend-item">
-                <div class="legend-color completed"></div>
-                <span>Completed</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color in-progress"></div>
-                <span>In Progress</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color pending"></div>
-                <span>Pending</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color delayed"></div>
-                <span>Delayed</span>
-              </div>
-            </div>
+      <!-- Legend -->
+      <div class="legend-section">
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-color completed"></span>
+            <span>Completed</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color in-progress"></span>
+            <span>In Progress</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color pending"></span>
+            <span>Pending</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color delayed"></span>
+            <span>Delayed</span>
           </div>
         </div>
       </div>
@@ -404,44 +355,77 @@
       </div>
 
       <div class="modal-body grid-2">
-        <div class="form-group">
-          <label>Task Name</label>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Task Name</mat-label>
+          <input matInput [(ngModel)]="editingTask.name" />
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Progress %</mat-label>
           <input
-            type="text"
-            [(ngModel)]="editingTask.name"
-            class="custom-input"
-          />
-        </div>
-        <div class="form-group">
-          <label>Progress %</label>
-          <input
+            matInput
             type="number"
             [(ngModel)]="editingTask.progress"
             min="0"
             max="100"
-            class="custom-input"
           />
-        </div>
-        <div class="form-group">
-          <label>Duration</label>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="editingTask.status">
+            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="in-progress">In Progress</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="delayed">Delayed</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Dependencies</mat-label>
+          <mat-select [(ngModel)]="editingTask.dependencies" multiple>
+            <mat-option
+              *ngFor="let t of ganttTasks"
+              [value]="t.id"
+              [disabled]="t.id === editingTask.id"
+            >
+              {{ t.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Start Date</mat-label>
           <input
-            type="number"
-            [(ngModel)]="editingTask.duration"
-            class="custom-input"
+            matInput
+            [matDatepicker]="pickerStartEdit"
+            [(ngModel)]="editingTask.startDate"
           />
-        </div>
-        <div class="form-group">
-          <label>Color</label>
-          <select [(ngModel)]="editingTask.color" class="custom-input">
-            <option *ngFor="let opt of colorOptions" [value]="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
-        </div>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerStartEdit"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerStartEdit></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>End Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerEndEdit"
+            [(ngModel)]="editingTask.endDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerEndEdit"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerEndEdit></mat-datepicker>
+        </mat-form-field>
       </div>
 
       <div class="modal-footer">
         <button mat-stroked-button (click)="closeEditTask()" class="cancel-btn">
+          <mat-icon class="icon-sm">close</mat-icon>
           Cancel
         </button>
         <button
@@ -450,6 +434,7 @@
           (click)="saveTask()"
           class="save-btn"
         >
+          <mat-icon class="icon-sm">check</mat-icon>
           Save Changes
         </button>
       </div>
@@ -461,26 +446,65 @@
     <div class="modal-content small" (click)="$event.stopPropagation()">
       <h3 class="modal-title">Add New Task</h3>
       <div class="modal-body space-y">
-        <div class="form-group">
-          <label>Task Name</label>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Task Name</mat-label>
           <input
-            type="text"
+            matInput
             [(ngModel)]="newTask.name"
-            class="custom-input"
             placeholder="Enter task name..."
           />
-        </div>
-        <div class="form-group">
-          <label>Phase</label>
-          <select [(ngModel)]="newTask.phase" class="custom-input">
-            <option value="Phase 1">Phase 1</option>
-            <option value="Phase 2">Phase 2</option>
-            <option value="Phase 3">Phase 3</option>
-          </select>
-        </div>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Phase</mat-label>
+          <mat-select [(ngModel)]="newTask.phase">
+            <mat-option *ngFor="let phase of phases" [value]="phase.id">
+              {{ phase.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="newTask.status">
+            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="in-progress">In Progress</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="delayed">Delayed</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Start Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerStartAdd"
+            [(ngModel)]="newTask.startDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerStartAdd"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerStartAdd></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>End Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerEndAdd"
+            [(ngModel)]="newTask.endDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerEndAdd"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerEndAdd></mat-datepicker>
+        </mat-form-field>
       </div>
       <div class="modal-footer">
         <button mat-stroked-button (click)="closeAddTask()" class="cancel-btn">
+          <mat-icon class="icon-sm">close</mat-icon>
           Cancel
         </button>
         <button
@@ -489,6 +513,7 @@
           (click)="addTask()"
           class="save-btn"
         >
+          <mat-icon class="icon-sm">add</mat-icon>
           Add Task
         </button>
       </div>

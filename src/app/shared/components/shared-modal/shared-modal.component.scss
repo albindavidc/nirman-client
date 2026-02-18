@@ -2,26 +2,42 @@
   display: flex;
   flex-direction: column;
   max-height: 90vh;
-  background-color: var(--md-sys-color-surface);
+
+  /* Glassmorphism */
+  background: linear-gradient(
+    135deg,
+    color-mix(
+      in srgb,
+      var(--md-sys-color-surface-container-high) 85%,
+      transparent
+    ),
+    color-mix(in srgb, var(--md-sys-color-surface-container) 65%, transparent)
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: var(--md-sys-color-on-surface);
-  border-radius: 8px; /* Should match dialog container radius if possible */
+  border-radius: 24px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 24px 24px 16px;
-  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  align-items: center;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
   .header-content {
     h2 {
       margin: 0;
       font-size: 1.25rem;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--md-sys-color-on-surface);
-      line-height: 1.5;
+      letter-spacing: -0.3px;
     }
 
     .subtitle {
@@ -32,28 +48,38 @@
   }
 
   .close-btn {
-    margin-top: -8px;
-    margin-right: -8px;
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-on-surface-variant) !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    transition: all 0.2s;
+
+    /* Explicit centering for icon inside button */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: var(--md-sys-color-on-surface) !important;
+    }
   }
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 1.25rem 1.75rem;
   overflow-y: auto;
   flex: 1;
 
-  /* Custom scrollbar for better look in dark mode */
   &::-webkit-scrollbar {
     width: 6px;
   }
-
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-
   &::-webkit-scrollbar-thumb {
-    background-color: var(--md-sys-color-outline-variant);
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
   }
 }
@@ -61,13 +87,13 @@
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 24px 24px;
-  border-top: 1px solid var(--md-sys-color-outline-variant);
-  background-color: var(--md-sys-color-surface);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.75rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-// Responsive adjustments
+// Responsive
 @media (max-width: 600px) {
   .modal-container {
     max-height: 100vh;
@@ -78,7 +104,7 @@
   .modal-header,
   .modal-body,
   .modal-actions {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

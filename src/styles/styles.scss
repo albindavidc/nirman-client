@@ -24,6 +24,20 @@ body {
   height: 100%;
   background-color: var(--md-sys-color-background);
   color: var(--md-sys-color-on-surface);
+  // Global Glassmorphism Gradient
+  background-image:
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--md-sys-color-primary) 15%, transparent) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      color-mix(in srgb, var(--md-sys-color-secondary) 10%, transparent) 0%,
+      transparent 40%
+    );
+  background-attachment: fixed; // Keeps gradient fixed during scroll
+  background-repeat: no-repeat;
 }
 
 body {

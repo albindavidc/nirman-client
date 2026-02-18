@@ -24,7 +24,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
-import { Task } from '../../services/task.service';
+import { Task, TaskService } from '../../services/task.service';
 
 // Interface for internal Gantt Task (extending the service Task or mapping to it)
 export interface GanttTask {
@@ -102,6 +102,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
     status: 'pending',
     progress: 0,
     dependencies: [],
+    color: '#3b82f6', // Default blue
   };
 
   showExportModal = false;
@@ -123,14 +124,12 @@ export class GanttChartComponent implements OnInit, OnChanges {
   manualWeeksAdded = 0;
 
   // Constants
+  // Constants
   readonly colorOptions = [
-    { value: '#10b981', label: 'Green' },
-    { value: '#3b82f6', label: 'Blue' },
-    { value: '#f59e0b', label: 'Amber' },
-    { value: '#ec4899', label: 'Pink' },
-    { value: '#8b5cf6', label: 'Purple' },
-    { value: '#ef4444', label: 'Red' },
-    { value: '#6b7280', label: 'Gray' },
+    { value: '#10b981', label: 'Completed (Green)' },
+    { value: '#facc15', label: 'In Progress (Yellow)' }, // Changed to facc15 (yellow-400) for better visibility than f59e0b (amber) if desired, but sticking to prompt request "yellow"
+    { value: '#9ca3af', label: 'Pending (Grey)' },
+    { value: '#fb923c', label: 'Delayed (Orange)' },
   ];
 
   // Icons for template
@@ -144,7 +143,20 @@ export class GanttChartComponent implements OnInit, OnChanges {
   totalDependencies = 0;
   criticalPathCount = 0;
 
-  constructor(private dialog: MatDialog) {}
+  // Project Start Date (Should ideally come from project details)
+  projectStartDate: Date;
+
+  constructor(
+    private dialog: MatDialog,
+    private taskService: TaskService,
+  ) {
+    // Initialize to start of current week (Sunday)
+    const today = new Date();
+    const day = today.getDay(); // 0 (Sun) to 6 (Sat)
+    const diff = today.getDate() - day; // adjust when day is sunday
+    this.projectStartDate = new Date(today.setDate(diff));
+    this.projectStartDate.setHours(0, 0, 0, 0);
+  }
 
   ngOnInit() {
     this.processTasks();
@@ -156,7 +168,38 @@ export class GanttChartComponent implements OnInit, OnChanges {
     }
   }
 
+  headerBtnClick() {
+    // openAddTask wrapper for template if needed without args
+    this.openAddTask();
+  }
+
   processTasks() {
+    // 1. Determine Project Start Date based on Earliest Task
+    if (this.tasks && this.tasks.length > 0) {
+      const startDates = this.tasks
+        .map((t) =>
+          t.plannedStartDate ? new Date(t.plannedStartDate).getTime() : null,
+        )
+        .filter((d) => d !== null && !isNaN(d)) as number[];
+
+      if (startDates.length > 0) {
+        const minDate = new Date(Math.min(...startDates));
+        // Normalize to start of that week (Sunday)
+        const day = minDate.getDay();
+        const diff = minDate.getDate() - day;
+        this.projectStartDate = new Date(minDate);
+        this.projectStartDate.setDate(diff);
+        this.projectStartDate.setHours(0, 0, 0, 0);
+      } else {
+        // Fallback to current week start
+        const today = new Date();
+        const day = today.getDay();
+        const diff = today.getDate() - day;
+        this.projectStartDate = new Date(today.setDate(diff));
+        this.projectStartDate.setHours(0, 0, 0, 0);
+      }
+    }
+
     // Convert input tasks to GanttTasks
     // This is a mapping placeholder - ideally we map your real backend data to this structure
     // allowing for the specific fields needed by this gantt chart
@@ -170,6 +213,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
   // Helper to map backend tasks to GanttTasks
   mapTasks(tasks: Task[]): GanttTask[] {
     return tasks.map((t, index) => {
+      // ... date logic ...
       const startDate = t.plannedStartDate
         ? new Date(t.plannedStartDate)
         : null;
@@ -192,65 +236,28 @@ export class GanttChartComponent implements OnInit, OnChanges {
         duration,
         startWeek: this.calculateStartWeek(t.plannedStartDate ?? undefined),
         status: this.mapStatus(t.status || 'pending'),
-        progress: (t.progress || 0) * 100,
-        color: this.getColorForStatus(t.status),
+        progress: t.progress || 0,
+        color: t.color || this.getColorForStatus(t.status),
         startDate: t.plannedStartDate?.toString(),
         endDate: t.plannedEndDate?.toString(),
-        dependencies: [],
+        dependencies: t.dependencies || [], // Map from backend
         originalTask: t,
       };
     });
   }
 
-  // Dummy fallback for demo if no tasks provided
+  // Dummy fallback removed
   getInitialTasks(): GanttTask[] {
-    return [
-      {
-        id: 'task-1',
-        name: 'Foundation Preparation',
-        phase: 'Phase 1',
-        duration: 14,
-        startWeek: 0,
-        status: 'completed',
-        progress: 100,
-        color: '#10b981',
-        startDate: '2025-05-01',
-        endDate: '2025-05-15',
-      },
-      // ... more initial tasks from the prompt
-      {
-        id: 'task-2',
-        name: 'Ductwork Installation',
-        phase: 'Phase 3',
-        duration: 14,
-        startWeek: 2,
-        status: 'completed',
-        dependencies: ['task-1'],
-        progress: 100,
-        color: '#10b981',
-        startDate: '2025-05-15',
-        endDate: '2025-05-29',
-      },
-      {
-        id: 'task-3',
-        name: 'HVAC Installation - Level 1',
-        phase: 'Phase 3',
-        duration: 16,
-        startWeek: 3,
-        status: 'in-progress',
-        dependencies: ['task-2'],
-        progress: 65,
-        color: '#f59e0b',
-        startDate: '2025-05-22',
-        endDate: '2025-06-07',
-      },
-    ];
+    return [];
   }
 
   calculateStartWeek(dateStr?: Date | string): number {
-    // Simplification: just return a number for now,
-    // real impl would diff against project start date
-    return 0;
+    if (!dateStr) return 0;
+    const date = new Date(dateStr);
+    const diffTime = date.getTime() - this.projectStartDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // Return relative week offset, can be negative if task is in past, but ideally 0 or positive for current view
+    return diffDays / 7;
   }
 
   mapStatus(status: string): GanttTask['status'] {
@@ -265,13 +272,14 @@ export class GanttChartComponent implements OnInit, OnChanges {
     const s = this.mapStatus(status || '');
     switch (s) {
       case 'completed':
-        return '#10b981';
+        return '#10b981'; // Green
       case 'in-progress':
-        return '#f59e0b';
+        return '#facc15'; // Yellow
       case 'delayed':
-        return '#ef4444';
+        return '#fb923c'; // Orange
+      case 'pending':
       default:
-        return '#6b7280';
+        return '#9ca3af'; // Grey
     }
   }
 
@@ -297,7 +305,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
     // Generate Weeks
     this.weeks = [];
-    const startDate = new Date('2025-05-01'); // Should be project start
+    const startDate = this.projectStartDate;
     for (let i = 0; i < this.totalWeeks; i++) {
       const ws = new Date(startDate);
       ws.setDate(startDate.getDate() + i * 7);
@@ -535,6 +543,49 @@ export class GanttChartComponent implements OnInit, OnChanges {
   }
 
   onMouseUp(e: MouseEvent) {
+    if (this.isDragging && this.draggedTaskId) {
+      // Find the task that was updated
+      const task = this.ganttTasks.find((t) => t.id === this.draggedTaskId);
+      if (task && task.originalTask?.id) {
+        // Calculate new dates based on startWeek and duration
+        const newStart = new Date(this.projectStartDate);
+        newStart.setDate(newStart.getDate() + Math.round(task.startWeek * 7));
+
+        const newEnd = new Date(newStart);
+        newEnd.setDate(newEnd.getDate() + Math.round(task.duration));
+
+        const payload: any = {};
+
+        // If we moved or resized, update dates
+        if (
+          this.dragType === 'move' ||
+          this.dragType === 'resize-left' ||
+          this.dragType === 'resize-right'
+        ) {
+          payload.plannedStartDate = newStart.toISOString();
+          payload.plannedEndDate = newEnd.toISOString();
+          // Also update local model strings to reflect immediately if needed by other parts
+          task.startDate = payload.plannedStartDate;
+          task.endDate = payload.plannedEndDate;
+        }
+
+        // If we changed progress
+        if (this.dragType === 'progress') {
+          payload.progress = Math.round(task.progress || 0);
+        }
+
+        // Call backend
+        if (task.originalTask?.id) {
+          this.taskService.updateTask(task.originalTask.id, payload).subscribe({
+            next: (updated) => {
+              console.log('Task updated via drag', updated);
+            },
+            error: (err) => console.error('Failed to update task drag', err),
+          });
+        }
+      }
+    }
+
     this.isDragging = false;
     this.dragType = null;
     this.draggedTaskId = null;
@@ -544,9 +595,48 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   // --- CRUD/Modal Logic ---
 
+  openAddTask(contextTask?: GanttTask) {
+    if (this.isDragging) return;
+
+    // Default phase
+    let defaultPhase = this.phases.length > 0 ? this.phases[0].id : 'Phase 1';
+
+    // Auto-fill phase from context
+    if (contextTask) {
+      defaultPhase = contextTask.phase;
+    } else if (this.selectedTaskId) {
+      const selected = this.ganttTasks.find(
+        (t) => t.id === this.selectedTaskId,
+      );
+      if (selected) defaultPhase = selected.phase;
+    }
+
+    this.newTask = {
+      name: '',
+      phase: defaultPhase,
+      duration: 7,
+      status: 'pending',
+      progress: 0,
+      dependencies: [],
+      color: '#3b82f6',
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+
+    this.showAddTask = true;
+  }
+
+  closeAddTask() {
+    this.showAddTask = false;
+    this.newTask = {};
+  }
+
   openEditTask(task: GanttTask) {
     if (this.isDragging) return;
-    this.editingTask = { ...task };
+    this.editingTask = {
+      ...task,
+      dependencies: [...(task.dependencies || [])],
+    };
     this.selectedTaskId = task.id;
     this.showEditTask = true;
   }
@@ -559,49 +649,127 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   saveTask() {
     if (!this.editingTask.id) return;
-    const idx = this.ganttTasks.findIndex((t) => t.id === this.editingTask.id);
-    if (idx !== -1) {
-      this.ganttTasks[idx] = { ...this.ganttTasks[idx], ...this.editingTask };
-      this.filterTasks();
+    const task = this.ganttTasks.find((t) => t.id === this.editingTask.id);
+    if (!task || !task.originalTask) return;
+
+    // Recalculate duration if dates changed (assuming editingTask has dates bound)
+    let duration = this.editingTask.duration;
+    if (this.editingTask.startDate && this.editingTask.endDate) {
+      const start = new Date(this.editingTask.startDate);
+      const end = new Date(this.editingTask.endDate);
+      const diff = end.getTime() - start.getTime();
+      duration = Math.max(1, Math.ceil(diff / (1000 * 3600 * 24)));
     }
-    this.closeEditTask();
-  }
 
-  openAddTask() {
-    this.newTask = {
-      name: '',
-      phase: 'Phase 1',
-      duration: 7,
-      status: 'pending',
-      progress: 0,
-      dependencies: [],
+    // Auto-update color based on status
+    const color = this.getColorForStatus(this.editingTask.status);
+
+    const payload: any = {
+      name: this.editingTask.name,
+      status: this.editingTask.status,
+      progress: Math.round(this.editingTask.progress || 0),
+      color: color,
+      notes: this.editingTask.originalTask?.notes,
+      plannedStartDate: this.editingTask.startDate
+        ? new Date(this.editingTask.startDate).toISOString()
+        : undefined,
+      plannedEndDate: this.editingTask.endDate
+        ? new Date(this.editingTask.endDate).toISOString()
+        : undefined,
     };
-    this.showAddTask = true;
-  }
 
-  closeAddTask() {
-    this.showAddTask = false;
+    if (this.editingTask.originalTask?.id) {
+      this.taskService
+        .updateTask(this.editingTask.originalTask.id, payload)
+        .subscribe({
+          next: (updated) => {
+            const idx = this.ganttTasks.findIndex(
+              (t) => t.id === this.editingTask.id,
+            );
+            if (idx !== -1) {
+              this.ganttTasks[idx] = {
+                ...this.ganttTasks[idx],
+                ...this.editingTask,
+                duration: duration || this.editingTask.duration || 1,
+                color: updated.color || color,
+              };
+              this.filterTasks();
+            }
+            this.closeEditTask();
+          },
+          error: (err) => console.error('Failed to update task', err),
+        });
+    }
   }
 
   addTask() {
     if (!this.newTask.name) return;
-    const task: GanttTask = {
-      id: `task-${Date.now()}`,
+
+    // We need a phaseId. If phases are passed, use first or selected.
+    // For now assuming 'Phase 1' is just a string, but backend needs phaseId (Guid/ObjectId).
+    // The newTask.phase currently holds a string name from the prompt's default.
+    // If we have `this.phases` input, we should select a valid phase ID.
+    // Let's assume for this "mock" or "demo" component that we might need to find a real phase ID or create one.
+    // If `this.phases` is empty, this call might fail if backend requires valid ID.
+    // But assuming the user context implies working with real data:
+    const phaseId =
+      this.phases.length > 0
+        ? this.phases[0].id
+        : this.newTask.phase || 'dummy-phase-id';
+
+    // Calculate duration from dates
+    const start = this.newTask.startDate
+      ? new Date(this.newTask.startDate)
+      : new Date();
+    const end = this.newTask.endDate
+      ? new Date(this.newTask.endDate)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const duration = Math.max(
+      1,
+      Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)),
+    );
+
+    const status = (this.newTask.status as any) || 'pending';
+    const color = this.getColorForStatus(status);
+
+    const payload: any = {
+      phaseId: phaseId,
       name: this.newTask.name,
-      phase: this.newTask.phase || 'Phase 1',
-      duration: this.newTask.duration || 7,
-      startWeek: 0,
-      status: (this.newTask.status as any) || 'pending',
-      progress: this.newTask.progress || 0,
-      color: '#6b7280',
-      dependencies: this.newTask.dependencies,
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
+      plannedStartDate: start.toISOString(),
+      plannedEndDate: end.toISOString(),
+      status: status,
+      priority: 'Medium',
+      color: color,
     };
-    this.ganttTasks.push(task);
-    this.filterTasks();
-    this.calculateMetrics();
-    this.closeAddTask();
+
+    this.taskService.createTask(payload).subscribe({
+      next: (created) => {
+        // Reload or add to list
+        // Ideally re-fetch or emit event.
+        // For now, push to local
+        const task: GanttTask = {
+          id: created.id,
+          name: created.name,
+          phase: created.phaseId, // Name mapping needed?
+          duration: this.newTask.duration || 7, // Recalc from dates
+          startWeek: this.calculateStartWeek(
+            created.plannedStartDate || undefined,
+          ),
+          status: 'pending',
+          progress: 0,
+          color: created.color || '#3b82f6',
+          dependencies: [],
+          startDate: created.plannedStartDate?.toString(),
+          endDate: created.plannedEndDate?.toString(),
+          originalTask: created,
+        };
+        this.ganttTasks.push(task);
+        this.filterTasks();
+        this.calculateMetrics();
+        this.closeAddTask();
+      },
+      error: (err) => console.error('Failed to create task', err),
+    });
   }
 
   // Dependency Management

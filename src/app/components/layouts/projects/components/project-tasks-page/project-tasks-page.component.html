@@ -24,40 +24,44 @@
   <!-- Stats Cards -->
   @if (stats$ | async; as stats) {
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="icon-box gold">
-          <mat-icon>description</mat-icon>
-        </div>
+      <!-- Total Tasks: Primary -->
+      <div class="stat-card card-primary">
+        <mat-icon class="card-icon">description</mat-icon>
         <div class="info">
           <span class="value">{{ stats.total }}</span>
           <span class="label">Total Tasks</span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="icon-box green">
-          <mat-icon>check_circle</mat-icon>
-        </div>
+      <!-- Completed: Success (Tertiary in M3 terms usually) -->
+      <div class="stat-card card-success">
+        <mat-icon class="card-icon">check_circle</mat-icon>
         <div class="info">
           <span class="value">{{ stats.completed }}</span>
           <span class="label">Completed</span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="icon-box blue">
-          <mat-icon>sync</mat-icon>
-        </div>
+      <!-- In Progress: Secondary -->
+      <div class="stat-card card-info">
+        <mat-icon class="card-icon">sync</mat-icon>
         <div class="info">
           <span class="value">{{ stats.inProgress }}</span>
           <span class="label">In Progress</span>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="icon-box red">
-          <mat-icon>warning</mat-icon>
-        </div>
+      <!-- Delayed: Error -->
+      <div class="stat-card card-warning">
+        <mat-icon class="card-icon">warning</mat-icon>
         <div class="info">
           <span class="value">{{ stats.delayed }}</span>
           <span class="label">Delayed</span>
+        </div>
+      </div>
+      <!-- Total Days: Accent/Surface Variant -->
+      <div class="stat-card card-accent">
+        <mat-icon class="card-icon">date_range</mat-icon>
+        <div class="info">
+          <span class="value">{{ stats.totalDays }}</span>
+          <span class="label">Total Days</span>
         </div>
       </div>
     </div>
@@ -102,20 +106,30 @@
               />
             </div>
 
-            <select class="custom-select" [formControl]="statusControl">
-              <option value="All Status">All Status</option>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Delayed">Delayed</option>
-            </select>
+            <mat-form-field class="glass-form-field">
+              <mat-select
+                [formControl]="statusControl"
+                panelClass="glass-select-panel"
+              >
+                <mat-option value="All Status">All Status</mat-option>
+                <mat-option value="Not Started">Not Started</mat-option>
+                <mat-option value="In Progress">In Progress</mat-option>
+                <mat-option value="Completed">Completed</mat-option>
+                <mat-option value="Delayed">Delayed</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-            <select class="custom-select" [formControl]="phaseControl">
-              <option value="All Phases">All Phases</option>
-              @for (phase of phases; track phase.id) {
-                <option [value]="phase.id">{{ phase.name }}</option>
-              }
-            </select>
+            <mat-form-field class="glass-form-field">
+              <mat-select
+                [formControl]="phaseControl"
+                panelClass="glass-select-panel"
+              >
+                <mat-option value="All Phases">All Phases</mat-option>
+                @for (phase of phases; track phase.id) {
+                  <mat-option [value]="phase.id">{{ phase.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
           </div>
         </div>
 
@@ -127,6 +141,8 @@
           <div class="col status">STATUS</div>
           <div class="col progress">PROGRESS</div>
           <div class="col date">DUE DATE</div>
+          <div class="col actions"></div>
+          <!-- Empty header for actions -->
         </div>
 
         <!-- Table Body -->
@@ -154,9 +170,25 @@
                 }
               </div>
               <div class="col status">
-                <span class="badge" [ngClass]="getStatusClass(task.status)">{{
-                  task.status
-                }}</span>
+                <span class="badge" [ngClass]="getStatusClass(task.status)">
+                  <mat-icon class="status-icon">
+                    @switch (task.status) {
+                      @case ("Completed") {
+                        check_circle
+                      }
+                      @case ("In Progress") {
+                        sync
+                      }
+                      @case ("Delayed") {
+                        warning
+                      }
+                      @default {
+                        schedule
+                      }
+                    }
+                  </mat-icon>
+                  {{ task.status }}
+                </span>
               </div>
               <div class="col progress">
                 <div class="progress-bar-wrapper">
@@ -173,6 +205,24 @@
               </div>
               <div class="col date text-muted">
                 {{ formatDate(task.plannedEndDate) }}
+              </div>
+              <!-- Actions Column -->
+              <div class="col actions">
+                <button
+                  mat-icon-button
+                  (click)="$event.stopPropagation(); editTask(task)"
+                  matTooltip="Edit Task"
+                >
+                  <mat-icon class="action-icon">edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="$event.stopPropagation(); deleteTask(task)"
+                  matTooltip="Delete Task"
+                >
+                  <mat-icon class="action-icon">delete</mat-icon>
+                </button>
               </div>
             </div>
           }

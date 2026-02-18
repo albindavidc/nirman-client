@@ -26,6 +26,7 @@ import {
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskModalComponent } from '../create-task-modal/create-task-modal.component';
 import { EditTaskModalComponent } from '../edit-task-modal/edit-task-modal.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-project-tasks-page',
@@ -43,6 +44,7 @@ import { EditTaskModalComponent } from '../edit-task-modal/edit-task-modal.compo
     ReactiveFormsModule,
     GanttChartComponent,
     MatDialogModule,
+    MatTooltipModule,
   ],
   templateUrl: './project-tasks-page.component.html',
   styleUrls: ['./project-tasks-page.component.scss'],
@@ -161,7 +163,36 @@ export class ProjectTasksPageComponent implements OnInit {
           const delayed = tasks.filter(
             (t: Task) => t.status === 'Delayed',
           ).length;
-          return { total, completed, inProgress, delayed };
+
+          // Calculate Total Days (Duration)
+          let totalDays = 0;
+          if (tasks.length > 0) {
+            const startDates = tasks
+              .map((t) =>
+                t.plannedStartDate
+                  ? new Date(t.plannedStartDate).getTime()
+                  : null,
+              )
+              .filter((d) => d !== null) as number[];
+            const endDates = tasks
+              .map((t) =>
+                t.plannedEndDate ? new Date(t.plannedEndDate).getTime() : null,
+              )
+              .filter((d) => d !== null) as number[];
+
+            if (startDates.length > 0 && endDates.length > 0) {
+              const minStart = Math.min(...startDates);
+              const maxEnd = Math.max(...endDates);
+              // distinct days inclusive? usually End - Start.
+              // If same day, it's 1 day? Or just difference?
+              // Standard gantt metrics usually imply span.
+              // 1 day = 24 hrs.
+              const diffTime = Math.abs(maxEnd - minStart);
+              totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include start day
+            }
+          }
+
+          return { total, completed, inProgress, delayed, totalDays };
         }),
       );
     }
@@ -233,10 +264,17 @@ export class ProjectTasksPageComponent implements OnInit {
    * Opens edit task modal when clicking on task in Gantt chart
    * @param ganttTask The GanttTask emitted from the chart (contains originalTask)
    */
+  /**
+   * Opens edit task modal when clicking on task in Gantt chart
+   * @param ganttTask The GanttTask emitted from the chart (contains originalTask)
+   */
   openEditTaskModal(ganttTask: GanttTask): void {
     const task = ganttTask.originalTask;
     if (!task) return;
+    this.editTask(task);
+  }
 
+  editTask(task: Task) {
     const dialogRef = this.dialog.open(EditTaskModalComponent, {
       width: '650px',
       data: {
@@ -252,6 +290,14 @@ export class ProjectTasksPageComponent implements OnInit {
         this.ngOnInit();
       }
     });
+  }
+
+  deleteTask(task: Task) {
+    if (confirm(`Are you sure you want to delete "${task.name}"?`)) {
+      this.taskService.deleteTask(task.id).subscribe(() => {
+        this.ngOnInit(); // Refresh list
+      });
+    }
   }
 
   goBack() {

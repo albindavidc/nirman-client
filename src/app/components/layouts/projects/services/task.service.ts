@@ -22,6 +22,8 @@ export interface Task {
     lastName: string;
     email: string;
   } | null;
+  color?: string | null;
+  dependencies?: string[]; // IDs of predecessor tasks
 }
 
 export interface CreateTaskDto {
@@ -37,6 +39,7 @@ export interface CreateTaskDto {
   progress?: number;
   actualStartDate?: string;
   actualEndDate?: string;
+  color?: string;
 }
 
 export interface CreateTaskDependencyDto {
@@ -103,5 +106,10 @@ export class TaskService {
     return this.http.get<any[]>(
       `${this.apiUrl}/project/${projectId}/dependencies`,
     );
+  }
+
+  // Generic get dependencies if needed, or by task?
+  getTaskDependencies(taskId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${taskId}/dependencies`);
   }
 }

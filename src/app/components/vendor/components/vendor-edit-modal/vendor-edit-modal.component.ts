@@ -55,6 +55,8 @@ export class VendorEditModalComponent implements OnInit {
     firstName: [''],
     lastName: [''],
     email: ['', [Validators.email]],
+    password: [''],
+    phone: [''],
 
     // Vendor Details
     companyName: ['', [Validators.required, Validators.minLength(2)]],
@@ -94,9 +96,14 @@ export class VendorEditModalComponent implements OnInit {
       // Disable user fields in edit mode or remove validators
     } else {
       this.isAddMode = true;
-      // Add validators for user fields
+      // Add validators for user fields required by backend
       this.editForm.get('firstName')?.addValidators(Validators.required);
       this.editForm.get('lastName')?.addValidators(Validators.required);
+      this.editForm
+        .get('password')
+        ?.addValidators([Validators.required, Validators.minLength(6)]);
+      this.editForm.get('phone')?.addValidators(Validators.required);
+      this.editForm.get('addressStreet')?.addValidators(Validators.required);
       this.editForm
         .get('email')
         ?.addValidators([Validators.required, Validators.email]);
@@ -125,13 +132,15 @@ export class VendorEditModalComponent implements OnInit {
       // Create Logic
       const createData = {
         email: formValue.email!,
+        password: formValue.password!,
         firstName: formValue.firstName!,
         lastName: formValue.lastName!,
+        phone: formValue.phone!,
         companyName: formValue.companyName!,
         registrationNumber: formValue.registrationNumber!,
         taxNumber: formValue.taxNumber || undefined,
         yearsInBusiness: formValue.yearsInBusiness || undefined,
-        addressStreet: formValue.addressStreet || undefined,
+        addressStreet: formValue.addressStreet!,
         addressCity: formValue.addressCity || undefined,
         addressState: formValue.addressState || undefined,
         addressZipCode: formValue.addressZipCode || undefined,

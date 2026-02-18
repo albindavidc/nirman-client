@@ -64,11 +64,13 @@ export interface CreateVendorDto {
   firstName: string;
   lastName: string;
   email: string;
+  password: string;
+  phone: string;
   companyName: string;
   registrationNumber: string;
   taxNumber?: string;
   yearsInBusiness?: number;
-  addressStreet?: string;
+  addressStreet: string;
   addressCity?: string;
   addressState?: string;
   addressZipCode?: string;

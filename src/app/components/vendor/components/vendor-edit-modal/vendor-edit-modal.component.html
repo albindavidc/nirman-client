@@ -63,6 +63,41 @@
             />
           </mat-form-field>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-field">
+            <label
+              class="block text-sm font-medium text-gray-300 mb-1"
+              for="password"
+              >Password *</label
+            >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-icon matPrefix>lock</mat-icon>
+              <input
+                matInput
+                id="password"
+                formControlName="password"
+                placeholder="Min 6 characters"
+                type="password"
+              />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <label
+              class="block text-sm font-medium text-gray-300 mb-1"
+              for="phone"
+              >Phone *</label
+            >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-icon matPrefix>phone</mat-icon>
+              <input
+                matInput
+                id="phone"
+                formControlName="phone"
+                placeholder="+91 98765 43210"
+              />
+            </mat-form-field>
+          </div>
+        </div>
         <div class="my-6 border-b border-zinc-700"></div>
       </div>
     }

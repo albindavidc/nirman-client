@@ -23,6 +23,7 @@ import { LoginEffects } from './components/layouts/auth/login/store/login.effect
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { authInitializerProvider } from './core/initializers/auth.initializer';
+// Lucide imports removed
 
 /**
  * Meta-reducer that resets the ENTIRE NgRx store (including lazy-loaded

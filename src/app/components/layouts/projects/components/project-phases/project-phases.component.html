@@ -156,7 +156,7 @@
           <ng-container matColumnDef="progress">
             <th mat-header-cell *matHeaderCellDef>PROGRESS</th>
             <td mat-cell *matCellDef="let element">
-              @if (element.status === "Not Started") {
+              @if (canRequestApproval && element.status === "Not Started") {
                 <button
                   mat-stroked-button
                   color="primary"
@@ -166,8 +166,16 @@
                   "
                   [disabled]="element.approvalStatus === 'pending'"
                 >
-                  <mat-icon>rate_review</mat-icon>
-                  <span>Request Approval</span>
+                  <mat-icon>{{
+                    element.approvalStatus === "pending"
+                      ? "hourglass_empty"
+                      : "rate_review"
+                  }}</mat-icon>
+                  <span>{{
+                    element.approvalStatus === "pending"
+                      ? "Approval Requested"
+                      : "Request Approval"
+                  }}</span>
                 </button>
               } @else {
                 <div class="progress-cell">
@@ -283,18 +291,20 @@
                     <span>Review Approval</span>
                   </button>
                 }
-                <button
-                  mat-menu-item
-                  (click)="openRequestApprovalModal(element)"
-                  [disabled]="
-                    element.status === 'Completed' ||
-                    element.status === 'Review Pending' ||
-                    element.approvalStatus === 'pending'
-                  "
-                >
-                  <mat-icon>rate_review</mat-icon>
-                  <span>Request Approval</span>
-                </button>
+                @if (canRequestApproval) {
+                  <button
+                    mat-menu-item
+                    (click)="openRequestApprovalModal(element)"
+                    [disabled]="
+                      element.status === 'Completed' ||
+                      element.status === 'Review Pending' ||
+                      element.approvalStatus === 'pending'
+                    "
+                  >
+                    <mat-icon>rate_review</mat-icon>
+                    <span>Request Approval</span>
+                  </button>
+                }
               </mat-menu>
             </td>
           </ng-container>

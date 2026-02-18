@@ -51,7 +51,7 @@ export class ProjectMaterialsComponent implements OnInit {
   currentUserRole: string = '';
 
   get canAddMaterial(): boolean {
-    return ['admin', 'project_manager'].includes(this.currentUserRole);
+    return ['supervisor'].includes(this.currentUserRole);
   }
 
   ngOnInit(): void {

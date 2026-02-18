@@ -57,16 +57,17 @@ export class PhaseApprovalListComponent implements OnInit {
   }
 
   viewDetails(approval: PhaseApprovalResponse): void {
-    // Navigate to the phase approval page in the project context
-    // We need projectId for the route: /projects/:id/phases/:phaseId/approval
-    // But approval response might not have projectId directly if not mapped?
-    // We added projectName to DTO, but we might need projectId too.
-    // Let's check DTO. It has phaseId. We might need to fetch phase to get projectId?
-    // Or we should add projectId to the DTO.
-    // For now, let's just log it.
-    // Actually, looking at the DTO, we didn't add projectId, only projectName.
-    // I should probably add projectId to DTO for navigation.
-    // But for this task, listing is the priority.
+    if (approval.projectId && approval.phaseId) {
+      this.router.navigate([
+        '/admin/projects',
+        approval.projectId,
+        'phases',
+        approval.phaseId,
+        'review',
+      ]);
+    } else {
+      console.warn('Missing projectId or phaseId for navigation', approval);
+    }
   }
 
   getStatusClass(status: string): string {

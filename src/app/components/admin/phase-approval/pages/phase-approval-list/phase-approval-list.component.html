@@ -18,12 +18,7 @@
         <ng-container matColumnDef="phaseName">
           <th mat-header-cell *matHeaderCellDef>Phase</th>
           <td mat-cell *matCellDef="let approval">
-            <!-- We assume phaseName is available, if not we show ID or need to fetch -->
-            <!-- The DTO has phaseId. We need phaseName in DTO? -->
-            <!-- Checking DTO update: we mapped phaseName in repository but DTO interface in frontend needs update if it wasn't there? -->
-            <!-- In backend repo we added phaseName. -->
-            <!-- In frontend service interface, we only added projectName. We should check if phaseName is there. -->
-            {{ approval.phaseId }}
+            {{ approval.phaseName || approval.phaseId }}
           </td>
         </ng-container>
 

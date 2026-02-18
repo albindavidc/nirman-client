@@ -129,17 +129,12 @@ export class SidebarComponent {
               {
                 label: 'Projects',
                 icon: 'work',
-                route: '/dashboard/supervisor/projects',
+                route: '/supervisor/projects',
               },
               {
-                label: 'Phases',
-                icon: 'timelapse',
-                route: '/dashboard/supervisor/phases',
-              },
-              {
-                label: 'Tasks',
-                icon: 'task_alt',
-                route: '/dashboard/supervisor/tasks',
+                label: 'Project Members',
+                icon: 'group',
+                route: '/supervisor/project-members',
               },
             ],
           },

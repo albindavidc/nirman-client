@@ -71,8 +71,18 @@ export class ProjectMembersComponent implements OnInit {
   totalRecords = 0;
 
   today = new Date();
+  currentUserRole: string = '';
+
+  get canAddMember(): boolean {
+    return ['admin'].includes(this.currentUserRole);
+  }
 
   ngOnInit(): void {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      this.currentUserRole = user.role?.toLowerCase() || '';
+    }
     this.refreshData();
   }
 

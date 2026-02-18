@@ -39,6 +39,7 @@ export interface PhaseForApproval {
 export interface PhaseApprovalResponse {
   id: string;
   phaseId: string;
+  projectId?: string;
   projectName?: string;
   approvalStatus: string;
   comments: string | null;
@@ -124,6 +125,17 @@ export class ProjectPhaseService {
   ): Observable<ProjectPhase> {
     return this.http.patch<ProjectPhase>(
       `${this.apiUrl}/${projectId}/phases/${phaseId}`,
+      data,
+    );
+  }
+
+  requestApproval(
+    projectId: string,
+    phaseId: string,
+    data: { comments?: string; media?: { type: string; url: string }[] },
+  ): Observable<PhaseApprovalResponse> {
+    return this.http.post<PhaseApprovalResponse>(
+      `${this.apiUrl}/${projectId}/phases/${phaseId}/approval-request`,
       data,
     );
   }

@@ -46,10 +46,12 @@
           Today's Attendance - {{ today | date: "MMMM d, yyyy" }}
         </h2>
         <div class="header-actions">
-          <button class="add-member-btn" (click)="openAddMemberModal()">
-            <mat-icon>person_add</mat-icon>
-            <span>Add Member</span>
-          </button>
+          @if (canAddMember) {
+            <button class="add-member-btn" (click)="openAddMemberModal()">
+              <mat-icon>person_add</mat-icon>
+              <span>Add Member</span>
+            </button>
+          }
           <button class="export-btn" (click)="exportReport()">
             <mat-icon>download</mat-icon>
             <span>Export Report</span>

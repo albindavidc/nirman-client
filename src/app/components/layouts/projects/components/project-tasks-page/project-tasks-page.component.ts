@@ -19,7 +19,10 @@ import {
   BehaviorSubject,
 } from 'rxjs';
 import { format } from 'date-fns';
-import { GanttChartComponent } from '../gantt-chart/gantt-chart.component';
+import {
+  GanttChartComponent,
+  GanttTask,
+} from '../gantt-chart/gantt-chart.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskModalComponent } from '../create-task-modal/create-task-modal.component';
 import { EditTaskModalComponent } from '../edit-task-modal/edit-task-modal.component';
@@ -228,9 +231,12 @@ export class ProjectTasksPageComponent implements OnInit {
 
   /**
    * Opens edit task modal when clicking on task in Gantt chart
-   * @param task The task to edit
+   * @param ganttTask The GanttTask emitted from the chart (contains originalTask)
    */
-  openEditTaskModal(task: Task): void {
+  openEditTaskModal(ganttTask: GanttTask): void {
+    const task = ganttTask.originalTask;
+    if (!task) return;
+
     const dialogRef = this.dialog.open(EditTaskModalComponent, {
       width: '650px',
       data: {

@@ -71,7 +71,11 @@ export class ProjectPhasesComponent implements OnInit {
   }
 
   get canReviewApproval(): boolean {
-    return ['admin', 'supervisor'].includes(this.currentUserRole);
+    return ['admin'].includes(this.currentUserRole);
+  }
+
+  get canRequestApproval(): boolean {
+    return ['supervisor'].includes(this.currentUserRole);
   }
 
   displayedColumns: string[] = [
@@ -217,12 +221,25 @@ export class ProjectPhasesComponent implements OnInit {
 
     const dialogRef = this.dialog.open(RequestApprovalModalComponent, {
       width: '500px',
-      data: { phaseId: phase.id, projectId: of(projectId) },
+      data: {
+        phaseId: phase.id,
+        phaseName: phase.name,
+        projectId: of(projectId),
+      },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: { comments: string }) => {
       if (result) {
-        this.refreshSubject.next();
+        this.projectPhaseService
+          .requestApproval(projectId, phase.id, {
+            comments: result.comments,
+          })
+          .subscribe({
+            next: () => {
+              this.refreshSubject.next();
+            },
+            error: (err) => console.error('Failed to request approval', err),
+          });
       }
     });
   }

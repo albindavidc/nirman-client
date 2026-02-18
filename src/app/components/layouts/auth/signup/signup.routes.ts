@@ -54,4 +54,12 @@ export const SIGNUP_ROUTES: Routes = [
     component: WorkerSignupComponent,
     title: 'Complete Profile - Nirman',
   },
+  {
+    path: 'supervisor/complete',
+    loadComponent: () =>
+      import('./components/supervisor-signup/supervisor-signup.component').then(
+        (m) => m.SupervisorSignupComponent,
+      ),
+    title: 'Complete Supervisor Profile - Nirman',
+  },
 ];

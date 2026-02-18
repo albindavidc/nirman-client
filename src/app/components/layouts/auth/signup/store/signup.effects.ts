@@ -248,8 +248,10 @@ export class SignupEffects {
             this.router.navigate(['/auth/login'], {
               queryParams: { role: 'worker' },
             });
+          } else if (accountType === 'supervisor') {
+            this.router.navigate(['/auth/signup/supervisor/complete']);
           } else {
-            // Supervisor (and others) go to regular login for now
+            // Others go to regular login for now
             this.router.navigate(['/auth/login']);
           }
         }),

@@ -62,6 +62,13 @@ export class SignupService {
     );
   }
 
+  completeSupervisorSignup(data: WorkerSignupData): Observable<any> {
+    return this.http.post(
+      `${this.configService.apiUrl}/auth/supervisor/signup`,
+      data,
+    );
+  }
+
   sendOtp(
     email: string,
     role?: string,

@@ -1,4 +1,4 @@
-import { Component, inject, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -33,7 +33,9 @@ export class UpdateStockModalComponent {
   private fb = inject(FormBuilder);
   public dialogRef = inject(MatDialogRef<UpdateStockModalComponent>);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { material: Material }) {}
+  public data = inject<{ material: Material }>(MAT_DIALOG_DATA);
+
+  // constructor() {} // Removed as it's empty now
 
   form = this.fb.group({
     type: ['IN', Validators.required],

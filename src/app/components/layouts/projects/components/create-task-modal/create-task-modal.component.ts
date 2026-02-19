@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -19,10 +19,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
-import { TaskService } from '../../services/task.service';
+import { TaskService, CreateTaskDto } from '../../services/task.service';
 import { ProjectService } from '../../services/project.service';
 import { ProjectPhaseService } from '../../services/project-phase.service';
-import { ProjectMemberWithUser } from '../../models/project.models';
+import {
+  ProjectMemberWithUser,
+  ProjectPhase,
+} from '../../models/project.models';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
 
 @Component({
@@ -49,17 +52,22 @@ export class CreateTaskModalComponent implements OnInit {
   private taskService = inject(TaskService);
   private projectService = inject(ProjectService);
   private phaseService = inject(ProjectPhaseService);
+  public dialogRef = inject(MatDialogRef<CreateTaskModalComponent>);
+  public data = inject<{ projectId: string; phaseId?: string }>(
+    MAT_DIALOG_DATA,
+  );
 
-  taskForm: FormGroup;
+  taskForm!: FormGroup;
   isSubmitting = false;
   projectMembers: ProjectMemberWithUser[] = [];
-  phases: any[] = [];
+  phases: ProjectPhase[] = [];
 
-  constructor(
-    public dialogRef: MatDialogRef<CreateTaskModalComponent>,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { projectId: string; phaseId?: string },
-  ) {
+  ngOnInit(): void {
+    this.initForm();
+    this.loadData();
+  }
+
+  private initForm(): void {
     this.taskForm = this.fb.group({
       name: [
         '',
@@ -71,17 +79,13 @@ export class CreateTaskModalComponent implements OnInit {
         ],
       ],
       description: ['', [Validators.maxLength(500)]],
-      phaseId: [data.phaseId || '', Validators.required],
+      phaseId: [this.data.phaseId || '', Validators.required],
       priority: ['Medium', Validators.required],
       status: ['Not Started', Validators.required],
       assignedTo: [null],
       plannedStartDate: [null],
       plannedEndDate: [null],
     });
-  }
-
-  ngOnInit(): void {
-    this.loadData();
   }
 
   onSubmit() {
@@ -93,7 +97,7 @@ export class CreateTaskModalComponent implements OnInit {
     const formValue = this.taskForm.value;
 
     // Construct DTO, ensuring we don't send 'null' for fields that expect string/dateString
-    const dto: any = {
+    const dto: CreateTaskDto = {
       name: formValue.name,
       phaseId: formValue.phaseId,
       priority: formValue.priority,

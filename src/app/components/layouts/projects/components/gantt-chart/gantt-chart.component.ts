@@ -9,7 +9,6 @@ import {
   EventEmitter,
   ViewEncapsulation,
   OnInit,
-  HostListener,
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -24,7 +23,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
-import { Task, TaskService } from '../../services/task.service';
+import { Task, TaskService, CreateTaskDto } from '../../services/task.service';
 
 // Interface for internal Gantt Task (extending the service Task or mapping to it)
 export interface GanttTask {
@@ -41,6 +40,21 @@ export interface GanttTask {
   endDate?: string;
   // For internal use
   originalTask?: Task;
+}
+
+export interface GanttWeek {
+  week: number;
+  dateRange: string;
+  displayDate: string;
+}
+
+export interface GanttDay {
+  day: number;
+  weekDay: string;
+  month: string;
+  year: number;
+  isWeekStart: boolean;
+  isWeekend: boolean;
 }
 
 @Component({
@@ -65,7 +79,9 @@ export interface GanttTask {
 })
 export class GanttChartComponent implements OnInit, OnChanges {
   @Input() tasks: Task[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() dependencies: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() phases: any[] = [];
   @Output() taskClick = new EventEmitter<GanttTask>();
 
@@ -136,9 +152,9 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   // Calculated values
   totalWeeks = 12;
-  weeks: any[] = [];
-  dailyViewData: any[] = [];
-  allDays: any[] = [];
+  weeks: GanttWeek[] = [];
+  dailyViewData: GanttDay[] = [];
+  allDays: GanttDay[] = [];
   totalDays = 0;
   totalDependencies = 0;
   criticalPathCount = 0;
@@ -146,10 +162,10 @@ export class GanttChartComponent implements OnInit, OnChanges {
   // Project Start Date (Should ideally come from project details)
   projectStartDate: Date;
 
-  constructor(
-    private dialog: MatDialog,
-    private taskService: TaskService,
-  ) {
+  private dialog = inject(MatDialog);
+  private taskService = inject(TaskService);
+
+  constructor() {
     // Initialize to start of current week (Sunday)
     const today = new Date();
     const day = today.getDay(); // 0 (Sun) to 6 (Sat)
@@ -238,8 +254,12 @@ export class GanttChartComponent implements OnInit, OnChanges {
         status: this.mapStatus(t.status || 'pending'),
         progress: t.progress || 0,
         color: t.color || this.getColorForStatus(t.status),
-        startDate: t.plannedStartDate?.toString(),
-        endDate: t.plannedEndDate?.toString(),
+        startDate: t.plannedStartDate
+          ? new Date(t.plannedStartDate).toISOString()
+          : undefined,
+        endDate: t.plannedEndDate
+          ? new Date(t.plannedEndDate).toISOString()
+          : undefined,
         dependencies: t.dependencies || [], // Map from backend
         originalTask: t,
       };
@@ -481,7 +501,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   // Bound methods for event listeners to allow removal
   private bindMouseMove = (e: MouseEvent) => this.onMouseMove(e);
-  private bindMouseUp = (e: MouseEvent) => this.onMouseUp(e);
+  private bindMouseUp = () => this.onMouseUp();
 
   onMouseMove(e: MouseEvent) {
     if (!this.isDragging || !this.draggedTaskId || !this.timelineRef) return;
@@ -542,7 +562,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
     this.filterTasks(); // Re-trigger filter to update view
   }
 
-  onMouseUp(e: MouseEvent) {
+  onMouseUp() {
     if (this.isDragging && this.draggedTaskId) {
       // Find the task that was updated
       const task = this.ganttTasks.find((t) => t.id === this.draggedTaskId);
@@ -554,7 +574,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
         const newEnd = new Date(newStart);
         newEnd.setDate(newEnd.getDate() + Math.round(task.duration));
 
-        const payload: any = {};
+        const payload: Partial<CreateTaskDto> & { progress?: number } = {};
 
         // If we moved or resized, update dates
         if (
@@ -563,7 +583,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
           this.dragType === 'resize-right'
         ) {
           payload.plannedStartDate = newStart.toISOString();
-          payload.plannedEndDate = newEnd.toISOString();
+
           // Also update local model strings to reflect immediately if needed by other parts
           task.startDate = payload.plannedStartDate;
           task.endDate = payload.plannedEndDate;
@@ -664,12 +684,12 @@ export class GanttChartComponent implements OnInit, OnChanges {
     // Auto-update color based on status
     const color = this.getColorForStatus(this.editingTask.status);
 
-    const payload: any = {
+    const payload: Partial<CreateTaskDto> = {
       name: this.editingTask.name,
       status: this.editingTask.status,
       progress: Math.round(this.editingTask.progress || 0),
       color: color,
-      notes: this.editingTask.originalTask?.notes,
+      notes: this.editingTask.originalTask?.notes || undefined,
       plannedStartDate: this.editingTask.startDate
         ? new Date(this.editingTask.startDate).toISOString()
         : undefined,
@@ -718,23 +738,20 @@ export class GanttChartComponent implements OnInit, OnChanges {
         : this.newTask.phase || 'dummy-phase-id';
 
     // Calculate duration from dates
+
     const start = this.newTask.startDate
       ? new Date(this.newTask.startDate)
       : new Date();
     const end = this.newTask.endDate
       ? new Date(this.newTask.endDate)
       : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const duration = Math.max(
-      1,
-      Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)),
-    );
 
-    const status = (this.newTask.status as any) || 'pending';
+    const status = this.newTask.status || 'pending';
     const color = this.getColorForStatus(status);
 
-    const payload: any = {
+    const payload: CreateTaskDto = {
       phaseId: phaseId,
-      name: this.newTask.name,
+      name: this.newTask.name || 'New Task',
       plannedStartDate: start.toISOString(),
       plannedEndDate: end.toISOString(),
       status: status,
@@ -753,7 +770,9 @@ export class GanttChartComponent implements OnInit, OnChanges {
           phase: created.phaseId, // Name mapping needed?
           duration: this.newTask.duration || 7, // Recalc from dates
           startWeek: this.calculateStartWeek(
-            created.plannedStartDate || undefined,
+            created.plannedStartDate
+              ? new Date(created.plannedStartDate)
+              : undefined,
           ),
           status: 'pending',
           progress: 0,

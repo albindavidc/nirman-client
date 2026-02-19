@@ -148,7 +148,13 @@
         <!-- Table Body -->
         <div class="table-body">
           @for (task of filteredTasks$ | async; track task.id) {
-            <div class="table-row" (click)="openTask(task)">
+            <div
+              class="table-row"
+              (click)="openTask(task)"
+              (keyup.enter)="openTask(task)"
+              tabindex="0"
+              role="button"
+            >
               <div class="col name font-medium">{{ task.name }}</div>
               <div class="col phase text-muted">
                 {{ getPhaseName(task.phaseId) }}
@@ -231,13 +237,14 @@
     } @else {
       <div class="mt-4">
         <!-- Gantt View -->
-        <app-gantt-chart
-          *ngIf="filteredTasks$ | async as tasks"
-          [tasks]="tasks"
-          [dependencies]="(dependencies$ | async) || []"
-          [phases]="phases"
-          (taskClick)="openEditTaskModal($event)"
-        ></app-gantt-chart>
+        @if (filteredTasks$ | async; as tasks) {
+          <app-gantt-chart
+            [tasks]="tasks"
+            [dependencies]="(dependencies$ | async) || []"
+            [phases]="phases"
+            (taskClick)="openEditTaskModal($event)"
+          ></app-gantt-chart>
+        }
       </div>
     }
   </div>

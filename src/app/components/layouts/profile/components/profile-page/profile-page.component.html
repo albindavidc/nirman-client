@@ -23,7 +23,12 @@
         <mat-card-content>
           <div class="profile-header">
             <!-- Clickable Avatar -->
-            <div class="avatar-upload-wrapper" (click)="openUploadModal()">
+            <div
+              class="avatar-upload-wrapper"
+              (click)="openUploadModal()"
+              tabindex="0"
+              (keydown.enter)="openUploadModal()"
+            >
               @if (getProfilePhotoUrl()) {
                 <img
                   [src]="getProfilePhotoUrl()"

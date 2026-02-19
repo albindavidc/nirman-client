@@ -15,18 +15,19 @@
 
       <!-- Particles -->
       <div class="particles">
-        <div
-          *ngFor="let i of particles"
-          class="particle"
-          [style.left.%]="20 + i * 5"
-          [style.top.%]="30 + (i % 3) * 20"
-          [style.background]="
-            i % 2 === 0
-              ? 'var(--md-sys-color-primary)'
-              : 'var(--md-sys-color-secondary)'
-          "
-          [style.animation-delay.s]="i * 0.3"
-        ></div>
+        @for (i of particles; track i) {
+          <div
+            class="particle"
+            [style.left.%]="20 + i * 5"
+            [style.top.%]="30 + (i % 3) * 20"
+            [style.background]="
+              i % 2 === 0
+                ? 'var(--md-sys-color-primary)'
+                : 'var(--md-sys-color-secondary)'
+            "
+            [style.animation-delay.s]="i * 0.3"
+          ></div>
+        }
       </div>
     </div>
   </div>

@@ -13,41 +13,47 @@
 
     <!-- Error Message -->
     @if (error$ | async; as error) {
-    <div class="error-message">
-      <mat-icon>error_outline</mat-icon>
-      <span>{{ error }}</span>
-    </div>
+      <div class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
     }
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <!-- Email Field -->
       <div class="form-field">
-        <label class="field-label">Email Address</label>
+        <label class="field-label" for="email">Email Address</label>
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>email_outline</mat-icon>
           <input
             matInput
+            id="email"
             formControlName="email"
             placeholder="you@example.com"
             type="email"
           />
-          @if (loginForm.get('email')?.hasError('required') &&
-          loginForm.get('email')?.touched) {
-          <mat-error>Email is required</mat-error>
-          } @else if (loginForm.get('email')?.hasError('email') &&
-          loginForm.get('email')?.touched) {
-          <mat-error>Please enter a valid email address</mat-error>
+          @if (
+            loginForm.get("email")?.hasError("required") &&
+            loginForm.get("email")?.touched
+          ) {
+            <mat-error>Email is required</mat-error>
+          } @else if (
+            loginForm.get("email")?.hasError("email") &&
+            loginForm.get("email")?.touched
+          ) {
+            <mat-error>Please enter a valid email address</mat-error>
           }
         </mat-form-field>
       </div>
 
       <!-- Password Field -->
       <div class="form-field">
-        <label class="field-label">Password</label>
+        <label class="field-label" for="password">Password</label>
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>lock_outline</mat-icon>
           <input
             matInput
+            id="password"
             formControlName="password"
             [type]="hidePassword() ? 'password' : 'text'"
             placeholder="••••••••"
@@ -62,12 +68,16 @@
               hidePassword() ? "visibility_off" : "visibility"
             }}</mat-icon>
           </button>
-          @if (loginForm.get('password')?.hasError('required') &&
-          loginForm.get('password')?.touched) {
-          <mat-error>Password is required</mat-error>
-          } @else if (loginForm.get('password')?.hasError('minlength') &&
-          loginForm.get('password')?.touched) {
-          <mat-error>Password must be at least 6 characters</mat-error>
+          @if (
+            loginForm.get("password")?.hasError("required") &&
+            loginForm.get("password")?.touched
+          ) {
+            <mat-error>Password is required</mat-error>
+          } @else if (
+            loginForm.get("password")?.hasError("minlength") &&
+            loginForm.get("password")?.touched
+          ) {
+            <mat-error>Password must be at least 6 characters</mat-error>
           }
         </mat-form-field>
       </div>
@@ -91,9 +101,9 @@
           [disabled]="loginForm.invalid || (isLoading$ | async)"
         >
           @if (isLoading$ | async) {
-          <mat-spinner diameter="20"></mat-spinner>
+            <mat-spinner diameter="20"></mat-spinner>
           } @else {
-          <span>Sign In</span>
+            <span>Sign In</span>
           }
         </button>
       </div>

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 
-export const VendorStatusGuard: CanActivateFn = (route, state) => {
+export const VendorStatusGuard: CanActivateFn = () => {
   const router = inject(Router);
   const userJson = localStorage.getItem('user');
 

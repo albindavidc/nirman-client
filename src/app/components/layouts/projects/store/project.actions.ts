@@ -3,6 +3,7 @@ import {
   Project,
   ProjectFilters,
   CreateProjectDto,
+  PhaseApproval,
 } from '../models/project.models';
 
 // Load Projects
@@ -147,7 +148,7 @@ export const loadProjectApprovals = createAction(
 
 export const loadProjectApprovalsSuccess = createAction(
   '[Project] Load Project Approvals Success',
-  props<{ approvals: any[] }>(),
+  props<{ approvals: PhaseApproval[] }>(),
 );
 
 export const loadProjectApprovalsFailure = createAction(

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -27,17 +27,13 @@ import { SharedModalComponent } from '../../../../../shared/components/shared-mo
   styleUrls: ['./request-approval-modal.component.scss'],
 })
 export class RequestApprovalModalComponent {
-  form: FormGroup;
+  private fb = inject(FormBuilder);
+  public dialogRef = inject(MatDialogRef<RequestApprovalModalComponent>);
+  public data = inject<{ phaseName: string }>(MAT_DIALOG_DATA);
 
-  constructor(
-    private fb: FormBuilder,
-    public dialogRef: MatDialogRef<RequestApprovalModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { phaseName: string },
-  ) {
-    this.form = this.fb.group({
-      comments: [''],
-    });
-  }
+  form: FormGroup = this.fb.group({
+    comments: [''],
+  });
 
   onSubmit(): void {
     if (this.form.valid) {

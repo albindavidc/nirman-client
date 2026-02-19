@@ -29,6 +29,22 @@ export interface ProjectPhase {
 
 export interface PhaseApprovalRequest {
   comments?: string;
+  media?: { type: string; url: string }[];
+  approverId?: string;
+}
+
+export interface CreatePhaseApprovalDto {
+  approvalStatus: 'approved' | 'rejected';
+  comments?: string;
+  media?: { type: string; url: string }[];
+}
+
+export interface TaskDependency {
+  id: string;
+  successorTaskId: string;
+  predecessorTaskId: string;
+  type: string;
+  lagTime: number;
 }
 
 export interface PhaseApproval {

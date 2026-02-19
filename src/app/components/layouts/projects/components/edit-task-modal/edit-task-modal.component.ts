@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -20,10 +20,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
-import { Task, TaskService } from '../../services/task.service';
+import { Task, TaskService, CreateTaskDto } from '../../services/task.service';
 import { ProjectService } from '../../services/project.service';
 import { ProjectPhaseService } from '../../services/project-phase.service';
-import { ProjectMemberWithUser } from '../../models/project.models';
+import {
+  ProjectMemberWithUser,
+  ProjectPhase,
+} from '../../models/project.models';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
 
 export interface EditTaskDialogData {
@@ -56,16 +59,13 @@ export class EditTaskModalComponent implements OnInit {
   private taskService = inject(TaskService);
   private projectService = inject(ProjectService);
   private phaseService = inject(ProjectPhaseService);
+  public dialogRef = inject(MatDialogRef<EditTaskModalComponent>);
+  public data = inject<EditTaskDialogData>(MAT_DIALOG_DATA);
 
   taskForm!: FormGroup;
   isSubmitting = false;
   projectMembers: ProjectMemberWithUser[] = [];
-  phases: any[] = [];
-
-  constructor(
-    public dialogRef: MatDialogRef<EditTaskModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: EditTaskDialogData,
-  ) {}
+  phases: ProjectPhase[] = [];
 
   ngOnInit(): void {
     this.initForm();
@@ -128,7 +128,7 @@ export class EditTaskModalComponent implements OnInit {
     const formValue = this.taskForm.value;
 
     // Build update DTO, only include defined values
-    const dto: any = {};
+    const dto: Partial<CreateTaskDto> = {};
 
     if (formValue.name) dto.name = formValue.name;
     if (formValue.description !== undefined)

@@ -14,7 +14,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
-import { debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { ProjectService } from '../../services/project.service';
 import { Professional } from '../../models/project.models';
 

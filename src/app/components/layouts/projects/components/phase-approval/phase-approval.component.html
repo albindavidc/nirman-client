@@ -36,43 +36,56 @@
           <!-- Phase Name -->
           <div class="flex flex-col gap-1">
             <label
+              for="phase-input"
               class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
               >Phase</label
             >
             <mat-form-field appearance="outline" class="w-full custom-input">
-              <input matInput formControlName="phase" class="!text-white" />
+              <input
+                id="phase-input"
+                matInput
+                formControlName="phase"
+                class="!text-white"
+              />
             </mat-form-field>
           </div>
 
           <!-- Approval Status -->
           <div class="flex flex-col gap-1">
             <label
+              for="status-input"
               class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
               >Approval Status</label
             >
             <mat-form-field appearance="outline" class="w-full custom-input">
-              <input matInput formControlName="status" class="!text-white" />
+              <input
+                id="status-input"
+                matInput
+                formControlName="status"
+                class="!text-white"
+              />
             </mat-form-field>
           </div>
 
           <!-- Approved By -->
           <div class="flex flex-col gap-1">
             <label
+              for="approver-select"
               class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
               >Approved By</label
             >
             <mat-form-field appearance="outline" class="w-full custom-input">
               <mat-select
+                id="approver-select"
                 formControlName="approverId"
                 placeholder="Select Approver"
                 class="!text-white"
               >
-                <mat-option
-                  *ngFor="let prof of approvers$ | async"
-                  [value]="prof.id"
-                >
-                  {{ prof.fullName }} ({{ prof.title }})
-                </mat-option>
+                @for (prof of approvers$ | async; track prof.id) {
+                  <mat-option [value]="prof.id">
+                    {{ prof.fullName }} ({{ prof.title }})
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
@@ -80,11 +93,13 @@
           <!-- Comments -->
           <div class="flex flex-col gap-1">
             <label
+              for="comments-input"
               class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
               >Comments</label
             >
             <mat-form-field appearance="outline" class="w-full custom-input">
               <textarea
+                id="comments-input"
                 matInput
                 formControlName="comments"
                 rows="4"
@@ -97,11 +112,13 @@
           <!-- Approval Date -->
           <div class="flex flex-col gap-1">
             <label
+              for="approval-date-input"
               class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
               >Approval Date</label
             >
             <mat-form-field appearance="outline" class="w-full custom-input">
               <input
+                id="approval-date-input"
                 matInput
                 [matDatepicker]="picker"
                 formControlName="date"
@@ -133,6 +150,7 @@
         <!-- Photo Evidence -->
         <div class="flex flex-col gap-2">
           <label
+            for="photo-upload"
             class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
             >Photo Evidence</label
           >
@@ -140,6 +158,7 @@
             class="border-2 border-dashed border-gray-600 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-[#363636] transition-colors relative"
           >
             <input
+              id="photo-upload"
               type="file"
               multiple
               accept="image/*"
@@ -153,22 +172,23 @@
             <span class="text-xs text-gray-500 mt-1"
               >Multiple images accepted</span
             >
-            <div
-              *ngIf="selectedPhotos.length > 0"
-              class="mt-4 flex gap-2 flex-wrap justify-center"
-            >
-              <span
-                *ngFor="let file of selectedPhotos"
-                class="bg-gray-700 rounded px-2 py-1 text-xs text-white"
-                >{{ file.name }}</span
-              >
-            </div>
+            @if (selectedPhotos.length > 0) {
+              <div class="mt-4 flex gap-2 flex-wrap justify-center">
+                @for (file of selectedPhotos; track file.name) {
+                  <span
+                    class="bg-gray-700 rounded px-2 py-1 text-xs text-white"
+                    >{{ file.name }}</span
+                  >
+                }
+              </div>
+            }
           </div>
         </div>
 
         <!-- Video Evidence -->
         <div class="flex flex-col gap-2">
           <label
+            for="video-upload"
             class="text-xs text-gray-400 uppercase font-semibold tracking-wider"
             >Video Evidence</label
           >
@@ -176,6 +196,7 @@
             class="border-2 border-dashed border-gray-600 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-[#363636] transition-colors relative"
           >
             <input
+              id="video-upload"
               type="file"
               multiple
               accept="video/*"
@@ -187,16 +208,16 @@
             >
             <span class="text-gray-300 font-medium">Upload Video</span>
             <span class="text-xs text-gray-500 mt-1">MP4, MOV up to 100MB</span>
-            <div
-              *ngIf="selectedVideos.length > 0"
-              class="mt-4 flex gap-2 flex-wrap justify-center"
-            >
-              <span
-                *ngFor="let file of selectedVideos"
-                class="bg-gray-700 rounded px-2 py-1 text-xs text-white"
-                >{{ file.name }}</span
-              >
-            </div>
+            @if (selectedVideos.length > 0) {
+              <div class="mt-4 flex gap-2 flex-wrap justify-center">
+                @for (file of selectedVideos; track file.name) {
+                  <span
+                    class="bg-gray-700 rounded px-2 py-1 text-xs text-white"
+                    >{{ file.name }}</span
+                  >
+                }
+              </div>
+            }
           </div>
         </div>
       </mat-card-content>

@@ -64,13 +64,15 @@
 
     <div class="form-row">
       <div class="form-field">
-        <label class="field-label">Phone Number *</label>
+        <label class="field-label" for="phone">Phone Number *</label>
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>phone</mat-icon>
           <input
             matInput
+            id="phone"
             formControlName="phone"
             placeholder="+1 234 567 8900"
+            aria-label="Phone Number"
           />
           @if (form.get("phone")?.hasError("required")) {
             <mat-error>Required</mat-error>

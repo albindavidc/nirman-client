@@ -45,12 +45,14 @@
     >
       <div class="text-center z-10">
         <h2 class="text-xl font-semibold mb-2">Check Out</h2>
-        <div class="text-4xl font-bold text-gray-500 mb-1" *ngIf="!isCheckedIn">
-          -- : --
-        </div>
-        <div class="text-4xl font-bold text-[#E6D5B8] mb-1" *ngIf="isCheckedIn">
-          {{ checkInTime | date: "hh:mm a" }}
-        </div>
+        @if (!isCheckedIn) {
+          <div class="text-4xl font-bold text-gray-500 mb-1">-- : --</div>
+        }
+        @if (isCheckedIn) {
+          <div class="text-4xl font-bold text-[#E6D5B8] mb-1">
+            {{ checkInTime | date: "hh:mm a" }}
+          </div>
+        }
         <p class="text-gray-400 text-sm mb-6">Click below to check out</p>
 
         <button
@@ -154,37 +156,42 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let record of recentHistory"
-            class="border-b border-gray-700 hover:bg-[#333]"
-          >
-            <td class="px-6 py-4">{{ record.date | date: "MMM d, y" }}</td>
-            <td class="px-6 py-4">
-              {{ record.checkIn ? (record.checkIn | date: "hh:mm a") : "-" }}
-            </td>
-            <td class="px-6 py-4">
-              {{ record.checkOut ? (record.checkOut | date: "hh:mm a") : "-" }}
-            </td>
-            <td class="px-6 py-4">{{ record.workHours || "-" }}h</td>
-            <td class="px-6 py-4">{{ record.location || "Unknown" }}</td>
-            <td class="px-6 py-4">
-              <span
-                class="px-2 py-1 rounded text-xs bg-[#10B981]/20 text-[#10B981]"
-                *ngIf="record.status === 'Present'"
-                >On Time</span
-              >
-              <span
-                class="px-2 py-1 rounded text-xs bg-[#EF4444]/20 text-[#EF4444]"
-                *ngIf="record.status !== 'Present'"
-                >{{ record.status }}</span
-              >
-            </td>
-          </tr>
-          <tr *ngIf="recentHistory.length === 0">
-            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-              No recent attendance records found.
-            </td>
-          </tr>
+          @for (record of recentHistory; track record.id) {
+            <tr class="border-b border-gray-700 hover:bg-[#333]">
+              <td class="px-6 py-4">{{ record.date | date: "MMM d, y" }}</td>
+              <td class="px-6 py-4">
+                {{ record.checkIn ? (record.checkIn | date: "hh:mm a") : "-" }}
+              </td>
+              <td class="px-6 py-4">
+                {{
+                  record.checkOut ? (record.checkOut | date: "hh:mm a") : "-"
+                }}
+              </td>
+              <td class="px-6 py-4">{{ record.workHours || "-" }}h</td>
+              <td class="px-6 py-4">{{ record.location || "Unknown" }}</td>
+              <td class="px-6 py-4">
+                @if (record.status === "Present") {
+                  <span
+                    class="px-2 py-1 rounded text-xs bg-[#10B981]/20 text-[#10B981]"
+                    >On Time</span
+                  >
+                }
+                @if (record.status !== "Present") {
+                  <span
+                    class="px-2 py-1 rounded text-xs bg-[#EF4444]/20 text-[#EF4444]"
+                    >{{ record.status }}</span
+                  >
+                }
+              </td>
+            </tr>
+          }
+          @if (recentHistory.length === 0) {
+            <tr>
+              <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                No recent attendance records found.
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>

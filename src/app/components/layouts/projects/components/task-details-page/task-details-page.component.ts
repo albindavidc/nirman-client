@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TaskService, Task } from '../../services/task.service';
+import { TaskDependency } from '../../models/project.models';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,12 +22,12 @@ export class TaskDetailsPageComponent implements OnInit {
   private taskService = inject(TaskService);
   private phaseService = inject(ProjectPhaseService);
 
-  taskId: string = '';
-  projectId: string = '';
+  taskId = '';
+  projectId = '';
 
   task$: Observable<Task> | undefined;
   phaseName$: Observable<string> | undefined;
-  dependencies$: Observable<any[]> | undefined; // We'll filter project deps for now
+  dependencies$: Observable<TaskDependency[]> | undefined; // We'll filter project deps for now
 
   ngOnInit() {
     this.taskId = this.route.snapshot.paramMap.get('taskId') || '';
@@ -75,17 +76,17 @@ export class TaskDetailsPageComponent implements OnInit {
     return differenceInDays(end, new Date(task.actualStartDate)) || 1;
   }
 
-  formatDate(date: any): string {
+  formatDate(date: string | Date | null | undefined): string {
     if (!date) return 'TBD';
     return format(new Date(date), 'MMM d, yyyy');
   }
 
-  formatDateTime(date: any): string {
+  formatDateTime(date: string | Date | null | undefined): string {
     if (!date) return '';
     return format(new Date(date), 'MMM d, yyyy - h:mm a');
   }
 
-  isPredecessor(dep: any): boolean {
+  isPredecessor(dep: TaskDependency): boolean {
     return dep.successorTaskId === this.taskId;
     // If I am the successor, that means the other one (predecessor) COMES BEFORE me.
     // "Depends On" = Predecessor

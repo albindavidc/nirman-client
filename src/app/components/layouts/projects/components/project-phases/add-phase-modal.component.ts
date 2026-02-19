@@ -46,8 +46,6 @@ export class AddPhaseModalComponent {
   phaseForm: FormGroup;
 
   constructor() {
-    const data = this.data;
-
     this.phaseForm = this.fb.group({
       name: [
         '',

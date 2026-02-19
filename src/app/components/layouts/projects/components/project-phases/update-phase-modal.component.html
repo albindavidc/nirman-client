@@ -1,21 +1,21 @@
 <app-shared-modal
   [title]="'Edit Phase: ' + data.phase.name"
-  (close)="onCancel()"
+  (closeModal)="onCancel()"
 >
   <form [formGroup]="phaseForm" (ngSubmit)="onSubmit()">
     <div class="modal-content">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Phase Name</mat-label>
         <input matInput formControlName="name" placeholder="e.g. Foundation" />
-        <mat-error *ngIf="phaseForm.get('name')?.hasError('required')">
-          Name is required
-        </mat-error>
-        <mat-error *ngIf="phaseForm.get('name')?.hasError('minlength')">
-          Name must be at least 3 characters
-        </mat-error>
-        <mat-error *ngIf="phaseForm.get('name')?.hasError('maxlength')">
-          Name cannot exceed 100 characters
-        </mat-error>
+        @if (phaseForm.get("name")?.hasError("required")) {
+          <mat-error>Name is required</mat-error>
+        }
+        @if (phaseForm.get("name")?.hasError("minlength")) {
+          <mat-error>Name must be at least 3 characters</mat-error>
+        }
+        @if (phaseForm.get("name")?.hasError("maxlength")) {
+          <mat-error>Name cannot exceed 100 characters</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -29,9 +29,9 @@
         <mat-hint align="end"
           >{{ phaseForm.get("description")?.value?.length || 0 }}/500</mat-hint
         >
-        <mat-error *ngIf="phaseForm.get('description')?.hasError('maxlength')">
-          Description cannot exceed 500 characters
-        </mat-error>
+        @if (phaseForm.get("description")?.hasError("maxlength")) {
+          <mat-error>Description cannot exceed 500 characters</mat-error>
+        }
       </mat-form-field>
 
       <div class="form-grid">
@@ -108,12 +108,12 @@
         <mat-form-field appearance="outline">
           <mat-label>Sequence</mat-label>
           <input matInput type="number" formControlName="sequence" />
-          <mat-error *ngIf="phaseForm.get('sequence')?.hasError('required')">
-            Sequence is required
-          </mat-error>
-          <mat-error *ngIf="phaseForm.get('sequence')?.hasError('min')">
-            Sequence must be at least 1
-          </mat-error>
+          @if (phaseForm.get("sequence")?.hasError("required")) {
+            <mat-error>Sequence is required</mat-error>
+          }
+          @if (phaseForm.get("sequence")?.hasError("min")) {
+            <mat-error>Sequence must be at least 1</mat-error>
+          }
         </mat-form-field>
       </div>
 

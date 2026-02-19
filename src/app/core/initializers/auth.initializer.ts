@@ -16,7 +16,7 @@ export function initializeAuthState() {
       store.dispatch(LoginActions.hydrateFromStorage({ user }));
       // Then validate session with backend (async)
       store.dispatch(LoginActions.validateSession());
-    } catch (e) {
+    } catch {
       localStorage.removeItem('user');
     }
   }

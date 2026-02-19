@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MatDialogRef,
@@ -8,12 +8,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Task } from '../../../services/task.service';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
@@ -35,18 +30,14 @@ import { SharedModalComponent } from '../../../../../../shared/components/shared
   styleUrl: './start-task-modal.component.scss',
 })
 export class StartTaskModalComponent implements OnInit {
-  form: FormGroup;
-  startTime: string = '';
+  private fb = inject(FormBuilder);
+  public dialogRef = inject(MatDialogRef<StartTaskModalComponent>);
+  public data = inject<{ task: Task }>(MAT_DIALOG_DATA);
 
-  constructor(
-    private fb: FormBuilder,
-    public dialogRef: MatDialogRef<StartTaskModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { task: Task },
-  ) {
-    this.form = this.fb.group({
-      notes: ['', [Validators.maxLength(500)]],
-    });
-  }
+  form = this.fb.group({
+    notes: ['', [Validators.maxLength(500)]],
+  });
+  startTime = '';
 
   ngOnInit() {
     const now = new Date();

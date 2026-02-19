@@ -8,8 +8,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, of } from 'rxjs';
-import { map, take, switchMap, startWith } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 // Material Imports
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -116,15 +115,17 @@ export class PhaseApprovalComponent implements OnInit {
     }
   }
 
-  onPhotoSelected(event: any): void {
-    const files = event.target.files;
+  onPhotoSelected(event: Event): void {
+    const element = event.target as HTMLInputElement;
+    const files = element.files;
     if (files) {
       this.selectedPhotos = Array.from(files);
     }
   }
 
-  onVideoSelected(event: any): void {
-    const files = event.target.files;
+  onVideoSelected(event: Event): void {
+    const element = event.target as HTMLInputElement;
+    const files = element.files;
     if (files) {
       this.selectedVideos = Array.from(files);
     }

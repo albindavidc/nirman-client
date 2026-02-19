@@ -1,6 +1,6 @@
 <app-shared-modal
   [title]="isAddMode ? 'Add New Vendor' : 'Edit Vendor'"
-  (close)="onCancel()"
+  (closeModal)="onCancel()"
 >
   <form
     [formGroup]="editForm"

@@ -70,11 +70,12 @@
 
         <!-- Tax Number -->
         <div class="form-field">
-          <label class="field-label">Tax Number</label>
+          <label class="field-label" for="taxNumber">Tax Number</label>
           <mat-form-field appearance="outline">
             <mat-icon matPrefix>receipt_long</mat-icon>
             <input
               matInput
+              id="taxNumber"
               formControlName="taxNumber"
               placeholder="XX-XXXXXXX"
             />
@@ -85,11 +86,14 @@
 
       <!-- Years in Business -->
       <div class="form-field full-width">
-        <label class="field-label">Years in Business</label>
+        <label class="field-label" for="yearsInBusiness"
+          >Years in Business</label
+        >
         <mat-form-field appearance="outline">
           <mat-icon matPrefix>schedule</mat-icon>
           <input
             matInput
+            id="yearsInBusiness"
             type="number"
             formControlName="yearsInBusiness"
             placeholder="5"

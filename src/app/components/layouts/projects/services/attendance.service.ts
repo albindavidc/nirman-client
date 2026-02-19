@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../../../core/services/config.service';
 import { Observable } from 'rxjs';
@@ -39,10 +39,8 @@ export interface AttendanceStats {
   providedIn: 'root',
 })
 export class AttendanceService {
-  constructor(
-    private http: HttpClient,
-    private configService: ConfigService,
-  ) {}
+  private readonly http = inject(HttpClient);
+  private readonly configService = inject(ConfigService);
 
   private get apiUrl(): string {
     return `${this.configService.apiBaseUrl}/projects`;
@@ -83,8 +81,8 @@ export class AttendanceService {
   getMyHistory(
     projectId: string,
     userId: string,
-    limit: number = 10,
-    offset: number = 0,
+    limit = 10,
+    offset = 0,
   ): Observable<AttendanceRecord[]> {
     return this.http.get<AttendanceRecord[]>(
       `${this.apiUrl}/${projectId}/attendance/me/history`,

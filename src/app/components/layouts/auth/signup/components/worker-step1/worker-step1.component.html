@@ -18,19 +18,21 @@
           placeholder="john.doe@example.com"
         />
         <mat-icon matPrefix>email</mat-icon>
-        <mat-error *ngIf="form.get('email')?.hasError('required')">
-          Email is required
-        </mat-error>
-        <mat-error *ngIf="form.get('email')?.hasError('email')">
-          Please enter a valid email address
-        </mat-error>
+        @if (form.get("email")?.hasError("required")) {
+          <mat-error>Email is required</mat-error>
+        }
+        @if (form.get("email")?.hasError("email")) {
+          <mat-error>Please enter a valid email address</mat-error>
+        }
       </mat-form-field>
     </div>
 
-    <div class="error-message" *ngIf="error$ | async as error">
-      <mat-icon>error_outline</mat-icon>
-      <span>{{ error }}</span>
-    </div>
+    @if (error$ | async; as error) {
+      <div class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    }
 
     <div class="actions">
       <a mat-button routerLink="/auth/login" [queryParams]="{ role: 'worker' }"
@@ -42,8 +44,12 @@
         type="submit"
         [disabled]="form.invalid || (loading$ | async)"
       >
-        <mat-spinner diameter="20" *ngIf="loading$ | async"></mat-spinner>
-        <span *ngIf="!(loading$ | async)">Send Verification Code</span>
+        @if (loading$ | async) {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
+        @if ((loading$ | async) === false) {
+          <span>Send Verification Code</span>
+        }
       </button>
     </div>
   </form>

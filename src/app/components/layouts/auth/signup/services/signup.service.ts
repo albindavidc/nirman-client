@@ -55,14 +55,14 @@ export class SignupService {
     });
   }
 
-  completeWorkerSignup(data: WorkerSignupData): Observable<any> {
+  completeWorkerSignup(data: WorkerSignupData): Observable<unknown> {
     return this.http.post(
       `${this.configService.apiUrl}/auth/worker/signup`,
       data,
     );
   }
 
-  completeSupervisorSignup(data: WorkerSignupData): Observable<any> {
+  completeSupervisorSignup(data: WorkerSignupData): Observable<unknown> {
     return this.http.post(
       `${this.configService.apiUrl}/auth/supervisor/signup`,
       data,

@@ -21,9 +21,9 @@ export class SharedModalComponent {
   @Input() subtitle = '';
   @Input({ transform: booleanAttribute }) hasActions = true;
 
-  @Output() close = new EventEmitter<void>();
+  @Output() closeModal = new EventEmitter<void>();
 
   onClose(): void {
-    this.close.emit();
+    this.closeModal.emit();
   }
 }

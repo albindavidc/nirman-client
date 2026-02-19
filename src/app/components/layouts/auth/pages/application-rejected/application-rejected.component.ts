@@ -48,7 +48,7 @@ export class ApplicationRejectedComponent implements OnInit {
 
     this.isSubmitting = true;
     this.vendorService.requestRecheck(this.vendorId).subscribe({
-      next: (updatedVendor) => {
+      next: () => {
         this.notification.success('Re-check request submitted successfully');
 
         // Update local storage to reflect pending status

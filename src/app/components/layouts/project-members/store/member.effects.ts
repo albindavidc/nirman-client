@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError, switchMap, tap } from 'rxjs/operators';
+import { map, mergeMap, catchError, switchMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as MemberActions from './member.actions';
 import { MemberService } from '../services/member.service';
@@ -18,10 +18,12 @@ export class MemberEffects {
       switchMap(({ page, limit, role, search }) =>
         this.memberService.getMembers(page, limit, role, search).pipe(
           map((response) => MemberActions.loadMembersSuccess(response)),
-          catchError((error) => of(MemberActions.loadMembersFailure({ error })))
-        )
-      )
-    )
+          catchError((error) =>
+            of(MemberActions.loadMembersFailure({ error })),
+          ),
+        ),
+      ),
+    ),
   );
 
   addMember$ = createEffect(() =>
@@ -40,10 +42,10 @@ export class MemberEffects {
               duration: 3000,
             });
             return of(MemberActions.addMemberFailure({ error }));
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   editMember$ = createEffect(() =>
@@ -62,10 +64,10 @@ export class MemberEffects {
               duration: 3000,
             });
             return of(MemberActions.editMemberFailure({ error }));
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   blockMember$ = createEffect(() =>
@@ -78,11 +80,11 @@ export class MemberEffects {
             return MemberActions.updateMemberStatusSuccess({ member });
           }),
           catchError((error) =>
-            of(MemberActions.updateMemberStatusFailure({ error }))
-          )
-        )
-      )
-    )
+            of(MemberActions.updateMemberStatusFailure({ error })),
+          ),
+        ),
+      ),
+    ),
   );
 
   unblockMember$ = createEffect(() =>
@@ -95,10 +97,10 @@ export class MemberEffects {
             return MemberActions.updateMemberStatusSuccess({ member });
           }),
           catchError((error) =>
-            of(MemberActions.updateMemberStatusFailure({ error }))
-          )
-        )
-      )
-    )
+            of(MemberActions.updateMemberStatusFailure({ error })),
+          ),
+        ),
+      ),
+    ),
   );
 }

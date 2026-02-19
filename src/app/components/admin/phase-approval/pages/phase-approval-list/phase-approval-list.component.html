@@ -70,12 +70,11 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
 
-      <div
-        *ngIf="(approvals$ | async)?.length === 0"
-        class="p-8 text-center text-gray-500"
-      >
-        No phase approvals found.
-      </div>
+      @if ((approvals$ | async)?.length === 0) {
+        <div class="p-8 text-center text-gray-500">
+          No phase approvals found.
+        </div>
+      }
     </div>
   </mat-card>
 </div>

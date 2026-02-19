@@ -1,4 +1,4 @@
-import { LoginCredentials, LoginResponse } from '../models/login.models';
+import { LoginResponse } from '../models/login.models';
 
 export interface LoginState {
   isLoading: boolean;

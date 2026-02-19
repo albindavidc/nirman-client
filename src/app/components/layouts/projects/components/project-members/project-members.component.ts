@@ -71,7 +71,7 @@ export class ProjectMembersComponent implements OnInit {
   totalRecords = 0;
 
   today = new Date();
-  currentUserRole: string = '';
+  currentUserRole = '';
 
   get canAddMember(): boolean {
     return ['admin'].includes(this.currentUserRole);

@@ -1,4 +1,4 @@
-<app-shared-modal title="Add New Phase" (close)="onCancel()">
+<app-shared-modal title="Add New Phase" (closeModal)="onCancel()">
   <form [formGroup]="phaseForm" (ngSubmit)="onSubmit()">
     <div class="flex flex-col gap-4">
       <mat-form-field appearance="outline" class="w-full">

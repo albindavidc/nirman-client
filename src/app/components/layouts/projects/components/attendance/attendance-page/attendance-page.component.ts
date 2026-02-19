@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -16,14 +16,17 @@ import { interval, Subscription } from 'rxjs';
   styleUrls: [],
 })
 export class AttendancePageComponent implements OnInit, OnDestroy {
+  private attendanceService = inject(AttendanceService);
+  private route = inject(ActivatedRoute);
+
   currentTime = new Date();
   currentDate = new Date();
   private timerSub!: Subscription;
 
   // State
-  projectId: string = '';
+  projectId = '';
   // TODO: Get userId from AuthService
-  userId: string = '673c7136f45347ad5657064d';
+  userId = '673c7136f45347ad5657064d';
 
   isCheckedIn = false;
   currentAttendanceId: string | null = null;
@@ -34,11 +37,6 @@ export class AttendancePageComponent implements OnInit, OnDestroy {
 
   stats: AttendanceStats | null = null;
   recentHistory: AttendanceRecord[] = [];
-
-  constructor(
-    private attendanceService: AttendanceService,
-    private route: ActivatedRoute,
-  ) {}
 
   ngOnInit(): void {
     this.projectId = this.route.parent?.snapshot.paramMap.get('id') || '';

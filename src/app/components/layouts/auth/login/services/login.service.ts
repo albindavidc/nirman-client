@@ -5,10 +5,8 @@ import { ConfigService } from '../../../../../core/services/config.service';
 import {
   LoginCredentials,
   LoginResponse,
-  ForgotPasswordRequest,
-  VerifyResetOtpRequest,
   VerifyResetOtpResponse,
-  ResetPasswordRequest,
+  User,
 } from '../models/login.models';
 
 @Injectable({
@@ -34,10 +32,8 @@ export class LoginService {
     return this.http.post<{ message: string }>(`${this.apiUrl}/refresh`, {});
   }
 
-  getMe(): Observable<{ id: string; email: string; role: string }> {
-    return this.http.get<{ id: string; email: string; role: string }>(
-      `${this.apiUrl}/me`
-    );
+  getMe(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`);
   }
 
   forgotPassword(email: string): Observable<{ message: string }> {
@@ -45,20 +41,20 @@ export class LoginService {
       `${this.apiUrl}/forgot-password`,
       {
         email,
-      }
+      },
     );
   }
 
   verifyResetOtp(
     email: string,
-    otp: string
+    otp: string,
   ): Observable<VerifyResetOtpResponse> {
     return this.http.post<VerifyResetOtpResponse>(
       `${this.apiUrl}/verify-reset-otp`,
       {
         email,
         otp,
-      }
+      },
     );
   }
 
@@ -67,14 +63,14 @@ export class LoginService {
       `${this.apiUrl}/forgot-password`,
       {
         email,
-      }
+      },
     );
   }
 
   resetPassword(
     email: string,
     resetToken: string,
-    newPassword: string
+    newPassword: string,
   ): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(
       `${this.apiUrl}/reset-password`,
@@ -82,7 +78,7 @@ export class LoginService {
         email,
         resetToken,
         newPassword,
-      }
+      },
     );
   }
 }

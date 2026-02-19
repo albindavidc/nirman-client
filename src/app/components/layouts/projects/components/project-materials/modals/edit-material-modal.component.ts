@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -58,11 +58,11 @@ export class EditMaterialModalComponent implements OnInit {
     { value: 'out_of_stock', label: 'Out of Stock' },
   ];
 
-  constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<EditMaterialModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { material: Material },
-  ) {
+  private fb = inject(FormBuilder);
+  private dialogRef = inject(MatDialogRef<EditMaterialModalComponent>);
+  public data = inject<{ material: Material }>(MAT_DIALOG_DATA);
+
+  constructor() {
     this.materialForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       code: [{ value: '', disabled: true }, Validators.required], // Code is usually immutable or requires special handling

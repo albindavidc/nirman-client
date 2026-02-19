@@ -6,8 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { CreateMaterialDto } from '../../../models/material.model';
-import { MaterialService } from '../../../services/material.service';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
 
 @Component({

@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import {
-  SignupState,
   initialSignupState,
   persistSignupState,
   clearPersistedSignupState,

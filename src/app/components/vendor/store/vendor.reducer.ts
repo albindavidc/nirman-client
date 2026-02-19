@@ -98,10 +98,14 @@ export const vendorReducer = createReducer(
   })),
 
   // Stats
-  on(VendorActions.loadVendorStatsSuccess, (state, { type, ...stats }) => ({
-    ...state,
-    stats: stats,
-  })),
+  on(
+    VendorActions.loadVendorStatsSuccess,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (state, { type: _type, ...stats }) => ({
+      ...state,
+      stats: stats,
+    }),
+  ),
 
   // UI
   on(VendorActions.setSelectedVendor, (state, { vendor }) => ({

@@ -17,12 +17,12 @@
             formControlName="name"
             placeholder="e.g. UltraTech Cement"
           />
-          <mat-error *ngIf="materialForm.get('name')?.hasError('required')">
-            Material name is required
-          </mat-error>
-          <mat-error *ngIf="materialForm.get('name')?.hasError('minlength')">
-            Name must be at least 3 characters
-          </mat-error>
+          @if (materialForm.get("name")?.hasError("required")) {
+            <mat-error>Material name is required</mat-error>
+          }
+          @if (materialForm.get("name")?.hasError("minlength")) {
+            <mat-error>Name must be at least 3 characters</mat-error>
+          }
         </mat-form-field>
 
         <div class="row">
@@ -35,15 +35,13 @@
           <mat-form-field appearance="outline">
             <mat-label>Category</mat-label>
             <mat-select formControlName="category">
-              <mat-option *ngFor="let cat of categories" [value]="cat">
-                {{ cat }}
-              </mat-option>
+              @for (cat of categories; track cat) {
+                <mat-option [value]="cat">{{ cat }}</mat-option>
+              }
             </mat-select>
-            <mat-error
-              *ngIf="materialForm.get('category')?.hasError('required')"
-            >
-              Category is required
-            </mat-error>
+            @if (materialForm.get("category")?.hasError("required")) {
+              <mat-error>Category is required</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -55,11 +53,9 @@
             rows="3"
             placeholder="Detailed description of the material..."
           ></textarea>
-          <mat-error
-            *ngIf="materialForm.get('description')?.hasError('maxlength')"
-          >
-            Description cannot exceed 500 characters
-          </mat-error>
+          @if (materialForm.get("description")?.hasError("maxlength")) {
+            <mat-error>Description cannot exceed 500 characters</mat-error>
+          }
         </mat-form-field>
 
         <!-- Inventory Details Section -->
@@ -69,21 +65,21 @@
           <mat-form-field appearance="outline">
             <mat-label>Unit</mat-label>
             <mat-select formControlName="unit">
-              <mat-option *ngFor="let u of units" [value]="u">
-                {{ u }}
-              </mat-option>
+              @for (u of units; track u) {
+                <mat-option [value]="u">{{ u }}</mat-option>
+              }
             </mat-select>
-            <mat-error *ngIf="materialForm.get('unit')?.hasError('required')">
-              Unit is required
-            </mat-error>
+            @if (materialForm.get("unit")?.hasError("required")) {
+              <mat-error>Unit is required</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Unit Price (₹)</mat-label>
             <input matInput type="number" formControlName="unitPrice" min="0" />
-            <mat-error *ngIf="materialForm.get('unitPrice')?.hasError('min')">
-              Price cannot be negative
-            </mat-error>
+            @if (materialForm.get("unitPrice")?.hasError("min")) {
+              <mat-error>Price cannot be negative</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -94,11 +90,9 @@
               formControlName="reorderLevel"
               min="0"
             />
-            <mat-error
-              *ngIf="materialForm.get('reorderLevel')?.hasError('min')"
-            >
-              Level cannot be negative
-            </mat-error>
+            @if (materialForm.get("reorderLevel")?.hasError("min")) {
+              <mat-error>Level cannot be negative</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -106,13 +100,13 @@
           <mat-form-field appearance="outline">
             <mat-label>Status</mat-label>
             <mat-select formControlName="status">
-              <mat-option *ngFor="let s of statuses" [value]="s.value">
-                {{ s.label }}
-              </mat-option>
+              @for (s of statuses; track s.value) {
+                <mat-option [value]="s.value">{{ s.label }}</mat-option>
+              }
             </mat-select>
-            <mat-error *ngIf="materialForm.get('status')?.hasError('required')">
-              Status is required
-            </mat-error>
+            @if (materialForm.get("status")?.hasError("required")) {
+              <mat-error>Status is required</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -133,11 +127,9 @@
             rows="2"
             placeholder="Grade, dimensions, or technical specs..."
           ></textarea>
-          <mat-error
-            *ngIf="materialForm.get('specifications')?.hasError('maxlength')"
-          >
-            Specifications cannot exceed 500 characters
-          </mat-error>
+          @if (materialForm.get("specifications")?.hasError("maxlength")) {
+            <mat-error>Specifications cannot exceed 500 characters</mat-error>
+          }
         </mat-form-field>
       </div>
     </mat-dialog-content>

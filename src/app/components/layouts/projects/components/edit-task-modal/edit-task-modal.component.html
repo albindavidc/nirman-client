@@ -1,4 +1,4 @@
-<app-shared-modal title="Edit Task" (close)="dialogRef.close()">
+<app-shared-modal title="Edit Task" (closeModal)="dialogRef.close()">
   <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
     <!-- Task Name -->
     <mat-form-field appearance="outline" class="full-width">
@@ -8,18 +8,18 @@
         formControlName="name"
         placeholder="E.g., Install HVAC Unit"
       />
-      <mat-error *ngIf="taskForm.get('name')?.hasError('required')">
-        Task name is required
-      </mat-error>
-      <mat-error *ngIf="taskForm.get('name')?.hasError('minlength')">
-        Task name must be at least 3 characters
-      </mat-error>
-      <mat-error *ngIf="taskForm.get('name')?.hasError('maxlength')">
-        Task name cannot exceed 100 characters
-      </mat-error>
-      <mat-error *ngIf="taskForm.get('name')?.hasError('whitespace')">
-        Task name cannot be only whitespace
-      </mat-error>
+      @if (taskForm.get("name")?.hasError("required")) {
+        <mat-error>Task name is required</mat-error>
+      }
+      @if (taskForm.get("name")?.hasError("minlength")) {
+        <mat-error>Task name must be at least 3 characters</mat-error>
+      }
+      @if (taskForm.get("name")?.hasError("maxlength")) {
+        <mat-error>Task name cannot exceed 100 characters</mat-error>
+      }
+      @if (taskForm.get("name")?.hasError("whitespace")) {
+        <mat-error>Task name cannot be only whitespace</mat-error>
+      }
     </mat-form-field>
 
     <!-- Description -->
@@ -34,9 +34,9 @@
       <mat-hint align="end"
         >{{ taskForm.get("description")?.value?.length || 0 }}/500</mat-hint
       >
-      <mat-error *ngIf="taskForm.get('description')?.hasError('maxlength')">
-        Description cannot exceed 500 characters
-      </mat-error>
+      @if (taskForm.get("description")?.hasError("maxlength")) {
+        <mat-error>Description cannot exceed 500 characters</mat-error>
+      }
     </mat-form-field>
 
     <!-- Phase & Priority -->
@@ -44,13 +44,15 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Phase</mat-label>
         <mat-select formControlName="phaseId">
-          <mat-option *ngFor="let phase of phases" [value]="phase.id">
-            {{ phase.name }}
-          </mat-option>
+          @for (phase of phases; track phase.id) {
+            <mat-option [value]="phase.id">
+              {{ phase.name }}
+            </mat-option>
+          }
         </mat-select>
-        <mat-error *ngIf="taskForm.get('phaseId')?.hasError('required')">
-          Phase is required
-        </mat-error>
+        @if (taskForm.get("phaseId")?.hasError("required")) {
+          <mat-error>Phase is required</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -80,14 +82,13 @@
         <mat-label>Assigned To</mat-label>
         <mat-select formControlName="assignedTo">
           <mat-option [value]="null">Unassigned</mat-option>
-          <mat-option
-            *ngFor="let member of projectMembers"
-            [value]="member.user?.id"
-          >
-            {{ member.user?.firstName }} {{ member.user?.lastName }} ({{
-              member.role
-            }})
-          </mat-option>
+          @for (member of projectMembers; track member.user?.id) {
+            <mat-option [value]="member.user?.id">
+              {{ member.user?.firstName }} {{ member.user?.lastName }} ({{
+                member.role
+              }})
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -190,9 +191,9 @@
       <mat-hint align="end"
         >{{ taskForm.get("notes")?.value?.length || 0 }}/1000</mat-hint
       >
-      <mat-error *ngIf="taskForm.get('notes')?.hasError('maxlength')">
-        Notes cannot exceed 1000 characters
-      </mat-error>
+      @if (taskForm.get("notes")?.hasError("maxlength")) {
+        <mat-error>Notes cannot exceed 1000 characters</mat-error>
+      }
     </mat-form-field>
 
     <!-- Actions -->
@@ -211,9 +212,15 @@
         [disabled]="taskForm.invalid || isSubmitting"
         class="update-btn"
       >
-        <mat-icon *ngIf="!isSubmitting">save</mat-icon>
-        <span *ngIf="!isSubmitting">Update Task</span>
-        <span *ngIf="isSubmitting">Updating...</span>
+        @if (!isSubmitting) {
+          <mat-icon>save</mat-icon>
+        }
+        @if (!isSubmitting) {
+          <span>Update Task</span>
+        }
+        @if (isSubmitting) {
+          <span>Updating...</span>
+        }
       </button>
     </div>
   </form>

@@ -17,9 +17,9 @@ import { UpdatePhaseModalComponent } from './update-phase-modal.component';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
-import { ProjectPhase } from '../../models/project.models';
+import { ProjectPhase, TaskDependency } from '../../models/project.models';
+import { Task } from '../../services/task.service';
 import { Store } from '@ngrx/store';
-import { requestPhaseApproval } from '../../store/project.actions';
 import { RequestApprovalModalComponent } from '../request-approval-modal/request-approval-modal.component';
 
 export const PHASE_STATUSES = [
@@ -64,7 +64,7 @@ export class ProjectPhasesComponent implements OnInit {
   private taskService = inject(TaskService);
   private store = inject(Store);
 
-  currentUserRole: string = '';
+  currentUserRole = '';
 
   get canAddPhase(): boolean {
     return ['admin', 'project_manager'].includes(this.currentUserRole);
@@ -100,8 +100,10 @@ export class ProjectPhasesComponent implements OnInit {
 
   private refreshSubject = new BehaviorSubject<void>(undefined);
 
-  ganttData$: Observable<{ tasks: any[]; dependencies: any[] } | null> =
-    new Observable();
+  ganttData$ = new Observable<{
+    tasks: Task[];
+    dependencies: TaskDependency[];
+  } | null>();
 
   ngOnInit(): void {
     const userJson = localStorage.getItem('user');

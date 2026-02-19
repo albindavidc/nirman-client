@@ -30,7 +30,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ],
 })
 export class PageLoaderComponent {
-  @Input() pageName: string = 'Loading';
+  @Input() pageName = 'Loading';
 
   particles: number[] = Array.from({ length: 12 }, (_, i) => i);
 }

@@ -26,7 +26,7 @@ import { CreateTaskModalComponent } from '../create-task-modal/create-task-modal
   styleUrls: ['./project-tasks.component.scss'],
 })
 export class ProjectTasksComponent implements OnInit {
-  @Input() phaseId: string = '';
+  @Input() phaseId = '';
   private route = inject(ActivatedRoute);
 
   private taskService = inject(TaskService);

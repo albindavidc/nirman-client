@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Task } from './task.service';
+import { TaskDependency } from '../models/project.models';
 import { format } from 'date-fns';
 
 export interface FrappeGanttTask {
@@ -13,17 +14,36 @@ export interface FrappeGanttTask {
   _task?: Task; // Original task reference for event handling
 }
 
+export interface DhtmlxTask {
+  id: string;
+  text: string;
+  start_date: string;
+  end_date: string | null;
+  duration?: number;
+  progress: number;
+  type: string;
+  status: string;
+  phaseName: string;
+  _task: Task;
+  parent?: string | number;
+}
+
+export interface DhtmlxLink {
+  id: string | number;
+  source: string;
+  target: string;
+  type: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class GanttService {
-  constructor() {}
-
   mapTasksToDhtmlx(
     tasks: Task[],
-    dependencies: any[] = [],
-    phaseMap: Map<string, string> = new Map(),
-  ): { data: any[]; links: any[] } {
+    dependencies: TaskDependency[] = [],
+    phaseMap = new Map<string, string>(),
+  ): { data: DhtmlxTask[]; links: DhtmlxLink[] } {
     const data = tasks.map((task) => {
       // Format dates as YYYY-MM-DD HH:mm
       const start = task.plannedStartDate

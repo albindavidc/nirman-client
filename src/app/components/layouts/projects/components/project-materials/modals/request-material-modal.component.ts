@@ -1,11 +1,6 @@
-import { Component, inject, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormControl,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
@@ -58,9 +53,7 @@ export class RequestMaterialModalComponent implements OnInit {
     purpose: ['', [Validators.required, Validators.maxLength(500)]],
   });
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { materials: Material[] },
-  ) {}
+  public data = inject<{ materials: Material[] }>(MAT_DIALOG_DATA);
 
   ngOnInit(): void {
     this.materials = this.data?.materials || [];

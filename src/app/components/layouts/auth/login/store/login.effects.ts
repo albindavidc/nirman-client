@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { map, exhaustMap, catchError, tap } from 'rxjs/operators';
 import { LoginService } from '../services/login.service';
+import { User } from '../models/login.models';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import * as LoginActions from './login.actions';
 
@@ -53,7 +54,7 @@ export class LoginEffects {
   /**
    * Returns the default route for each user role
    */
-  private getRouteByRole(user: any): string {
+  private getRouteByRole(user: User): string {
     const role = user.role.toLowerCase();
 
     console.log('Login Redirection Debug:', {

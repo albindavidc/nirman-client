@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, interval, Subscription } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,7 +37,7 @@ import * as SignupSelectors from '../../store/signup.selectors';
         style({ opacity: 0, transform: 'translateY(30px)' }),
         animate(
           '600ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
+          style({ opacity: 1, transform: 'translateY(0)' }),
         ),
       ]),
     ]),
@@ -46,7 +46,7 @@ import * as SignupSelectors from '../../store/signup.selectors';
         style({ opacity: 0, transform: 'translateX(-20px)' }),
         animate(
           '400ms 200ms ease-out',
-          style({ opacity: 1, transform: 'translateX(0)' })
+          style({ opacity: 1, transform: 'translateX(0)' }),
         ),
       ]),
     ]),
@@ -194,7 +194,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
       this.email$.pipe(take(1)).subscribe((email) => {
         if (email) {
           this.store.dispatch(
-            SignupActions.verifyOtp({ email, otp: this.otpCode })
+            SignupActions.verifyOtp({ email, otp: this.otpCode }),
           );
         }
       });

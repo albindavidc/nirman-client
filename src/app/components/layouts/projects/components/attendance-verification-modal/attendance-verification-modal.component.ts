@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import {
@@ -34,15 +34,11 @@ import { SharedModalComponent } from '../../../../../shared/components/shared-mo
 })
 export class AttendanceVerificationModalComponent {
   private attendanceService = inject(AttendanceService);
-  record: AttendanceRecord;
-  notesControl = new FormControl('');
+  dialogRef = inject(MatDialogRef<AttendanceVerificationModalComponent>);
+  data = inject<{ record: AttendanceRecord }>(MAT_DIALOG_DATA);
 
-  constructor(
-    public dialogRef: MatDialogRef<AttendanceVerificationModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { record: AttendanceRecord },
-  ) {
-    this.record = data.record;
-  }
+  record: AttendanceRecord = this.data.record;
+  notesControl = new FormControl('');
 
   verify(isVerified: boolean) {
     // Assuming supervisorId is fetched from auth service or similar in real app.
@@ -62,7 +58,7 @@ export class AttendanceVerificationModalComponent {
         next: () => {
           this.dialogRef.close(true);
         },
-        error: (err: any) => {
+        error: (err: unknown) => {
           console.error('Verification failed', err);
           // Handle error (show toast)
         },

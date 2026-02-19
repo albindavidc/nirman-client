@@ -29,7 +29,12 @@ import {
 
 import * as VendorActions from '../../store/vendor.actions';
 import * as VendorSelectors from '../../store/vendor.selectors';
-import { Vendor, VendorStats } from '../../models/vendor.models';
+import {
+  Vendor,
+  VendorStats,
+  VendorFilters,
+  VendorStatus,
+} from '../../models/vendor.models';
 import { VendorEditModalComponent } from '../vendor-edit-modal/vendor-edit-modal.component';
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { TableColumn } from '../../../../shared/components/table/table.models';
@@ -167,9 +172,9 @@ export class VendorListComponent implements OnInit {
   }
 
   loadData(pageIndex = 0, pageSize = this.pageSize): void {
-    const filters: any = { page: pageIndex + 1, limit: pageSize };
+    const filters: VendorFilters = { page: pageIndex + 1, limit: pageSize };
     if (this.statusFilter.value) {
-      filters.status = this.statusFilter.value;
+      filters.status = this.statusFilter.value as VendorStatus;
     }
     if (this.searchTerm) {
       filters.search = this.searchTerm;

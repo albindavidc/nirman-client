@@ -34,7 +34,7 @@ export class ProjectAttendanceComponent implements OnInit {
   private attendanceService = inject(AttendanceService);
   private dialog = inject(MatDialog);
 
-  projectId: string = '';
+  projectId = '';
   currentDate: Date = new Date();
 
   stats: AttendanceStats = {
@@ -46,7 +46,7 @@ export class ProjectAttendanceComponent implements OnInit {
     hoursThisMonth: 0,
   };
 
-  currentUserRole: string = '';
+  currentUserRole = '';
 
   get canVerify(): boolean {
     return ['admin', 'supervisor', 'project_manager'].includes(

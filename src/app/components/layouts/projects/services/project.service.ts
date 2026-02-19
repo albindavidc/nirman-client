@@ -11,6 +11,9 @@ import {
   Professional,
   ProjectMemberWithUser,
   AttendanceRecord,
+  PhaseApproval,
+  CreatePhaseApprovalDto,
+  PhaseApprovalRequest,
 } from '../models/project.models';
 
 @Injectable({
@@ -128,9 +131,9 @@ export class ProjectService {
   createPhaseApproval(
     projectId: string,
     phaseId: string,
-    data: any, // Use proper DTO if available in frontend
-  ): Observable<any> {
-    return this.http.post<any>(
+    data: CreatePhaseApprovalDto,
+  ): Observable<PhaseApproval> {
+    return this.http.post<PhaseApproval>(
       `${this.apiUrl}/${projectId}/phases/${phaseId}/approval`,
       data,
     );
@@ -139,15 +142,17 @@ export class ProjectService {
   requestPhaseApproval(
     projectId: string,
     phaseId: string,
-    data: { comments?: string; media?: any[]; approverId?: string },
-  ): Observable<any> {
-    return this.http.post<any>(
+    data: PhaseApprovalRequest,
+  ): Observable<PhaseApproval> {
+    return this.http.post<PhaseApproval>(
       `${this.apiUrl}/${projectId}/phases/${phaseId}/approval-request`,
       data,
     );
   }
 
-  getProjectApprovals(projectId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${projectId}/approvals`);
+  getProjectApprovals(projectId: string): Observable<PhaseApproval[]> {
+    return this.http.get<PhaseApproval[]>(
+      `${this.apiUrl}/${projectId}/approvals`,
+    );
   }
 }

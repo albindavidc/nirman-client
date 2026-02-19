@@ -190,7 +190,7 @@ export class SignupEffects {
       this.actions$.pipe(
         ofType(SignupActions.verifyOtpSuccess),
         withLatestFrom(this.store.select(SignupSelectors.selectAccountType)),
-        tap(([_, accountType]) => {
+        tap(([, accountType]) => {
           this.notification.success('Email verified successfully');
 
           if (accountType === 'worker') {

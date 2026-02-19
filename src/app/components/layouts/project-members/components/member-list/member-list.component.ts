@@ -1,5 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, TitleCasePipe, AsyncPipe, UpperCasePipe } from '@angular/common';
+import {
+  CommonModule,
+  TitleCasePipe,
+  AsyncPipe,
+  UpperCasePipe,
+} from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -71,7 +76,7 @@ import {
         style({ opacity: 0, transform: 'translateY(20px)' }),
         animate(
           '300ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
+          style({ opacity: 1, transform: 'translateY(0)' }),
         ),
       ]),
     ]),
@@ -84,11 +89,11 @@ import {
             stagger('50ms', [
               animate(
                 '300ms ease-out',
-                style({ opacity: 1, transform: 'translateY(0)' })
+                style({ opacity: 1, transform: 'translateY(0)' }),
               ),
             ]),
           ],
-          { optional: true }
+          { optional: true },
         ),
       ]),
     ]),
@@ -133,20 +138,21 @@ export class MemberListComponent implements OnInit {
     // The original code did this, so preserving behavior. Ideally counts should come from backend stats.
     this.workerCount$ = this.members$.pipe(
       map(
-        (members: Member[]) => members.filter((m) => m.role === 'worker').length
-      )
+        (members: Member[]) =>
+          members.filter((m) => m.role === 'worker').length,
+      ),
     );
     this.supervisorCount$ = this.members$.pipe(
       map(
         (members: Member[]) =>
-          members.filter((m) => m.role === 'supervisor').length
-      )
+          members.filter((m) => m.role === 'supervisor').length,
+      ),
     );
     this.activeCount$ = this.members$.pipe(
       map(
         (members: Member[]) =>
-          members.filter((m) => m.userStatus === 'active').length
-      )
+          members.filter((m) => m.userStatus === 'active').length,
+      ),
     );
   }
 
@@ -172,7 +178,7 @@ export class MemberListComponent implements OnInit {
         limit: this.pageSize,
         search: this.searchTerm || '',
         role: this.roleControl.value || '',
-      })
+      }),
     );
   }
 
@@ -183,14 +189,14 @@ export class MemberListComponent implements OnInit {
   }
 
   openAddModal() {
-    const dialogRef = this.dialog.open(MemberAddEditModalComponent, {
+    this.dialog.open(MemberAddEditModalComponent, {
       width: '600px',
       data: { mode: 'add' },
     });
   }
 
   openEditModal(member: Member) {
-    const dialogRef = this.dialog.open(MemberAddEditModalComponent, {
+    this.dialog.open(MemberAddEditModalComponent, {
       width: '600px',
       data: { mode: 'edit', member },
     });

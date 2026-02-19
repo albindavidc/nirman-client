@@ -1,6 +1,6 @@
 <app-shared-modal
   [title]="'Request Approval for ' + data.phaseName"
-  (close)="onCancel()"
+  (closeModal)="onCancel()"
 >
   <form [formGroup]="form" class="flex flex-col gap-4">
     <p class="text-zinc-400">

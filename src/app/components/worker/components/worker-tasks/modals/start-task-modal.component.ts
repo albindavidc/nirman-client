@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MatDialogRef,
@@ -35,18 +35,14 @@ import { SharedModalComponent } from '../../../../../shared/components/shared-mo
   styleUrl: './start-task-modal.component.scss',
 })
 export class StartTaskModalComponent implements OnInit {
-  form: FormGroup;
-  startTime = '';
+  private readonly fb = inject(FormBuilder);
+  public dialogRef = inject(MatDialogRef<StartTaskModalComponent>);
+  public data = inject<{ task: Task }>(MAT_DIALOG_DATA);
 
-  constructor(
-    private readonly fb: FormBuilder,
-    public dialogRef: MatDialogRef<StartTaskModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { task: Task },
-  ) {
-    this.form = this.fb.group({
-      notes: ['', [Validators.maxLength(500)]],
-    });
-  }
+  form: FormGroup = this.fb.group({
+    notes: ['', [Validators.maxLength(500)]],
+  });
+  startTime = '';
 
   ngOnInit(): void {
     const now = new Date();

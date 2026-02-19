@@ -2,7 +2,9 @@
   <div class="modal-header">
     <div class="header-content">
       <h2>{{ title }}</h2>
-      <p *ngIf="subtitle" class="subtitle">{{ subtitle }}</p>
+      @if (subtitle) {
+        <p class="subtitle">{{ subtitle }}</p>
+      }
     </div>
     <button mat-icon-button (click)="onClose()" class="close-btn">
       <mat-icon>close</mat-icon>
@@ -13,7 +15,9 @@
     <ng-content></ng-content>
   </div>
 
-  <div class="modal-actions" *ngIf="hasActions">
-    <ng-content select="[actions]"></ng-content>
-  </div>
+  @if (hasActions) {
+    <div class="modal-actions">
+      <ng-content select="[actions]"></ng-content>
+    </div>
+  }
 </div>

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MatDialogRef,
@@ -37,22 +37,18 @@ import { SharedModalComponent } from '../../../../../shared/components/shared-mo
   styleUrl: './update-progress-modal.component.scss',
 })
 export class UpdateProgressModalComponent {
-  form: FormGroup;
+  private readonly fb = inject(FormBuilder);
+  public dialogRef = inject(MatDialogRef<UpdateProgressModalComponent>);
+  public data = inject<{ task: Task }>(MAT_DIALOG_DATA);
 
-  constructor(
-    private readonly fb: FormBuilder,
-    public dialogRef: MatDialogRef<UpdateProgressModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { task: Task },
-  ) {
-    this.form = this.fb.group({
-      progress: [
-        data.task.progress || 0,
-        [Validators.required, Validators.min(0), Validators.max(100)],
-      ],
-      status: [data.task.status || 'In Progress', Validators.required],
-      notes: [data.task.notes || '', [Validators.maxLength(500)]],
-    });
-  }
+  form: FormGroup = this.fb.group({
+    progress: [
+      this.data.task.progress || 0,
+      [Validators.required, Validators.min(0), Validators.max(100)],
+    ],
+    status: [this.data.task.status || 'In Progress', Validators.required],
+    notes: [this.data.task.notes || '', [Validators.maxLength(500)]],
+  });
 
   onSubmit(): void {
     if (this.form.valid) {

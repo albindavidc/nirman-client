@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 
-export const RoleGuard: CanActivateFn = (route, state) => {
+export const RoleGuard: CanActivateFn = (route) => {
   const router = inject(Router);
   const userJson = localStorage.getItem('user');
 

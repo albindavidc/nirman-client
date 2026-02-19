@@ -262,10 +262,10 @@ export class ProjectCreateModalComponent implements OnInit {
         // OR we accept that we might just show "Loading..." chips.
         // Let's rely on the user re-adding members or just not editing members for this version.
         // WAIT, we want a professional UX. Let's try to fetch them.
-        this.data.members.forEach((_) => {
+        this.data.members.forEach(() => {
           this.memberService
             .getMembers(1, 1, undefined, undefined)
-            .subscribe((_) => {
+            .subscribe(() => {
               // ideally we filter by ID but our service only has search.
               // Let's just create a placeholder for now to be safe.
             });
@@ -441,7 +441,7 @@ export class ProjectCreateModalComponent implements OnInit {
   addMember(member: SearchableMember): void {
     if (!this.selectedMembers.some((m) => m.id === member.id)) {
       this.selectedMembers.push(member);
-      this.projectForm.patchValue({ members: this.selectedMembers as any });
+      this.projectForm.patchValue({ members: this.selectedMembers });
     }
     this.memberSearchControl.setValue('');
   }
@@ -450,7 +450,7 @@ export class ProjectCreateModalComponent implements OnInit {
     this.selectedMembers = this.selectedMembers.filter(
       (m) => m.id !== member.id,
     );
-    this.projectForm.patchValue({ members: this.selectedMembers as any });
+    this.projectForm.patchValue({ members: this.selectedMembers });
   }
 
   async searchLocation(): Promise<void> {
@@ -492,7 +492,13 @@ export class ProjectCreateModalComponent implements OnInit {
       name: formValue.name!,
       managerId: formValue.managerId || undefined,
       description: formValue.description || undefined,
-      status: (formValue.status as any) || 'active', // Cast to any to avoid type mismatch with literal types if needed
+      status:
+        (formValue.status as
+          | 'PLANNED'
+          | 'IN_PROGRESS'
+          | 'COMPLETED'
+          | 'ON_HOLD'
+          | 'CANCELLED') || 'PLANNED',
       startDate: formValue.startDate
         ? new Date(formValue.startDate).toISOString()
         : undefined,

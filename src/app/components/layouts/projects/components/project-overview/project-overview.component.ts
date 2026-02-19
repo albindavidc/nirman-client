@@ -7,20 +7,9 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import * as ProjectSelectors from '../../store/project.selectors';
 import { TaskService } from '../../services/task.service';
 import { ProjectService } from '../../services/project.service';
-import {
-  Observable,
-  combineLatest,
-  filter,
-  map,
-  switchMap,
-  of,
-  catchError,
-} from 'rxjs';
-import {
-  Project,
-  ProjectPhase,
-  ProjectMember,
-} from '../../models/project.models';
+import { ConfigService } from '../../../../../core/services/config.service';
+import { combineLatest, filter, map, switchMap, of, catchError } from 'rxjs';
+import { Project, ProjectPhase } from '../../models/project.models';
 
 @Component({
   selector: 'app-project-overview',
@@ -34,6 +23,7 @@ export class ProjectOverviewComponent {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly taskService = inject(TaskService);
   private readonly projectService = inject(ProjectService);
+  private readonly configService = inject(ConfigService);
 
   project$ = this.store.select(ProjectSelectors.selectSelectedProject);
 
@@ -114,7 +104,7 @@ export class ProjectOverviewComponent {
   }
 
   getMapUrl(lat: number, lng: number): SafeResourceUrl {
-    const url = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${lat},${lng}&zoom=15`;
+    const url = `https://www.google.com/maps/embed/v1/place?key=${this.configService.googleMapsApiKey}&q=${lat},${lng}&zoom=15`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 

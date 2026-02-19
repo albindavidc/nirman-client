@@ -1,156 +1,164 @@
-<div class="page-container" *ngIf="task$ | async as task">
-  <!-- Breadcrumb / Header -->
-  <div class="header">
-    <button mat-icon-button (click)="goBack()" class="back-btn">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <div class="title-group">
-      <div class="breadcrumb">
-        <mat-icon>description</mat-icon>
-        <span>Task Details - {{ task.name }}</span>
-      </div>
-      <div class="meta">
-        Task ID: {{ task.id.slice(-8) | uppercase }} • Phase:
-        {{ phaseName$ | async }}
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Grid -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="icon-box gold">
-        <span class="symbol">%</span>
-      </div>
-      <div class="info">
-        <div class="value">{{ task.progress }}%</div>
-        <div class="label">Task Progress</div>
-        <div class="progress-bar">
-          <div class="fill" [style.width.%]="task.progress"></div>
+<div class="page-container">
+  @if (task$ | async; as task) {
+    <!-- Breadcrumb / Header -->
+    <div class="header">
+      <button mat-icon-button (click)="goBack()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-group">
+        <div class="breadcrumb">
+          <mat-icon>description</mat-icon>
+          <span>Task Details - {{ task.name }}</span>
+        </div>
+        <div class="meta">
+          Task ID: {{ task.id.slice(-8) | uppercase }} • Phase:
+          {{ phaseName$ | async }}
         </div>
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="icon-box green">
-        <mat-icon>check</mat-icon>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="icon-box gold">
+          <span class="symbol">%</span>
+        </div>
+        <div class="info">
+          <div class="value">{{ task.progress }}%</div>
+          <div class="field-label">Task Progress</div>
+          <div class="progress-bar">
+            <div class="fill" [style.width.%]="task.progress"></div>
+          </div>
+        </div>
       </div>
-      <div class="info">
-        <div class="value">{{ task.status }}</div>
-        <div class="label">Status</div>
-        <div class="sub-label">On time</div>
+
+      <div class="stat-card">
+        <div class="icon-box green">
+          <mat-icon>check</mat-icon>
+        </div>
+        <div class="info">
+          <div class="value">{{ task.status }}</div>
+          <div class="field-label">Status</div>
+          <div class="sub-label">On time</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="icon-box blue">
+          <mat-icon>calendar_today</mat-icon>
+        </div>
+        <div class="info">
+          <div class="value">
+            {{ formatDate(task.plannedEndDate).split(",")[0] }}
+          </div>
+          <div class="field-label">Due Date</div>
+          <div class="sub-label">
+            Due: {{ formatDate(task.plannedEndDate) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="icon-box gold">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="info">
+          <div class="value">{{ getDaysTaken(task) }}</div>
+          <div class="field-label">Days Taken</div>
+          <div class="sub-label">Planned: {{ 15 }} days</div>
+          <!-- Placeholder calc -->
+        </div>
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="icon-box blue">
-        <mat-icon>calendar_today</mat-icon>
-      </div>
-      <div class="info">
-        <div class="value">
-          {{ formatDate(task.plannedEndDate).split(",")[0] }}
-        </div>
-        <div class="label">Due Date</div>
-        <div class="sub-label">Due: {{ formatDate(task.plannedEndDate) }}</div>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="icon-box gold">
-        <mat-icon>schedule</mat-icon>
-      </div>
-      <div class="info">
-        <div class="value">{{ getDaysTaken(task) }}</div>
-        <div class="label">Days Taken</div>
-        <div class="sub-label">Planned: {{ 15 }} days</div>
-        <!-- Placeholder calc -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content Layout - Single Column -->
-  <div class="layout-grid">
-    <div class="main-col">
-      <div class="card info-card">
-        <div class="card-header">
-          <h3>Task Information</h3>
-        </div>
-
-        <div class="info-grid">
-          <div class="field">
-            <label>STATUS</label>
-            <span class="badge" [ngClass]="getStatusClass(task.status)">{{
-              task.status
-            }}</span>
-          </div>
-          <div class="field">
-            <label>PRIORITY</label>
-            <span class="value block">{{ task.priority || "Medium" }}</span>
+    <!-- Main Content Layout - Single Column -->
+    <div class="layout-grid">
+      <div class="main-col">
+        <div class="card info-card">
+          <div class="card-header">
+            <h3>Task Information</h3>
           </div>
 
-          <div class="field">
-            <label>PLANNED START</label>
-            <span class="value block">{{
-              formatDate(task.plannedStartDate)
-            }}</span>
-          </div>
-          <div class="field">
-            <label>PLANNED END</label>
-            <span class="value block">{{
-              formatDate(task.plannedEndDate)
-            }}</span>
+          <div class="info-grid">
+            <div class="field">
+              <div class="field-label">STATUS</div>
+              <span class="badge" [ngClass]="getStatusClass(task.status)">{{
+                task.status
+              }}</span>
+            </div>
+            <div class="field">
+              <div class="field-label">PRIORITY</div>
+              <span class="value block">{{ task.priority || "Medium" }}</span>
+            </div>
+
+            <div class="field">
+              <div class="field-label">PLANNED START</div>
+              <span class="value block">{{
+                formatDate(task.plannedStartDate)
+              }}</span>
+            </div>
+            <div class="field">
+              <div class="field-label">PLANNED END</div>
+              <span class="value block">{{
+                formatDate(task.plannedEndDate)
+              }}</span>
+            </div>
+
+            <div class="field">
+              <div class="field-label">ACTUAL START</div>
+              <span class="value block">{{
+                formatDate(task.actualStartDate) || "-"
+              }}</span>
+            </div>
+            <div class="field">
+              <div class="field-label">ACTUAL END</div>
+              <span class="value block">{{
+                formatDate(task.actualEndDate) || "-"
+              }}</span>
+            </div>
           </div>
 
-          <div class="field">
-            <label>ACTUAL START</label>
-            <span class="value block">{{
-              formatDate(task.actualStartDate) || "-"
-            }}</span>
+          <div class="description-section">
+            <div class="field-label">DESCRIPTION</div>
+            <p>{{ task.description || "No description provided." }}</p>
           </div>
-          <div class="field">
-            <label>ACTUAL END</label>
-            <span class="value block">{{
-              formatDate(task.actualEndDate) || "-"
-            }}</span>
-          </div>
-        </div>
 
-        <div class="description-section">
-          <label>DESCRIPTION</label>
-          <p>{{ task.description || "No description provided." }}</p>
-        </div>
-
-        <div class="assignee-section">
-          <label>ASSIGNED TO</label>
-          <div class="assignee-box">
-            <div class="avatar">{{ task.assignee?.firstName?.[0] || "?" }}</div>
-            <div class="details">
-              <div class="name">
-                {{ task.assignee?.firstName }} {{ task.assignee?.lastName }}
+          <div class="assignee-section">
+            <div class="field-label">ASSIGNED TO</div>
+            <div class="assignee-box">
+              <div class="avatar">
+                {{ task.assignee?.firstName?.[0] || "?" }}
               </div>
-              <div class="role">Assignee • {{ task.assignee?.email }}</div>
+              <div class="details">
+                <div class="name">
+                  {{ task.assignee?.firstName }} {{ task.assignee?.lastName }}
+                </div>
+                <div class="role">Assignee • {{ task.assignee?.email }}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Activity (Bonus, simple mock for now) -->
-      <div class="card activity-card">
-        <div class="card-header">
-          <h3>Task Activity</h3>
-        </div>
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="dot"></div>
-            <div class="content">
-              <div class="time">{{ formatDateTime(task.plannedEndDate) }}</div>
-              <!-- Using updated_at would be better -->
-              <div class="title">Current State</div>
-              <div class="desc">Task is currently {{ task.status }}</div>
+        <!-- Activity (Bonus, simple mock for now) -->
+        <div class="card activity-card">
+          <div class="card-header">
+            <h3>Task Activity</h3>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="dot"></div>
+              <div class="content">
+                <div class="time">
+                  {{ formatDateTime(task.plannedEndDate) }}
+                </div>
+                <!-- Using updated_at would be better -->
+                <div class="title">Current State</div>
+                <div class="desc">Task is currently {{ task.status }}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 </div>

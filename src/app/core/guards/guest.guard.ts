@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 
-export const GuestGuard: CanActivateFn = (route, state) => {
+export const GuestGuard: CanActivateFn = () => {
   const router = inject(Router);
   const userJson = localStorage.getItem('user');
 

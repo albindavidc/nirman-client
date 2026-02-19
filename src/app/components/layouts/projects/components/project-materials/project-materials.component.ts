@@ -48,7 +48,7 @@ export class ProjectMaterialsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
 
-  currentUserRole: string = '';
+  currentUserRole = '';
 
   get canAddMaterial(): boolean {
     return ['supervisor'].includes(this.currentUserRole);

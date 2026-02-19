@@ -7,15 +7,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { Store } from '@ngrx/store';
 import { LayoutService } from '../../services/layout.service';
+import { ConfigService } from '../../services/config.service';
 import * as LoginSelectors from '../../../components/layouts/auth/login/store/login.selectors';
 import { map } from 'rxjs/operators';
-
-interface NavItem {
-  label: string;
-  icon: string;
-  route?: string;
-  children?: NavItem[];
-}
 
 @Component({
   selector: 'app-sidebar',
@@ -36,6 +30,7 @@ interface NavItem {
 export class SidebarComponent {
   layoutService = inject(LayoutService);
   private readonly store = inject(Store);
+  private readonly configService = inject(ConfigService);
 
   user$ = this.store.select(LoginSelectors.selectUser);
 
@@ -304,7 +299,7 @@ export class SidebarComponent {
   getProfilePhotoUrl(url: string): string {
     if (url.startsWith('/')) {
       // Relative URL - prepend API base (remove /api/v1)
-      const baseUrl = 'http://localhost:3000';
+      const baseUrl = this.configService.apiBaseUrl;
       return `${baseUrl}${url}`;
     }
     return url;

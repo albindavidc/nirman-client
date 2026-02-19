@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../../../../core/services/config.service';
 import { Observable } from 'rxjs';
+import { TaskDependency } from '../models/project.models';
 
 export interface Task {
   id: string;
@@ -53,10 +54,8 @@ export interface CreateTaskDependencyDto {
   providedIn: 'root',
 })
 export class TaskService {
-  constructor(
-    private http: HttpClient,
-    private configService: ConfigService,
-  ) {}
+  private readonly http = inject(HttpClient);
+  private readonly configService = inject(ConfigService);
 
   private get apiUrl(): string {
     return `${this.configService.apiUrl}/tasks`;
@@ -90,26 +89,30 @@ export class TaskService {
     return this.http.get<Task>(`${this.apiUrl}/${id}`);
   }
 
-  addDependency(dto: CreateTaskDependencyDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/dependencies`, dto);
+  addDependency(dto: CreateTaskDependencyDto): Observable<TaskDependency> {
+    return this.http.post<TaskDependency>(`${this.apiUrl}/dependencies`, dto);
   }
 
   removeDependency(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/dependencies/${id}`);
   }
 
-  getPhaseDependencies(phaseId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/phase/${phaseId}/dependencies`);
+  getPhaseDependencies(phaseId: string): Observable<TaskDependency[]> {
+    return this.http.get<TaskDependency[]>(
+      `${this.apiUrl}/phase/${phaseId}/dependencies`,
+    );
   }
 
-  getProjectDependencies(projectId: string): Observable<any[]> {
-    return this.http.get<any[]>(
+  getProjectDependencies(projectId: string): Observable<TaskDependency[]> {
+    return this.http.get<TaskDependency[]>(
       `${this.apiUrl}/project/${projectId}/dependencies`,
     );
   }
 
   // Generic get dependencies if needed, or by task?
-  getTaskDependencies(taskId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${taskId}/dependencies`);
+  getTaskDependencies(taskId: string): Observable<TaskDependency[]> {
+    return this.http.get<TaskDependency[]>(
+      `${this.apiUrl}/${taskId}/dependencies`,
+    );
   }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TaskService, Task } from '../../services/task.service';
 import { ProjectPhaseService } from '../../services/project-phase.service'; // Assuming available for Phase Name lookup
+import { TaskDependency } from '../../models/project.models';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -11,13 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import {
-  Observable,
-  combineLatest,
-  map,
-  startWith,
-  BehaviorSubject,
-} from 'rxjs';
+import { Observable, combineLatest, map, startWith } from 'rxjs';
 import { format } from 'date-fns';
 import {
   GanttChartComponent,
@@ -56,9 +51,11 @@ export class ProjectTasksPageComponent implements OnInit {
   private phaseService = inject(ProjectPhaseService); // To map phaseId -> Name
   private dialog = inject(MatDialog);
 
-  projectId: string = '';
+  projectId = '';
   tasks$: Observable<Task[]> | undefined;
-  dependencies$: Observable<any[]> | undefined;
+  dependencies$: Observable<TaskDependency[]> | undefined;
+  // Used any for dependencies in other files, checking if TaskDependency is imported.
+  // It is not. I will add import.
 
   // Filters
   searchControl = new FormControl('');
@@ -67,9 +64,17 @@ export class ProjectTasksPageComponent implements OnInit {
 
   // Derivations
   filteredTasks$: Observable<Task[]> | undefined;
-  stats$: Observable<any> | undefined;
+  stats$:
+    | Observable<{
+        total: number;
+        completed: number;
+        inProgress: number;
+        delayed: number;
+        totalDays: number;
+      }>
+    | undefined;
 
-  phases: any[] = []; // Simple list for dropdown
+  phases: { id: string; name: string }[] = []; // Simple list for dropdown
   viewMode: 'list' | 'gantt' = 'list'; // View Switcher State
 
   ngOnInit() {
@@ -229,7 +234,7 @@ export class ProjectTasksPageComponent implements OnInit {
     }
   }
 
-  formatDate(date: any): string {
+  formatDate(date: string | Date | null | undefined): string {
     if (!date) return '-';
     // date-fns format
     return format(new Date(date), 'MMM d, yyyy');

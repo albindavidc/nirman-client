@@ -1,12 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 import { Store } from '@ngrx/store';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -46,17 +42,16 @@ export class ResetPasswordComponent {
     {
       newPassword: [
         '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-          ),
-        ],
+        [Validators.required, CustomValidators.passwordStrength()],
       ],
       confirmPassword: ['', [Validators.required]],
     },
-    { validators: this.passwordMatchValidator },
+    {
+      validators: CustomValidators.passwordMatch(
+        'newPassword',
+        'confirmPassword',
+      ),
+    },
   );
 
   email$ = this.store.select(LoginSelectors.selectForgotPasswordEmail);
@@ -70,22 +65,6 @@ export class ResetPasswordComponent {
 
   toggleConfirmPasswordVisibility(): void {
     this.hideConfirmPassword.update((v) => !v);
-  }
-
-  passwordMatchValidator(
-    control: AbstractControl,
-  ): Record<string, boolean> | null {
-    const password = control.get('newPassword');
-    const confirmPassword = control.get('confirmPassword');
-
-    if (
-      password &&
-      confirmPassword &&
-      password.value !== confirmPassword.value
-    ) {
-      return { passwordMismatch: true };
-    }
-    return null;
   }
 
   onSubmit(): void {
@@ -107,6 +86,8 @@ export class ResetPasswordComponent {
           }),
         );
       }
+    } else {
+      this.resetPasswordForm.markAllAsTouched();
     }
   }
 }

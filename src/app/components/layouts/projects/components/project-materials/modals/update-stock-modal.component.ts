@@ -39,7 +39,7 @@ export class UpdateStockModalComponent {
     type: ['IN', Validators.required],
     quantity: [0, [Validators.required, Validators.min(0.01)]],
     referenceId: [''],
-    notes: [''],
+    notes: ['', [Validators.maxLength(500)]],
   });
 
   get calculatedStock(): number {
@@ -52,9 +52,11 @@ export class UpdateStockModalComponent {
     return current;
   }
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
+    this.dialogRef.close(this.form.value);
   }
 }

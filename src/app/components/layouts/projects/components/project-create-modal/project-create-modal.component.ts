@@ -204,12 +204,15 @@ export class ProjectCreateModalComponent implements OnInit {
   projectForm = this.fb.group({
     name: [
       this.data?.name || '',
-      [Validators.required, Validators.minLength(2)],
+      [Validators.required, Validators.minLength(2), Validators.maxLength(100)],
     ],
     managerId: [this.data?.managerId || ''],
     status: [this.data?.status || 'active'],
-    description: [this.data?.description || ''],
-    startDate: [this.data?.startDate ? new Date(this.data.startDate) : null, [Validators.required]],
+    description: [this.data?.description || '', [Validators.maxLength(1000)]],
+    startDate: [
+      this.data?.startDate ? new Date(this.data.startDate) : null,
+      [Validators.required],
+    ],
     endDate: [this.data?.dueDate ? new Date(this.data.dueDate) : null],
     budget: [this.data?.budget || null, [Validators.min(0)]],
     progress: [

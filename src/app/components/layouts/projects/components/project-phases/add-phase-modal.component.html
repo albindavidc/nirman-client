@@ -6,6 +6,10 @@
         <input matInput formControlName="name" placeholder="e.g. Foundation" />
         @if (phaseForm.get("name")?.hasError("required")) {
           <mat-error> Name is required </mat-error>
+        } @else if (phaseForm.get("name")?.hasError("minlength")) {
+          <mat-error> Name must be at least 3 characters </mat-error>
+        } @else if (phaseForm.get("name")?.hasError("maxlength")) {
+          <mat-error> Name cannot exceed 100 characters </mat-error>
         }
       </mat-form-field>
 
@@ -17,6 +21,12 @@
           placeholder="Phase details..."
           rows="3"
         ></textarea>
+        <mat-hint align="end"
+          >{{ phaseForm.get("description")?.value?.length || 0 }}/500</mat-hint
+        >
+        @if (phaseForm.get("description")?.hasError("maxlength")) {
+          <mat-error>Description cannot exceed 500 characters</mat-error>
+        }
       </mat-form-field>
 
       <div class="grid grid-cols-2 gap-4">
@@ -54,6 +64,8 @@
         <input matInput type="number" formControlName="sequence" />
         @if (phaseForm.get("sequence")?.hasError("required")) {
           <mat-error> Sequence is required </mat-error>
+        } @else if (phaseForm.get("sequence")?.hasError("min")) {
+          <mat-error> Sequence must be at least 1 </mat-error>
         }
       </mat-form-field>
     </div>

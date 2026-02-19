@@ -10,6 +10,12 @@
         <mat-error *ngIf="phaseForm.get('name')?.hasError('required')">
           Name is required
         </mat-error>
+        <mat-error *ngIf="phaseForm.get('name')?.hasError('minlength')">
+          Name must be at least 3 characters
+        </mat-error>
+        <mat-error *ngIf="phaseForm.get('name')?.hasError('maxlength')">
+          Name cannot exceed 100 characters
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -20,6 +26,12 @@
           placeholder="Phase details..."
           rows="3"
         ></textarea>
+        <mat-hint align="end"
+          >{{ phaseForm.get("description")?.value?.length || 0 }}/500</mat-hint
+        >
+        <mat-error *ngIf="phaseForm.get('description')?.hasError('maxlength')">
+          Description cannot exceed 500 characters
+        </mat-error>
       </mat-form-field>
 
       <div class="form-grid">
@@ -98,6 +110,9 @@
           <input matInput type="number" formControlName="sequence" />
           <mat-error *ngIf="phaseForm.get('sequence')?.hasError('required')">
             Sequence is required
+          </mat-error>
+          <mat-error *ngIf="phaseForm.get('sequence')?.hasError('min')">
+            Sequence must be at least 1
           </mat-error>
         </mat-form-field>
       </div>

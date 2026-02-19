@@ -8,7 +8,12 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Task } from '../../../../layouts/projects/services/task.service';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
@@ -39,7 +44,7 @@ export class StartTaskModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { task: Task },
   ) {
     this.form = this.fb.group({
-      notes: [''],
+      notes: ['', [Validators.maxLength(500)]],
     });
   }
 

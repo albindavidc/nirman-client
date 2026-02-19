@@ -13,8 +13,15 @@
         placeholder="Explain the reason for rejection..."
         rows="4"
       ></textarea>
+      <mat-hint align="end"
+        >{{ form.get("comments")?.value?.length || 0 }}/1000</mat-hint
+      >
       @if (form.get("comments")?.hasError("required")) {
         <mat-error> Comments are required when rejecting a phase </mat-error>
+      } @else if (form.get("comments")?.hasError("minlength")) {
+        <mat-error> Comments must be at least 10 characters </mat-error>
+      } @else if (form.get("comments")?.hasError("maxlength")) {
+        <mat-error> Comments cannot exceed 1000 characters </mat-error>
       }
     </mat-form-field>
   </form>

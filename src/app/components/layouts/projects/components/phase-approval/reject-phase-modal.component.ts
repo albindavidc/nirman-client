@@ -52,12 +52,22 @@ export class RejectPhaseModalComponent {
 
   constructor() {
     this.form = this.fb.group({
-      comments: ['', Validators.required],
+      comments: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(1000),
+        ],
+      ],
     });
   }
 
   onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.isSubmitting = true;
     this.phaseService

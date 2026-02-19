@@ -49,28 +49,37 @@ export class AddPhaseModalComponent {
     const data = this.data;
 
     this.phaseForm = this.fb.group({
-      name: ['', Validators.required],
-      description: [''],
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(100),
+        ],
+      ],
+      description: ['', [Validators.maxLength(500)]],
       plannedStartDate: [null],
       plannedEndDate: [null],
-      sequence: [data.nextSequence || 1, Validators.required],
+      sequence: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
   onSubmit(): void {
-    if (this.phaseForm.valid) {
-      const formValue = this.phaseForm.value;
-      const payload = {
-        ...formValue,
-        plannedStartDate: formValue.plannedStartDate
-          ? new Date(formValue.plannedStartDate).toISOString()
-          : null,
-        plannedEndDate: formValue.plannedEndDate
-          ? new Date(formValue.plannedEndDate).toISOString()
-          : null,
-      };
-      this.dialogRef.close(payload);
+    if (this.phaseForm.invalid) {
+      this.phaseForm.markAllAsTouched();
+      return;
     }
+    const formValue = this.phaseForm.value;
+    const payload = {
+      ...formValue,
+      plannedStartDate: formValue.plannedStartDate
+        ? new Date(formValue.plannedStartDate).toISOString()
+        : null,
+      plannedEndDate: formValue.plannedEndDate
+        ? new Date(formValue.plannedEndDate).toISOString()
+        : null,
+    };
+    this.dialogRef.close(payload);
   }
 
   onCancel(): void {

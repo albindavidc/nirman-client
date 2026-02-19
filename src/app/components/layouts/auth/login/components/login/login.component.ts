@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 import { Store } from '@ngrx/store';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -48,7 +49,10 @@ export class LoginComponent implements OnInit {
   }
 
   loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: [
+      '',
+      [Validators.required, Validators.email, CustomValidators.noWhitespace()],
+    ],
     password: ['', [Validators.required, Validators.minLength(6)]],
     rememberMe: [false],
   });
@@ -79,6 +83,8 @@ export class LoginComponent implements OnInit {
           },
         }),
       );
+    } else {
+      this.loginForm.markAllAsTouched();
     }
   }
 }

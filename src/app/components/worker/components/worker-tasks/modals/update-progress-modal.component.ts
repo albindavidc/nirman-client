@@ -50,7 +50,7 @@ export class UpdateProgressModalComponent {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       status: [data.task.status || 'In Progress', Validators.required],
-      notes: [data.task.notes || ''],
+      notes: [data.task.notes || '', [Validators.maxLength(500)]],
     });
   }
 

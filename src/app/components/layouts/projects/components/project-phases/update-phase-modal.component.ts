@@ -51,38 +51,47 @@ export class UpdatePhaseModalComponent implements OnInit {
   ngOnInit() {
     const phase = this.data.phase;
     this.phaseForm = this.fb.group({
-      name: [phase.name, Validators.required],
-      description: [phase.description],
+      name: [
+        phase.name,
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(100),
+        ],
+      ],
+      description: [phase.description || '', [Validators.maxLength(500)]],
       plannedStartDate: [phase.plannedStartDate],
       plannedEndDate: [phase.plannedEndDate],
       actualStartDate: [phase.actualStartDate],
       actualEndDate: [phase.actualEndDate],
       status: [phase.status, Validators.required],
-      sequence: [phase.sequence, Validators.required],
+      sequence: [phase.sequence, [Validators.required, Validators.min(1)]],
       progress: [phase.progress, [Validators.min(0), Validators.max(100)]],
     });
   }
 
   onSubmit(): void {
-    if (this.phaseForm.valid) {
-      const formValue = this.phaseForm.value;
-      const payload = {
-        ...formValue,
-        plannedStartDate: formValue.plannedStartDate
-          ? new Date(formValue.plannedStartDate).toISOString()
-          : null,
-        plannedEndDate: formValue.plannedEndDate
-          ? new Date(formValue.plannedEndDate).toISOString()
-          : null,
-        actualStartDate: formValue.actualStartDate
-          ? new Date(formValue.actualStartDate).toISOString()
-          : null,
-        actualEndDate: formValue.actualEndDate
-          ? new Date(formValue.actualEndDate).toISOString()
-          : null,
-      };
-      this.dialogRef.close(payload);
+    if (this.phaseForm.invalid) {
+      this.phaseForm.markAllAsTouched();
+      return;
     }
+    const formValue = this.phaseForm.value;
+    const payload = {
+      ...formValue,
+      plannedStartDate: formValue.plannedStartDate
+        ? new Date(formValue.plannedStartDate).toISOString()
+        : null,
+      plannedEndDate: formValue.plannedEndDate
+        ? new Date(formValue.plannedEndDate).toISOString()
+        : null,
+      actualStartDate: formValue.actualStartDate
+        ? new Date(formValue.actualStartDate).toISOString()
+        : null,
+      actualEndDate: formValue.actualEndDate
+        ? new Date(formValue.actualEndDate).toISOString()
+        : null,
+    };
+    this.dialogRef.close(payload);
   }
 
   onCancel(): void {

@@ -1,11 +1,12 @@
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormBuilder,
-  FormGroup,
-  Validators,
   ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+  FormGroup,
 } from '@angular/forms';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
@@ -75,8 +76,16 @@ export class EditTaskModalComponent implements OnInit {
     const task = this.data.task;
 
     this.taskForm = this.fb.group({
-      name: [task.name, Validators.required],
-      description: [task.description || ''],
+      name: [
+        task.name || '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(100),
+          CustomValidators.noWhitespace(),
+        ],
+      ],
+      description: [task.description || '', [Validators.maxLength(500)]],
       phaseId: [task.phaseId, Validators.required],
       priority: [task.priority || 'Medium', Validators.required],
       status: [task.status || 'Not Started', Validators.required],
@@ -92,7 +101,7 @@ export class EditTaskModalComponent implements OnInit {
       ],
       actualEndDate: [task.actualEndDate ? new Date(task.actualEndDate) : null],
       progress: [task.progress || 0, [Validators.min(0), Validators.max(100)]],
-      notes: [task.notes || ''],
+      notes: [task.notes || '', [Validators.maxLength(1000)]],
     });
   }
 
@@ -111,51 +120,51 @@ export class EditTaskModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.taskForm.valid) {
-      this.isSubmitting = true;
-      const formValue = this.taskForm.value;
-
-      // Build update DTO, only include defined values
-      const dto: any = {};
-
-      if (formValue.name) dto.name = formValue.name;
-      if (formValue.description !== undefined)
-        dto.description = formValue.description;
-      if (formValue.priority) dto.priority = formValue.priority;
-      if (formValue.status) dto.status = formValue.status;
-      if (formValue.progress !== undefined) dto.progress = formValue.progress;
-      if (formValue.notes !== undefined) dto.notes = formValue.notes;
-
-      // Handle assignedTo - can be null to unassign
-      dto.assignedTo = formValue.assignedTo || null;
-
-      // Handle dates - convert to ISO string if present
-      if (formValue.plannedStartDate) {
-        dto.plannedStartDate = new Date(
-          formValue.plannedStartDate,
-        ).toISOString();
-      }
-      if (formValue.plannedEndDate) {
-        dto.plannedEndDate = new Date(formValue.plannedEndDate).toISOString();
-      }
-      if (formValue.actualStartDate) {
-        dto.actualStartDate = new Date(formValue.actualStartDate).toISOString();
-      }
-      if (formValue.actualEndDate) {
-        dto.actualEndDate = new Date(formValue.actualEndDate).toISOString();
-      }
-
-      this.taskService.updateTask(this.data.task.id, dto).subscribe({
-        next: (updatedTask) => {
-          this.isSubmitting = false;
-          this.dialogRef.close(updatedTask);
-        },
-        error: (err) => {
-          console.error('Error updating task:', err);
-          this.isSubmitting = false;
-        },
-      });
+    if (this.taskForm.invalid) {
+      this.taskForm.markAllAsTouched();
+      return;
     }
+    this.isSubmitting = true;
+    const formValue = this.taskForm.value;
+
+    // Build update DTO, only include defined values
+    const dto: any = {};
+
+    if (formValue.name) dto.name = formValue.name;
+    if (formValue.description !== undefined)
+      dto.description = formValue.description;
+    if (formValue.priority) dto.priority = formValue.priority;
+    if (formValue.status) dto.status = formValue.status;
+    if (formValue.progress !== undefined) dto.progress = formValue.progress;
+    if (formValue.notes !== undefined) dto.notes = formValue.notes;
+
+    // Handle assignedTo - can be null to unassign
+    dto.assignedTo = formValue.assignedTo || null;
+
+    // Handle dates - convert to ISO string if present
+    if (formValue.plannedStartDate) {
+      dto.plannedStartDate = new Date(formValue.plannedStartDate).toISOString();
+    }
+    if (formValue.plannedEndDate) {
+      dto.plannedEndDate = new Date(formValue.plannedEndDate).toISOString();
+    }
+    if (formValue.actualStartDate) {
+      dto.actualStartDate = new Date(formValue.actualStartDate).toISOString();
+    }
+    if (formValue.actualEndDate) {
+      dto.actualEndDate = new Date(formValue.actualEndDate).toISOString();
+    }
+
+    this.taskService.updateTask(this.data.task.id, dto).subscribe({
+      next: (updatedTask) => {
+        this.isSubmitting = false;
+        this.dialogRef.close(updatedTask);
+      },
+      error: (err) => {
+        console.error('Error updating task:', err);
+        this.isSubmitting = false;
+      },
+    });
   }
 
   formatProgressLabel(value: number): string {

@@ -45,6 +45,8 @@ export class ForgotPasswordComponent {
     if (this.forgotPasswordForm.valid) {
       const email = this.forgotPasswordForm.value.email!;
       this.store.dispatch(LoginActions.forgotPassword({ email }));
+    } else {
+      this.forgotPasswordForm.markAllAsTouched();
     }
   }
 }

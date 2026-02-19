@@ -44,7 +44,7 @@ export class StartTaskModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { task: Task },
   ) {
     this.form = this.fb.group({
-      notes: [''],
+      notes: ['', [Validators.maxLength(500)]],
     });
   }
 

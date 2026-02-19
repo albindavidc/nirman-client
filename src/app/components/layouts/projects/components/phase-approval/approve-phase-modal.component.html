@@ -13,6 +13,12 @@
         placeholder="Add any comments or observations (optional)"
         rows="4"
       ></textarea>
+      <mat-hint align="end"
+        >{{ form.get("comments")?.value?.length || 0 }}/1000</mat-hint
+      >
+      @if (form.get("comments")?.hasError("maxlength")) {
+        <mat-error>Comments cannot exceed 1000 characters</mat-error>
+      }
     </mat-form-field>
   </form>
 

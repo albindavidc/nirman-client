@@ -1,6 +1,11 @@
 import { Component, inject } from '@angular/core';
 
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
@@ -47,7 +52,7 @@ export class ApprovePhaseModalComponent {
 
   constructor() {
     this.form = this.fb.group({
-      comments: [''],
+      comments: ['', [Validators.maxLength(1000)]],
     });
   }
 

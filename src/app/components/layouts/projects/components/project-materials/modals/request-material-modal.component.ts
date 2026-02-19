@@ -55,7 +55,7 @@ export class RequestMaterialModalComponent implements OnInit {
     quantity: [1, [Validators.required, Validators.min(1)]],
     priority: ['medium', Validators.required],
     requiredDate: [new Date(), Validators.required],
-    purpose: ['', Validators.required],
+    purpose: ['', [Validators.required, Validators.maxLength(500)]],
   });
 
   constructor(

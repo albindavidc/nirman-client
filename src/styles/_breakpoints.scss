@@ -1,0 +1,25 @@
+// ─────────────────────────────────────────────────
+// Responsive Breakpoint Mixins
+// Usage: @include tablet { ... }
+// ─────────────────────────────────────────────────
+
+// Tablet & small laptops (≤1024px)
+@mixin tablet {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+// Mobile landscape & small tablets (≤768px)
+@mixin mobile {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+// Phone portrait (≤480px)
+@mixin small-mobile {
+  @media (max-width: 480px) {
+    @content;
+  }
+}

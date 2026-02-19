@@ -1,8 +1,18 @@
+@use "breakpoints" as *;
+
 .dashboard-container {
   padding: 24px;
   color: #e0e0e0;
   background-color: #121212;
   min-height: 100vh;
+
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include small-mobile {
+    padding: 12px;
+  }
 }
 
 .header h1 {
@@ -97,6 +107,11 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 12px;
+
+  @include mobile {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 .task-title {
@@ -135,6 +150,10 @@
   gap: 16px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+
+  @include mobile {
+    gap: 8px;
+  }
 }
 
 .meta-item {
@@ -163,6 +182,12 @@
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }
 
 .status-badge {

@@ -1,4 +1,12 @@
+@use "breakpoints" as *;
+
 /* You can add component-specific styles here if needed */
 table {
   width: 100%;
+
+  @include mobile {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

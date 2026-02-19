@@ -1,3 +1,5 @@
+@use "breakpoints" as *;
+
 .login-container {
   min-height: 100vh;
   display: flex;
@@ -7,6 +9,14 @@
   background: var(--md-sys-color-background);
   position: relative;
   overflow: hidden;
+
+  @include mobile {
+    padding: 24px 16px;
+  }
+
+  @include small-mobile {
+    padding: 16px 12px;
+  }
 
   &::before {
     content: "";
@@ -23,6 +33,11 @@
       transparent 70%
     );
     pointer-events: none;
+
+    @include mobile {
+      width: 100%;
+      height: 300px;
+    }
   }
 }
 
@@ -33,6 +48,10 @@
   margin-bottom: 32px;
   position: relative;
   z-index: 1;
+
+  @include mobile {
+    margin-bottom: 24px;
+  }
 
   .logo-glow {
     position: absolute;
@@ -64,15 +83,27 @@
     justify-content: center;
     position: relative;
     z-index: 1;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
+
+    @include mobile {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+    }
   }
 
   .logo {
     width: 60px;
     height: 60px;
     filter: brightness(0) invert(0.85);
+
+    @include mobile {
+      width: 48px;
+      height: 48px;
+    }
   }
 
   .brand-name {
@@ -82,6 +113,10 @@
     color: var(--md-sys-color-primary);
     margin: 16px 0 4px;
     letter-spacing: 0.02em;
+
+    @include mobile {
+      font-size: 1.5rem;
+    }
   }
 
   .tagline {
@@ -100,6 +135,16 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border: 1px solid var(--md-sys-color-outline-variant);
 
+  @include mobile {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  @include small-mobile {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
   .card-header {
     margin-bottom: 20px;
 
@@ -108,6 +153,10 @@
       font-weight: 600;
       color: var(--md-sys-color-primary);
       margin: 0 0 8px;
+
+      @include mobile {
+        font-size: 1.25rem;
+      }
     }
 
     p {

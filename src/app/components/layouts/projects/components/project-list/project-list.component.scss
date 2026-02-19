@@ -1,8 +1,22 @@
+@use "breakpoints" as *;
+
 // Projects Container
 .projects-container {
   padding: 24px 32px;
   max-width: 1600px;
   margin: 0 auto;
+
+  @include tablet {
+    padding: 20px 24px;
+  }
+
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include small-mobile {
+    padding: 12px;
+  }
 }
 
 // Page Header
@@ -14,6 +28,12 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
   }
 
   .header-text {
@@ -39,6 +59,10 @@
     font-weight: 600;
     color: var(--md-sys-color-on-surface);
     margin: 0;
+
+    @include mobile {
+      font-size: 1.375rem;
+    }
   }
 
   .page-subtitle {
@@ -46,6 +70,10 @@
     color: var(--md-sys-color-on-surface-variant);
     margin: 0;
     padding-left: 40px;
+
+    @include mobile {
+      padding-left: 0;
+    }
   }
 
   .create-btn {
@@ -56,6 +84,11 @@
     display: flex;
     align-items: center;
     gap: 8px;
+
+    @include mobile {
+      width: 100%;
+      justify-content: center;
+    }
 
     mat-icon {
       font-size: 20px;
@@ -72,11 +105,13 @@
   gap: 20px;
   margin-bottom: 32px;
 
-  @media (max-width: 1200px) {
+  @include tablet {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
   }
 
-  @media (max-width: 600px) {
+  @include small-mobile {
     grid-template-columns: 1fr;
   }
 }
@@ -87,7 +122,9 @@
   padding: 20px;
   position: relative;
   border: 1px solid var(--md-sys-color-outline-variant);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
@@ -191,12 +228,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 
-  @media (max-width: 1200px) {
+  @include tablet {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
-  @media (max-width: 768px) {
+  @include mobile {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
@@ -206,7 +245,10 @@
   padding: 20px;
   border: 1px solid var(--md-sys-color-outline-variant);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
     transform: translateY(-4px);
@@ -414,7 +456,9 @@
       border: 2px solid var(--md-sys-color-surface-container-high);
       margin-left: -8px;
       cursor: pointer;
-      transition: transform 0.2s ease, z-index 0s;
+      transition:
+        transform 0.2s ease,
+        z-index 0s;
 
       &:first-child {
         margin-left: 0;

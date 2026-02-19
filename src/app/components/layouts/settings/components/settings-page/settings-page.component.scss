@@ -1,7 +1,17 @@
+@use "breakpoints" as *;
+
 .settings-container {
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
+
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include small-mobile {
+    padding: 12px;
+  }
 
   .page-header {
     margin-bottom: 32px;
@@ -25,7 +35,7 @@
     grid-template-columns: 1fr 300px;
     gap: 24px;
 
-    @media (max-width: 900px) {
+    @include mobile {
       grid-template-columns: 1fr;
     }
   }
@@ -181,7 +191,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 
-    @media (max-width: 600px) {
+    @include mobile {
       grid-template-columns: 1fr;
     }
   }

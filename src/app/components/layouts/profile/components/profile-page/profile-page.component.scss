@@ -1,3 +1,5 @@
+@use "breakpoints" as *;
+
 .profile-container {
   padding: 32px;
   background-color: var(--md-sys-color-background);
@@ -6,11 +8,23 @@
   max-width: 900px;
   margin: 0 auto;
 
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include small-mobile {
+    padding: 12px;
+  }
+
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
+
+    @include mobile {
+      margin-bottom: 24px;
+    }
 
     .title-section {
       display: flex;
@@ -40,6 +54,10 @@
         font-size: 2rem;
         font-weight: 600;
         color: var(--md-sys-color-primary);
+
+        @include mobile {
+          font-size: 1.5rem;
+        }
       }
 
       .subtitle {
@@ -76,6 +94,12 @@
       gap: 24px;
       align-items: center;
       padding: 16px;
+
+      @include mobile {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
 
       .avatar-upload-wrapper {
         position: relative;

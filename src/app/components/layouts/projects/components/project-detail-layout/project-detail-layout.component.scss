@@ -1,8 +1,22 @@
+@use "breakpoints" as *;
+
 .project-detail-container {
   padding: 24px 32px;
   min-height: 100vh;
   background-color: var(--md-sys-color-background);
   color: var(--md-sys-color-on-surface);
+
+  @include tablet {
+    padding: 20px 24px;
+  }
+
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include small-mobile {
+    padding: 12px;
+  }
 }
 
 .header-section {
@@ -14,6 +28,19 @@
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 16px;
   margin-bottom: 24px;
+
+  @include mobile {
+    padding: 16px;
+    gap: 12px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  @include small-mobile {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px 12px;
+  }
 }
 
 .header-icon {
@@ -25,12 +52,23 @@
   justify-content: center;
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-primary);
+
+  @include mobile {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 .header-icon mat-icon {
   font-size: 28px;
   width: 28px;
   height: 28px;
+
+  @include mobile {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
 }
 
 .header-content {
@@ -42,6 +80,10 @@
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
   margin: 0 0 4px 0;
+
+  @include mobile {
+    font-size: 1.25rem;
+  }
 }
 
 .project-meta {
@@ -56,6 +98,14 @@
   border-radius: 12px;
   padding: 8px;
   margin-bottom: 24px;
+
+  @include mobile {
+    padding: 4px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .tab-link {

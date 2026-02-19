@@ -2,6 +2,8 @@
 // Worker Tasks Page — uses MD3 design system tokens
 // ─────────────────────────────────────────────────
 
+@use "breakpoints" as *;
+
 :host {
   display: block;
 }
@@ -306,7 +308,7 @@
 
 // ── Responsive ───────────────────────────────────
 
-@media (max-width: 768px) {
+@include mobile {
   .worker-tasks-container {
     padding: 16px;
   }
@@ -332,7 +334,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@include small-mobile {
   .stats-grid {
     grid-template-columns: 1fr;
   }

@@ -23,7 +23,7 @@ import { TaskService, CreateTaskDto } from '../../services/task.service';
 import { ProjectService } from '../../services/project.service';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import {
-  ProjectMemberWithUser,
+  ProjectWorkerWithUser,
   ProjectPhase,
 } from '../../models/project.models';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
@@ -59,7 +59,7 @@ export class CreateTaskModalComponent implements OnInit {
 
   taskForm!: FormGroup;
   isSubmitting = false;
-  projectMembers: ProjectMemberWithUser[] = [];
+  projectWorkers: ProjectWorkerWithUser[] = [];
   phases: ProjectPhase[] = [];
 
   ngOnInit(): void {
@@ -96,7 +96,6 @@ export class CreateTaskModalComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.taskForm.value;
 
-    // Construct DTO, ensuring we don't send 'null' for fields that expect string/dateString
     const dto: CreateTaskDto = {
       name: formValue.name,
       phaseId: formValue.phaseId,
@@ -120,9 +119,6 @@ export class CreateTaskModalComponent implements OnInit {
       dto.plannedEndDate = new Date(formValue.plannedEndDate).toISOString();
     }
 
-    // Note: projectId is not in CreateTaskDto, so we don't send it.
-    // The backend likely infers project context from Phase or doesn't need it for task creation logic yet.
-
     this.taskService.createTask(dto).subscribe({
       next: () => {
         this.isSubmitting = false;
@@ -136,20 +132,16 @@ export class CreateTaskModalComponent implements OnInit {
   }
 
   loadData() {
-    // 1. Fetch Project Members
+    // 1. Fetch Project Workers
     this.projectService
-      .getProjectMembers(this.data.projectId)
-      .subscribe((members) => {
-        this.projectMembers = members;
+      .getProjectWorkers(this.data.projectId)
+      .subscribe((workers) => {
+        this.projectWorkers = workers;
       });
 
-    // 2. Fetch Phases (if not provided, or even if provided to allow switching)
+    // 2. Fetch Phases
     this.phaseService.getPhases(this.data.projectId).subscribe((phases) => {
       this.phases = phases;
-      // If phaseId passed but not in list (rare), or need default
-      if (!this.taskForm.get('phaseId')?.value && phases.length > 0) {
-        // Optional: auto-select first phase
-      }
     });
   }
 }

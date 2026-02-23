@@ -136,8 +136,22 @@ export class PhaseApprovalReviewComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Refresh data or navigate back
-        this.router.navigate(['../../'], { relativeTo: this.route });
+        // Call backend to approve
+        this.phaseService
+          .approvePhase(data.phase.id, {
+            approvalStatus: 'approved',
+            comments: result.comments,
+          })
+          .subscribe({
+            next: () => {
+              // Refresh data or navigate back
+              this.router.navigate(['../../'], { relativeTo: this.route });
+            },
+            error: (err) => {
+              console.error('Failed to approve phase', err);
+              // Ideally show a snackbar or alert here
+            },
+          });
       }
     });
   }
@@ -150,7 +164,19 @@ export class PhaseApprovalReviewComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.router.navigate(['../../'], { relativeTo: this.route });
+        this.phaseService
+          .rejectPhase(data.phase.id, {
+            approvalStatus: 'rejected',
+            comments: result.comments,
+          })
+          .subscribe({
+            next: () => {
+              this.router.navigate(['../../'], { relativeTo: this.route });
+            },
+            error: (err) => {
+              console.error('Failed to reject phase', err);
+            },
+          });
       }
     });
   }

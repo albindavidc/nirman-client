@@ -51,17 +51,19 @@
             {{ stats.tasksProgress }}% progress, {{ stats.completedTasks }} done
           </div>
         </div>
-        <!-- Team Members -->
+        <!-- Project Workers -->
         <div class="stat-card">
           <div class="stat-icon warning">
             <mat-icon>groups</mat-icon>
           </div>
           <div class="stat-content">
-            <span class="stat-value">{{ project.members?.length || 0 }}</span>
-            <span class="stat-label">Team Members</span>
+            <span class="stat-value">{{
+              project.projectWorkers?.length || 0
+            }}</span>
+            <span class="stat-label">Project Workers</span>
           </div>
           <div class="stat-sublabel">
-            {{ stats.activeMembersToday }} active today
+            {{ stats.activeWorkersToday }} active today
           </div>
         </div>
       </div>

@@ -82,10 +82,10 @@
         <mat-label>Assigned To</mat-label>
         <mat-select formControlName="assignedTo">
           <mat-option [value]="null">Unassigned</mat-option>
-          @for (member of projectMembers; track member.user?.id) {
-            <mat-option [value]="member.user?.id">
-              {{ member.user?.firstName }} {{ member.user?.lastName }} ({{
-                member.role
+          @for (worker of projectWorkers; track worker.user?.id) {
+            <mat-option [value]="worker.user?.id">
+              {{ worker.user?.firstName }} {{ worker.user?.lastName }} ({{
+                worker.role
               }})
             </mat-option>
           }

@@ -12,13 +12,11 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
-    path: 'project-members',
+    path: 'project-workers',
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },
     loadChildren: () =>
-      import('../layouts/project-members/project-members.routes').then(
-        (m) => m.PROJECT_MEMBERS_ROUTES,
-      ),
+      import('../layouts/workers/workers.routes').then((m) => m.WORKER_ROUTES),
   },
   {
     path: 'phase-approvals',

@@ -17,10 +17,12 @@
           <span>Add Material</span>
         </button>
       }
-      <button class="action-btn-secondary" (click)="openRequestModal()">
-        <mat-icon>shopping_cart</mat-icon>
-        <span>Request Material</span>
-      </button>
+      @if (currentUserRole !== "admin") {
+        <button class="action-btn-secondary" (click)="openRequestModal()">
+          <mat-icon>shopping_cart</mat-icon>
+          <span>Request Material</span>
+        </button>
+      }
       <button class="export-btn">
         <mat-icon>download</mat-icon>
         <span>Export Report</span>

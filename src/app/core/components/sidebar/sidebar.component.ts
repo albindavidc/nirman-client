@@ -127,9 +127,9 @@ export class SidebarComponent {
                 route: '/supervisor/projects',
               },
               {
-                label: 'Project Members',
+                label: 'Project Workers',
                 icon: 'group',
-                route: '/supervisor/project-members',
+                route: '/supervisor/project-workers',
               },
             ],
           },
@@ -199,9 +199,9 @@ export class SidebarComponent {
           children: [
             { label: 'Projects', icon: 'work', route: '/admin/projects' },
             {
-              label: 'Project Members',
+              label: 'Project Workers',
               icon: 'group',
-              route: '/admin/project-members',
+              route: '/admin/project-workers',
             },
           ],
         },

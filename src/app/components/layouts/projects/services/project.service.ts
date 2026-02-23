@@ -9,7 +9,7 @@ import {
   ProjectStats,
   ProjectListResponse,
   Professional,
-  ProjectMemberWithUser,
+  ProjectWorkerWithUser,
   AttendanceRecord,
   PhaseApproval,
   CreatePhaseApprovalDto,
@@ -83,20 +83,20 @@ export class ProjectService {
     });
   }
 
-  // Project Members
-  getProjectMembers(projectId: string): Observable<ProjectMemberWithUser[]> {
-    return this.http.get<ProjectMemberWithUser[]>(
-      `${this.apiUrl}/${projectId}/members`,
+  // Project Workers
+  getProjectWorkers(projectId: string): Observable<ProjectWorkerWithUser[]> {
+    return this.http.get<ProjectWorkerWithUser[]>(
+      `${this.apiUrl}/${projectId}/workers`,
     );
   }
 
-  addProjectMembers(
+  addProjectWorkers(
     projectId: string,
     userIds: string[],
     role: string,
   ): Observable<{ success: boolean }> {
     return this.http.post<{ success: boolean }>(
-      `${this.apiUrl}/${projectId}/members`,
+      `${this.apiUrl}/${projectId}/workers`,
       {
         userIds,
         role,
@@ -104,19 +104,19 @@ export class ProjectService {
     );
   }
 
-  removeProjectMember(projectId: string, userId: string): Observable<void> {
+  removeProjectWorker(projectId: string, userId: string): Observable<void> {
     return this.http.delete<void>(
-      `${this.apiUrl}/${projectId}/members/${userId}`,
+      `${this.apiUrl}/${projectId}/workers/${userId}`,
     );
   }
 
-  updateProjectMember(
+  updateProjectWorker(
     projectId: string,
     userId: string,
     role: string,
   ): Observable<void> {
     return this.http.patch<void>(
-      `${this.apiUrl}/${projectId}/members/${userId}`,
+      `${this.apiUrl}/${projectId}/workers/${userId}`,
       {
         role,
       },

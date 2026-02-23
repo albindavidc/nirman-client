@@ -1,13 +1,13 @@
 export type ProjectStatus = 'active' | 'paused' | 'completed' | 'on-hold';
 
-export interface TeamMember {
+export interface TeamWorker {
   id: string;
   name: string;
   initials: string;
   avatarUrl?: string;
 }
 
-export interface ProjectMember {
+export interface ProjectWorker {
   userId: string;
   role: 'Admin' | 'Viewer';
   joinedAt?: string;
@@ -79,9 +79,9 @@ export interface Project {
   dueDate: string;
   latitude?: number;
   longitude?: number;
-  members?: ProjectMember[];
+  projectWorkers?: ProjectWorker[];
   phases?: ProjectPhase[];
-  teamMembers: TeamMember[];
+  teamWorkers: TeamWorker[];
   budget?: number;
   spent?: number;
   createdBy?: string;
@@ -100,8 +100,8 @@ export interface CreateProjectDto {
   progress?: number;
   latitude?: number;
   longitude?: number;
-  members?: ProjectMember[];
-  teamMemberIds?: string[];
+  projectWorkers?: ProjectWorker[];
+  teamWorkerIds?: string[];
 }
 
 export interface ProjectStats {
@@ -151,8 +151,8 @@ export interface Professional {
   skills: string[];
 }
 
-/** Enhanced project member with user details for API responses */
-export interface ProjectMemberWithUser {
+/** Enhanced project worker with user details for API responses */
+export interface ProjectWorkerWithUser {
   userId: string;
   role: string;
   joinedAt: Date;
@@ -168,7 +168,6 @@ export interface ProjectMemberWithUser {
     title: string;
   } | null;
 }
-
 /** Attendance record for project tracking */
 export interface AttendanceRecord {
   id: string;

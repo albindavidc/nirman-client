@@ -24,7 +24,7 @@ import { Task, TaskService, CreateTaskDto } from '../../services/task.service';
 import { ProjectService } from '../../services/project.service';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import {
-  ProjectMemberWithUser,
+  ProjectWorkerWithUser,
   ProjectPhase,
 } from '../../models/project.models';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
@@ -64,7 +64,7 @@ export class EditTaskModalComponent implements OnInit {
 
   taskForm!: FormGroup;
   isSubmitting = false;
-  projectMembers: ProjectMemberWithUser[] = [];
+  projectWorkers: ProjectWorkerWithUser[] = [];
   phases: ProjectPhase[] = [];
 
   ngOnInit(): void {
@@ -106,11 +106,11 @@ export class EditTaskModalComponent implements OnInit {
   }
 
   private loadData(): void {
-    // Fetch Project Members
+    // Fetch Project Workers
     this.projectService
-      .getProjectMembers(this.data.projectId)
-      .subscribe((members) => {
-        this.projectMembers = members;
+      .getProjectWorkers(this.data.projectId)
+      .subscribe((workers) => {
+        this.projectWorkers = workers;
       });
 
     // Fetch Phases
@@ -127,7 +127,6 @@ export class EditTaskModalComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.taskForm.value;
 
-    // Build update DTO, only include defined values
     const dto: Partial<CreateTaskDto> = {};
 
     if (formValue.name) dto.name = formValue.name;
@@ -138,10 +137,8 @@ export class EditTaskModalComponent implements OnInit {
     if (formValue.progress !== undefined) dto.progress = formValue.progress;
     if (formValue.notes !== undefined) dto.notes = formValue.notes;
 
-    // Handle assignedTo - can be null to unassign
     dto.assignedTo = formValue.assignedTo || null;
 
-    // Handle dates - convert to ISO string if present
     if (formValue.plannedStartDate) {
       dto.plannedStartDate = new Date(formValue.plannedStartDate).toISOString();
     }

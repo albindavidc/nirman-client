@@ -207,41 +207,41 @@
       <label
         class="block text-sm font-medium text-gray-300 mb-1"
         for="addPeople"
-        >Add people*</label
+        >Add workers*</label
       >
       <mat-form-field appearance="outline" class="w-full">
         <input
           matInput
           id="addPeople"
-          [formControl]="memberSearchControl"
-          [matAutocomplete]="memberAuto"
+          [formControl]="workerSearchControl"
+          [matAutocomplete]="workerAuto"
           placeholder="Search"
         />
         <mat-autocomplete
-          #memberAuto="matAutocomplete"
-          (optionSelected)="addMember($event.option.value)"
+          #workerAuto="matAutocomplete"
+          (optionSelected)="addWorker($event.option.value)"
         >
-          @for (member of filteredMembers$ | async; track member.id) {
-            <mat-option [value]="member">
-              {{ member.name }}
-              <span class="text-xs text-gray-400 ml-2">{{ member.email }}</span>
+          @for (worker of filteredWorkers$ | async; track worker.id) {
+            <mat-option [value]="worker">
+              {{ worker.name }}
+              <span class="text-xs text-gray-400 ml-2">{{ worker.email }}</span>
             </mat-option>
           }
         </mat-autocomplete>
       </mat-form-field>
 
-      <!-- Selected Members Chips -->
-      @if (selectedMembers.length > 0) {
+      <!-- Selected Workers Chips -->
+      @if (selectedWorkers.length > 0) {
         <div class="flex flex-wrap gap-2 mt-2">
-          @for (member of selectedMembers; track member.id) {
+          @for (worker of selectedWorkers; track worker.id) {
             <div
               class="flex items-center bg-zinc-800 rounded-full px-3 py-1 border border-zinc-700"
             >
-              <span class="text-sm text-gray-200">{{ member.name }}</span>
+              <span class="text-sm text-gray-200">{{ worker.name }}</span>
               <button
                 type="button"
                 class="ml-2 text-gray-400 hover:text-white"
-                (click)="removeMember(member)"
+                (click)="removeWorker(worker)"
               >
                 <mat-icon
                   class="text-base w-4 h-4 flex items-center justify-center"
@@ -253,11 +253,11 @@
         </div>
       }
       @if (
-        projectForm.get("members")?.touched &&
-        projectForm.get("members")?.hasError("required")
+        projectForm.get("workers")?.touched &&
+        projectForm.get("workers")?.hasError("required")
       ) {
         <mat-error class="mt-2 text-xs">
-          At least one member is required
+          At least one worker is required
         </mat-error>
       }
     </div>
@@ -305,22 +305,22 @@
             }
           </mat-autocomplete>
         </mat-form-field>
-      </div>
 
-      <!-- Map Container -->
-      <google-map
-        class="block w-full h-[300px] rounded-lg overflow-hidden border border-zinc-700"
-        [center]="center"
-        [zoom]="zoom"
-        [options]="mapOptions"
-        (mapClick)="onMapClick($event)"
-      >
-        <map-marker
-          [position]="markerPosition"
-          [options]="markerOptions"
-          (mapDragend)="onMarkerDragEnd($event)"
-        ></map-marker>
-      </google-map>
+        <!-- Map Container -->
+        <google-map
+          class="block w-full h-[300px] rounded-lg overflow-hidden border border-zinc-700"
+          [center]="center"
+          [zoom]="zoom"
+          [options]="mapOptions"
+          (mapClick)="onMapClick($event)"
+        >
+          <map-marker
+            [position]="markerPosition"
+            [options]="markerOptions"
+            (mapDragend)="onMarkerDragEnd($event)"
+          ></map-marker>
+        </google-map>
+      </div>
     </div>
   </form>
 

@@ -117,10 +117,10 @@
           </div>
 
           <div class="team-avatars">
-            @if (project.members && project.members.length > 0) {
+            @if (project.projectWorkers && project.projectWorkers.length > 0) {
               @for (
-                member of project.members.slice(0, 3);
-                track member.userId
+                worker of project.projectWorkers.slice(0, 3);
+                track worker.userId
               ) {
                 <div class="avatar">
                   <!-- TODO: Show initials or avatar when user data is available -->
@@ -129,14 +129,14 @@
                   >
                 </div>
               }
-              @if (project.members.length > 3) {
+              @if (project.projectWorkers.length > 3) {
                 <div
                   class="avatar more"
                   [matTooltip]="
-                    '+' + (project.members.length - 3) + ' more members'
+                    '+' + (project.projectWorkers.length - 3) + ' more workers'
                   "
                 >
-                  +{{ project.members.length - 3 }}
+                  +{{ project.projectWorkers.length - 3 }}
                 </div>
               }
             }

@@ -1,0 +1,219 @@
+<div class="edit-worker-modal text-white">
+  <h2 class="modal-title">
+    {{ mode === "add" ? "Add New Worker" : "Edit Worker" }}
+  </h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label" for="firstName">First Name *</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>person</mat-icon>
+          <input
+            matInput
+            id="firstName"
+            formControlName="firstName"
+            placeholder="First Name"
+          />
+          @if (form.get("firstName")?.hasError("required")) {
+            <mat-error>Required</mat-error>
+          }
+          @if (form.get("firstName")?.hasError("minlength")) {
+            <mat-error>Min 2 characters</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="form-field">
+        <label class="field-label" for="lastName">Last Name *</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>person</mat-icon>
+          <input
+            matInput
+            id="lastName"
+            formControlName="lastName"
+            placeholder="Last Name"
+          />
+          @if (form.get("lastName")?.hasError("required")) {
+            <mat-error>Required</mat-error>
+          }
+          @if (form.get("lastName")?.hasError("minlength")) {
+            <mat-error>Min 2 characters</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="field-label" for="email">Email Address *</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>email</mat-icon>
+        <input
+          matInput
+          id="email"
+          formControlName="email"
+          placeholder="john@example.com"
+        />
+        @if (form.get("email")?.hasError("required")) {
+          <mat-error>Required</mat-error>
+        }
+        @if (form.get("email")?.hasError("email")) {
+          <mat-error>Invalid email</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label" for="phone">Phone Number *</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>phone</mat-icon>
+          <input
+            matInput
+            id="phone"
+            formControlName="phone"
+            placeholder="+1 234 567 8900"
+            aria-label="Phone Number"
+          />
+          @if (form.get("phone")?.hasError("required")) {
+            <mat-error>Required</mat-error>
+          }
+          @if (form.get("phone")?.hasError("phoneNumber")) {
+            <mat-error>Please enter a valid 10-digit number</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="form-field">
+        <label class="field-label" for="role">Role *</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-select id="role" formControlName="role">
+            <mat-option value="supervisor">Supervisor</mat-option>
+            <mat-option value="worker">Worker</mat-option>
+          </mat-select>
+          @if (form.get("role")?.hasError("required")) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <h3 class="section-title">Worker Details</h3>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label" for="professionalTitle">Job Title</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>work</mat-icon>
+          <input
+            matInput
+            id="professionalTitle"
+            formControlName="professionalTitle"
+            placeholder="e.g. Site Engineer"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-field">
+        <label class="field-label" for="experienceYears"
+          >Experience (Years)</label
+        >
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>history</mat-icon>
+          <input
+            matInput
+            id="experienceYears"
+            type="number"
+            formControlName="experienceYears"
+            placeholder="0"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="field-label" for="skills">Skills (comma separated)</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>handyman</mat-icon>
+        <input
+          matInput
+          id="skills"
+          formControlName="skills"
+          placeholder="Welding, Plumbing"
+        />
+      </mat-form-field>
+    </div>
+
+    <h3 class="section-title">Address</h3>
+
+    <div class="form-field">
+      <label class="field-label" for="addressStreet">Street Address</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>location_on</mat-icon>
+        <input
+          matInput
+          id="addressStreet"
+          formControlName="addressStreet"
+          placeholder="123 Main St"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="field-label" for="addressCity">City</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>location_city</mat-icon>
+          <input
+            matInput
+            id="addressCity"
+            formControlName="addressCity"
+            placeholder="City"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-field">
+        <label class="field-label" for="addressState">State</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>map</mat-icon>
+          <input
+            matInput
+            id="addressState"
+            formControlName="addressState"
+            placeholder="State"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="field-label" for="addressZipCode">Zip Code</label>
+      <mat-form-field appearance="outline">
+        <mat-icon matPrefix>pin_drop</mat-icon>
+        <input
+          matInput
+          id="addressZipCode"
+          formControlName="addressZipCode"
+          placeholder="Zip Code"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="form-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="onCancel()"
+        class="cancel-btn"
+      >
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        type="submit"
+        class="save-btn"
+        [disabled]="form.invalid"
+      >
+        {{ mode === "add" ? "Add Worker" : "Save Changes" }}
+      </button>
+    </div>
+  </form>
+</div>

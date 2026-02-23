@@ -33,14 +33,14 @@ import {
 import {
   Project,
   CreateProjectDto,
-  ProjectMember,
+  ProjectWorker,
 } from '../../models/project.models';
 import * as ProjectActions from '../../store/project.actions';
 import * as ProjectSelectors from '../../store/project.selectors';
-import { MemberService } from '../../../project-members/services/member.service';
+import { WorkerService } from '../../../workers/services/worker.service';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
 
-export interface SearchableMember {
+export interface SearchableWorker {
   id: string;
   name: string;
   email: string;
@@ -62,7 +62,6 @@ export interface SearchableMember {
     MatAutocompleteModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatProgressSpinnerModule,
     GoogleMapsModule,
     SharedModalComponent,
   ],
@@ -75,7 +74,7 @@ export class ProjectCreateModalComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
-  private readonly memberService = inject(MemberService);
+  private readonly workerService = inject(WorkerService);
   private readonly dialogRef = inject(
     MatDialogRef<ProjectCreateModalComponent>,
   );
@@ -189,15 +188,15 @@ export class ProjectCreateModalComponent implements OnInit {
   };
 
   // Observables
-  filteredManagers$!: Observable<SearchableMember[]>;
-  filteredMembers$!: Observable<SearchableMember[]>;
+  filteredManagers$!: Observable<SearchableWorker[]>;
+  filteredWorkers$!: Observable<SearchableWorker[]>;
   filteredLocations$!: Observable<google.maps.places.AutocompletePrediction[]>;
 
-  selectedMembers: SearchableMember[] = [];
+  selectedWorkers: SearchableWorker[] = [];
 
   // Form controls
   managerSearchControl = new FormControl('');
-  memberSearchControl = new FormControl('');
+  workerSearchControl = new FormControl('');
   mapSearchControl = new FormControl('');
 
   // Main form
@@ -221,8 +220,9 @@ export class ProjectCreateModalComponent implements OnInit {
     ],
     latitude: [this.data?.latitude || null],
     longitude: [this.data?.longitude || null],
-    members: [
-      (this.data?.members || []) as unknown as SearchableMember[],
+    // Renaming 'members' form control to 'workers'
+    workers: [
+      (this.data?.projectWorkers || []) as unknown as SearchableWorker[],
       [Validators.required, Validators.minLength(1)],
     ],
   });
@@ -235,8 +235,6 @@ export class ProjectCreateModalComponent implements OnInit {
     this.initAutocompleteService();
 
     // If editing, setup initial state
-
-    // If editing, setup initial state
     if (this.data) {
       if (this.data.latitude && this.data.longitude) {
         this.center = {
@@ -246,44 +244,16 @@ export class ProjectCreateModalComponent implements OnInit {
         this.markerPosition = { ...this.center };
       }
 
-      // Pre-fill selected members
-      // Note: In a real app we might need to fetch full member details if they aren't fully in the project object
-      // For now assuming we recreate searchable members from the project members.
-      if (this.data.members) {
-        // This assumes project.members has expanded user details which typically it might not depending on the backend response.
-        // If member data is minimal, we might need to fetch it.
-        // Let's assume for now we have enough to display, or we will just use IDs if that's all we have.
-        // Actually, looking at Project model, members are ProjectMember[] { userId, role }.
-        // We might need to fetch these users to display their names.
-        // For this iteration, let's just leave it empty or try to fetch if we have a way.
-        // Strategy: We will fetch the specific members by ID if we can, or just list IDs.
-        // Better Strategy: Iterate project members and fetch their details one by one or via a bulk endpoint if available.
-        // Since we lack a bulk endpoint, we will skip pre-filling members visually for now to avoid complexity,
-        // OR we accept that we might just show "Loading..." chips.
-        // Let's rely on the user re-adding members or just not editing members for this version.
-        // WAIT, we want a professional UX. Let's try to fetch them.
-        this.data.members.forEach(() => {
-          this.memberService
-            .getMembers(1, 1, undefined, undefined)
+      // Pre-fill selected workers
+      if (this.data.projectWorkers) {
+        this.data.projectWorkers.forEach(() => {
+          this.workerService
+            .getWorkers(1, 1, undefined, undefined)
             .subscribe(() => {
-              // ideally we filter by ID but our service only has search.
-              // Let's just create a placeholder for now to be safe.
+              // placeholder
             });
         });
       }
-    }
-
-    // Initialize members control with pre-filled members if any
-    if (this.data?.members) {
-      // Logic to pre-fill selectedMembers is complex without full user objects,
-      // but if we had them we would set them here.
-      // For now, if we don't have the full objects to display chips,
-      // we might rely on the form control having something to pass validation if editing.
-      // But typically for 'Add People' with chips, we need the display objects.
-      // Since we decided earlier to skip visual pre-fill due to API limits,
-      // we should at least not make it invalid if it's an edit and technically has members.
-      // However, for this task, I will stick to validating what is strictly visible.
-      // If selectedMembers is empty, the form is invalid.
     }
 
     // Setup manager search
@@ -293,11 +263,11 @@ export class ProjectCreateModalComponent implements OnInit {
       switchMap((term) => this.filterManagers(term || '')),
     );
 
-    // Setup member search
-    this.filteredMembers$ = this.memberSearchControl.valueChanges.pipe(
+    // Setup worker search
+    this.filteredWorkers$ = this.workerSearchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((term) => this.filterMembers(term || '')),
+      switchMap((term) => this.filterWorkers(term || '')),
     );
 
     // Setup location search
@@ -312,7 +282,6 @@ export class ProjectCreateModalComponent implements OnInit {
     if (typeof google !== 'undefined' && google.maps && google.maps.places) {
       this.autocompleteService = new google.maps.places.AutocompleteService();
     } else {
-      // Retry initialization if google maps script hasn't loaded yet
       setTimeout(() => this.initAutocompleteService(), 500);
     }
   }
@@ -403,27 +372,25 @@ export class ProjectCreateModalComponent implements OnInit {
     }
   }
 
-  private filterManagers(term: string): Observable<SearchableMember[]> {
-    return this.memberService
-      .getMembers(1, 10, undefined, term) // Fetch members matching term
-      .pipe(
-        map((response) =>
-          response.data.map((m) => ({
-            id: m.id,
-            name: `${m.firstName} ${m.lastName}`,
-            email: m.email,
-          })),
-        ),
-      );
+  private filterManagers(term: string): Observable<SearchableWorker[]> {
+    return this.workerService.getWorkers(1, 10, undefined, term).pipe(
+      map((response) =>
+        response.data.map((m) => ({
+          id: m.id,
+          name: `${m.firstName} ${m.lastName}`,
+          email: m.email,
+        })),
+      ),
+    );
   }
 
-  private filterMembers(term: string): Observable<SearchableMember[]> {
+  private filterWorkers(term: string): Observable<SearchableWorker[]> {
     if (!term) return of([]);
 
-    return this.memberService.getMembers(1, 10, undefined, term).pipe(
+    return this.workerService.getWorkers(1, 10, undefined, term).pipe(
       map((response) =>
         response.data
-          .filter((m) => !this.selectedMembers.some((sm) => sm.id === m.id))
+          .filter((m) => !this.selectedWorkers.some((sm) => sm.id === m.id))
           .map((m) => ({
             id: m.id,
             name: `${m.firstName} ${m.lastName}`,
@@ -433,35 +400,33 @@ export class ProjectCreateModalComponent implements OnInit {
     );
   }
 
-  selectManager(manager: SearchableMember): void {
+  selectManager(manager: SearchableWorker): void {
     this.projectForm.patchValue({ managerId: manager.id });
     this.managerSearchControl.setValue(manager.name);
   }
 
-  addMember(member: SearchableMember): void {
-    if (!this.selectedMembers.some((m) => m.id === member.id)) {
-      this.selectedMembers.push(member);
-      this.projectForm.patchValue({ members: this.selectedMembers });
+  addWorker(worker: SearchableWorker): void {
+    if (!this.selectedWorkers.some((m) => m.id === worker.id)) {
+      this.selectedWorkers.push(worker);
+      this.projectForm.patchValue({ workers: this.selectedWorkers });
     }
-    this.memberSearchControl.setValue('');
+    this.workerSearchControl.setValue('');
   }
 
-  removeMember(member: SearchableMember): void {
-    this.selectedMembers = this.selectedMembers.filter(
-      (m) => m.id !== member.id,
+  removeWorker(worker: SearchableWorker): void {
+    this.selectedWorkers = this.selectedWorkers.filter(
+      (m) => m.id !== worker.id,
     );
-    this.projectForm.patchValue({ members: this.selectedMembers });
+    this.projectForm.patchValue({ workers: this.selectedWorkers });
   }
 
   async searchLocation(): Promise<void> {
     const query = this.mapSearchControl.value;
     if (!query) return;
 
-    // If query is an object (autocomplete prediction), it's already handled by onLocationSelected
     if (typeof query !== 'string') return;
 
     try {
-      // Using Google Places Autocomplete Service for geocoding
       const geocoder = new google.maps.Geocoder();
       const results = await geocoder.geocode({ address: query });
 
@@ -481,11 +446,10 @@ export class ProjectCreateModalComponent implements OnInit {
 
     const formValue = this.projectForm.value;
 
-    // Build members array
-    const members: ProjectMember[] = this.selectedMembers.map((m) => ({
+    const projectWorkers: ProjectWorker[] = this.selectedWorkers.map((m) => ({
       userId: m.id,
       role: 'Viewer' as const,
-      joinedAt: new Date().toISOString(), // Add joinedAt date
+      joinedAt: new Date().toISOString(),
     }));
 
     const createData: CreateProjectDto = {
@@ -509,8 +473,8 @@ export class ProjectCreateModalComponent implements OnInit {
       progress: formValue.progress || 0,
       latitude: formValue.latitude || undefined,
       longitude: formValue.longitude || undefined,
-      members, // Send structured members
-      teamMemberIds: this.selectedMembers.map((m) => m.id), // Keep for backward compatibility if backend uses it
+      projectWorkers,
+      teamWorkerIds: this.selectedWorkers.map((m) => m.id),
     };
 
     if (this.isEditing && this.data) {

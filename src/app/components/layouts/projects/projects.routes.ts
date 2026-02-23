@@ -41,10 +41,10 @@ export const PROJECTS_ROUTES: Routes = [
           ),
       },
       {
-        path: 'members',
+        path: 'workers',
         loadComponent: () =>
-          import('./components/project-members/project-members.component').then(
-            (m) => m.ProjectMembersComponent,
+          import('./components/project-workers/project-workers.component').then(
+            (m) => m.ProjectWorkersComponent,
           ),
       },
       {

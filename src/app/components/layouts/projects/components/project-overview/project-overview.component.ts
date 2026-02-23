@@ -56,7 +56,7 @@ export class ProjectOverviewComponent {
             completedTasks,
             totalTasks,
             tasksProgress,
-            activeMembersToday: 0, // Placeholder until attendance date filter is ready
+            activeWorkersToday: 0, // Placeholder until attendance date filter is ready
           };
         }),
       ),

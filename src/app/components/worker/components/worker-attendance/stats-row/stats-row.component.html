@@ -1,0 +1,32 @@
+<div class="stats-row">
+  @for (stat of stats; track stat.label) {
+    <div class="stat-card">
+      <div>
+        <div class="stat-card__value">{{ stat.value }}</div>
+        <div class="stat-card__label">{{ stat.label }}</div>
+      </div>
+
+      <div class="stat-card__icon" [ngClass]="stat.colorClass">
+        <mat-icon>
+          @switch (stat.icon) {
+            @case ("clock") {
+              calender
+            }
+            @case ("calendar") {
+              calender_month
+            }
+            @case ("trend") {
+              trending_up
+            }
+            @case ("alert") {
+              warning
+            }
+            @default {
+              help_outline
+            }
+          }
+        </mat-icon>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,78 @@
+<!-- front-end/src/app/components/worker/components/worker-attendance/history-table/history-table.component.html -->
+<div class="table-card">
+  <h2 class="table-card__title">Recent Attendance</h2>
+
+  <!-- Skeleton loader -->
+  @if (isLoading()) {
+    <div class="skeleton-list">
+      @for (_ of skeletonRows; track $index) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  }
+
+  <!-- Data table -->
+  @if (!isLoading()) {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Hours</th>
+            <th>Location</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of history()?.data; track row.id) {
+            <tr>
+              <td>{{ formatDate(row.date) }}</td>
+              <td>{{ formatTime(row.checkIn) }}</td>
+              <td>{{ formatTime(row.checkOut) }}</td>
+              <td class="td--mono">
+                {{ row.workHours != null ? row.workHours + "h" : "—" }}
+              </td>
+              <td>{{ row.project?.name ?? row.location ?? "—" }}</td>
+              <td>
+                <span class="badge" [ngClass]="statusClass(row.status)">
+                  {{ row.status }}
+                </span>
+              </td>
+            </tr>
+          }
+
+          @if (!history()?.data?.length) {
+            <tr>
+              <td colspan="6" class="td--empty">No attendance records found</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if ((history()?.meta?.totalPages ?? 0) > 1) {
+      <div class="pagination">
+        <button
+          class="page-btn"
+          [disabled]="history()!.meta.page === 1"
+          (click)="pageChange.emit(history()!.meta.page - 1)"
+        >
+          ‹ Prev
+        </button>
+        <span class="page-info">
+          {{ history()!.meta.page }} / {{ history()!.meta.totalPages }}
+        </span>
+        <button
+          class="page-btn"
+          [disabled]="history()!.meta.page === history()!.meta.totalPages"
+          (click)="pageChange.emit(history()!.meta.page + 1)"
+        >
+          Next ›
+        </button>
+      </div>
+    }
+  }
+</div>

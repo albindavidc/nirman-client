@@ -1,0 +1,140 @@
+// front-end/src/app/components/worker/components/worker-attendance/check-in-card/check-in-card.component.scss
+.card {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 32px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease;
+
+  &:hover {
+    background: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-outline);
+  }
+}
+
+.card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
+  letter-spacing: 0.04em;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.card__time {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+  letter-spacing: 5px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition:
+    color 300ms ease,
+    letter-spacing 300ms ease;
+
+  &--active {
+    color: var(--md-sys-color-on-surface);
+    letter-spacing: -1px;
+  }
+}
+
+.card__hint {
+  font-size: 12.5px;
+  color: var(--md-sys-color-outline);
+  margin: 0;
+}
+
+/* Button */
+.btn-action {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 16px 0 8px;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+
+  &--out {
+    background: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+
+    &:hover:not(.btn-action--disabled):not(.btn-action--done) {
+      transform: scale(1.06);
+      box-shadow: 0 0 40px rgba(255, 180, 171, 0.3);
+    }
+  }
+
+  &--disabled,
+  &--done,
+  &:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  &--busy {
+    pointer-events: none;
+  }
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid rgba(86, 30, 25, 0.3);
+  border-top-color: var(--md-sys-color-on-error);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.card__hours {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--md-sys-color-outline);
+  margin: 0;
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  strong {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+}

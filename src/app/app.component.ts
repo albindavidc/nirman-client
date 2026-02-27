@@ -1,8 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
 
-import { PageLoaderComponent } from './core/components/page-loader/page-loader.component';
+import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
 
 @Component({
   selector: 'app-root',

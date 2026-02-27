@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './shared/components/home/home.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { GuestGuard } from './core/guards/guest.guard';
+import { HomeComponent } from './shared/components/home/home.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [GuestGuard] },
@@ -34,7 +34,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
 
     loadComponent: () =>
-      import('./core/components/main-layout/main-layout.component').then(
+      import('./shared/components/main-layout/main-layout.component').then(
         (m) => m.MainLayoutComponent,
       ),
     children: [

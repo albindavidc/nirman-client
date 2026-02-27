@@ -21,7 +21,7 @@ export class CheckInCardComponent {
   readonly time = input.required<string>();
 
   /* Optional Inputs */
-  readonly location = input<boolean>();
+  readonly location = input<string>();
   readonly isLoading = input<boolean>(false);
   readonly checkedIn = input<boolean>(false);
 

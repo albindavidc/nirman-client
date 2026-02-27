@@ -1,0 +1,132 @@
+// front-end/src/app/components/worker/components/worker-attendance/worker-attendance.component.scss
+.dashboard {
+  min-height: 100vh;
+  background: var(--md-sys-color-background);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--md-sys-color-on-background);
+  font-family: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  position: relative;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: toast-in 0.2s ease;
+
+  &--success {
+    background: var(--md-extended-color-success-color-container);
+    color: var(--md-extended-color-success-on-color-container);
+    border: 1px solid var(--md-extended-color-success-color);
+  }
+
+  &--error {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    border: 1px solid var(--md-sys-color-error);
+  }
+
+  &__icon {
+    font-size: 15px;
+    font-weight: 800;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Header */
+.dashboard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dashboard__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+
+.dashboard__subtitle {
+  font-size: 13px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0;
+}
+
+/* Status chip in header */
+.dashboard__chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--md-sys-color-outline);
+  flex-shrink: 0;
+
+  &--in {
+    background: var(--md-sys-color-primary);
+    box-shadow: 0 0 6px var(--md-sys-color-primary);
+  }
+  &--out {
+    background: var(--md-extended-color-success-color);
+  }
+}
+
+.dashboard__divider {
+  height: 1px;
+  background: var(--md-sys-color-outline-variant);
+  margin-bottom: 4px;
+}
+
+/* Clock Grid */
+.clock-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}

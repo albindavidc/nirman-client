@@ -1,15 +1,15 @@
+import { AsyncPipe, CommonModule, TitleCasePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { CommonModule, TitleCasePipe, AsyncPipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { LayoutService } from '../../services/layout.service';
-import { ConfigService } from '../../services/config.service';
-import * as LoginSelectors from '../../../components/layouts/auth/login/store/login.selectors';
 import { map } from 'rxjs/operators';
+import * as LoginSelectors from '../../../components/layouts/auth/login/store/login.selectors';
+import { ConfigService } from '../../../core/services/config.service';
+import { LayoutService } from '../../../core/services/layout.service';
 
 @Component({
   selector: 'app-sidebar',

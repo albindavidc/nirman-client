@@ -1,1 +1,68 @@
-<p>worker-attendance works!</p>
+<!-- front-end/src/app/components/worker/components/worker-attendance/worker-attendance.component.html -->
+
+<div class="dashboard">
+  @if (store.toast()) {
+    <div
+      class="toast"
+      [class.toast--success]="store.toast()!.type === 'success'"
+      [class.toast--error]="store.toast()!.type === 'error'"
+    >
+      <span class="toast__icon">{{
+        store.toast()!.type === "success" ? "✓" : "✕"
+      }}</span>
+      {{ store.toast()!.message }}
+    </div>
+  }
+
+  <header class="dashboard__header">
+    <div class="dashboard__header-text">
+      <h1 class="dashboard__title">Attendance</h1>
+      <p class="dashboard__subtitle">
+        Clock in and out · View your attendance history
+      </p>
+    </div>
+    <div class="dashboard__chip">
+      <span
+        class="status-dot"
+        [class.status-dot--in]="store.checkedIn()"
+        [class.status-dot--out]="store.checkedOut()"
+      ></span>
+      {{
+        store.checkedOut()
+          ? "Shift Complete"
+          : store.checkedIn()
+            ? "On Shift"
+            : "Not Clocked In"
+      }}
+    </div>
+  </header>
+
+  <div class="dashboard__divider"></div>
+
+  <section class="clock-grid">
+    <app-check-in-card
+      [time]="formattedTime()"
+      [date]="formattedDate()"
+      [checkedIn]="store.checkedIn()"
+      [isLoading]="isCheckingIn()"
+      [location]="store.today()?.location ?? 'Downtown Plaza Construction Site'"
+      (checkIn)="onCheckIn()"
+    />
+
+    <app-check-out-card
+      [checkOutTime]="checkOutDisplay()"
+      [canCheckOut]="store.canCheckOut()"
+      [isLoading]="isCheckingOut()"
+      [hoursToday]="store.hoursToday()"
+      (checkOut)="onCheckOut()"
+    />
+  </section>
+
+  <app-stats-row [summary]="store.summary()" />
+
+  <app-history-table
+    [history]="store.history()"
+    [isLoading]="store.isLoading() === 'loading'"
+    (pageChange)="onPageChange($event)"
+  />
+</div>

@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
+import { LayoutService } from '../../../core/services/layout.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
-import { LayoutService } from '../../services/layout.service';
 
 @Component({
   selector: 'app-main-layout',

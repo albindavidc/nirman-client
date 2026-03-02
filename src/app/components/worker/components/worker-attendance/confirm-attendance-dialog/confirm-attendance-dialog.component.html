@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>
+  <div class="dialog-header">
+    <mat-icon
+      [ngClass]="data.type === 'in' ? 'icon-in' : 'icon-out'"
+      class="dialog-icon"
+    >
+      {{ data.type === "in" ? "login" : "logout" }}
+    </mat-icon>
+    <span>Confirm Check {{ data.type === "in" ? "In" : "Out" }}</span>
+  </div>
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-message">
+    Are you sure you want to verify your check
+    {{ data.type === "in" ? "in" : "out" }} with the following details?
+  </p>
+
+  <div class="details-card">
+    <div class="detail-row">
+      <mat-icon>schedule</mat-icon>
+      <div class="detail-info">
+        <span class="detail-label">Time</span>
+        <span class="detail-value">{{ data.time }}</span>
+      </div>
+    </div>
+
+    <div class="detail-row">
+      <mat-icon>location_on</mat-icon>
+      <div class="detail-info">
+        <span class="detail-label">Location</span>
+        <span class="detail-value">{{ data.location }}</span>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" class="btn-cancel">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="onConfirm()"
+    class="btn-confirm"
+  >
+    Confirm
+  </button>
+</mat-dialog-actions>

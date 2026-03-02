@@ -30,7 +30,6 @@
     "@ngrx/store-devtools": "^20.0.0",
     "date-fns": "^4.1.0",
     "dhtmlx-gantt": "^9.1.1",
-    "express": "^4.18.2",
     "filepond": "^4.32.10",
     "filepond-plugin-file-validate-type": "^1.2.9",
     "filepond-plugin-image-exif-orientation": "^1.0.11",

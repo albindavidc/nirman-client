@@ -40,20 +40,19 @@
   <div class="dashboard__divider"></div>
 
   <section class="clock-grid">
-    <app-check-in-card
+    <app-check-in-out-card
       [time]="formattedTime()"
       [date]="formattedDate()"
-      [checkedIn]="store.checkedIn()"
-      [isLoading]="isCheckingIn()"
-      [location]="store.today()?.location ?? 'Downtown Plaza Construction Site'"
-      (checkIn)="onCheckIn()"
-    />
-
-    <app-check-out-card
       [checkOutTime]="checkOutDisplay()"
+      [checkedIn]="store.checkedIn()"
+      [isCheckingIn]="isCheckingIn()"
+      [isCheckingOut]="isCheckingOut()"
       [canCheckOut]="store.canCheckOut()"
-      [isLoading]="isCheckingOut()"
-      [hoursToday]="store.hoursToday()"
+      [location]="
+        store.today()?.location ?? activeLocation() ?? 'Unknown Location'
+      "
+      [formattedHoursToday]="store.formattedHoursToday()"
+      (checkIn)="onCheckIn()"
       (checkOut)="onCheckOut()"
     />
   </section>

@@ -1,0 +1,74 @@
+<div class="cards-container">
+  <!-- Check In Section -->
+  <div class="card card--in">
+    <p class="card__label">Check In</p>
+
+    <div class="card__time">
+      {{ timeVal }} <span class="card__period">{{ timePeriod }}</span>
+    </div>
+    <div class="card__date">{{ date() }}</div>
+
+    <button
+      class="btn-action btn-action--in"
+      [class.btn-action--done]="checkedIn()"
+      [class.btn-action--busy]="isCheckingIn()"
+      [disabled]="checkedIn() || isCheckingIn()"
+      (click)="checkIn.emit()"
+    >
+      @if (!isCheckingIn()) {
+        <ng-container>
+          <mat-icon>login</mat-icon>
+          {{ checkedIn() ? "CHECKED IN" : "CHECK IN" }}
+        </ng-container>
+      } @else {
+        <span class="spinner"></span>
+      }
+    </button>
+
+    @if (location()) {
+      <p class="card__location">
+        <mat-icon>location_on</mat-icon>
+        {{ location() }}
+      </p>
+    }
+  </div>
+
+  <!-- Check Out Section -->
+  <div class="card card--out">
+    <p class="card__label">Check Out</p>
+
+    <div class="card__time" [class.card__time--active]="checkOutTime()">
+      {{ checkOutTimeVal }}
+      <span class="card__period">{{ checkOutTimePeriod }}</span>
+    </div>
+
+    <p class="card__hint">
+      {{
+        checkOutTime() ? "Checked out for today" : "Click below to check out"
+      }}
+    </p>
+
+    <button
+      class="btn-action btn-action--out"
+      [class.btn-action--done]="!!checkOutTime()"
+      [class.btn-action--disabled]="!canCheckOut()"
+      [class.btn-action--busy]="isCheckingOut()"
+      [disabled]="!canCheckOut() || isCheckingOut()"
+      (click)="checkOut.emit()"
+    >
+      @if (!isCheckingOut()) {
+        <ng-container>
+          <mat-icon>logout</mat-icon>
+          {{ checkOutTime() ? "CHECKED OUT" : "CHECK OUT" }}
+        </ng-container>
+      } @else {
+        <span class="spinner"></span>
+      }
+    </button>
+
+    <p class="card__hours">
+      <mat-icon>schedule</mat-icon>
+      Hours Today: <strong>{{ formattedHoursToday() }}</strong>
+    </p>
+  </div>
+</div>

@@ -43,7 +43,7 @@ export class AttendanceService {
   private readonly configService = inject(ConfigService);
 
   private get apiUrl(): string {
-    return `${this.configService.apiBaseUrl}/projects`;
+    return `${this.configService.apiUrl}/attendance`;
   }
 
   checkIn(
@@ -51,15 +51,12 @@ export class AttendanceService {
     userId: string,
     location?: string,
   ): Observable<AttendanceRecord> {
-    return this.http.post<AttendanceRecord>(
-      `${this.apiUrl}/${projectId}/attendance/check-in`,
-      {
-        projectId,
-        userId,
-        location,
-        method: 'Manual', // Default method
-      },
-    );
+    return this.http.post<AttendanceRecord>(`${this.apiUrl}/check-in`, {
+      projectId,
+      userId,
+      location,
+      method: 'Manual',
+    });
   }
 
   checkOut(
@@ -68,14 +65,11 @@ export class AttendanceService {
     notes?: string,
     location?: string,
   ): Observable<AttendanceRecord> {
-    return this.http.post<AttendanceRecord>(
-      `${this.apiUrl}/${projectId}/attendance/check-out`,
-      {
-        attendanceId,
-        notes,
-        location,
-      },
-    );
+    return this.http.patch<AttendanceRecord>(`${this.apiUrl}/check-out`, {
+      attendanceId,
+      supervisorNotes: notes,
+      location,
+    });
   }
 
   getMyHistory(
@@ -84,21 +78,20 @@ export class AttendanceService {
     limit = 10,
     offset = 0,
   ): Observable<AttendanceRecord[]> {
-    return this.http.get<AttendanceRecord[]>(
-      `${this.apiUrl}/${projectId}/attendance/me/history`,
-      {
-        params: { userId, limit: limit.toString(), offset: offset.toString() },
+    return this.http.get<AttendanceRecord[]>(`${this.apiUrl}/me/history`, {
+      params: {
+        projectId,
+        userId,
+        limit: limit.toString(),
+        offset: offset.toString(),
       },
-    );
+    });
   }
 
   getMyStats(projectId: string, userId: string): Observable<AttendanceStats> {
-    return this.http.get<AttendanceStats>(
-      `${this.apiUrl}/${projectId}/attendance/me/stats`,
-      {
-        params: { userId },
-      },
-    );
+    return this.http.get<AttendanceStats>(`${this.apiUrl}/me/stats`, {
+      params: { projectId, userId },
+    });
   }
 
   getAttendanceStats(
@@ -106,7 +99,7 @@ export class AttendanceService {
     date: Date,
   ): Observable<AttendanceStats> {
     return this.http.get<AttendanceStats>(
-      `${this.apiUrl}/${projectId}/attendance/stats`,
+      `${this.apiUrl}/project/${projectId}/stats`,
       {
         params: { date: date.toISOString() },
       },
@@ -118,7 +111,7 @@ export class AttendanceService {
     date: Date,
   ): Observable<AttendanceRecord[]> {
     return this.http.get<AttendanceRecord[]>(
-      `${this.apiUrl}/${projectId}/attendance`,
+      `${this.apiUrl}/project/${projectId}`,
       {
         params: { date: date.toISOString() },
       },
@@ -132,13 +125,8 @@ export class AttendanceService {
     isVerified: boolean,
     notes?: string,
   ): Observable<void> {
-    return this.http.post<void>(
-      `${this.apiUrl}/${projectId}/attendance/${attendanceId}/verify`,
-      {
-        verifiedBy,
-        isVerified,
-        notes,
-      },
-    );
+    return this.http.patch<void>(`${this.apiUrl}/${attendanceId}/verify`, {
+      supervisorNotes: notes,
+    });
   }
 }

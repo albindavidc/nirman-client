@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { AttendanceSummary } from '../../../model/attendance.model';
 import { CommonModule } from '@angular/common';
-import { MatIcon } from "@angular/material/icon";
+import { MatIcon } from '@angular/material/icon';
 
 interface StatItem {
   label: string;
@@ -27,19 +27,19 @@ export class StatsRowComponent {
         label: 'This Week',
         value: `${s?.weeklyHours ?? 0}h`,
         icon: 'clock',
-        colorClass: 'icon--secondary',
+        colorClass: 'icon--tertiary',
       },
       {
         label: 'This Month',
         value: `${s?.monthlyHours ?? 0}h`,
         icon: 'calendar',
-        colorClass: 'icon--primary',
+        colorClass: 'icon--secondary',
       },
       {
         label: 'Attendance Rate',
-        value: `${s?.attendanceRate ?? 0}h`,
+        value: `${s?.attendanceRate ?? 0}%`,
         icon: 'trend',
-        colorClass: 'icon--tertiary',
+        colorClass: 'icon--neutral',
       },
       {
         label: 'Late Arrivals',

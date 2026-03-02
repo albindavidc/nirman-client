@@ -39,6 +39,20 @@ export class AttendanceStore {
     return Math.round((ms / (1000 * 60 * 60)) * 10) / 10;
   });
 
+  readonly formattedHoursToday = computed(() => {
+    let rec = this.today();
+    if (!rec?.checkIn) return '0h 0m';
+
+    const checkIn = new Date(rec.checkIn);
+    const checkOut = rec.checkOut ? new Date(rec.checkOut) : new Date();
+
+    const ms = checkOut.getTime() - checkIn.getTime();
+    const totalMinutes = Math.floor(ms / (1000 * 60));
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${h}h ${m}m`;
+  });
+
   /* Mutations */
   setToday(rec: Attendance | null) {
     this.today.set(rec);

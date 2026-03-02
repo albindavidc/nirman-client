@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   get apiBaseUrl(): string {
-    return process.env['NG_APP_API_BASE_URL'] || 'http://localhost:3000';
+    return environment.api.baseUrl;
   }
 
   get apiVersion(): string {
-    return process.env['NG_APP_API_VERSION'] || 'v1';
+    return environment.api.version;
   }
 
   get apiUrl(): string {
@@ -17,14 +18,14 @@ export class ConfigService {
   }
 
   get awsRegion(): string {
-    return process.env['NG_APP_AWS_REGION'] || '';
+    return environment.aws.region;
   }
 
   get s3BucketName(): string {
-    return process.env['NG_APP_S3_BUCKET_NAME'] || '';
+    return environment.aws.s3BucketName;
   }
 
   get googleMapsApiKey(): string {
-    return process.env['NG_APP_GOOGLE_MAPS_API_KEY'] || '';
+    return environment.google.mapsApiKey;
   }
 }

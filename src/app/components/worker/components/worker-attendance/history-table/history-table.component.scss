@@ -2,14 +2,16 @@
 .table-card {
   background: var(--md-sys-color-surface-container);
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 24px;
+  box-shadow: none;
 
   &__title {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     color: var(--md-sys-color-on-surface);
     margin: 0 0 20px;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -30,24 +32,24 @@ thead tr {
 
 th {
   text-align: left;
-  padding: 8px 14px;
-  font-size: 10.5px;
+  padding: 12px 14px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface-variant);
   white-space: nowrap;
 }
 
 td {
-  padding: 14px 14px;
-  color: var(--md-sys-color-on-surface-variant);
+  padding: 18px 14px;
+  color: var(--md-sys-color-on-surface);
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
   white-space: nowrap;
 }
 
 tbody tr {
-  transition: background 120ms ease;
+  transition: background 150ms ease;
 
   &:hover td {
     background: var(--md-sys-color-surface-container-high);
@@ -60,7 +62,7 @@ tbody tr {
 .td--mono {
   font-variant-numeric: tabular-nums;
   color: var(--md-sys-color-on-surface);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .td--empty {
@@ -73,27 +75,32 @@ tbody tr {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 6px 14px;
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
+  letter-spacing: 0.02em;
 
   &--success {
-    background: var(--md-extended-color-success-color-container);
-    color: var(--md-extended-color-success-on-color-container);
+    background: rgba(161, 211, 154, 0.1);
+    color: var(--md-extended-color-success-color);
+    border: 1px solid rgba(161, 211, 154, 0.2);
   }
   &--warning {
-    background: var(--md-extended-color-warning-color-container);
-    color: var(--md-extended-color-warning-on-color-container);
+    background: rgba(255, 183, 134, 0.1);
+    color: var(--md-extended-color-warning-color);
+    border: 1px solid rgba(255, 183, 134, 0.2);
   }
   &--error {
-    background: var(--md-sys-color-error-container);
-    color: var(--md-sys-color-on-error-container);
+    background: rgba(255, 180, 171, 0.1);
+    color: var(--md-sys-color-error);
+    border: 1px solid rgba(255, 180, 171, 0.2);
   }
   &--secondary {
-    background: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background: rgba(139, 208, 239, 0.1);
+    color: var(--md-sys-color-secondary);
+    border: 1px solid rgba(139, 208, 239, 0.2);
   }
 }
 

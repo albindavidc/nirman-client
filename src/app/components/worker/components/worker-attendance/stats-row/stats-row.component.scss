@@ -1,0 +1,91 @@
+// front-end/src/app/components/worker/components/worker-attendance/stats-row/stats-row.component.scss
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition:
+    background 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+
+  &:hover {
+    background: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-outline);
+    transform: translateY(-2px);
+  }
+}
+
+.stat-card__value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.stat-card__label {
+  font-size: 13px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+}
+
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+  }
+
+  &.icon--primary {
+    background: rgba(233, 193, 108, 0.1);
+    color: var(--md-sys-color-primary);
+  }
+
+  &.icon--secondary {
+    background: rgba(139, 208, 239, 0.1);
+    color: var(--md-sys-color-secondary);
+  }
+
+  &.icon--tertiary {
+    background: rgba(161, 211, 154, 0.1);
+    color: var(--md-sys-color-tertiary);
+  }
+
+  &.icon--warning {
+    background: rgba(255, 183, 134, 0.1);
+    color: var(--md-extended-color-warning-color);
+  }
+
+  &.icon--neutral {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+}

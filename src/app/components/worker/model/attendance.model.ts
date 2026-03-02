@@ -39,14 +39,14 @@ export interface AttendanceHistoryResponse {
 }
 
 export interface CheckInPayload {
-  project_id: string;
+  projectId: string;
   location?: string;
   method?: string;
-  supervisor_notes?: string;
+  supervisorNotes?: string;
 }
 
 export interface CheckOutPayload {
-  attendance_id: string;
+  attendanceId: string;
   location?: string;
-  supervisor_notes?: string;
+  supervisorNotes?: string;
 }

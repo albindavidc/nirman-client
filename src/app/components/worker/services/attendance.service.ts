@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class AttendanceService {
   private readonly http = inject(HttpClient);
-  private readonly api = `${environment.api.baseUrl}/attendance`;
+  private readonly api = `${environment.api.baseUrl}/api/${environment.api.version}/attendance`;
 
   checkIn(payload: CheckInPayload): Observable<Attendance> {
     return this.http.post<Attendance>(`${this.api}/check-in`, payload);
@@ -26,13 +26,15 @@ export class AttendanceService {
   getToday(projectId?: string): Observable<Attendance | null> {
     let params = new HttpParams();
     if (projectId) params = params.set('projectId', projectId);
-    return this.http.get<Attendance | null>(`${this.api}/today`, { params });
+    return this.http.get<Attendance | null>(`${this.api}/me`, { params });
   }
 
   getSummary(projectId?: string): Observable<AttendanceSummary> {
     let params = new HttpParams();
     if (projectId) params = params.set('projectId', projectId);
-    return this.http.get<AttendanceSummary>(`${this.api}/summary`, { params });
+    return this.http.get<AttendanceSummary>(`${this.api}/me/summary`, {
+      params,
+    });
   }
 
   getHistory(opts: {
@@ -50,7 +52,7 @@ export class AttendanceService {
     if (opts.status) params = params.set('status', opts.status);
     if (opts.page) params = params.set('page', opts.page);
     if (opts.limit) params = params.set('limit', opts.limit);
-    return this.http.get<AttendanceHistoryResponse>(`${this.api}/history`, {
+    return this.http.get<AttendanceHistoryResponse>(`${this.api}/me/history`, {
       params,
     });
   }

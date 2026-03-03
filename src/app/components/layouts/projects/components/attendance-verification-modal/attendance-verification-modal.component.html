@@ -1,95 +1,89 @@
 <app-shared-modal title="Verify Attendance" (closeModal)="dialogRef.close()">
   <!-- User Info -->
-  <div
-    class="user-info flex items-center gap-4 mb-6 bg-[#1e1e1e] p-4 rounded-lg"
-  >
-    <div
-      class="avatar bg-yellow-500 text-black font-bold h-12 w-12 rounded-full flex items-center justify-center text-lg"
-    >
+  <div class="user-info-card flex items-center gap-4">
+    <div class="avatar-icon">
       {{ record.user?.firstName?.charAt(0)
       }}{{ record.user?.lastName?.charAt(0) }}
     </div>
     <div>
-      <h3 class="font-bold text-lg mb-0">
+      <h3 class="text-primary font-bold text-lg mb-0">
         {{ record.user?.firstName }} {{ record.user?.lastName }}
       </h3>
-      <p class="text-gray-400 text-sm">
+      <p class="text-secondary text-sm">
         {{ record.user?.role }} • ID: {{ record.userId | slice: 0 : 8 }}
       </p>
-      <span
-        class="inline-block mt-1 px-2 py-0.5 rounded bg-yellow-900/40 text-yellow-500 text-xs border border-yellow-900"
-      >
+      <span class="status-badge">
         {{ record.status }}
       </span>
     </div>
   </div>
 
-  <!-- Details Grid -->
-  <div class="grid grid-cols-2 gap-4 mb-6">
-    <div class="detail-box bg-[#1e1e1e] p-4 rounded-lg border border-gray-800">
-      <div class="flex items-center gap-2 mb-2 text-green-500">
-        <mat-icon class="text-sm">schedule</mat-icon>
-        <span class="text-sm font-bold">Check-In</span>
+  <!-- Tracking Info Card -->
+  <div class="tracking-card">
+    <!-- Check-In Row -->
+    <div class="tracking-row">
+      <div
+        class="tracking-title"
+        style="color: var(--md-extended-color-success-color)"
+      >
+        <mat-icon>schedule</mat-icon>
+        <span>Check-In</span>
       </div>
-      <div class="text-sm">
-        <p class="text-gray-400 mb-1">
+      <div>
+        <div class="tracking-detail">
           Time:
-          <span class="text-white">{{
-            record.checkIn | date: "shortTime"
-          }}</span>
-        </p>
-        <p class="text-gray-400 mb-1">
-          Method: <span class="text-white">{{ record.method }}</span>
-        </p>
-        <p class="text-gray-400 flex items-center gap-1">
-          <mat-icon class="text-xs text-blue-400">verified</mat-icon> Photo
-          Verified
-        </p>
+          <span class="val">{{ record.checkIn | date: "shortTime" }}</span>
+        </div>
+        <div class="tracking-detail">
+          Method: <span class="val">{{ record.method }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="detail-box bg-[#1e1e1e] p-4 rounded-lg border border-gray-800">
-      <div class="flex items-center gap-2 mb-2 text-red-500">
-        <mat-icon class="text-sm">schedule</mat-icon>
-        <span class="text-sm font-bold">Check-Out</span>
+    <!-- Check-Out Row -->
+    <div class="tracking-row">
+      <div
+        class="tracking-title"
+        style="color: var(--md-extended-color-warning-color)"
+      >
+        <mat-icon>schedule</mat-icon>
+        <span>Check-Out</span>
       </div>
-      <div class="text-sm">
+      <div>
         @if (record.checkOut) {
-          <p class="text-gray-400 mb-1">
+          <div class="tracking-detail">
             Time:
-            <span class="text-white">{{
-              record.checkOut | date: "shortTime"
-            }}</span>
-          </p>
+            <span class="val">{{ record.checkOut | date: "shortTime" }}</span>
+          </div>
         }
         @if (!record.checkOut) {
-          <p class="text-gray-400 italic">Worker has not checked out yet</p>
+          <div class="tracking-detail" style="font-style: italic">
+            Worker has not checked out yet
+          </div>
         }
       </div>
     </div>
-  </div>
 
-  <!-- Total Hours -->
-  <div
-    class="bg-blue-900/20 border border-blue-900 rounded-lg p-4 flex justify-between items-center mb-6"
-  >
-    <div class="flex items-center gap-2 text-blue-400">
-      <mat-icon>show_chart</mat-icon>
-      <span class="font-bold">Total Hours</span>
+    <!-- Total Hours Row -->
+    <div class="tracking-row tracking-row-total">
+      <div class="tracking-total-title">
+        <mat-icon>show_chart</mat-icon>
+        <span>Total Hours</span>
+      </div>
+      @if (record.workHours) {
+        <div class="tracking-total-value">{{ record.workHours }}h</div>
+      }
+      @if (!record.workHours) {
+        <div class="tracking-total-progress">In Progress</div>
+      }
     </div>
-    @if (record.workHours) {
-      <div class="text-2xl font-bold">{{ record.workHours }}h</div>
-    }
-    @if (!record.workHours) {
-      <div class="text-lg text-yellow-500 font-bold">In Progress</div>
-    }
   </div>
 
   <!-- Supervisor Notes -->
-  <div class="mb-2">
-    <div class="flex items-center gap-2 mb-2 text-gray-400">
-      <mat-icon class="text-sm">comment</mat-icon>
-      <span class="text-sm">Supervisor Notes</span>
+  <div class="mb-4">
+    <div class="notes-header">
+      <mat-icon>edit_note</mat-icon>
+      <span>Supervisor Notes</span>
     </div>
     <mat-form-field appearance="outline" class="w-full text-area-dark">
       <textarea
@@ -102,12 +96,12 @@
   </div>
 
   <!-- Actions -->
-  <div actions class="flex justify-end gap-3 p-0 w-full">
+  <div actions class="actions-container">
     <button
       mat-stroked-button
       color="basic"
       (click)="dialogRef.close()"
-      class="w-32 py-6 border-gray-600 text-white"
+      class="action-btn"
     >
       Cancel
     </button>
@@ -115,7 +109,7 @@
       mat-flat-button
       color="warn"
       (click)="verify(false)"
-      class="w-32 py-6 bg-red-900/80 text-red-200"
+      class="action-btn"
     >
       <mat-icon>block</mat-icon> Reject
     </button>
@@ -123,7 +117,7 @@
       mat-flat-button
       color="primary"
       (click)="verify(true)"
-      class="w-32 py-6 bg-green-600 text-white"
+      class="action-btn"
     >
       <mat-icon>check_circle</mat-icon> Approve
     </button>

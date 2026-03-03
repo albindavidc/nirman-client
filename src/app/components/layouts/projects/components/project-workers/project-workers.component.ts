@@ -19,6 +19,8 @@ import {
   EditWorkerDialogData,
 } from '../edit-worker-modal/edit-worker-modal.component';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { AttendanceVerificationModalComponent } from '../attendance-verification-modal/attendance-verification-modal.component';
+import { AttendanceRecord as ServiceAttendanceRecord } from '../../services/attendance.service';
 import { AttendanceRecord } from '../../models/project.models';
 
 interface AttendanceStats {
@@ -73,8 +75,16 @@ export class ProjectWorkersComponent implements OnInit {
   today = new Date();
   currentUserRole = '';
 
+  get isAdmin(): boolean {
+    return ['admin'].includes(this.currentUserRole);
+  }
+
   get canAddWorker(): boolean {
     return ['admin'].includes(this.currentUserRole);
+  }
+
+  get canVerify(): boolean {
+    return ['supervisor'].includes(this.currentUserRole);
   }
 
   ngOnInit(): void {
@@ -198,6 +208,43 @@ export class ProjectWorkersComponent implements OnInit {
           .subscribe(() => {
             this.refreshData();
           });
+      }
+    });
+  }
+
+  openVerificationModal(worker: AttendanceRecord): void {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id') || '';
+
+    // Map from project.models AttendanceRecord to attendance.service AttendanceRecord
+    const nameParts = worker.workerName.split(' ');
+    const serviceRecord: ServiceAttendanceRecord = {
+      id: worker.id,
+      userId: worker.workerId,
+      projectId: projectId,
+      date: worker.date,
+      checkIn: worker.checkIn,
+      checkOut: worker.checkOut,
+      status: worker.status,
+      location: worker.location,
+      workHours: worker.workHours,
+      method: 'Manual',
+      isVerified: false,
+      user: {
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        role: worker.workerRole,
+      },
+    };
+
+    const dialogRef = this.dialog.open(AttendanceVerificationModalComponent, {
+      width: '600px',
+      data: { record: serviceRecord },
+      panelClass: 'custom-dialog-container',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.refreshData();
       }
     });
   }

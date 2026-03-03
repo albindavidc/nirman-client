@@ -121,11 +121,14 @@ export class AttendanceService {
   verifyAttendance(
     projectId: string,
     attendanceId: string,
-    verifiedBy: string,
+    supervisorId: string,
     isVerified: boolean,
     notes?: string,
   ): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${attendanceId}/verify`, {
+      attendanceId,
+      supervisorId,
+      isVerified,
       supervisorNotes: notes,
     });
   }

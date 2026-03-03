@@ -171,11 +171,12 @@
   border-radius: 8px;
 }
 
-.modal-actions {
+[actions] {
   display: flex;
-  justify-content: flex-start;
-  gap: 12px;
-  padding: 16px 24px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
 }
 
 .cancel-btn {

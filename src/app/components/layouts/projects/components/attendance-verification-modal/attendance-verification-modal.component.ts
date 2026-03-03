@@ -41,9 +41,8 @@ export class AttendanceVerificationModalComponent {
   notesControl = new FormControl('');
 
   verify(isVerified: boolean) {
-    // Assuming supervisorId is fetched from auth service or similar in real app.
-    // Making it hardcoded or passed for now.
-    const supervisorId = 'current-user-id';
+    const userJson = localStorage.getItem('user');
+    const supervisorId = userJson ? JSON.parse(userJson).id || '' : '';
     const notes = this.notesControl.value || '';
 
     this.attendanceService

@@ -162,22 +162,45 @@
             <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
             <td mat-cell *matCellDef="let element">
               <div class="actions-cell">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="editWorker(element)"
-                  matTooltip="Edit"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="removeWorker(element)"
-                  matTooltip="Remove"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canVerify && !element.id.startsWith("pending-")) {
+                  @if (element.isVerified) {
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      (click)="openVerificationModal(element)"
+                      matTooltip="Verified"
+                    >
+                      <mat-icon>verified</mat-icon>
+                    </button>
+                  } @else {
+                    <button
+                      mat-icon-button
+                      color="accent"
+                      (click)="openVerificationModal(element)"
+                      matTooltip="Unverified - Click to Verify"
+                    >
+                      <mat-icon>pending_actions</mat-icon>
+                    </button>
+                  }
+                }
+                @if (isAdmin) {
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="editWorker(element)"
+                    matTooltip="Edit"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="removeWorker(element)"
+                    matTooltip="Remove"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </td>
           </ng-container>

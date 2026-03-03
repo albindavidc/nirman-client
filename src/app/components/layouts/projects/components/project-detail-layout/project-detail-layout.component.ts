@@ -24,6 +24,17 @@ export class ProjectDetailLayoutComponent implements OnInit {
     .select(ProjectSelectors.selectSelectedProject)
     .pipe(map((p) => p ?? undefined));
 
+  get attendanceTabName(): string {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      const role = user.role?.toLowerCase() || '';
+      if (role === 'admin') return 'Worker Management';
+      if (role === 'supervisor') return 'Attendance Verification';
+    }
+    return 'Attendance Tracking'; // fallback
+  }
+
   ngOnInit(): void {
     const projectId = this.route.snapshot.paramMap.get('id');
     if (projectId) {

@@ -1,5 +1,11 @@
 export type ProjectStatus = 'active' | 'paused' | 'completed' | 'on-hold';
 
+export enum ApprovalStatus {
+  pending = 'pending',
+  approved = 'approved',
+  rejected = 'rejected',
+}
+
 export interface TeamWorker {
   id: string;
   name: string;
@@ -24,7 +30,7 @@ export interface ProjectPhase {
   actualStartDate?: string;
   actualEndDate?: string;
   sequence: number;
-  approvalStatus?: 'pending' | 'approved' | 'rejected';
+  approvalStatus?: ApprovalStatus;
 }
 
 export interface PhaseApprovalRequest {
@@ -34,7 +40,7 @@ export interface PhaseApprovalRequest {
 }
 
 export interface CreatePhaseApprovalDto {
-  approvalStatus: 'approved' | 'rejected';
+  approvalStatus: ApprovalStatus;
   comments?: string;
   media?: { type: string; url: string }[];
 }
@@ -59,7 +65,7 @@ export interface PhaseApproval {
   requesterFirstName: string;
   requesterLastName: string;
   requesterName?: string; // Derived or mapped
-  approvalStatus: 'pending' | 'approved' | 'rejected';
+  approvalStatus: ApprovalStatus;
   comments: string | null;
   media: { type: string; url: string }[];
   approvedAt: string | null;

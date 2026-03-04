@@ -15,6 +15,7 @@ import {
   AttendanceService,
 } from '../../services/attendance.service';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-attendance-verification-modal',
@@ -34,6 +35,7 @@ import { SharedModalComponent } from '../../../../../shared/components/shared-mo
 })
 export class AttendanceVerificationModalComponent {
   private attendanceService = inject(AttendanceService);
+  private notificationService = inject(NotificationService);
   dialogRef = inject(MatDialogRef<AttendanceVerificationModalComponent>);
   data = inject<{ record: AttendanceRecord }>(MAT_DIALOG_DATA);
 
@@ -55,11 +57,12 @@ export class AttendanceVerificationModalComponent {
       )
       .subscribe({
         next: () => {
+          this.notificationService.success('Verification sent successfully');
           this.dialogRef.close(true);
         },
         error: (err: unknown) => {
           console.error('Verification failed', err);
-          // Handle error (show toast)
+          this.notificationService.error('Verification failed');
         },
       });
   }

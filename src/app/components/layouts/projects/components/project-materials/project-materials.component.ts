@@ -1,26 +1,26 @@
-import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, switchMap, startWith, tap, take } from 'rxjs/operators';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MaterialService } from '../../services/material.service';
-import { Material, MaterialTransaction } from '../../models/material.model';
-import { ProjectService } from '../../services/project.service';
-import { Project } from '../../models/project.models';
-import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Material, MaterialTransaction } from '../../models/material.model';
+import { Project } from '../../models/project.models';
+import { MaterialService } from '../../services/material.service';
+import { ProjectService } from '../../services/project.service';
 import { AddMaterialModalComponent } from './modals/add-material-modal.component';
 import { EditMaterialModalComponent } from './modals/edit-material-modal.component';
-import { UpdateStockModalComponent } from './modals/update-stock-modal.component';
 import { RequestMaterialModalComponent } from './modals/request-material-modal.component';
+import { UpdateStockModalComponent } from './modals/update-stock-modal.component';
 
 @Component({
   selector: 'app-project-materials',
@@ -49,6 +49,8 @@ export class ProjectMaterialsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
 
   currentUserRole = '';
+  // toggle visibility for the export report action
+  showExportButton = false;
 
   get canAddMaterial(): boolean {
     return ['supervisor'].includes(this.currentUserRole);

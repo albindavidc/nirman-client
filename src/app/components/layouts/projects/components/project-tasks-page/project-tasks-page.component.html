@@ -242,6 +242,7 @@
             [tasks]="tasks"
             [dependencies]="(dependencies$ | async) || []"
             [phases]="phases"
+            [showExportPrint]="false"
             (taskClick)="openEditTaskModal($event)"
           ></app-gantt-chart>
         }

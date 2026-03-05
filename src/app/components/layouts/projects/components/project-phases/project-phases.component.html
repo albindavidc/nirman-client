@@ -241,6 +241,7 @@
                     mat-stroked-button
                     color="primary"
                     class="review-btn"
+                    [disabled]="element.status !== 'Review Pending'"
                     (click)="
                       $event.stopPropagation();
                       navigateToApprovalReview(element)
@@ -296,6 +297,7 @@
                 ) {
                   <button
                     mat-menu-item
+                    [disabled]="element.status !== 'Review Pending'"
                     (click)="navigateToApprovalReview(element)"
                   >
                     <mat-icon>verified</mat-icon>

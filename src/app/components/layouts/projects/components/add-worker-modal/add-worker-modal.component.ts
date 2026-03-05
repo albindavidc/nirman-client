@@ -1,22 +1,22 @@
 import { Component, OnInit, inject } from '@angular/core';
 
-import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 import {
-  MatDialogRef,
   MAT_DIALOG_DATA,
   MatDialogModule,
+  MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { MatSelectModule } from '@angular/material/select';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
-import { ProjectService } from '../../services/project.service';
+import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
 import { Professional } from '../../models/project.models';
+import { ProjectService } from '../../services/project.service';
 
 export interface AddWorkerDialogData {
   projectId: string;
@@ -48,7 +48,8 @@ export class AddWorkerModalComponent implements OnInit {
   private readonly projectService = inject(ProjectService);
 
   searchControl = new FormControl('');
-  roleControl = new FormControl('worker', [Validators.required]);
+  // default value should match backend enum (capitalised)
+  roleControl = new FormControl('Worker', [Validators.required]);
 
   searchResults: Professional[] = [];
   selectedProfessionals: Professional[] = [];

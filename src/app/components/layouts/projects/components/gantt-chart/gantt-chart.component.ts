@@ -1,29 +1,29 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import {
   Component,
+  ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
+  OnInit,
+  Output,
   SimpleChanges,
   ViewChild,
-  ElementRef,
-  Output,
-  EventEmitter,
   ViewEncapsulation,
-  OnInit,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { Task, TaskService, CreateTaskDto } from '../../services/task.service';
+import { CreateTaskDto, Task, TaskService } from '../../services/task.service';
 
 // Interface for internal Gantt Task (extending the service Task or mapping to it)
 export interface GanttTask {
@@ -84,6 +84,12 @@ export class GanttChartComponent implements OnInit, OnChanges {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() phases: any[] = [];
   @Output() taskClick = new EventEmitter<GanttTask>();
+
+  /**
+   * Hide header action buttons (export/print) when false.
+   * Useful for embedding the chart in contexts where those controls are not needed.
+   */
+  @Input() showExportPrint = true;
 
   @ViewChild('timelineRef') timelineRef!: ElementRef<HTMLDivElement>;
 

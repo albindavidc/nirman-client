@@ -23,7 +23,8 @@
           <span>Request Material</span>
         </button>
       }
-      <button class="export-btn">
+      <!-- export button hidden according to requirement -->
+      <button *ngIf="showExportButton" class="export-btn">
         <mat-icon>download</mat-icon>
         <span>Export Report</span>
       </button>

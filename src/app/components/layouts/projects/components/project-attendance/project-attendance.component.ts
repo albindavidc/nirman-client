@@ -54,6 +54,10 @@ export class ProjectAttendanceComponent implements OnInit {
     );
   }
 
+  get hasPendingVerification(): boolean {
+    return this.dataSource.some((record) => !record.isVerified);
+  }
+
   displayedColumns: string[] = [
     'workerId',
     'name',
@@ -95,6 +99,14 @@ export class ProjectAttendanceComponent implements OnInit {
       .subscribe((records) => {
         this.dataSource = records;
       });
+  }
+
+  openNextPendingVerification() {
+    if (!this.canVerify) return;
+    const pending = this.dataSource.find((record) => !record.isVerified);
+    if (pending) {
+      this.openVerificationModal(pending);
+    }
   }
 
   openVerificationModal(record: AttendanceRecord) {

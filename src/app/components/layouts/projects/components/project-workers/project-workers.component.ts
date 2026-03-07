@@ -84,7 +84,9 @@ export class ProjectWorkersComponent implements OnInit {
   }
 
   get canVerify(): boolean {
-    return ['supervisor'].includes(this.currentUserRole);
+    return ['admin', 'supervisor', 'project_manager'].includes(
+      this.currentUserRole,
+    );
   }
 
   ngOnInit(): void {

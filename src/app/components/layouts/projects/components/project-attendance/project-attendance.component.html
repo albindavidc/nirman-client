@@ -5,12 +5,25 @@
       <h2 class="text-2xl font-bold mb-1">Project Attendance</h2>
       <p class="text-gray-400">Manage and verify worker attendance</p>
     </div>
-    <div class="flex gap-4">
+    <div class="flex gap-4 items-center">
       <span class="text-gray-400 self-center">{{
         currentDate | date: "fullDate"
       }}</span>
-      <button mat-stroked-button color="accent">
-        <mat-icon>download</mat-icon> Export Report
+      @if (canVerify) {
+        <button
+          mat-flat-button
+          color="primary"
+          class="verify-header-btn"
+          [disabled]="!hasPendingVerification"
+          (click)="openNextPendingVerification()"
+        >
+          <mat-icon>verified_user</mat-icon>
+          <span>Verify Attendance</span>
+        </button>
+      }
+      <button mat-stroked-button color="accent" class="export-btn">
+        <mat-icon>download</mat-icon>
+        <span>Export Report</span>
       </button>
     </div>
   </div>
@@ -184,6 +197,7 @@
                 mat-stroked-button
                 color="primary"
                 class="small-btn"
+                [disabled]="!element.checkIn || element.isVerified"
                 (click)="openVerificationModal(element)"
               >
                 Verify

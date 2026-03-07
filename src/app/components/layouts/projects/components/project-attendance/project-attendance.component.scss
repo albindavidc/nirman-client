@@ -34,3 +34,22 @@
   padding: 0 12px;
   font-size: 12px;
 }
+
+.verify-header-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.export-btn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as LoginActions from '../../store/login.actions';
 import * as LoginSelectors from '../../store/login.selectors';
 import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
+import { AdminLoginComponent } from '../../../../../admin/auth/login/admin-login.component';
 
 @Component({
   selector: 'app-login',
@@ -29,6 +30,7 @@ import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
     MatCheckboxModule,
     MatProgressSpinnerModule,
     AuthLogoComponent,
+    AdminLoginComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -41,8 +43,10 @@ export class LoginComponent implements OnInit {
   hidePassword = signal(true);
   isVendor = signal(false);
   isWorker = signal(false);
+  isAdmin = signal(false);
 
   get signupRoute(): string {
+    if (this.isAdmin()) return '/auth/signup?role=admin';
     if (this.isVendor()) return '/auth/signup/vendor/step1';
     if (this.isWorker()) return '/auth/signup/worker/step1';
     return '/auth/signup';
@@ -64,6 +68,7 @@ export class LoginComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.isVendor.set(params['role'] === 'vendor');
       this.isWorker.set(params['role'] === 'worker');
+      this.isAdmin.set(params['role'] === 'admin');
     });
   }
 

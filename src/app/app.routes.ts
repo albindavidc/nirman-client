@@ -4,7 +4,65 @@ import { GuestGuard } from './core/guards/guest.guard';
 import { HomeComponent } from './shared/components/home/home.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [GuestGuard] },
+  // 1. Exact Home Route
+  {
+    path: '',
+    component: HomeComponent,
+    canActivate: [GuestGuard],
+    pathMatch: 'full',
+  },
+
+  // 2. Redirects for Admin Auth (Compatibility & Request)
+  {
+    path: 'admin/auth',
+    redirectTo: '/auth/login?role=admin',
+    pathMatch: 'prefix',
+  },
+  {
+    path: 'auth/admin',
+    redirectTo: '/auth/login?role=admin',
+    pathMatch: 'full',
+  },
+  {
+    path: 'auth/admin/signup',
+    redirectTo: '/auth/signup?role=admin',
+    pathMatch: 'full',
+  },
+  {
+    path: 'auth/admin/login',
+    redirectTo: '/auth/login?role=admin',
+    pathMatch: 'full',
+  },
+
+  // 3. Dedicated Admin OTP
+  {
+    path: 'auth/admin/otp',
+    canActivate: [GuestGuard],
+    loadComponent: () =>
+      import('./components/admin/auth/otp/admin-otp.component').then(
+        (m) => m.AdminOtpComponent
+      ),
+  },
+
+  // 4. Auth Protection Pages
+  {
+    path: 'auth/pending-approval',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import(
+        './components/layouts/auth/pages/pending-approval/pending-approval.component'
+      ).then((m) => m.PendingApprovalComponent),
+  },
+  {
+    path: 'auth/application-rejected',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import(
+        './components/layouts/auth/pages/application-rejected/application-rejected.component'
+      ).then((m) => m.ApplicationRejectedComponent),
+  },
+
+  // 5. General Auth Routes (Handles /auth/signup and /auth/login)
   {
     path: 'auth',
     canActivate: [GuestGuard],
@@ -13,26 +71,12 @@ export const routes: Routes = [
         (m) => m.AUTH_ROUTES,
       ),
   },
-  {
-    path: 'auth/pending-approval',
-    canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./components/layouts/auth/pages/pending-approval/pending-approval.component').then(
-        (m) => m.PendingApprovalComponent,
-      ),
-  },
-  {
-    path: 'auth/application-rejected',
-    canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./components/layouts/auth/pages/application-rejected/application-rejected.component').then(
-        (m) => m.ApplicationRejectedComponent,
-      ),
-  },
+
+
+  // 6. Main Protected Section (Catch-all prefix '')
   {
     path: '',
     canActivate: [AuthGuard],
-
     loadComponent: () =>
       import('./shared/components/main-layout/main-layout.component').then(
         (m) => m.MainLayoutComponent,
@@ -92,7 +136,9 @@ export const routes: Routes = [
             (m) => m.SUPERVISOR_ROUTES,
           ),
       },
-      // Other protected routes will go here
     ],
   },
+
+  // 7. Final Fallback
+  { path: '**', redirectTo: '/auth/admin/login'  },
 ];

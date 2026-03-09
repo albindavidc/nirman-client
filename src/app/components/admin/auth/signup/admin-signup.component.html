@@ -1,0 +1,232 @@
+<div class="signup-container" @fadeInUp>
+  <!-- Logo Section -->
+  <app-auth-logo></app-auth-logo>
+
+  <!-- Registration Card -->
+  <div class="form-card" @slideIn>
+    <div class="card-header">
+      <h2>Admin Registration</h2>
+      <p>Create your administrative account to manage the platform.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Error Message -->
+    @if (error$ | async; as error) {
+      <div class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    }
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <!-- Name Row -->
+      <div class="form-row">
+        <div class="form-field half-width">
+          <label class="field-label" for="firstName">First Name</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <input
+              matInput
+              id="firstName"
+              formControlName="firstName"
+              placeholder="Enter first name"
+            />
+            @if (
+              signupForm.get("firstName")?.hasError("required") &&
+              signupForm.get("firstName")?.touched
+            ) {
+              <mat-error>First name is required</mat-error>
+            } @else if (
+              signupForm.get("firstName")?.hasError("minlength") &&
+              signupForm.get("firstName")?.touched
+            ) {
+              <mat-error>First name must be at least 2 characters</mat-error>
+            } @else if (
+              signupForm.get("firstName")?.hasError("nameFormat") &&
+              signupForm.get("firstName")?.touched
+            ) {
+              <mat-error>First name contains invalid characters</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-field half-width">
+          <label class="field-label" for="lastName">Last Name</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <input
+              matInput
+              id="lastName"
+              formControlName="lastName"
+              placeholder="Enter last name"
+            />
+            @if (
+              signupForm.get("lastName")?.hasError("required") &&
+              signupForm.get("lastName")?.touched
+            ) {
+              <mat-error>Last name is required</mat-error>
+            } @else if (
+              signupForm.get("lastName")?.hasError("minlength") &&
+              signupForm.get("lastName")?.touched
+            ) {
+              <mat-error>Last name must be at least 2 characters</mat-error>
+            } @else if (
+              signupForm.get("lastName")?.hasError("nameFormat") &&
+              signupForm.get("lastName")?.touched
+            ) {
+              <mat-error>Last name contains invalid characters</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-field">
+        <label class="field-label" for="email">Email Address</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>email_outline</mat-icon>
+          <input
+            matInput
+            id="email"
+            formControlName="email"
+            placeholder="admin@nirman.com"
+            type="email"
+          />
+          @if (
+            signupForm.get("email")?.hasError("required") &&
+            signupForm.get("email")?.touched
+          ) {
+            <mat-error>Email is required</mat-error>
+          } @else if (
+            signupForm.get("email")?.hasError("email") &&
+            signupForm.get("email")?.touched
+          ) {
+            <mat-error>Please enter a valid email address</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Phone Number Field -->
+      <div class="form-field">
+        <label class="field-label" for="phoneNumber">Phone Number</label>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>phone_outline</mat-icon>
+          <input
+            matInput
+            id="phoneNumber"
+            formControlName="phoneNumber"
+            placeholder="Enter phone number"
+            type="tel"
+          />
+          @if (
+            signupForm.get("phoneNumber")?.hasError("required") &&
+            signupForm.get("phoneNumber")?.touched
+          ) {
+            <mat-error>Phone number is required</mat-error>
+          } @else if (
+            signupForm.get("phoneNumber")?.hasError("phoneFormat") &&
+            signupForm.get("phoneNumber")?.touched
+          ) {
+            <mat-error>Please enter a valid 10-digit number</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Password Row -->
+      <div class="form-row">
+        <div class="form-field half-width">
+          <label class="field-label" for="password">Password</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <input
+              matInput
+              id="password"
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Create a strong password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="togglePasswordVisibility()"
+            >
+              <mat-icon>{{
+                hidePassword() ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            @if (
+              signupForm.get("password")?.hasError("required") &&
+              signupForm.get("password")?.touched
+            ) {
+              <mat-error>Password is required</mat-error>
+            } @else if (
+              signupForm.get("password")?.hasError("passwordStrength") &&
+              signupForm.get("password")?.touched
+            ) {
+              <mat-error>Password doesn't meet requirements</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-field half-width">
+          <label class="field-label" for="confirmPassword">Confirm Password</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>lock_reset</mat-icon>
+            <input
+              matInput
+              id="confirmPassword"
+              [type]="hideConfirmPassword() ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              placeholder="Re-enter password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleConfirmPasswordVisibility()"
+            >
+              <mat-icon>{{
+                hideConfirmPassword() ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            @if (
+              signupForm.get("confirmPassword")?.hasError("required") &&
+              signupForm.get("confirmPassword")?.touched
+            ) {
+              <mat-error>Please confirm your password</mat-error>
+            } @else if (
+              signupForm.hasError("passwordMismatch") &&
+              signupForm.get("confirmPassword")?.touched
+            ) {
+              <mat-error>Passwords do not match</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button
+          mat-flat-button
+          type="submit"
+          class="submit-btn"
+          [disabled]="loading$ | async"
+        >
+          @if (loading$ | async) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <span>Register Admin Account</span>
+          }
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer Links -->
+    <div class="footer-links">
+      <span>Already have an administrative account?</span>
+      <a routerLink="/auth/login" [queryParams]="{role: 'admin'}">Sign In</a>
+    </div>
+  </div>
+</div>

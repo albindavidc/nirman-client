@@ -4,6 +4,8 @@ import { RoleGuard } from '../../core/guards/role.guard';
 export const ADMIN_ROUTES: Routes = [
   {
     path: 'projects',
+
+
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },
     loadChildren: () =>

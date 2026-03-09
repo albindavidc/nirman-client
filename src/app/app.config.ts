@@ -23,7 +23,8 @@ import { LoginEffects } from './components/layouts/auth/login/store/login.effect
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { authInitializerProvider } from './core/initializers/auth.initializer';
-// Lucide imports removed
+import { adminAuthReducer } from './components/admin/store/admin-auth.reducer';
+import { AdminAuthEffects } from './components/admin/store/admin-auth.effects';
 
 /**
  * Meta-reducer that resets the ENTIRE NgRx store (including lazy-loaded
@@ -59,10 +60,11 @@ export const appConfig: ApplicationConfig = {
       {
         signup: signupReducer,
         login: loginReducer,
+        adminAuth: adminAuthReducer,
       },
       { metaReducers },
     ),
-    provideEffects([SignupEffects, LoginEffects]),
+    provideEffects([SignupEffects, LoginEffects, AdminAuthEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

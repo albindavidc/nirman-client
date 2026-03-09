@@ -14,11 +14,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { AccountTypeOption, AccountType } from '../../models/signup.models';
 import * as SignupActions from '../../store/signup.actions';
+import { ActivatedRoute } from '@angular/router';
+import { AdminSignupComponent } from '../../../../../admin/auth/signup/admin-signup.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-account-type-selection',
   standalone: true,
-  imports: [MatCardModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, AdminSignupComponent],
   templateUrl: './account-type-selection.component.html',
   styleUrl: './account-type-selection.component.scss',
   animations: [
@@ -53,6 +56,9 @@ import * as SignupActions from '../../store/signup.actions';
 export class AccountTypeSelectionComponent {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  isAdmin = false;
 
   accountTypes: AccountTypeOption[] = [
     {
@@ -87,6 +93,12 @@ export class AccountTypeSelectionComponent {
       ],
     },
   ];
+
+  constructor() {
+    this.route.queryParams.subscribe(params => {
+      this.isAdmin = params['role'] === 'admin';
+    });
+  }
 
   selectAccountType(type: AccountType): void {
     this.store.dispatch(SignupActions.selectAccountType({ accountType: type }));

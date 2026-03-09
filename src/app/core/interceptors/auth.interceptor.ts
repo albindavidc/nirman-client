@@ -27,7 +27,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         !req.url.includes('/auth/refresh') &&
         !req.url.includes('/auth/logout') &&
         !req.url.includes('/auth/vendor/signup') &&
-        !req.url.includes('/auth/otp')
+        !req.url.includes('/auth/admin/signup') &&
+        !req.url.includes('/auth/otp') &&
+        !req.url.includes('/auth/forgot-password') &&
+        !req.url.includes('/auth/verify-reset-otp') &&
+        !req.url.includes('/auth/reset-password')
       ) {
         isRefreshing = true;
 

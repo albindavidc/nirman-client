@@ -1,4 +1,4 @@
-export type ProjectStatus = 'active' | 'paused' | 'completed' | 'on-hold';
+export type ProjectStatus = 'active' | 'paused' | 'completed' | 'on_hold';
 
 export enum ApprovalStatus {
   pending = 'pending',
@@ -76,7 +76,7 @@ export interface PhaseApproval {
 export interface Project {
   id: string;
   name: string;
-  managerId?: string;
+  managerIds?: string[];
   description: string;
   icon: string;
   status: ProjectStatus;
@@ -85,9 +85,9 @@ export interface Project {
   dueDate: string;
   latitude?: number;
   longitude?: number;
-  projectWorkers?: ProjectWorker[];
+  workers?: ProjectWorker[];
   phases?: ProjectPhase[];
-  teamWorkers: TeamWorker[];
+  teamMembers: TeamWorker[];
   budget?: number;
   spent?: number;
   createdBy?: string;
@@ -97,7 +97,7 @@ export interface Project {
 
 export interface CreateProjectDto {
   name: string;
-  managerId?: string;
+  managerIds?: string[];
   description?: string;
   status?: string;
   startDate?: string;
@@ -106,8 +106,7 @@ export interface CreateProjectDto {
   progress?: number;
   latitude?: number;
   longitude?: number;
-  projectWorkers?: ProjectWorker[];
-  teamWorkerIds?: string[];
+  workers?: ProjectWorker[];
 }
 
 export interface ProjectStats {

@@ -34,6 +34,7 @@ import {
   Project,
   CreateProjectDto,
   ProjectWorker,
+  ProjectStatus,
 } from '../../models/project.models';
 import * as ProjectActions from '../../store/project.actions';
 import * as ProjectSelectors from '../../store/project.selectors';
@@ -86,11 +87,10 @@ export class ProjectCreateModalComponent implements OnInit {
   isEditing = !!this.data;
 
   statusOptions = [
-    { value: 'PLANNED', label: 'Planned' },
-    { value: 'IN_PROGRESS', label: 'In Progress' },
-    { value: 'COMPLETED', label: 'Completed' },
-    { value: 'ON_HOLD', label: 'On Hold' },
-    { value: 'CANCELLED', label: 'Cancelled' },
+    { value: 'active', label: 'Active' },
+    { value: 'paused', label: 'Paused' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'on_hold', label: 'On Hold' },
   ];
 
   // Maps configuration
@@ -205,7 +205,7 @@ export class ProjectCreateModalComponent implements OnInit {
       this.data?.name || '',
       [Validators.required, Validators.minLength(2), Validators.maxLength(100)],
     ],
-    managerId: [this.data?.managerId || ''],
+    managerIds: [this.data?.managerIds || []],
     status: [this.data?.status || 'active'],
     description: [this.data?.description || '', [Validators.maxLength(1000)]],
     startDate: [
@@ -222,7 +222,7 @@ export class ProjectCreateModalComponent implements OnInit {
     longitude: [this.data?.longitude || null],
     // Renaming 'members' form control to 'workers'
     workers: [
-      (this.data?.projectWorkers || []) as unknown as SearchableWorker[],
+      (this.data?.workers || []) as unknown as SearchableWorker[],
       [Validators.required, Validators.minLength(1)],
     ],
   });
@@ -245,8 +245,8 @@ export class ProjectCreateModalComponent implements OnInit {
       }
 
       // Pre-fill selected workers
-      if (this.data.projectWorkers) {
-        this.data.projectWorkers.forEach(() => {
+      if (this.data.workers) {
+        this.data.workers.forEach(() => {
           this.workerService
             .getWorkers(1, 1, undefined, undefined)
             .subscribe(() => {
@@ -401,7 +401,7 @@ export class ProjectCreateModalComponent implements OnInit {
   }
 
   selectManager(manager: SearchableWorker): void {
-    this.projectForm.patchValue({ managerId: manager.id });
+    this.projectForm.patchValue({ managerIds: [manager.id] });
     this.managerSearchControl.setValue(manager.name);
   }
 
@@ -446,7 +446,7 @@ export class ProjectCreateModalComponent implements OnInit {
 
     const formValue = this.projectForm.value;
 
-    const projectWorkers: ProjectWorker[] = this.selectedWorkers.map((m) => ({
+    const workers: ProjectWorker[] = this.selectedWorkers.map((m) => ({
       userId: m.id,
       role: 'Viewer' as const,
       joinedAt: new Date().toISOString(),
@@ -454,15 +454,9 @@ export class ProjectCreateModalComponent implements OnInit {
 
     const createData: CreateProjectDto = {
       name: formValue.name!,
-      managerId: formValue.managerId || undefined,
+      managerIds: formValue.managerIds || [],
       description: formValue.description || undefined,
-      status:
-        (formValue.status as
-          | 'PLANNED'
-          | 'IN_PROGRESS'
-          | 'COMPLETED'
-          | 'ON_HOLD'
-          | 'CANCELLED') || 'PLANNED',
+      status: (formValue.status as ProjectStatus) || 'active',
       startDate: formValue.startDate
         ? new Date(formValue.startDate).toISOString()
         : undefined,
@@ -473,8 +467,7 @@ export class ProjectCreateModalComponent implements OnInit {
       progress: formValue.progress || 0,
       latitude: formValue.latitude || undefined,
       longitude: formValue.longitude || undefined,
-      projectWorkers,
-      teamWorkerIds: this.selectedWorkers.map((m) => m.id),
+      workers,
     };
 
     if (this.isEditing && this.data) {

@@ -1,10 +1,21 @@
-import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+  inject,
+} from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { verifyAdminOtp, resendAdminOtp } from '../../store/admin-auth.actions';
-import { selectAdminEmail, selectAdminAuthLoading, selectAdminAuthError } from '../../store/admin-auth.selectors';
+import {
+  selectAdminEmail,
+  selectAdminAuthLoading,
+  selectAdminAuthError,
+} from '../../store/admin-auth.selectors';
 import { CommonModule } from '@angular/common';
-import { Observable, interval, Subscription, takeWhile } from 'rxjs';
+import { interval, Subscription, takeWhile } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,13 +27,13 @@ import { trigger, transition, style, animate } from '@angular/animations';
   selector: 'app-admin-otp',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatProgressSpinnerModule, 
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
     RouterModule,
-    AuthLogoComponent
+    AuthLogoComponent,
   ],
   templateUrl: './admin-otp.component.html',
   styleUrls: ['./admin-otp.component.scss'],
@@ -30,13 +41,19 @@ import { trigger, transition, style, animate } from '@angular/animations';
     trigger('fadeInUp', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(30px)' }),
-        animate('600ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+        animate(
+          '600ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
       ]),
     ]),
     trigger('slideUp', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('400ms 200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+        animate(
+          '400ms 200ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
       ]),
     ]),
   ],
@@ -98,14 +115,18 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
 
     // Auto-focus next input
     if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement;
+      const nextInput = document.getElementById(
+        `otp-${index + 1}`,
+      ) as HTMLInputElement;
       nextInput?.focus();
     }
   }
 
   onKeyDown(event: KeyboardEvent, index: number): void {
     if (event.key === 'Backspace' && !this.otpDigits()[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`) as HTMLInputElement;
+      const prevInput = document.getElementById(
+        `otp-${index - 1}`,
+      ) as HTMLInputElement;
       prevInput?.focus();
     }
   }
@@ -122,7 +143,9 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
 
       // Focus last filled input or next empty
       const focusIndex = Math.min(digits.length, 5);
-      const input = document.getElementById(`otp-${focusIndex}`) as HTMLInputElement;
+      const input = document.getElementById(
+        `otp-${focusIndex}`,
+      ) as HTMLInputElement;
       input?.focus();
     }
   }

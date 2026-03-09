@@ -117,9 +117,9 @@
           </div>
 
           <div class="team-avatars">
-            @if (project.projectWorkers && project.projectWorkers.length > 0) {
+            @if (project.workers && project.workers.length > 0) {
               @for (
-                worker of project.projectWorkers.slice(0, 3);
+                worker of project.workers.slice(0, 3);
                 track worker.userId
               ) {
                 <div class="avatar">
@@ -129,14 +129,14 @@
                   >
                 </div>
               }
-              @if (project.projectWorkers.length > 3) {
+              @if (project.workers.length > 3) {
                 <div
                   class="avatar more"
                   [matTooltip]="
-                    '+' + (project.projectWorkers.length - 3) + ' more workers'
+                    '+' + (project.workers.length - 3) + ' more workers'
                   "
                 >
-                  +{{ project.projectWorkers.length - 3 }}
+                  +{{ project.workers.length - 3 }}
                 </div>
               }
             }

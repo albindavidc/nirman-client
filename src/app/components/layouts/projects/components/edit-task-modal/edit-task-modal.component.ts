@@ -64,7 +64,7 @@ export class EditTaskModalComponent implements OnInit {
 
   taskForm!: FormGroup;
   isSubmitting = false;
-  projectWorkers: ProjectWorkerWithUser[] = [];
+  workers: ProjectWorkerWithUser[] = [];
   phases: ProjectPhase[] = [];
 
   ngOnInit(): void {
@@ -110,7 +110,7 @@ export class EditTaskModalComponent implements OnInit {
     this.projectService
       .getProjectWorkers(this.data.projectId)
       .subscribe((workers) => {
-        this.projectWorkers = workers;
+        this.workers = workers;
       });
 
     // Fetch Phases

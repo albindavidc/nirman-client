@@ -35,8 +35,8 @@
       >
         <mat-icon class="tab-icon">groups</mat-icon>
         <span class="tab-text">{{ attendanceTabName }}</span>
-        @if (project.projectWorkers?.length) {
-          <span class="tab-badge">{{ project.projectWorkers?.length }}</span>
+        @if (project.workers?.length) {
+          <span class="tab-badge">{{ project.workers?.length }}</span>
         }
       </a>
       <a

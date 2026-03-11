@@ -38,14 +38,14 @@ export class WorkerService {
   }
 
   editWorker(id: string, worker: Partial<Worker>): Observable<Worker> {
-    return this.http.put<Worker>(`${this.apiUrl}/${id}`, worker);
+    return this.http.patch<Worker>(`${this.apiUrl}/${id}`, worker);
   }
 
   blockWorker(id: string): Observable<Worker> {
-    return this.http.put<Worker>(`${this.apiUrl}/${id}/block`, {});
+    return this.http.patch<Worker>(`${this.apiUrl}/${id}/block`, {});
   }
 
   unblockWorker(id: string): Observable<Worker> {
-    return this.http.put<Worker>(`${this.apiUrl}/${id}/unblock`, {});
+    return this.http.patch<Worker>(`${this.apiUrl}/${id}/unblock`, {});
   }
 }

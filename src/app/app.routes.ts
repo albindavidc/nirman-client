@@ -12,7 +12,7 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  // 2. Redirects for Admin Auth (Compatibility & Request)
+  // 2. Unified Redirects for Admin Auth
   {
     path: 'admin/auth',
     redirectTo: '/auth/login?role=admin',

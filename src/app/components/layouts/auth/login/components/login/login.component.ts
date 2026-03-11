@@ -10,11 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import * as LoginActions from '../../store/login.actions';
 import * as LoginSelectors from '../../store/login.selectors';
 import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
-import { AdminLoginComponent } from '../../../../../admin/auth/login/admin-login.component';
 
 @Component({
   selector: 'app-login',
@@ -30,10 +30,20 @@ import { AdminLoginComponent } from '../../../../../admin/auth/login/admin-login
     MatCheckboxModule,
     MatProgressSpinnerModule,
     AuthLogoComponent,
-    AdminLoginComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(30px)' }),
+        animate(
+          '600ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
+      ]),
+    ]),
+  ],
 })
 export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

@@ -126,11 +126,6 @@ export class SidebarComponent {
                 icon: 'work',
                 route: '/supervisor/projects',
               },
-              {
-                label: 'Project Workers',
-                icon: 'group',
-                route: '/supervisor/project-workers',
-              },
             ],
           },
           {

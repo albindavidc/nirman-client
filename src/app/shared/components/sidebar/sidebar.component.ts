@@ -76,23 +76,9 @@ export class SidebarComponent {
       } else if (role === 'worker') {
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/dashboard/worker' },
-          { label: 'My Tasks', icon: 'task_alt', route: '/worker' },
-          {
-            label: 'Workforce & Labor',
-            icon: 'engineering',
-            children: [
-              {
-                label: 'Attendance',
-                icon: 'schedule',
-                route: '/dashboard/worker/attendance',
-              },
-              {
-                label: 'Scheduling',
-                icon: 'calendar_month',
-                route: '/dashboard/worker/scheduling',
-              },
-            ],
-          },
+          { label: 'My Tasks', icon: 'task_alt', route: '/worker/tasks' },
+          { label: 'Attendance', icon: 'schedule', route: '/worker/attendance' },
+          { label: 'Scheduling', icon: 'calendar_month', route: '/dashboard/worker/scheduling' },
           {
             label: 'Communication',
             icon: 'chat',

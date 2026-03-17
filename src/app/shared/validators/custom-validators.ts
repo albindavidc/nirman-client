@@ -270,4 +270,151 @@ export class CustomValidators {
       return null;
     };
   }
+
+  /**
+   * Validates business name length.
+   */
+  static businessName(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const len = value.trim().length;
+      if (len < min || len > max) {
+        return { businessNameLength: { requiredLength: [min, max], actualLength: len } };
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Validates Indian CIN format.
+   */
+  static cin(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      // Typical CIN format: 21 chars (L12345XX2023PTC123456)
+      const isValid = /^[LUu][0-9]{5}[A-Za-z]{2}[0-9]{4}[A-Za-z]{3}[0-9]{6}$/.test(value);
+      return isValid ? null : { cinFormat: true };
+    };
+  }
+
+  /**
+   * Validates GSTIN format.
+   */
+  static gstin(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      // Typical GSTIN format: 15 chars (22AAAAA0000A1Z5)
+      const isValid = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(value);
+      return isValid ? null : { gstinFormat: true };
+    };
+  }
+
+  /**
+   * Validates maximum years in business.
+   */
+  static yearsInBusiness(max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (value === null || value === undefined || value === '') return null;
+      const numValue = Number(value);
+      if (isNaN(numValue) || numValue < 0 || numValue > max || !Number.isInteger(numValue)) {
+        return { yearsInBusiness: { max } };
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Validates address field maximum length.
+   */
+  static addressField(max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const len = value.trim().length;
+      if (len > max) {
+        return { addressLength: { requiredLength: max, actualLength: len } };
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Validates Indian PIN code format (6 digits).
+   */
+  static indianPinCode(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const isValid = /^[1-9][0-9]{5}$/.test(value);
+      return isValid ? null : { indianPinCode: true };
+    };
+  }
+
+  /**
+   * Validates Indian mobile number format (10 digits starting with 6-9).
+   */
+  static indianMobile(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const digitsOnly = value.replace(/\D/g, '');
+      const isValid = /^[6-9]\d{9}$/.test(digitsOnly);
+      return isValid ? null : { indianMobile: true };
+    };
+  }
+
+  /**
+   * Validates email domain to block specific providers.
+   */
+  static emailDomain(blockedDomains: string[]): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const domainMatch = value.match(/@(.+)$/);
+      if (domainMatch && domainMatch[1]) {
+        const domain = domainMatch[1].toLowerCase();
+        if (blockedDomains.includes(domain)) {
+          return { emailDomain: { blockedDomain: domain } };
+        }
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Validates products/services array length.
+   */
+  static productsServices(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+      const items = typeof value === 'string' 
+        ? value.split(',').map(s => s.trim()).filter(Boolean)
+        : (Array.isArray(value) ? value : []);
+      
+      if (items.length < min || items.length > max) {
+        return { productsServicesCount: { required: [min, max], actual: items.length } };
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Validates maximum trimmed length.
+   */
+  static maxTrimmedLength(max: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value || typeof value !== 'string') return null;
+      const len = value.trim().length;
+      if (len > max) {
+        return { maxTrimmedLength: { requiredLength: max, actualLength: len } };
+      }
+      return null;
+    };
+  }
 }

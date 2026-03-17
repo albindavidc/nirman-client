@@ -1,6 +1,6 @@
 import { inject, provideAppInitializer } from '@angular/core';
 import { Store } from '@ngrx/store';
-import * as LoginActions from '../../components/layouts/auth/login/store/login.actions';
+import * as LoginActions from '../../features/auth/login/store/login.actions';
 
 /**
  * Factory function to hydrate NgRx store from localStorage on app init.

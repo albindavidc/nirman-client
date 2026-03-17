@@ -39,7 +39,7 @@ export const routes: Routes = [
     path: 'auth/admin/otp',
     canActivate: [GuestGuard],
     loadComponent: () =>
-      import('./components/admin/components/phase-approval/auth/otp/admin-otp.component').then(
+      import('./features/admin/components/phase-approval/auth/otp/admin-otp.component').then(
         (m) => m.AdminOtpComponent,
       ),
   },
@@ -49,7 +49,7 @@ export const routes: Routes = [
     path: 'auth/pending-approval',
     canActivate: [AuthGuard],
     loadComponent: () =>
-      import('./components/layouts/auth/pages/pending-approval/pending-approval.component').then(
+      import('./features/auth/pages/pending-approval/pending-approval.component').then(
         (m) => m.PendingApprovalComponent,
       ),
   },
@@ -57,7 +57,7 @@ export const routes: Routes = [
     path: 'auth/application-rejected',
     canActivate: [AuthGuard],
     loadComponent: () =>
-      import('./components/layouts/auth/pages/application-rejected/application-rejected.component').then(
+      import('./features/auth/pages/application-rejected/application-rejected.component').then(
         (m) => m.ApplicationRejectedComponent,
       ),
   },
@@ -67,9 +67,7 @@ export const routes: Routes = [
     path: 'auth',
     canActivate: [GuestGuard],
     loadChildren: () =>
-      import('./components/layouts/auth/auth.routes').then(
-        (m) => m.AUTH_ROUTES,
-      ),
+      import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
 
   // 6. Main Protected Section (Catch-all prefix '')
@@ -84,7 +82,7 @@ export const routes: Routes = [
       {
         path: 'vendor-management',
         loadChildren: () =>
-          import('./components/vendor/vendor-management.routes').then(
+          import('./features/vendor/vendor-management.routes').then(
             (m) => m.VENDOR_MANAGEMENT_ROUTES,
           ),
       },
@@ -98,40 +96,40 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadChildren: () =>
-          import('./components/layouts/settings/settings.routes').then(
+          import('./features/shared-features/settings/settings.routes').then(
             (m) => m.SETTINGS_ROUTES,
           ),
       },
       {
         path: 'profile',
         loadChildren: () =>
-          import('./components/layouts/profile/profile.routes').then(
+          import('./features/shared-features/profile/profile.routes').then(
             (m) => m.PROFILE_ROUTES,
           ),
       },
       {
         path: 'worker',
         loadChildren: () =>
-          import('./components/worker/worker.routes').then(
+          import('./features/worker/worker.routes').then(
             (m) => m.WORKER_ROUTES,
           ),
       },
       {
         path: 'my-tasks',
         loadComponent: () =>
-          import('./components/layouts/projects/components/my-tasks/my-tasks.component').then(
+          import('./features/shared-features/projects/components/my-tasks/my-tasks.component').then(
             (m) => m.MyTasksComponent,
           ),
       },
       {
         path: 'admin',
         loadChildren: () =>
-          import('./components/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+          import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
       },
       {
         path: 'supervisor',
         loadChildren: () =>
-          import('./components/supervisor/supervisor.routes').then(
+          import('./features/supervisor/supervisor.routes').then(
             (m) => m.SUPERVISOR_ROUTES,
           ),
       },

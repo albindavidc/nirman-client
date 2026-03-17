@@ -7,7 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
-import * as LoginSelectors from '../../../components/layouts/auth/login/store/login.selectors';
+import * as LoginSelectors from '../../../features/auth/login/store/login.selectors';
 import { ConfigService } from '../../../core/services/config.service';
 import { LayoutService } from '../../../core/services/layout.service';
 
@@ -77,8 +77,16 @@ export class SidebarComponent {
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/dashboard/worker' },
           { label: 'My Tasks', icon: 'task_alt', route: '/worker/tasks' },
-          { label: 'Attendance', icon: 'schedule', route: '/worker/attendance' },
-          { label: 'Scheduling', icon: 'calendar_month', route: '/dashboard/worker/scheduling' },
+          {
+            label: 'Attendance',
+            icon: 'schedule',
+            route: '/worker/attendance',
+          },
+          {
+            label: 'Scheduling',
+            icon: 'calendar_month',
+            route: '/dashboard/worker/scheduling',
+          },
           {
             label: 'Communication',
             icon: 'chat',

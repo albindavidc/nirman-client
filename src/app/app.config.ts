@@ -16,15 +16,15 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { routes } from './app.routes';
-import { signupReducer } from './components/layouts/auth/signup/store/signup.reducer';
-import { SignupEffects } from './components/layouts/auth/signup/store/signup.effects';
-import { loginReducer } from './components/layouts/auth/login/store/login.reducer';
-import { LoginEffects } from './components/layouts/auth/login/store/login.effects';
+import { signupReducer } from './features/auth/signup/store/signup.reducer';
+import { SignupEffects } from './features/auth/signup/store/signup.effects';
+import { loginReducer } from './features/auth/login/store/login.reducer';
+import { LoginEffects } from './features/auth/login/store/login.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { authInitializerProvider } from './core/initializers/auth.initializer';
-import { adminAuthReducer } from './components/admin/store/admin-auth.reducer';
-import { AdminAuthEffects } from './components/admin/store/admin-auth.effects';
+import { adminAuthReducer } from './features/admin/store/admin-auth.reducer';
+import { AdminAuthEffects } from './features/admin/store/admin-auth.effects';
 
 /**
  * Meta-reducer that resets the ENTIRE NgRx store (including lazy-loaded

@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import * as LoginActions from '../../../components/layouts/auth/login/store/login.actions';
-import * as LoginSelectors from '../../../components/layouts/auth/login/store/login.selectors';
+import * as LoginActions from '../../../features/auth/login/store/login.actions';
+import * as LoginSelectors from '../../../features/auth/login/store/login.selectors';
 
 @Component({
   selector: 'app-dashboard',

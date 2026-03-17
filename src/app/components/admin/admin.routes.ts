@@ -24,9 +24,9 @@ export const ADMIN_ROUTES: Routes = [
     path: 'phase-approvals',
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },
-    loadChildren: () =>
-      import('./phase-approval/phase-approval.routes').then(
-        (m) => m.PHASE_APPROVAL_ROUTES,
+    loadComponent: () =>
+      import('./components/phase-approval/phase-approval-list.component').then(
+        (m) => m.PhaseApprovalListComponent,
       ),
   },
 ];

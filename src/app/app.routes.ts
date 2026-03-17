@@ -39,8 +39,8 @@ export const routes: Routes = [
     path: 'auth/admin/otp',
     canActivate: [GuestGuard],
     loadComponent: () =>
-      import('./components/admin/auth/otp/admin-otp.component').then(
-        (m) => m.AdminOtpComponent
+      import('./components/admin/components/phase-approval/auth/otp/admin-otp.component').then(
+        (m) => m.AdminOtpComponent,
       ),
   },
 
@@ -49,17 +49,17 @@ export const routes: Routes = [
     path: 'auth/pending-approval',
     canActivate: [AuthGuard],
     loadComponent: () =>
-      import(
-        './components/layouts/auth/pages/pending-approval/pending-approval.component'
-      ).then((m) => m.PendingApprovalComponent),
+      import('./components/layouts/auth/pages/pending-approval/pending-approval.component').then(
+        (m) => m.PendingApprovalComponent,
+      ),
   },
   {
     path: 'auth/application-rejected',
     canActivate: [AuthGuard],
     loadComponent: () =>
-      import(
-        './components/layouts/auth/pages/application-rejected/application-rejected.component'
-      ).then((m) => m.ApplicationRejectedComponent),
+      import('./components/layouts/auth/pages/application-rejected/application-rejected.component').then(
+        (m) => m.ApplicationRejectedComponent,
+      ),
   },
 
   // 5. General Auth Routes (Handles /auth/signup and /auth/login)
@@ -71,7 +71,6 @@ export const routes: Routes = [
         (m) => m.AUTH_ROUTES,
       ),
   },
-
 
   // 6. Main Protected Section (Catch-all prefix '')
   {
@@ -140,5 +139,5 @@ export const routes: Routes = [
   },
 
   // 7. Final Fallback
-  { path: '**', redirectTo: '/auth/admin/login'  },
+  { path: '**', redirectTo: '/auth/admin/login' },
 ];

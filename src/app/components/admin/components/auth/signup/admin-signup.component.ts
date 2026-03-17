@@ -6,7 +6,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { AdminAuthActions } from '../../store/admin-auth.actions';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -15,9 +14,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AuthLogoComponent } from '../../../layouts/auth/auth-logo/auth-logo.component';
-import { CustomValidators } from '../../../../shared/validators/custom-validators';
-import * as AdminAuthSelectors from '../../store/admin-auth.selectors';
+import { AuthLogoComponent } from '../../../../layouts/auth/auth-logo/auth-logo.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
+import { AdminAuthActions } from '../../../store/admin-auth.actions';
+import {
+  selectAdminAuthLoading,
+  selectAdminAuthError,
+} from '../../../store/admin-auth.selectors';
 
 @Component({
   selector: 'app-admin-signup',
@@ -64,8 +67,8 @@ export class AdminSignupComponent {
   hidePassword = signal(true);
   hideConfirmPassword = signal(true);
 
-  loading$ = this.store.select(AdminAuthSelectors.selectAdminAuthLoading);
-  error$ = this.store.select(AdminAuthSelectors.selectAdminAuthError);
+  loading$ = this.store.select(selectAdminAuthLoading);
+  error$ = this.store.select(selectAdminAuthError);
 
   constructor() {
     this.signupForm = this.fb.group(
@@ -99,18 +102,12 @@ export class AdminSignupComponent {
         ],
         phoneNumber: [
           '',
-          [
-            Validators.required,
-            Validators.minLength(10),
-            Validators.maxLength(10),
-            CustomValidators.phoneNumber(),
-          ],
+          [Validators.required, CustomValidators.phoneNumber()],
         ],
         password: [
           '',
           [
             Validators.required,
-            Validators.minLength(8),
             Validators.maxLength(128),
             CustomValidators.passwordStrength(),
           ],
@@ -129,7 +126,9 @@ export class AdminSignupComponent {
   onSubmit() {
     if (this.signupForm.valid) {
       const { confirmPassword, ...signupData } = this.signupForm.value;
-      this.store.dispatch(AdminAuthActions.savePendingSignupData({ signupData }));
+      this.store.dispatch(
+        AdminAuthActions.savePendingSignupData({ signupData }),
+      );
       this.store.dispatch(AdminAuthActions.signup({ signupData }));
     } else {
       this.signupForm.markAllAsTouched();

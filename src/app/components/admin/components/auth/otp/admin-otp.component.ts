@@ -14,20 +14,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { AdminAuthActions } from '../../store/admin-auth.actions';
-import {
-  selectAdminEmail,
-  selectAdminAuthLoading,
-  selectAdminAuthError,
-} from '../../store/admin-auth.selectors';
 import { CommonModule } from '@angular/common';
 import { interval, Subscription, takeWhile } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
-import { AuthLogoComponent } from '../../../layouts/auth/auth-logo/auth-logo.component';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { AuthLogoComponent } from '../../../../layouts/auth/auth-logo/auth-logo.component';
+import { AdminAuthActions } from '../../../store/admin-auth.actions';
+import { selectAdminAuthError, selectAdminAuthLoading, selectAdminEmail } from '../../../store/admin-auth.selectors';
 
 @Component({
   selector: 'app-admin-otp',
@@ -88,7 +84,12 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
       digits: this.fb.array(
         Array(6)
           .fill('')
-          .map(() => this.fb.control('', [Validators.required, Validators.pattern(/^\d$/)])),
+          .map(() =>
+            this.fb.control('', [
+              Validators.required,
+              Validators.pattern(/^\d$/),
+            ]),
+          ),
       ),
     });
   }
@@ -141,7 +142,11 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
   }
 
   onKeyDown(event: KeyboardEvent, index: number): void {
-    if (event.key === 'Backspace' && !this.digits.at(index).value && index > 0) {
+    if (
+      event.key === 'Backspace' &&
+      !this.digits.at(index).value &&
+      index > 0
+    ) {
       const prevInput = document.getElementById(
         `otp-${index - 1}`,
       ) as HTMLInputElement;
@@ -155,10 +160,10 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
       ?.getData('text')
       ?.replace(/\D/g, '')
       .slice(0, 6);
-      
+
     if (pastedData) {
       const digitValues = pastedData.split('');
-      
+
       this.digits.controls.forEach((control, index) => {
         control.setValue(digitValues[index] || '');
       });

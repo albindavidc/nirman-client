@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as LoginActions from '../../store/login.actions';
 import * as LoginSelectors from '../../store/login.selectors';
 import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-forgot-password',
@@ -35,7 +36,15 @@ export class ForgotPasswordComponent {
   private readonly store = inject(Store);
 
   forgotPasswordForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(254),
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
+      ],
+    ],
   });
 
   isLoading$ = this.store.select(LoginSelectors.selectForgotPasswordLoading);

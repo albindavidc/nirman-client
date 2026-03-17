@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AccountTypeOption, AccountType } from '../../models/signup.models';
 import * as SignupActions from '../../store/signup.actions';
 import { ActivatedRoute } from '@angular/router';
-import { AdminSignupComponent } from '../../../../../admin/auth/signup/admin-signup.component';
+import { AdminSignupComponent } from '../../../../../admin/components/phase-approval/auth/signup/admin-signup.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -30,7 +30,7 @@ import { CommonModule } from '@angular/common';
         style({ opacity: 0, transform: 'translateY(30px)' }),
         animate(
           '600ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
+          style({ opacity: 1, transform: 'translateY(0)' }),
         ),
       ]),
     ]),
@@ -43,11 +43,11 @@ import { CommonModule } from '@angular/common';
             stagger(150, [
               animate(
                 '500ms ease-out',
-                style({ opacity: 1, transform: 'translateY(0)' })
+                style({ opacity: 1, transform: 'translateY(0)' }),
               ),
             ]),
           ],
-          { optional: true }
+          { optional: true },
         ),
       ]),
     ]),
@@ -95,7 +95,7 @@ export class AccountTypeSelectionComponent {
   ];
 
   constructor() {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.isAdmin = params['role'] === 'admin';
     });
   }

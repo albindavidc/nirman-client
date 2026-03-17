@@ -20,14 +20,16 @@ export class CustomValidators {
       const hasLowerCase = /[a-z]/.test(value);
       const hasNumeric = /\d/.test(value);
       const hasSpecialChar = /[@$!%*?&]/.test(value);
-      const hasMinLength = value.length >= 8;
+      const minLength = value.length >= 8;
+      const maxLength = value.length <= 128;
 
       const passwordValid =
         hasUpperCase &&
         hasLowerCase &&
         hasNumeric &&
         hasSpecialChar &&
-        hasMinLength;
+        minLength &&
+        maxLength;
 
       if (!passwordValid) {
         return {
@@ -36,7 +38,8 @@ export class CustomValidators {
             hasLowerCase,
             hasNumeric,
             hasSpecialChar,
-            hasMinLength,
+            minLength,
+            maxLength,
           },
         };
       }

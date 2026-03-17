@@ -1,12 +1,10 @@
 import { createAction, props } from '@ngrx/store';
 import {
   LoginCredentials,
-  LoginResponse,
   VerifyResetOtpResponse,
-  User,
 } from '../models/login.models';
-
-// Login Actions
+import { UserProfile } from '../../../../../shared/models/profile.model';
+import { LoginResponse } from '../../../../../shared/models/auth-signup.model';
 export const login = createAction(
   '[Login] Login',
   props<{ credentials: LoginCredentials }>(),
@@ -25,7 +23,7 @@ export const loginFailure = createAction(
 // Hydrate user from localStorage on app init
 export const hydrateFromStorage = createAction(
   '[Login] Hydrate From Storage',
-  props<{ user: LoginResponse['user'] }>(),
+  props<{ user: UserProfile }>(),
 );
 
 // Validate session with backend after hydrating
@@ -33,7 +31,7 @@ export const validateSession = createAction('[Login] Validate Session');
 
 export const validateSessionSuccess = createAction(
   '[Login] Validate Session Success',
-  props<{ user: User }>(),
+  props<{ user: UserProfile }>(),
 );
 
 export const validateSessionFailure = createAction(
@@ -114,5 +112,5 @@ export const resetForgotPasswordFlow = createAction(
 // Profile Update Action - updates user in store when profile is modified
 export const updateUserProfile = createAction(
   '[Login] Update User Profile',
-  props<{ user: Partial<LoginResponse['user']> }>(),
+  props<{ user: Partial<UserProfile> }>(),
 );

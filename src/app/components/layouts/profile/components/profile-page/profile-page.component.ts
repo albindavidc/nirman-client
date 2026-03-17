@@ -17,7 +17,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ProfileService } from '../../services/profile.service';
-import { Profile } from '../../models/profile.model';
+import { UserProfile } from '../../../../../shared/models/profile.model';
 import { ConfigService } from '../../../../../core/services/config.service';
 import { ImageUploadModalComponent } from '../../../../../shared/components/image-upload-modal/image-upload-modal.component';
 import * as LoginActions from '../../../auth/login/store/login.actions';
@@ -51,7 +51,7 @@ export class ProfilePageComponent implements OnInit {
 
   private readonly store = inject(Store);
 
-  profile: Profile | null = null;
+  profile: UserProfile | null = null;
   isLoading = true;
   isSaving = false;
   isChangingPassword = false;
@@ -86,9 +86,9 @@ export class ProfilePageComponent implements OnInit {
       {
         validators: CustomValidators.passwordMatch(
           'newPassword',
-          'confirmPassword'
+          'confirmPassword',
         ),
-      }
+      },
     );
   }
 
@@ -144,7 +144,7 @@ export class ProfilePageComponent implements OnInit {
               this.store.dispatch(
                 LoginActions.updateUserProfile({
                   user: { profilePhotoUrl: updatedProfile.profilePhotoUrl },
-                })
+                }),
               );
               this.snackBar.open('Profile photo updated', 'Close', {
                 duration: 3000,
@@ -182,7 +182,7 @@ export class ProfilePageComponent implements OnInit {
               firstName: updatedProfile.firstName,
               lastName: updatedProfile.lastName,
             },
-          })
+          }),
         );
         this.snackBar.open('Profile updated successfully', 'Close', {
           duration: 3000,
@@ -217,7 +217,7 @@ export class ProfilePageComponent implements OnInit {
           this.snackBar.open(
             res.message || 'Password changed successfully',
             'Close',
-            { duration: 3000 }
+            { duration: 3000 },
           );
           this.passwordForm.reset();
           this.isChangingPassword = false;
@@ -226,7 +226,7 @@ export class ProfilePageComponent implements OnInit {
           this.snackBar.open(
             err.error?.message || 'Failed to change password',
             'Close',
-            { duration: 3000 }
+            { duration: 3000 },
           );
           this.isChangingPassword = false;
         },

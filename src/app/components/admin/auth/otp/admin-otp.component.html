@@ -28,21 +28,24 @@
     }
 
     <!-- OTP Input Fields -->
-    <div class="otp-inputs" (paste)="onPaste($event)">
-      @for (digit of otpDigits(); track $index) {
-        <input
-          type="text"
-          inputmode="numeric"
-          maxlength="1"
-          [id]="'otp-' + $index"
-          [value]="digit"
-          (input)="onDigitInput($event, $index)"
-          (keydown)="onKeyDown($event, $index)"
-          class="otp-input"
-          [class.filled]="digit !== ''"
-        />
-      }
-    </div>
+    <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
+      <div class="otp-inputs" formArrayName="digits" (paste)="onPaste($event)">
+        @for (control of digits.controls; track $index) {
+          <input
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            [id]="'otp-' + $index"
+            [formControlName]="$index"
+            (input)="onDigitInput($event, $index)"
+            (keydown)="onKeyDown($event, $index)"
+            class="otp-input"
+            [class.filled]="control.value !== ''"
+            [class.invalid]="control.invalid && (control.dirty || control.touched)"
+          />
+        }
+      </div>
+    </form>
 
     <!-- Timer -->
     <div class="timer">
@@ -56,7 +59,7 @@
         mat-flat-button
         type="button"
         class="submit-btn"
-        [disabled]="!isComplete() || (isLoading$ | async)"
+        [disabled]="otpForm.invalid || (isLoading$ | async)"
         (click)="onSubmit()"
       >
         @if (isLoading$ | async) {

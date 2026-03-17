@@ -4,21 +4,9 @@ export interface LoginCredentials {
   rememberMe?: boolean;
 }
 
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  vendorStatus?: string;
-  rejectionReason?: string;
-  vendorId?: string;
-  profilePhotoUrl?: string;
-}
 
-export interface LoginResponse {
-  accessToken: string;
-  user: User;
+export interface VerifyResetOtpResponse {
+  resetToken: string;
 }
 
 export interface ForgotPasswordRequest {

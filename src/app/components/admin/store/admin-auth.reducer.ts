@@ -5,40 +5,46 @@ import * as AdminAuthActions from './admin-auth.actions';
 export const adminAuthReducer = createReducer(
   initialAdminAuthState,
 
-  on(AdminAuthActions.savePendingSignupData, (state, { signupData }) => {
-    localStorage.setItem('admin_pending_signup', JSON.stringify(signupData));
-    return {
-      ...state,
-      pendingSignupData: signupData,
-    };
-  }),
+  on(
+    AdminAuthActions.AdminAuthActions.savePendingSignupData,
+    (state, { signupData }) => {
+      localStorage.setItem('admin_pending_signup', JSON.stringify(signupData));
+      return {
+        ...state,
+        pendingSignupData: signupData,
+      };
+    },
+  ),
 
-  on(AdminAuthActions.adminSignup, (state) => ({
+  on(AdminAuthActions.AdminAuthActions.signup, (state) => ({
     ...state,
     loading: true,
     error: null,
   })),
 
-  on(AdminAuthActions.adminSignupSuccess, (state, { response, email }) => ({
-    ...state,
-    loading: false,
-    userId: response.userId,
-    email: email,
-  })),
+  on(
+    AdminAuthActions.AdminAuthActions.signupSuccess,
+    (state, { response, email }) => ({
+      ...state,
+      loading: false,
+      userId: response.id,
+      email: email,
+    }),
+  ),
 
-  on(AdminAuthActions.adminSignupFailure, (state, { error }) => ({
+  on(AdminAuthActions.AdminAuthActions.signupFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,
   })),
 
-  on(AdminAuthActions.verifyAdminOtp, (state) => ({
+  on(AdminAuthActions.AdminAuthActions.verifyOTP, (state) => ({
     ...state,
     loading: true,
     error: null,
   })),
 
-  on(AdminAuthActions.verifyAdminOtpSuccess, (state) => {
+  on(AdminAuthActions.AdminAuthActions.verifyOTPSuccess, (state) => {
     localStorage.removeItem('admin_pending_signup');
     return {
       ...state,
@@ -47,33 +53,36 @@ export const adminAuthReducer = createReducer(
     };
   }),
 
-  on(AdminAuthActions.verifyAdminOtpFailure, (state, { error }) => ({
-    ...state,
-    loading: false,
-    error,
-  })),
+  on(
+    AdminAuthActions.AdminAuthActions.verifyOTPFailure,
+    (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+    }),
+  ),
 
-  on(AdminAuthActions.adminLogin, (state) => ({
+  on(AdminAuthActions.AdminAuthActions.login, (state) => ({
     ...state,
     loading: true,
     error: null,
   })),
 
-  on(AdminAuthActions.adminLoginSuccess, (state, { response }) => ({
+  on(AdminAuthActions.AdminAuthActions.loginSuccess, (state, { response }) => ({
     ...state,
     loading: false,
     isAuthenticated: true,
     // Add logic to save tokens if necessary
   })),
 
-  on(AdminAuthActions.adminLoginFailure, (state, { error }) => ({
+  on(AdminAuthActions.AdminAuthActions.loginFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,
   })),
 
-  on(AdminAuthActions.clearAdminAuthState, () => {
+  on(AdminAuthActions.AdminAuthActions.clearState, () => {
     localStorage.removeItem('admin_pending_signup');
     return initialAdminAuthState;
-  })
+  }),
 );

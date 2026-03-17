@@ -1,11 +1,10 @@
-import { LoginResponse } from '../models/login.models';
+import { UserProfile } from '../../../../../shared/models/profile.model';
 
 export interface LoginState {
   isLoading: boolean;
   error: string | null;
   isLoggedIn: boolean;
-  user: LoginResponse['user'] | null;
-  accessToken: string | null;
+  user: UserProfile | null;
 
   // Forgot password flow
   forgotPasswordEmail: string | null;
@@ -27,7 +26,6 @@ export const initialLoginState: LoginState = {
   error: null,
   isLoggedIn: false,
   user: null,
-  accessToken: null,
 
   forgotPasswordEmail: null,
   forgotPasswordLoading: false,

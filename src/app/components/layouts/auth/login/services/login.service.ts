@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import { ConfigService } from '../../../../../core/services/config.service';
 import {
   LoginCredentials,
-  LoginResponse,
   VerifyResetOtpResponse,
-  User,
 } from '../models/login.models';
+import { UserProfile } from '../../../../../shared/models/profile.model';
+import { LoginResponse } from '../../../../../shared/models/auth-signup.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,8 +32,8 @@ export class LoginService {
     return this.http.post<{ message: string }>(`${this.apiUrl}/refresh`, {});
   }
 
-  getMe(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/me`);
+  getMe(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/me`);
   }
 
   forgotPassword(email: string): Observable<{ message: string }> {

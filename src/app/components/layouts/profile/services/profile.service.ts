@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
 import { ConfigService } from '../../../../core/services/config.service';
 import {
-  Profile,
+  UserProfile,
   UpdateProfileDto,
   UpdatePasswordDto,
-} from '../models/profile.model';
+} from '../../../../shared/models/profile.model';
 
 interface PresignedUrlResponse {
   uploadUrl: string; // URL for PUT request
@@ -24,12 +24,12 @@ export class ProfileService {
   private readonly apiUrl = `${this.configService.apiUrl}/profile`;
   private readonly uploadUrl = `${this.configService.apiUrl}/upload`;
 
-  getProfile(): Observable<Profile> {
-    return this.http.get<Profile>(this.apiUrl);
+  getProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(this.apiUrl);
   }
 
-  updateProfile(dto: UpdateProfileDto): Observable<Profile> {
-    return this.http.put<Profile>(this.apiUrl, dto);
+  updateProfile(dto: UpdateProfileDto): Observable<UserProfile> {
+    return this.http.put<UserProfile>(this.apiUrl, dto);
   }
 
   updatePassword(dto: UpdatePasswordDto): Observable<{ message: string }> {
@@ -72,7 +72,7 @@ export class ProfileService {
               observer.error(error);
             });
         });
-      })
+      }),
     );
   }
 
@@ -81,7 +81,7 @@ export class ProfileService {
    */
   private getPresignedUrl(
     fileName: string,
-    fileType: string
+    fileType: string,
   ): Observable<PresignedUrlResponse> {
     return this.http.post<PresignedUrlResponse>(
       `${this.uploadUrl}/presigned-url`,
@@ -89,7 +89,7 @@ export class ProfileService {
         fileName,
         fileType,
         uploadType: 'profile',
-      }
+      },
     );
   }
 }

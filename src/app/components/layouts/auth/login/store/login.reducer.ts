@@ -17,7 +17,6 @@ export const loginReducer = createReducer(
     isLoading: false,
     isLoggedIn: true,
     user: response.user,
-    accessToken: response.accessToken,
     error: null,
   })),
 

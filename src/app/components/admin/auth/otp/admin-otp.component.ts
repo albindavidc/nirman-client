@@ -6,9 +6,15 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+} from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { verifyAdminOtp, resendAdminOtp } from '../../store/admin-auth.actions';
+import { AdminAuthActions } from '../../store/admin-auth.actions';
 import {
   selectAdminEmail,
   selectAdminAuthLoading,
@@ -60,9 +66,10 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 export class AdminOtpComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
+  private readonly fb = inject(FormBuilder);
   private timerSubscription?: Subscription;
 
-  otpDigits = signal<string[]>(['', '', '', '', '', '']);
+  otpForm: FormGroup;
   countdown = signal(120); // 2 minutes
   canResend = signal(false);
 
@@ -76,8 +83,22 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   });
 
+  constructor() {
+    this.otpForm = this.fb.group({
+      digits: this.fb.array(
+        Array(6)
+          .fill('')
+          .map(() => this.fb.control('', [Validators.required, Validators.pattern(/^\d$/)])),
+      ),
+    });
+  }
+
+  get digits(): FormArray {
+    return this.otpForm.get('digits') as FormArray;
+  }
+
   isComplete = computed(() => {
-    return this.otpDigits().every((digit) => digit !== '');
+    return this.otpForm.valid;
   });
 
   ngOnInit(): void {
@@ -107,11 +128,8 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const value = input.value.replace(/\D/g, '').slice(-1);
 
-    this.otpDigits.update((digits) => {
-      const newDigits = [...digits];
-      newDigits[index] = value;
-      return newDigits;
-    });
+    const digitControl = this.digits.at(index);
+    digitControl.setValue(value, { emitEvent: false });
 
     // Auto-focus next input
     if (value && index < 5) {
@@ -123,7 +141,7 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
   }
 
   onKeyDown(event: KeyboardEvent, index: number): void {
-    if (event.key === 'Backspace' && !this.otpDigits()[index] && index > 0) {
+    if (event.key === 'Backspace' && !this.digits.at(index).value && index > 0) {
       const prevInput = document.getElementById(
         `otp-${index - 1}`,
       ) as HTMLInputElement;
@@ -137,12 +155,16 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
       ?.getData('text')
       ?.replace(/\D/g, '')
       .slice(0, 6);
+      
     if (pastedData) {
-      const digits = pastedData.split('');
-      this.otpDigits.set([...digits, ...Array(6 - digits.length).fill('')]);
+      const digitValues = pastedData.split('');
+      
+      this.digits.controls.forEach((control, index) => {
+        control.setValue(digitValues[index] || '');
+      });
 
       // Focus last filled input or next empty
-      const focusIndex = Math.min(digits.length, 5);
+      const focusIndex = Math.min(digitValues.length, 5);
       const input = document.getElementById(
         `otp-${focusIndex}`,
       ) as HTMLInputElement;
@@ -151,13 +173,13 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    if (this.isComplete()) {
-      const otp = this.otpDigits().join('');
+    if (this.otpForm.valid) {
+      const otp = this.digits.value.join('');
       this.email$
         .pipe(takeWhile((email) => email !== null, true))
         .subscribe((email) => {
           if (email) {
-            this.store.dispatch(verifyAdminOtp({ email, otp }));
+            this.store.dispatch(AdminAuthActions.verifyOTP({ email, otp }));
           }
         })
         .unsubscribe();
@@ -169,7 +191,7 @@ export class AdminOtpComponent implements OnInit, OnDestroy {
       .pipe(takeWhile((email) => email !== null, true))
       .subscribe((email) => {
         if (email) {
-          this.store.dispatch(resendAdminOtp({ email }));
+          this.store.dispatch(AdminAuthActions.resendOTP({ email }));
           this.startTimer();
         }
       })

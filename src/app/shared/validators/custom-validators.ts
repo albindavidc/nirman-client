@@ -81,13 +81,12 @@ export class CustomValidators {
 
   /**
    * Validates phone number format (10 digits).
-   * Accepts formats: 1234567890, with or without country code
    */
   static phoneNumber(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
       if (!value) {
-        return null; // Let required validator handle empty values
+        return null;
       }
 
       // Remove non-digit characters for validation
@@ -100,7 +99,6 @@ export class CustomValidators {
 
   /**
    * Validates name fields (letters, spaces, hyphens, apostrophes only).
-   * @param minLength - Minimum length for the name (default: 2)
    */
   static nameValidator(minLength = 2): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -196,12 +194,10 @@ export class CustomValidators {
       const end = new Date(endDate);
 
       if (end < start) {
-        control
-          .get(endDateField)
-          ?.setErrors({
-            dateRange: true,
-            ...control.get(endDateField)?.errors,
-          });
+        control.get(endDateField)?.setErrors({
+          dateRange: true,
+          ...control.get(endDateField)?.errors,
+        });
         return { dateRange: { startDate, endDate } };
       }
 

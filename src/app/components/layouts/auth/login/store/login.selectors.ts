@@ -24,10 +24,6 @@ export const selectUser = createSelector(
   (state) => state.user
 );
 
-export const selectAccessToken = createSelector(
-  selectLoginState,
-  (state) => state.accessToken
-);
 
 // Forgot password selectors
 export const selectForgotPasswordEmail = createSelector(

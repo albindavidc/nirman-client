@@ -1,7 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { adminSignup, savePendingSignupData } from '../../store/admin-auth.actions';
+import { AdminAuthActions } from '../../store/admin-auth.actions';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -58,28 +63,74 @@ export class AdminSignupComponent {
   signupForm: FormGroup;
   hidePassword = signal(true);
   hideConfirmPassword = signal(true);
-  
+
   loading$ = this.store.select(AdminAuthSelectors.selectAdminAuthLoading);
   error$ = this.store.select(AdminAuthSelectors.selectAdminAuthError);
 
   constructor() {
-    this.signupForm = this.fb.group({
-      firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
-      lastName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, CustomValidators.phoneNumber()]],
-      password: ['', [Validators.required, CustomValidators.passwordStrength()]],
-      confirmPassword: ['', [Validators.required]]
-    }, { 
-      validators: CustomValidators.passwordMatch('password', 'confirmPassword') 
-    });
+    this.signupForm = this.fb.group(
+      {
+        firstName: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(50),
+            CustomValidators.nameValidator(2),
+          ],
+        ],
+        lastName: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(50),
+            CustomValidators.nameValidator(2),
+          ],
+        ],
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.email,
+            Validators.maxLength(254),
+            Validators.pattern(
+              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            ),
+          ],
+        ],
+        phoneNumber: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(10),
+            Validators.maxLength(10),
+            CustomValidators.phoneNumber(),
+          ],
+        ],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.maxLength(128),
+            CustomValidators.passwordStrength(),
+          ],
+        ],
+        confirmPassword: ['', [Validators.required]],
+      },
+      {
+        validators: CustomValidators.passwordMatch(
+          'password',
+          'confirmPassword',
+        ),
+      },
+    );
   }
 
   onSubmit() {
     if (this.signupForm.valid) {
-      const signupData = this.signupForm.value;
-      this.store.dispatch(savePendingSignupData({ signupData }));
-      this.store.dispatch(adminSignup({ signupData }));
+      const { confirmPassword, ...signupData } = this.signupForm.value;
+      this.store.dispatch(AdminAuthActions.savePendingSignupData({ signupData }));
+      this.store.dispatch(AdminAuthActions.signup({ signupData }));
     } else {
       this.signupForm.markAllAsTouched();
     }

@@ -1,5 +1,7 @@
+import { SignupRequest } from '../../../shared/models/auth-signup.model';
+
 export interface AdminAuthState {
-  pendingSignupData: any | null;
+  pendingSignupData: SignupRequest | null;
   userId: string | null;
   email: string | null;
   loading: boolean;

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { map, exhaustMap, catchError, tap } from 'rxjs/operators';
 import { LoginService } from '../services/login.service';
-import { User } from '../models/login.models';
+import { UserProfile } from '../../../../../shared/models/profile.model';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import * as LoginActions from './login.actions';
 
@@ -54,17 +54,17 @@ export class LoginEffects {
   /**
    * Returns the default route for each user role
    */
-  private getRouteByRole(user: User): string {
+  private getRouteByRole(user: UserProfile): string {
     const role = user.role.toLowerCase();
 
     console.log('Login Redirection Debug:', {
       role,
-      vendorStatus: user.vendorStatus,
-      rejectionReason: user.rejectionReason,
+      vendorStatus: user.vendor?.vendorStatus,
+      rejectionReason: user.vendor?.rejectionReason,
     });
 
     if (role === 'vendor') {
-      const status = user.vendorStatus?.toLowerCase();
+      const status = user.vendor?.vendorStatus?.toLowerCase();
 
       console.log('Processed Vendor Status:', status);
 

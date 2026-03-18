@@ -54,19 +54,59 @@ export class WorkerAddEditModalComponent implements OnInit {
 
     this.mode = data.mode;
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
-      lastName: ['', [Validators.required, CustomValidators.nameValidator(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, CustomValidators.phoneNumber()]],
+      firstName: [
+        '',
+        [
+          Validators.required,
+          CustomValidators.nameValidator(2),
+          CustomValidators.maxTrimmedLength(50),
+          CustomValidators.noWhitespace(),
+        ],
+      ],
+      lastName: [
+        '',
+        [
+          Validators.required,
+          CustomValidators.nameValidator(2),
+          CustomValidators.maxTrimmedLength(50),
+          CustomValidators.noWhitespace(),
+        ],
+      ],
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern(
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+          ),
+          CustomValidators.emailDomain([
+            'gmail.com',
+            'yahoo.com',
+            'outlook.com',
+            'hotmail.com',
+          ]),
+        ],
+      ],
+      phone: ['', [Validators.required, CustomValidators.indianMobile()]],
       role: ['worker', Validators.required],
       // Professional fields
-      professionalTitle: [''],
+      professionalTitle: ['', [CustomValidators.maxTrimmedLength(100)]],
       experienceYears: [0, [CustomValidators.experienceYears()]],
-      skills: [''], // Comma separated string for simplicity in form
-      addressStreet: [''],
-      addressCity: [''],
-      addressState: [''],
-      addressZipCode: ['', [CustomValidators.zipCode()]],
+      skills: [
+        '',
+        [
+          CustomValidators.productsServices(1, 20),
+          CustomValidators.maxTrimmedLength(500),
+        ],
+      ], // Comma separated string for simplicity in form
+      addressStreet: ['', [CustomValidators.addressField(150)]],
+      addressCity: [
+        '',
+        [CustomValidators.addressField(50), CustomValidators.nameValidator(2)],
+      ],
+      addressState: ['', [CustomValidators.addressField(50)]],
+      addressZipCode: ['', [CustomValidators.indianPinCode()]],
     });
   }
 

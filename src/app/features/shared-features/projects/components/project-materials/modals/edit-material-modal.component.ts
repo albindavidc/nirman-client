@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { Material } from '../../../models/material.model';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-edit-material-modal',
@@ -64,11 +65,11 @@ export class EditMaterialModalComponent implements OnInit {
 
   constructor() {
     this.materialForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3), CustomValidators.noWhitespace()]],
       code: [{ value: '', disabled: true }, Validators.required], // Code is usually immutable or requires special handling
       category: ['', Validators.required],
-      description: ['', Validators.maxLength(500)],
-      specifications: ['', Validators.maxLength(500)],
+      description: ['', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
+      specifications: ['', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
       unit: ['', Validators.required],
       unitPrice: [0, [Validators.min(0)]],
       reorderLevel: [0, [Validators.min(0)]],

@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 interface ApproveDialogData {
   phaseId: string;
@@ -52,7 +53,7 @@ export class ApprovePhaseModalComponent {
 
   constructor() {
     this.form = this.fb.group({
-      comments: ['', [Validators.maxLength(1000)]],
+      comments: ['', [Validators.maxLength(1000), CustomValidators.noWhitespace()]],
     });
   }
 

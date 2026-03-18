@@ -17,6 +17,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-add-phase-modal',
@@ -53,13 +54,14 @@ export class AddPhaseModalComponent {
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(100),
+          CustomValidators.noWhitespace(),
         ],
       ],
-      description: ['', [Validators.maxLength(500)]],
+      description: ['', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
       plannedStartDate: [null],
       plannedEndDate: [null],
       sequence: [null, [Validators.required, Validators.min(1)]],
-    });
+    }, { validators: CustomValidators.dateRange('plannedStartDate', 'plannedEndDate') });
   }
 
   onSubmit(): void {

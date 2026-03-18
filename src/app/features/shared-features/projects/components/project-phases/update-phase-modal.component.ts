@@ -20,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { ProjectPhase } from '../../models/project.models';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-update-phase-modal',
@@ -57,9 +58,10 @@ export class UpdatePhaseModalComponent implements OnInit {
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(100),
+          CustomValidators.noWhitespace(),
         ],
       ],
-      description: [phase.description || '', [Validators.maxLength(500)]],
+      description: [phase.description || '', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
       plannedStartDate: [phase.plannedStartDate],
       plannedEndDate: [phase.plannedEndDate],
       actualStartDate: [phase.actualStartDate],
@@ -67,6 +69,11 @@ export class UpdatePhaseModalComponent implements OnInit {
       status: [phase.status, Validators.required],
       sequence: [phase.sequence, [Validators.required, Validators.min(1)]],
       progress: [phase.progress, [Validators.min(0), Validators.max(100)]],
+    }, {
+      validators: [
+        CustomValidators.dateRange('plannedStartDate', 'plannedEndDate'),
+        CustomValidators.dateRange('actualStartDate', 'actualEndDate'),
+      ]
     });
   }
 

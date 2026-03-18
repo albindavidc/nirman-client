@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { ProjectService } from '../../services/project.service';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 export interface EditWorkerDialogData {
   projectId: string;
@@ -40,6 +41,7 @@ export class EditWorkerModalComponent {
   data = inject<EditWorkerDialogData>(MAT_DIALOG_DATA);
 
   private readonly projectService = inject(ProjectService);
+  private readonly notificationService = inject(NotificationService);
 
   roleControl = new FormControl('', [Validators.required]);
   loading = false;
@@ -65,12 +67,13 @@ export class EditWorkerModalComponent {
       .subscribe({
         next: () => {
           this.loading = false;
+          this.notificationService.success('Worker role updated successfully');
           this.dialogRef.close(true);
         },
         error: (err) => {
           this.loading = false;
           console.error('Failed to update role', err);
-          // Ideally show snackbar here
+          this.notificationService.error('Failed to update worker role');
         },
       });
   }

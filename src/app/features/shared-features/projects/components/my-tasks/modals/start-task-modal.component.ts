@@ -12,6 +12,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Task } from '../../../services/task.service';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-start-task-modal',
@@ -35,7 +36,7 @@ export class StartTaskModalComponent implements OnInit {
   public data = inject<{ task: Task }>(MAT_DIALOG_DATA);
 
   form = this.fb.group({
-    notes: ['', [Validators.maxLength(500)]],
+    notes: ['', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
   });
   startTime = '';
 

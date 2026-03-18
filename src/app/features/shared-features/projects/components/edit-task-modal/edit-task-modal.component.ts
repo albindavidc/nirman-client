@@ -85,7 +85,10 @@ export class EditTaskModalComponent implements OnInit {
           CustomValidators.noWhitespace(),
         ],
       ],
-      description: [task.description || '', [Validators.maxLength(500)]],
+      description: [
+        task.description || '',
+        [Validators.maxLength(500), CustomValidators.noWhitespace()],
+      ],
       phaseId: [task.phaseId, Validators.required],
       priority: [task.priority || 'Medium', Validators.required],
       status: [task.status || 'Not Started', Validators.required],
@@ -101,7 +104,16 @@ export class EditTaskModalComponent implements OnInit {
       ],
       actualEndDate: [task.actualEndDate ? new Date(task.actualEndDate) : null],
       progress: [task.progress || 0, [Validators.min(0), Validators.max(100)]],
-      notes: [task.notes || '', [Validators.maxLength(1000)]],
+      notes: [
+        task.notes || '',
+        [Validators.maxLength(1000), CustomValidators.noWhitespace()],
+      ],
+    },
+    {
+      validators: [
+        CustomValidators.dateRange('plannedStartDate', 'plannedEndDate'),
+        CustomValidators.dateRange('actualStartDate', 'actualEndDate'),
+      ],
     });
   }
 

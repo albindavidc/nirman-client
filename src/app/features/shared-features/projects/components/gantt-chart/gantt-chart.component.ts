@@ -38,7 +38,6 @@ export interface GanttTask {
   color?: string;
   startDate?: string;
   endDate?: string;
-  // For internal use
   originalTask?: Task;
 }
 
@@ -145,7 +144,6 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   manualWeeksAdded = 0;
 
-  // Constants
   // Constants
   readonly colorOptions = [
     { value: '#10b981', label: 'Completed (Green)' },

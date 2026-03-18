@@ -23,6 +23,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 
 import * as ProjectActions from '../../store/project.actions';
+import { NotificationService } from '../../../../../core/services/notification.service';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import { ProjectService } from '../../services/project.service';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { Professional, PhaseApproval } from '../../models/project.models';
@@ -81,8 +83,8 @@ export class PhaseApprovalComponent implements OnInit {
       phase: [{ value: '', disabled: true }],
       status: [{ value: 'Pending', disabled: true }],
       approverId: ['', Validators.required],
-      comments: [''],
-      date: [new Date(), Validators.required], // Approval Request Date
+      comments: ['', [CustomValidators.noWhitespace()]],
+      date: [new Date(), Validators.required], 
     });
 
     this.approvers$ = this.projectService.getProfessionals();

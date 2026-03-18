@@ -9,6 +9,8 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { NotificationService } from '../../../../../core/services/notification.service';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
 
 @Component({
@@ -32,7 +34,7 @@ export class RequestApprovalModalComponent {
   public data = inject<{ phaseName: string }>(MAT_DIALOG_DATA);
 
   form: FormGroup = this.fb.group({
-    comments: [''],
+    comments: ['', [CustomValidators.noWhitespace()]],
   });
 
   onSubmit(): void {

@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import {
   MatDialogModule,
   MAT_DIALOG_DATA,
@@ -40,12 +41,26 @@ export class AttendanceVerificationModalComponent {
   data = inject<{ record: AttendanceRecord }>(MAT_DIALOG_DATA);
 
   record: AttendanceRecord = this.data.record;
-  notesControl = new FormControl('');
+  notesControl = new FormControl('', [
+    Validators.maxLength(500),
+    CustomValidators.noWhitespace(),
+  ]);
 
   verify(isVerified: boolean) {
+    if (this.notesControl.invalid) {
+      this.notesControl.markAsTouched();
+      return;
+    }
+
+    if (!isVerified && !this.notesControl.value?.trim()) {
+      this.notesControl.setErrors({ required: true });
+      this.notesControl.markAsTouched();
+      return;
+    }
+
     const userJson = localStorage.getItem('user');
     const supervisorId = userJson ? JSON.parse(userJson).id || '' : '';
-    const notes = this.notesControl.value || '';
+    const notes = this.notesControl.value?.trim() || '';
 
     this.attendanceService
       .verifyAttendance(

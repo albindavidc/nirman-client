@@ -13,6 +13,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Task } from '../../../services/task.service';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-update-progress-modal',
@@ -42,7 +43,7 @@ export class UpdateProgressModalComponent {
       [Validators.required, Validators.min(0), Validators.max(100)],
     ],
     status: [this.data.task.status || 'In Progress', Validators.required],
-    notes: [this.data.task.notes || '', [Validators.maxLength(500)]],
+    notes: [this.data.task.notes || '', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
   });
 
   onSubmit() {

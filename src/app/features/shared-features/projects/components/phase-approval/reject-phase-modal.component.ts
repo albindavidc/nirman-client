@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 interface RejectDialogData {
   phaseId: string;
@@ -58,6 +59,7 @@ export class RejectPhaseModalComponent {
           Validators.required,
           Validators.minLength(10),
           Validators.maxLength(1000),
+          CustomValidators.noWhitespace(),
         ],
       ],
     });

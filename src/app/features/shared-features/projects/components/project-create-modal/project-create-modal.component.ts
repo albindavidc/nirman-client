@@ -22,11 +22,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleMapsModule, GoogleMap, MapMarker } from '@angular/google-maps';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
+import { Observable, BehaviorSubject, map, firstValueFrom, of } from 'rxjs';
+import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import {
   debounceTime,
   distinctUntilChanged,
-  map,
   switchMap,
 } from 'rxjs/operators';
 
@@ -203,11 +203,11 @@ export class ProjectCreateModalComponent implements OnInit {
   projectForm = this.fb.group({
     name: [
       this.data?.name || '',
-      [Validators.required, Validators.minLength(2), Validators.maxLength(100)],
+      [Validators.required, Validators.minLength(2), Validators.maxLength(100), CustomValidators.noWhitespace()],
     ],
     managerIds: [this.data?.managerIds || []],
     status: [this.data?.status || 'active'],
-    description: [this.data?.description || '', [Validators.maxLength(1000)]],
+    description: [this.data?.description || '', [Validators.maxLength(1000), CustomValidators.noWhitespace()]],
     startDate: [
       this.data?.startDate ? new Date(this.data.startDate) : null,
       [Validators.required],
@@ -225,7 +225,7 @@ export class ProjectCreateModalComponent implements OnInit {
       (this.data?.workers || []) as unknown as SearchableWorker[],
       [Validators.required, Validators.minLength(1)],
     ],
-  });
+  }, { validators: CustomValidators.dateRange('startDate', 'endDate') });
 
   private autocompleteService: google.maps.places.AutocompleteService | null =
     null;

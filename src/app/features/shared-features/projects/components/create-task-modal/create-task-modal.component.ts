@@ -78,14 +78,15 @@ export class CreateTaskModalComponent implements OnInit {
           CustomValidators.noWhitespace(),
         ],
       ],
-      description: ['', [Validators.maxLength(500)]],
+      description: ['', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
       phaseId: [this.data.phaseId || '', Validators.required],
       priority: ['Medium', Validators.required],
       status: ['Not Started', Validators.required],
       assignedTo: [null],
       plannedStartDate: [null],
       plannedEndDate: [null],
-    });
+    },
+    { validators: CustomValidators.dateRange('plannedStartDate', 'plannedEndDate') });
   }
 
   onSubmit() {

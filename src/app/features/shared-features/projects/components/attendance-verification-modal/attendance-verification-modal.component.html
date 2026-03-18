@@ -92,6 +92,17 @@
         placeholder="Add any notes or comments about this attendance record..."
         rows="3"
       ></textarea>
+      @if (notesControl.invalid && (notesControl.dirty || notesControl.touched)) {
+        <mat-error>
+          @if (notesControl.hasError('required')) {
+            Notes are required when rejecting attendance
+          } @else if (notesControl.hasError('whitespace')) {
+            Notes cannot contain only whitespace
+          } @else if (notesControl.hasError('maxlength')) {
+            Notes cannot exceed 500 characters
+          }
+        </mat-error>
+      }
     </mat-form-field>
   </div>
 

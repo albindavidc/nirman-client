@@ -16,6 +16,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
 import { Material } from '../../../models/material.model';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-request-material-modal',
@@ -50,7 +51,7 @@ export class RequestMaterialModalComponent implements OnInit {
     quantity: [1, [Validators.required, Validators.min(1)]],
     priority: ['medium', Validators.required],
     requiredDate: [new Date(), Validators.required],
-    purpose: ['', [Validators.required, Validators.maxLength(500)]],
+    purpose: ['', [Validators.required, Validators.maxLength(500), CustomValidators.noWhitespace()]],
   });
 
   public data = inject<{ materials: Material[] }>(MAT_DIALOG_DATA);

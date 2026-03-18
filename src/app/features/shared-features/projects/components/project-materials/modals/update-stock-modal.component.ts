@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { Material } from '../../../models/material.model';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
+import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-update-stock-modal',
@@ -41,7 +42,7 @@ export class UpdateStockModalComponent {
     type: ['IN', Validators.required],
     quantity: [0, [Validators.required, Validators.min(0.01)]],
     referenceId: [''],
-    notes: ['', [Validators.maxLength(500)]],
+    notes: ['', [Validators.maxLength(500), CustomValidators.noWhitespace()]],
   });
 
   get calculatedStock(): number {

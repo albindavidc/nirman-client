@@ -94,7 +94,10 @@ export class CustomValidators {
 
       // Remove non-digit characters for validation
       const digitsOnly = value.replace(/\D/g, '');
-      const isValid = /^\d{10}$/.test(digitsOnly);
+      // Validate 10 digits, or 12 digits if it starts with 91, or 11 digits if it starts with 0
+      const isValid = /^\d{10}$/.test(digitsOnly) || 
+                      /^91\d{10}$/.test(digitsOnly) || 
+                      /^0\d{10}$/.test(digitsOnly);
 
       return isValid ? null : { phoneNumber: { value: control.value } };
     };
@@ -362,7 +365,8 @@ export class CustomValidators {
       const value = control.value;
       if (!value) return null;
       const digitsOnly = value.replace(/\D/g, '');
-      const isValid = /^[6-9]\d{9}$/.test(digitsOnly);
+      // Validates 10 digits starting with 6-9, or 12 digits starting with 91 followed by 6-9
+      const isValid = /^[6-9]\d{9}$/.test(digitsOnly) || /^91[6-9]\d{9}$/.test(digitsOnly);
       return isValid ? null : { indianMobile: true };
     };
   }

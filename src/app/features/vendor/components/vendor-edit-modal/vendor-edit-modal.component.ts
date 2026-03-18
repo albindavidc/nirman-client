@@ -51,26 +51,19 @@ export class VendorEditModalComponent implements OnInit {
   isAddMode = false;
 
   editForm = this.fb.group({
-    // User Details (Only for Add Mode)
-    firstName: [
-      '',
-      [Validators.required, Validators.minLength(2), Validators.maxLength(50)],
-    ],
-    lastName: [
-      '',
-      [Validators.required, Validators.minLength(2), Validators.maxLength(50)],
-    ],
+    // User Details (Only for Add Mode - Validators added dynamically in ngOnInit)
+    firstName: ['', [Validators.minLength(2), Validators.maxLength(50)]],
+    lastName: ['', [Validators.minLength(2), Validators.maxLength(50)]],
     email: [
       '',
       [
-        Validators.required,
         Validators.email,
         Validators.maxLength(254),
         Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
       ],
     ],
-    password: ['', [Validators.required, CustomValidators.passwordStrength()]],
-    phone: ['', Validators.required, CustomValidators.phoneNumber()],
+    password: [''],
+    phone: [''],
 
     // Vendor Details
     companyName: [
@@ -136,20 +129,27 @@ export class VendorEditModalComponent implements OnInit {
         vendorStatus: vendor.vendorStatus,
         productsServices: (vendor.productsServices || []).join(', '),
       });
-      // Disable user fields in edit mode or remove validators
+      // Ensure user fields don't have required validators in edit mode
+      this.editForm.get('firstName')?.clearValidators();
+      this.editForm.get('firstName')?.setValidators([Validators.minLength(2), Validators.maxLength(50)]);
+      this.editForm.get('lastName')?.clearValidators();
+      this.editForm.get('lastName')?.setValidators([Validators.minLength(2), Validators.maxLength(50)]);
+      this.editForm.get('password')?.clearValidators();
+      this.editForm.get('phone')?.clearValidators();
+      this.editForm.get('email')?.clearValidators();
+      this.editForm.get('email')?.setValidators([Validators.email, Validators.maxLength(254)]);
+      
+      this.editForm.updateValueAndValidity();
     } else {
       this.isAddMode = true;
       // Add validators for user fields required by backend
-      this.editForm.get('firstName')?.addValidators(Validators.required);
-      this.editForm.get('lastName')?.addValidators(Validators.required);
-      this.editForm
-        .get('password')
-        ?.addValidators([Validators.required, Validators.minLength(6)]);
-      this.editForm.get('phone')?.addValidators(Validators.required);
+      this.editForm.get('firstName')?.addValidators([Validators.required]);
+      this.editForm.get('lastName')?.addValidators([Validators.required]);
+      this.editForm.get('email')?.addValidators([Validators.required, Validators.email]);
+      this.editForm.get('password')?.addValidators([Validators.required, CustomValidators.passwordStrength()]);
+      this.editForm.get('phone')?.addValidators([Validators.required, CustomValidators.phoneNumber()]);
+      
       this.editForm.get('addressStreet')?.addValidators(Validators.required);
-      this.editForm
-        .get('email')
-        ?.addValidators([Validators.required, Validators.email]);
       this.editForm.updateValueAndValidity();
     }
   }
@@ -182,7 +182,7 @@ export class VendorEditModalComponent implements OnInit {
         companyName: formValue.companyName!,
         registrationNumber: formValue.registrationNumber!,
         taxNumber: formValue.taxNumber || undefined,
-        yearsInBusiness: formValue.yearsInBusiness || undefined,
+        yearsInBusiness: formValue.yearsInBusiness !== null ? Number(formValue.yearsInBusiness) : undefined,
         addressStreet: formValue.addressStreet!,
         addressCity: formValue.addressCity || undefined,
         addressState: formValue.addressState || undefined,
@@ -200,19 +200,19 @@ export class VendorEditModalComponent implements OnInit {
         VendorActions.updateVendor({
           id: this.data.vendor.id,
           data: {
-            companyName: formValue.companyName!,
-            registrationNumber: formValue.registrationNumber!,
-            taxNumber: formValue.taxNumber!,
-            yearsInBusiness: formValue.yearsInBusiness!,
-            addressStreet: formValue.addressStreet!,
-            addressCity: formValue.addressCity!,
-            addressState: formValue.addressState!,
-            addressZipCode: formValue.addressZipCode!,
-            websiteUrl: formValue.websiteUrl!,
+            companyName: formValue.companyName || undefined,
+            registrationNumber: formValue.registrationNumber || undefined,
+            taxNumber: formValue.taxNumber || undefined,
+            yearsInBusiness: formValue.yearsInBusiness !== null ? Number(formValue.yearsInBusiness) : undefined,
+            addressStreet: formValue.addressStreet || undefined,
+            addressCity: formValue.addressCity || undefined,
+            addressState: formValue.addressState || undefined,
+            addressZipCode: formValue.addressZipCode || undefined,
+            websiteUrl: formValue.websiteUrl || undefined,
             productsServices: productsServices,
-            contactPhone: formValue.contactPhone!,
-            contactEmail: formValue.contactEmail!,
-            vendorStatus: formValue.vendorStatus as VendorStatus,
+            contactPhone: formValue.contactPhone || undefined,
+            contactEmail: formValue.contactEmail || undefined,
+            vendorStatus: (formValue.vendorStatus as VendorStatus) || undefined,
           },
         }),
       );

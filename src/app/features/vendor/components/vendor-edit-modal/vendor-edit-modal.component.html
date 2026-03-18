@@ -27,6 +27,12 @@
                 formControlName="firstName"
                 placeholder="First Name"
               />
+              @if (editForm.get("firstName")?.hasError("required")) {
+                <mat-error>First name is required</mat-error>
+              }
+              @if (editForm.get("firstName")?.hasError("minlength")) {
+                <mat-error>Minimum 2 characters</mat-error>
+              }
             </mat-form-field>
           </div>
           <div class="form-field">
@@ -43,6 +49,12 @@
                 formControlName="lastName"
                 placeholder="Last Name"
               />
+              @if (editForm.get("lastName")?.hasError("required")) {
+                <mat-error>Last name is required</mat-error>
+              }
+              @if (editForm.get("lastName")?.hasError("minlength")) {
+                <mat-error>Minimum 2 characters</mat-error>
+              }
             </mat-form-field>
           </div>
         </div>
@@ -61,6 +73,12 @@
               placeholder="Login Email"
               type="email"
             />
+            @if (editForm.get("email")?.hasError("required")) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (editForm.get("email")?.hasError("email") || editForm.get("email")?.hasError("pattern")) {
+              <mat-error>Invalid email format</mat-error>
+            }
           </mat-form-field>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -76,9 +94,15 @@
                 matInput
                 id="password"
                 formControlName="password"
-                placeholder="Min 6 characters"
+                placeholder="At least 8 characters"
                 type="password"
               />
+              @if (editForm.get("password")?.hasError("required")) {
+                <mat-error>Password is required</mat-error>
+              }
+              @if (editForm.get("password")?.hasError("passwordStrength")) {
+                <mat-error>Must include uppercase, lowercase, number, and special character</mat-error>
+              }
             </mat-form-field>
           </div>
           <div class="form-field">
@@ -93,8 +117,14 @@
                 matInput
                 id="phone"
                 formControlName="phone"
-                placeholder="+91 98765 43210"
+                placeholder="10-digit number"
               />
+              @if (editForm.get("phone")?.hasError("required")) {
+                <mat-error>Phone number is required</mat-error>
+              }
+              @if (editForm.get("phone")?.hasError("phoneNumber")) {
+                <mat-error>Enter a valid 10-digit number</mat-error>
+              }
             </mat-form-field>
           </div>
         </div>
@@ -135,7 +165,7 @@
       <label
         class="block text-sm font-medium text-gray-300 mb-1"
         for="registrationNumber"
-        >Vendor Code *</label
+        >Registration Number (CIN) *</label
       >
       <mat-form-field appearance="outline" class="w-full">
         <mat-icon matPrefix>badge</mat-icon>
@@ -143,10 +173,13 @@
           matInput
           id="registrationNumber"
           formControlName="registrationNumber"
-          placeholder="e.g., V-001"
+          placeholder="L12345XX2023PTC123456"
         />
         @if (editForm.get("registrationNumber")?.hasError("required")) {
-          <mat-error>Vendor code is required</mat-error>
+          <mat-error>Registration number is required</mat-error>
+        }
+        @if (editForm.get("registrationNumber")?.hasError("cinFormat")) {
+          <mat-error>Invalid CIN format (21 characters starting with L/U)</mat-error>
         }
       </mat-form-field>
     </div>
@@ -167,6 +200,9 @@
           formControlName="yearsInBusiness"
           placeholder="0"
         />
+        @if (editForm.get("yearsInBusiness")?.hasError("yearsInBusiness")) {
+          <mat-error>Enter a valid number of years</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -188,8 +224,8 @@
         @if (editForm.get("contactPhone")?.hasError("required")) {
           <mat-error>Phone number is required</mat-error>
         }
-        @if (editForm.get("contactPhone")?.hasError("phoneNumber")) {
-          <mat-error>Enter a valid 10-digit phone number</mat-error>
+        @if (editForm.get("contactPhone")?.hasError("indianMobile")) {
+          <mat-error>Enter a valid 10-digit mobile number starting with 6-9</mat-error>
         }
       </mat-form-field>
     </div>
@@ -216,6 +252,9 @@
         @if (editForm.get("contactEmail")?.hasError("email")) {
           <mat-error>Enter a valid email</mat-error>
         }
+        @if (editForm.get("contactEmail")?.hasError("emailDomain")) {
+          <mat-error>This email domain is not allowed</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -235,6 +274,12 @@
           placeholder="Complete business address"
           rows="2"
         ></textarea>
+        @if (editForm.get("addressStreet")?.hasError("required")) {
+          <mat-error>Address is required</mat-error>
+        }
+        @if (editForm.get("addressStreet")?.hasError("addressLength")) {
+          <mat-error>Maximum 150 characters</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -254,6 +299,12 @@
             formControlName="addressCity"
             placeholder="City"
           />
+          @if (editForm.get("addressCity")?.hasError("addressLength")) {
+            <mat-error>Maximum 50 characters</mat-error>
+          }
+          @if (editForm.get("addressCity")?.hasError("nameFormat")) {
+            <mat-error>Invalid city name format</mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -272,6 +323,9 @@
             formControlName="addressState"
             placeholder="State"
           />
+          @if (editForm.get("addressState")?.hasError("addressLength")) {
+            <mat-error>Maximum 50 characters</mat-error>
+          }
         </mat-form-field>
       </div>
     </div>
@@ -291,8 +345,8 @@
           formControlName="addressZipCode"
           placeholder="Zip Code"
         />
-        @if (editForm.get("addressZipCode")?.hasError("zipCode")) {
-          <mat-error>Enter a valid zip code</mat-error>
+        @if (editForm.get("addressZipCode")?.hasError("indianPinCode")) {
+          <mat-error>Enter a valid 6-digit PIN code</mat-error>
         }
       </mat-form-field>
     </div>
@@ -312,6 +366,9 @@
           formControlName="taxNumber"
           placeholder="GST/VAT number"
         />
+        @if (editForm.get("taxNumber")?.hasError("gstinFormat")) {
+          <mat-error>Invalid GSTIN format (15 characters)</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -351,6 +408,15 @@
           formControlName="productsServices"
           placeholder="e.g., HVAC, Electrical, Plumbing"
         />
+        @if (editForm.get("productsServices")?.hasError("required")) {
+          <mat-error>Products/Services are required</mat-error>
+        }
+        @if (editForm.get("productsServices")?.hasError("productsServicesCount")) {
+          <mat-error>Mention between 1 and 20 products/services</mat-error>
+        }
+        @if (editForm.get("productsServices")?.hasError("maxTrimmedLength")) {
+          <mat-error>Maximum 500 characters</mat-error>
+        }
       </mat-form-field>
     </div>
 

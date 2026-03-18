@@ -39,7 +39,7 @@ export const routes: Routes = [
     path: 'auth/admin/otp',
     canActivate: [GuestGuard],
     loadComponent: () =>
-      import('./features/admin/components/phase-approval/auth/otp/admin-otp.component').then(
+      import('./features/admin/components/auth/otp/admin-otp.component').then(
         (m) => m.AdminOtpComponent,
       ),
   },

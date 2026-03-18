@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AccountTypeOption, AccountType } from '../../models/signup.models';
 import * as SignupActions from '../../store/signup.actions';
 import { ActivatedRoute } from '@angular/router';
-import { AdminSignupComponent } from '../../../../../admin/components/phase-approval/auth/signup/admin-signup.component';
+import { AdminSignupComponent } from '../../../../admin/components/auth/signup/admin-signup.component';
 import { CommonModule } from '@angular/common';
 
 @Component({

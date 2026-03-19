@@ -265,9 +265,13 @@ export class ProjectWorkersComponent implements OnInit {
         return this.projectService.getProjectAttendance(id);
       }),
       map((records) => {
-        this.totalRecords = records.length;
+        // Filter out admins from the listing
+        const filteredRecords = records.filter(
+          (r) => r.workerRole?.toLowerCase() !== 'admin',
+        );
+        this.totalRecords = filteredRecords.length;
         const start = this.currentPage * this.pageSize;
-        return records.slice(start, start + this.pageSize);
+        return filteredRecords.slice(start, start + this.pageSize);
       }),
       shareReplay(1),
     );
@@ -279,14 +283,18 @@ export class ProjectWorkersComponent implements OnInit {
         return this.projectService.getProjectAttendance(id);
       }),
       map((records) => {
-        const total = records.length;
+        // Filter out admins from the stats
+        const filteredRecords = records.filter(
+          (r) => r.workerRole?.toLowerCase() !== 'admin',
+        );
+        const total = filteredRecords.length;
         if (total === 0) return { rate: 0, present: 0, late: 0, absent: 0 };
 
-        const present = records.filter(
+        const present = filteredRecords.filter(
           (r) => r.status === 'on_time' || r.status === 'late',
         ).length;
-        const late = records.filter((r) => r.status === 'late').length;
-        const absent = records.filter(
+        const late = filteredRecords.filter((r) => r.status === 'late').length;
+        const absent = filteredRecords.filter(
           (r) => r.status === 'absent' || r.status === 'on_leave',
         ).length;
 

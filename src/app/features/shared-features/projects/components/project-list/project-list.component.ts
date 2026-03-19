@@ -22,6 +22,7 @@ import { Project } from '../../models/project.models';
 import { ProjectCreateModalComponent } from '../project-create-modal/project-create-modal.component';
 import * as ProjectActions from '../../store/project.actions';
 import * as ProjectSelectors from '../../store/project.selectors';
+import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-list',
@@ -159,5 +160,24 @@ export class ProjectListComponent implements OnInit {
 
   openProjectDetails(project: Project): void {
     this.router.navigate([project.id], { relativeTo: this.route });
+  }
+
+  onDeleteProject(project: Project, event: Event): void {
+    event.stopPropagation();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Project',
+        message: `Are you sure you want to delete "${project.name}"? This action cannot be undone.`,
+        confirmButtonText: 'Delete',
+        confirmButtonColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.store.dispatch(ProjectActions.deleteProject({ id: project.id }));
+      }
+    });
   }
 }

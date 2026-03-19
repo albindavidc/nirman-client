@@ -115,10 +115,7 @@
             [matDatepicker]="startPicker"
             formControlName="startDate"
             placeholder="dd-mm-yyyy"
-            min="{{"
-            new
-            Date()
-            }}
+            [min]="minDate"
           />
           <mat-datepicker-toggle
             matSuffix
@@ -135,7 +132,7 @@
             @if (projectForm.get("startDate")?.hasError("required")) {
               <mat-error> Start date is required </mat-error>
             }
-            @if (projectForm.get("startDate")?.hasError("matDatepickerMin")) {
+            @if (projectForm.get("startDate")?.hasError("matDatepickerMin") || projectForm.get("startDate")?.hasError("pastDate")) {
               <mat-error> Start date cannot be in the past </mat-error>
             }
           </div>
@@ -156,6 +153,7 @@
             [matDatepicker]="endPicker"
             formControlName="endDate"
             placeholder="dd-mm-yyyy"
+            [min]="minDate"
           />
           <mat-datepicker-toggle
             matSuffix
@@ -163,6 +161,20 @@
           ></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
+
+        @if (
+          projectForm.get("endDate")?.invalid &&
+          projectForm.get("endDate")?.touched
+        ) {
+          <div>
+            @if (projectForm.get("endDate")?.hasError("required")) {
+              <mat-error> End date is required </mat-error>
+            }
+            @if (projectForm.get("endDate")?.hasError("dateRange")) {
+              <mat-error> End date must be on or after start date </mat-error>
+            }
+          </div>
+        }
       </div>
     </div>
 
@@ -184,22 +196,24 @@
       </div>
 
       <!-- Initial Progress -->
-      <div class="form-field">
-        <label
-          class="block text-sm font-medium text-gray-300 mb-1"
-          for="progress"
-          >Initial Progress (%)</label
-        >
-        <mat-form-field appearance="outline" class="w-full">
-          <input
-            matInput
-            id="progress"
-            type="number"
-            formControlName="progress"
-            placeholder="0"
-          />
-        </mat-form-field>
-      </div>
+      @if (isEditing) {
+        <div class="form-field">
+          <label
+            class="block text-sm font-medium text-gray-300 mb-1"
+            for="progress"
+            >Initial Progress (%)</label
+          >
+          <mat-form-field appearance="outline" class="w-full">
+            <input
+              matInput
+              id="progress"
+              type="number"
+              formControlName="progress"
+              placeholder="0"
+            />
+          </mat-form-field>
+        </div>
+      }
     </div>
 
     <!-- Add People -->

@@ -28,7 +28,9 @@ import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
+  take,
 } from 'rxjs/operators';
+import * as AuthSelectors from '../../../../auth/login/store/login.selectors';
 
 import {
   Project,
@@ -85,6 +87,8 @@ export class ProjectCreateModalComponent implements OnInit {
 
   isCreating$ = this.store.select(ProjectSelectors.selectIsCreating);
   isEditing = !!this.data;
+  minDate = new Date(); // To restrict selection to current/future dates
+  currentUserId: string | null = null;
 
   statusOptions = [
     { value: 'active', label: 'Active' },
@@ -191,7 +195,6 @@ export class ProjectCreateModalComponent implements OnInit {
   filteredManagers$!: Observable<SearchableWorker[]>;
   filteredWorkers$!: Observable<SearchableWorker[]>;
   filteredLocations$!: Observable<google.maps.places.AutocompletePrediction[]>;
-
   selectedWorkers: SearchableWorker[] = [];
 
   // Form controls
@@ -200,37 +203,59 @@ export class ProjectCreateModalComponent implements OnInit {
   mapSearchControl = new FormControl('');
 
   // Main form
-  projectForm = this.fb.group({
-    name: [
-      this.data?.name || '',
-      [Validators.required, Validators.minLength(2), Validators.maxLength(100), CustomValidators.noWhitespace()],
-    ],
-    managerIds: [this.data?.managerIds || []],
-    status: [this.data?.status || 'active'],
-    description: [this.data?.description || '', [Validators.maxLength(1000), CustomValidators.noWhitespace()]],
-    startDate: [
-      this.data?.startDate ? new Date(this.data.startDate) : null,
-      [Validators.required],
-    ],
-    endDate: [this.data?.dueDate ? new Date(this.data.dueDate) : null],
-    budget: [this.data?.budget || null, [Validators.min(0)]],
-    progress: [
-      this.data?.progress || 0,
-      [Validators.min(0), Validators.max(100)],
-    ],
-    latitude: [this.data?.latitude || null],
-    longitude: [this.data?.longitude || null],
-    // Renaming 'members' form control to 'workers'
-    workers: [
-      (this.data?.workers || []) as unknown as SearchableWorker[],
-      [Validators.required, Validators.minLength(1)],
-    ],
-  }, { validators: CustomValidators.dateRange('startDate', 'endDate') });
+  projectForm = this.fb.group(
+    {
+      name: [
+        this.data?.name || '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(100),
+          CustomValidators.noWhitespace(),
+        ],
+      ],
+      managerIds: [this.data?.managerIds || []],
+      status: [this.data?.status || 'active'],
+      description: [
+        this.data?.description || '',
+        [Validators.maxLength(1000), CustomValidators.noWhitespace()],
+      ],
+      startDate: [
+        this.data?.startDate ? new Date(this.data.startDate) : new Date(),
+        [Validators.required, CustomValidators.futureOrTodayDate()],
+      ],
+      endDate: [
+        this.data?.dueDate ? new Date(this.data.dueDate) : new Date(),
+        [Validators.required, CustomValidators.futureOrTodayDate()],
+      ],
+      budget: [this.data?.budget || null, [Validators.min(0)]],
+      progress: [
+        this.data?.progress || 0,
+        [Validators.min(0), Validators.max(100)],
+      ],
+      latitude: [this.data?.latitude || null],
+      longitude: [this.data?.longitude || null],
+      // Renaming 'members' form control to 'workers'
+      workers: [
+        (this.data?.workers || []) as unknown as SearchableWorker[],
+        [Validators.required, Validators.minLength(1)],
+      ],
+    },
+    { validators: CustomValidators.dateRange('startDate', 'endDate') },
+  );
 
   private autocompleteService: google.maps.places.AutocompleteService | null =
     null;
 
   ngOnInit(): void {
+    // Get current user to exclude from selection
+    this.store
+      .select(AuthSelectors.selectUser)
+      .pipe(take(1))
+      .subscribe((user) => {
+        this.currentUserId = user?.id || null;
+      });
+
     // Initialize Autocomplete Service
     this.initAutocompleteService();
 
@@ -375,11 +400,13 @@ export class ProjectCreateModalComponent implements OnInit {
   private filterManagers(term: string): Observable<SearchableWorker[]> {
     return this.workerService.getWorkers(1, 10, undefined, term).pipe(
       map((response) =>
-        response.data.map((m) => ({
-          id: m.id,
-          name: `${m.firstName} ${m.lastName}`,
-          email: m.email,
-        })),
+        response.data
+          .filter((m) => m.id !== this.currentUserId)
+          .map((m) => ({
+            id: m.id,
+            name: `${m.firstName} ${m.lastName}`,
+            email: m.email,
+          })),
       ),
     );
   }
@@ -390,7 +417,11 @@ export class ProjectCreateModalComponent implements OnInit {
     return this.workerService.getWorkers(1, 10, undefined, term).pipe(
       map((response) =>
         response.data
-          .filter((m) => !this.selectedWorkers.some((sm) => sm.id === m.id))
+          .filter(
+            (m) =>
+              !this.selectedWorkers.some((sm) => sm.id === m.id) &&
+              m.id !== this.currentUserId,
+          )
           .map((m) => ({
             id: m.id,
             name: `${m.firstName} ${m.lastName}`,

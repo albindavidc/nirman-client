@@ -97,7 +97,10 @@ export class ProjectAttendanceComponent implements OnInit {
     this.attendanceService
       .getProjectAttendance(this.projectId, this.currentDate)
       .subscribe((records) => {
-        this.dataSource = records;
+        // Filter out admins from the listing
+        this.dataSource = records.filter(
+          (record) => record.user?.role?.toLowerCase() !== 'admin',
+        );
       });
   }
 

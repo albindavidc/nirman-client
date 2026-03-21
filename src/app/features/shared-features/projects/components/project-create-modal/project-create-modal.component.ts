@@ -479,7 +479,7 @@ export class ProjectCreateModalComponent implements OnInit {
 
     const workers: ProjectWorker[] = this.selectedWorkers.map((m) => ({
       userId: m.id,
-      role: 'Viewer' as const,
+      role: 'Worker' as const,
       joinedAt: new Date().toISOString(),
     }));
 

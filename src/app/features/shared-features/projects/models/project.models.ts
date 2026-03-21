@@ -15,7 +15,13 @@ export interface TeamWorker {
 
 export interface ProjectWorker {
   userId: string;
-  role: 'Admin' | 'Viewer';
+  role:
+    | 'Admin'
+    | 'Worker'
+    | 'Supervisor'
+    | 'Engineer'
+    | 'Foreman'
+    | 'Technician';
   joinedAt?: string;
 }
 

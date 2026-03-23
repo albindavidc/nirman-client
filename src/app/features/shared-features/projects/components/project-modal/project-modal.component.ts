@@ -35,6 +35,7 @@ import * as AuthSelectors from '../../../../auth/login/store/login.selectors';
 import {
   Project,
   CreateProjectDto,
+  UpdateProjectDto,
   ProjectWorker,
   ProjectStatus,
 } from '../../models/project.models';
@@ -42,6 +43,7 @@ import * as ProjectActions from '../../store/project.actions';
 import * as ProjectSelectors from '../../store/project.selectors';
 import { WorkerService } from '../../../workers/services/worker.service';
 import { SharedModalComponent } from '../../../../../shared/components/shared-modal/shared-modal.component';
+import { ProjectService } from '../../services/project.service';
 
 export interface SearchableWorker {
   id: string;
@@ -50,7 +52,7 @@ export interface SearchableWorker {
 }
 
 @Component({
-  selector: 'app-project-create-modal',
+  selector: 'app-project-modal',
   standalone: true,
   imports: [
     CommonModule,
@@ -68,24 +70,24 @@ export interface SearchableWorker {
     GoogleMapsModule,
     SharedModalComponent,
   ],
-  templateUrl: './project-create-modal.component.html',
-  styleUrls: ['./project-create-modal.component.scss'],
+  templateUrl: './project-modal.component.html',
+  styleUrls: ['./project-modal.component.scss'],
 })
-export class ProjectCreateModalComponent implements OnInit {
+export class ProjectModalComponent implements OnInit {
   @ViewChild(GoogleMap) googleMap!: GoogleMap;
   @ViewChild(MapMarker) mapMarker!: MapMarker;
 
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
   private readonly workerService = inject(WorkerService);
-  private readonly dialogRef = inject(
-    MatDialogRef<ProjectCreateModalComponent>,
-  );
+  private readonly projectService = inject(ProjectService);
+  private readonly dialogRef = inject(MatDialogRef<ProjectModalComponent>);
   private readonly data = inject<Project | undefined>(MAT_DIALOG_DATA, {
     optional: true,
   });
 
   isCreating$ = this.store.select(ProjectSelectors.selectIsCreating);
+  isUpdating$ = this.store.select(ProjectSelectors.selectIsUpdating);
   isEditing = !!this.data;
   minDate = new Date(); // To restrict selection to current/future dates
   currentUserId: string | null = null;
@@ -105,6 +107,9 @@ export class ProjectCreateModalComponent implements OnInit {
   mapOptions: google.maps.MapOptions = {
     mapTypeId: 'roadmap',
     zoomControl: true,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false,
     scrollwheel: false,
     disableDoubleClickZoom: true,
     maxZoom: 20,
@@ -196,6 +201,7 @@ export class ProjectCreateModalComponent implements OnInit {
   filteredWorkers$!: Observable<SearchableWorker[]>;
   filteredLocations$!: Observable<google.maps.places.AutocompletePrediction[]>;
   selectedWorkers: SearchableWorker[] = [];
+  selectedManager: SearchableWorker | null = null;
 
   // Form controls
   managerSearchControl = new FormControl('');
@@ -269,14 +275,34 @@ export class ProjectCreateModalComponent implements OnInit {
         this.markerPosition = { ...this.center };
       }
 
-      // Pre-fill selected workers
-      if (this.data.workers) {
-        this.data.workers.forEach(() => {
-          this.workerService
-            .getWorkers(1, 1, undefined, undefined)
-            .subscribe(() => {
-              // placeholder
-            });
+      // Pre-fill selected workers by fetching from backend
+      if (this.data.id) {
+        this.projectService.getProjectWorkers(this.data.id).subscribe((workers) => {
+          this.selectedWorkers = workers
+            .filter((w) => w.role !== 'Admin')
+            .map((w) => ({
+              id: w.user?.id || w.userId,
+              name: w.user?.fullName || w.user?.firstName || 'Unknown',
+              email: w.user?.email || '',
+            }));
+          this.projectForm.patchValue({ workers: this.selectedWorkers });
+        });
+      }
+
+      // Pre-fill manager name if exists by fetching professionals
+      if (this.data.managerIds && this.data.managerIds.length > 0) {
+        const managerId = this.data.managerIds[0];
+        this.projectService.getProfessionals().subscribe((pros) => {
+          const manager = pros.find(p => p.id === managerId);
+          if (manager) {
+            this.selectedManager = {
+              id: manager.id,
+              name: manager.fullName || manager.firstName,
+              email: manager.email || ''
+            };
+            this.managerSearchControl.setValue('');
+            this.projectForm.patchValue({ managerIds: [manager.id] });
+          }
         });
       }
     }
@@ -432,8 +458,15 @@ export class ProjectCreateModalComponent implements OnInit {
   }
 
   selectManager(manager: SearchableWorker): void {
+    this.selectedManager = manager;
     this.projectForm.patchValue({ managerIds: [manager.id] });
-    this.managerSearchControl.setValue(manager.name);
+    this.managerSearchControl.setValue('');
+  }
+
+  removeManager(): void {
+    this.selectedManager = null;
+    this.projectForm.patchValue({ managerIds: [] });
+    this.managerSearchControl.setValue('');
   }
 
   addWorker(worker: SearchableWorker): void {
@@ -483,32 +516,48 @@ export class ProjectCreateModalComponent implements OnInit {
       joinedAt: new Date().toISOString(),
     }));
 
-    const createData: CreateProjectDto = {
-      name: formValue.name!,
-      managerIds: formValue.managerIds || [],
-      description: formValue.description || undefined,
-      status: (formValue.status as ProjectStatus) || 'active',
-      startDate: formValue.startDate
-        ? new Date(formValue.startDate).toISOString()
-        : undefined,
-      dueDate: formValue.endDate
-        ? new Date(formValue.endDate).toISOString()
-        : undefined,
-      budget: formValue.budget || undefined,
-      progress: formValue.progress || 0,
-      latitude: formValue.latitude || undefined,
-      longitude: formValue.longitude || undefined,
-      workers,
-    };
-
     if (this.isEditing && this.data) {
+      const updateData: UpdateProjectDto = {
+        name: formValue.name || undefined,
+        managerIds: formValue.managerIds || undefined,
+        description: formValue.description || undefined,
+        status: (formValue.status as ProjectStatus) || undefined,
+        startDate: formValue.startDate
+          ? new Date(formValue.startDate).toISOString()
+          : undefined,
+        dueDate: formValue.endDate
+          ? new Date(formValue.endDate).toISOString()
+          : undefined,
+        budget: formValue.budget != null ? Number(formValue.budget) : undefined,
+        progress: formValue.progress != null ? Number(formValue.progress) : undefined,
+        latitude: formValue.latitude || undefined,
+        longitude: formValue.longitude || undefined,
+      };
+
       this.store.dispatch(
         ProjectActions.updateProject({
           id: this.data.id,
-          data: createData,
+          data: updateData,
         }),
       );
     } else {
+      const createData: CreateProjectDto = {
+        name: formValue.name!,
+        managerIds: formValue.managerIds || [],
+        description: formValue.description || undefined,
+        status: (formValue.status as ProjectStatus) || 'active',
+        startDate: formValue.startDate
+          ? new Date(formValue.startDate).toISOString()
+          : undefined,
+        dueDate: formValue.endDate
+          ? new Date(formValue.endDate).toISOString()
+          : undefined,
+        budget: formValue.budget != null ? Number(formValue.budget) : undefined,
+        progress: formValue.progress != null ? Number(formValue.progress) : 0,
+        latitude: formValue.latitude || undefined,
+        longitude: formValue.longitude || undefined,
+        workers,
+      };
       this.store.dispatch(ProjectActions.createProject({ data: createData }));
     }
     this.dialogRef.close(true);

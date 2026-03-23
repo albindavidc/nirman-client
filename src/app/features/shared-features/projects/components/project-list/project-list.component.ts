@@ -19,7 +19,7 @@ import {
 } from '@angular/animations';
 
 import { Project } from '../../models/project.models';
-import { ProjectCreateModalComponent } from '../project-create-modal/project-create-modal.component';
+import { ProjectModalComponent } from '../project-modal/project-modal.component';
 import * as ProjectActions from '../../store/project.actions';
 import * as ProjectSelectors from '../../store/project.selectors';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -141,7 +141,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   openCreateProjectModal(): void {
-    this.dialog.open(ProjectCreateModalComponent, {
+    this.dialog.open(ProjectModalComponent, {
       width: '700px',
       maxHeight: '90vh',
       panelClass: 'dark-dialog',
@@ -150,7 +150,7 @@ export class ProjectListComponent implements OnInit {
 
   openEditProjectModal(project: Project, event: Event): void {
     event.stopPropagation();
-    this.dialog.open(ProjectCreateModalComponent, {
+    this.dialog.open(ProjectModalComponent, {
       width: '700px',
       maxHeight: '90vh',
       panelClass: 'dark-dialog',

@@ -105,7 +105,7 @@ export interface CreateProjectDto {
   name: string;
   managerIds?: string[];
   description?: string;
-  status?: string;
+  status?: ProjectStatus;
   startDate?: string;
   dueDate?: string;
   budget?: number;
@@ -113,6 +113,19 @@ export interface CreateProjectDto {
   latitude?: number;
   longitude?: number;
   workers?: ProjectWorker[];
+}
+
+export interface UpdateProjectDto {
+  name?: string;
+  managerIds?: string[];
+  description?: string;
+  status?: ProjectStatus;
+  startDate?: string;
+  dueDate?: string;
+  budget?: number;
+  progress?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface ProjectStats {

@@ -67,7 +67,7 @@ export const projectReducer = createReducer(
   // Update Project
   on(ProjectActions.updateProject, (state) => ({
     ...state,
-    isCreating: true,
+    isUpdating: true,
     error: null,
   })),
 
@@ -78,12 +78,12 @@ export const projectReducer = createReducer(
       state.selectedProject?.id === project.id
         ? project
         : state.selectedProject,
-    isCreating: false,
+    isUpdating: false,
   })),
 
   on(ProjectActions.updateProjectFailure, (state, { error }) => ({
     ...state,
-    isCreating: false,
+    isUpdating: false,
     error,
   })),
 

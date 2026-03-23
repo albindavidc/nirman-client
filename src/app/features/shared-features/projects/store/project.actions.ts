@@ -3,6 +3,7 @@ import {
   Project,
   ProjectFilters,
   CreateProjectDto,
+  UpdateProjectDto,
   PhaseApproval,
 } from '../models/project.models';
 
@@ -57,7 +58,7 @@ export const createProjectFailure = createAction(
 // Update Project
 export const updateProject = createAction(
   '[Project] Update Project',
-  props<{ id: string; data: Partial<CreateProjectDto> }>(),
+  props<{ id: string; data: UpdateProjectDto }>(),
 );
 
 export const updateProjectSuccess = createAction(

@@ -39,6 +39,11 @@ export const selectIsCreating = createSelector(
   (state) => state.isCreating
 );
 
+export const selectIsUpdating = createSelector(
+  selectProjectState,
+  (state) => state.isUpdating
+);
+
 export const selectError = createSelector(
   selectProjectState,
   (state) => state.error

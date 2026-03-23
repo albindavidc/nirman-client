@@ -55,14 +55,29 @@
           >
             @for (manager of filteredManagers$ | async; track manager.id) {
               <mat-option [value]="manager">
-                {{ manager.name }}
-                <span class="text-xs text-gray-400 ml-2">{{
-                  manager.email
-                }}</span>
+                <span class="font-medium">{{ manager.name }}</span>
+                <span class="text-sm opacity-70 ml-2">({{ manager.email }})</span>
               </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
+
+        <!-- Selected Manager Pill -->
+        @if (selectedManager) {
+          <div class="custom-pill-container">
+            <div class="custom-pill">
+              <span class="pill-text">{{ selectedManager.name }}</span>
+              <button
+                type="button"
+                class="pill-remove"
+                (click)="removeManager()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+
       </div>
 
       <!-- Status -->
@@ -237,8 +252,8 @@
         >
           @for (worker of filteredWorkers$ | async; track worker.id) {
             <mat-option [value]="worker">
-              {{ worker.name }}
-              <span class="text-xs text-gray-400 ml-2">{{ worker.email }}</span>
+              <span class="font-medium">{{ worker.name }}</span>
+              <span class="text-sm opacity-70 ml-2">({{ worker.email }})</span>
             </mat-option>
           }
         </mat-autocomplete>
@@ -246,21 +261,16 @@
 
       <!-- Selected Workers Chips -->
       @if (selectedWorkers.length > 0) {
-        <div class="flex flex-wrap gap-2 mt-2">
+        <div class="custom-pill-container">
           @for (worker of selectedWorkers; track worker.id) {
-            <div
-              class="flex items-center bg-zinc-800 rounded-full px-3 py-1 border border-zinc-700"
-            >
-              <span class="text-sm text-gray-200">{{ worker.name }}</span>
+            <div class="custom-pill">
+              <span class="pill-text">{{ worker.name }}</span>
               <button
                 type="button"
-                class="ml-2 text-gray-400 hover:text-white"
+                class="pill-remove"
                 (click)="removeWorker(worker)"
               >
-                <mat-icon
-                  class="text-base w-4 h-4 flex items-center justify-center"
-                  >close</mat-icon
-                >
+                <mat-icon>close</mat-icon>
               </button>
             </div>
           }
@@ -338,24 +348,23 @@
     </div>
   </form>
 
-  <div actions>
-    <button mat-stroked-button type="button" (click)="onCancel()">
-      Cancel
-    </button>
-    <button
-      mat-flat-button
-      color="primary"
-      (click)="onSubmit()"
-      [disabled]="isCreating$ | async"
-    >
-      @if (isCreating$ | async) {
-        <mat-spinner diameter="20"></mat-spinner>
-      } @else {
-        <div class="flex items-center gap-2">
-          <mat-icon>{{ isEditing ? "save" : "add" }}</mat-icon>
+  <div actions class="w-full">
+    <div class="flex justify-center items-center w-full pt-4">
+      <button mat-stroked-button type="button" class="cancel-btn" (click)="onCancel()">
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        class="create-btn"
+        (click)="onSubmit()"
+        [disabled]="(isCreating$ | async) || (isUpdating$ | async)"
+      >
+        @if ((isCreating$ | async) || (isUpdating$ | async)) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
           <span>{{ isEditing ? "Save Changes" : "Create Project" }}</span>
-        </div>
-      }
-    </button>
+        }
+      </button>
+    </div>
   </div>
 </app-shared-modal>

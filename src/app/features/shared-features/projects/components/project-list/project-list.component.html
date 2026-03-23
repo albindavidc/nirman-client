@@ -15,7 +15,6 @@
         class="create-btn"
         (click)="openCreateProjectModal()"
       >
-        <mat-icon>add</mat-icon>
         Create Project
       </button>
     </div>
@@ -81,10 +80,7 @@
               <mat-icon>edit</mat-icon>
               <span>Edit</span>
             </button>
-            <button
-              mat-menu-item
-              (click)="onDeleteProject(project, $event)"
-            >
+            <button mat-menu-item (click)="onDeleteProject(project, $event)">
               <mat-icon>delete</mat-icon>
               <span>Delete</span>
             </button>

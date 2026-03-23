@@ -12,6 +12,7 @@ export interface ProjectState {
   stats: ProjectStats;
   isLoading: boolean;
   isCreating: boolean;
+  isUpdating: boolean;
   error: string | null;
 }
 
@@ -41,5 +42,6 @@ export const initialProjectState: ProjectState = {
   },
   isLoading: false,
   isCreating: false,
+  isUpdating: false,
   error: null,
 };

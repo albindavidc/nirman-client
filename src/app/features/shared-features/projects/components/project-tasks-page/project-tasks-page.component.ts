@@ -19,8 +19,7 @@ import {
   GanttTask,
 } from '../gantt-chart/gantt-chart.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CreateTaskModalComponent } from '../create-task-modal/create-task-modal.component';
-import { EditTaskModalComponent } from '../edit-task-modal/edit-task-modal.component';
+import { TaskModalComponent, TaskModalData } from '../task-modal/task-modal.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
@@ -241,15 +240,16 @@ export class ProjectTasksPageComponent implements OnInit {
   }
 
   navigateToCreate() {
-    const dialogRef = this.dialog.open(CreateTaskModalComponent, {
+    const dialogRef = this.dialog.open(TaskModalComponent, {
       width: '600px',
       data: {
+        mode: 'create',
         projectId: this.projectId,
         phaseId:
           this.phaseControl.value !== 'All Phases'
             ? this.phaseControl.value
             : undefined,
-      },
+      } as TaskModalData,
       panelClass: 'custom-dialog-container',
     });
 
@@ -280,12 +280,13 @@ export class ProjectTasksPageComponent implements OnInit {
   }
 
   editTask(task: Task) {
-    const dialogRef = this.dialog.open(EditTaskModalComponent, {
+    const dialogRef = this.dialog.open(TaskModalComponent, {
       width: '650px',
       data: {
+        mode: 'edit',
         task: task,
         projectId: this.projectId,
-      },
+      } as TaskModalData,
       panelClass: 'custom-dialog-container',
     });
 

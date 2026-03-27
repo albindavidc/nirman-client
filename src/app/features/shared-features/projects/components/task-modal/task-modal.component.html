@@ -1,0 +1,231 @@
+<app-shared-modal
+  [title]="mode === 'create' ? 'Create New Task' : 'Edit Task'"
+  (closeModal)="dialogRef.close()"
+>
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <!-- Task Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Task Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        placeholder="E.g., Install HVAC Unit"
+      />
+      @if (taskForm.get("name")?.hasError("required")) {
+        <mat-error>Task name is required</mat-error>
+      }
+      @if (taskForm.get("name")?.hasError("minlength")) {
+        <mat-error>Task name must be at least 3 characters</mat-error>
+      }
+      @if (taskForm.get("name")?.hasError("maxlength")) {
+        <mat-error>Task name cannot exceed 100 characters</mat-error>
+      }
+      @if (taskForm.get("name")?.hasError("whitespace")) {
+        <mat-error>Task name cannot be only whitespace</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        placeholder="Details about the task..."
+      ></textarea>
+      <mat-hint align="end"
+        >{{ taskForm.get("description")?.value?.length || 0 }}/500</mat-hint
+      >
+      @if (taskForm.get("description")?.hasError("maxlength")) {
+        <mat-error>Description cannot exceed 500 characters</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Phase & Priority -->
+    <div class="grid-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phase</mat-label>
+        <mat-select formControlName="phaseId">
+          @for (phase of phases; track phase.id) {
+            <mat-option [value]="phase.id">
+              {{ phase.name }}
+            </mat-option>
+          }
+        </mat-select>
+        @if (taskForm.get("phaseId")?.hasError("required")) {
+          <mat-error>Phase is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option value="Low">Low</mat-option>
+          <mat-option value="Medium">Medium</mat-option>
+          <mat-option value="High">High</mat-option>
+          <mat-option value="Critical">Critical</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Status & Assigned To -->
+    <div class="grid-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="Not Started">Not Started</mat-option>
+          <mat-option value="In Progress">In Progress</mat-option>
+          <mat-option value="Completed">Completed</mat-option>
+          <mat-option value="Delayed">Delayed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Assigned To</mat-label>
+        <mat-select formControlName="assignedTo">
+          <mat-option [value]="null">Unassigned</mat-option>
+          @for (worker of workers; track worker.user?.id) {
+            <mat-option [value]="worker.user?.id">
+              {{ worker.user?.firstName }} {{ worker.user?.lastName }} ({{ worker.role }})
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Planned Dates -->
+    @if (mode === 'edit') {
+      <div class="section-label">Planned Dates</div>
+    }
+    <div class="grid-2">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Start Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerStart"
+          formControlName="plannedStartDate"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerStart"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerStart></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ mode === 'create' ? 'Due Date' : 'End Date' }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="pickerEnd"
+          formControlName="plannedEndDate"
+          [min]="taskForm.get('plannedStartDate')?.value"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="pickerEnd"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerEnd></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- Edit Only Fields -->
+    @if (mode === 'edit') {
+      <!-- Actual Dates -->
+      <div class="section-label">Actual Dates</div>
+      <div class="grid-2">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Actual Start</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerActualStart"
+            formControlName="actualStartDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerActualStart"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerActualStart></mat-datepicker>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Actual End</mat-label>
+          <input
+            matInput
+            [matDatepicker]="pickerActualEnd"
+            formControlName="actualEndDate"
+            [min]="taskForm.get('actualStartDate')?.value"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="pickerActualEnd"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerActualEnd></mat-datepicker>
+        </mat-form-field>
+      </div>
+  
+      <!-- Progress Slider -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="section-label">Progress</span>
+          <span class="progress-value">{{ taskForm.get("progress")?.value }}%</span>
+        </div>
+        <mat-slider
+          class="progress-slider"
+          [min]="0"
+          [max]="100"
+          [step]="5"
+          [displayWith]="formatProgressLabel"
+          discrete
+        >
+          <input matSliderThumb formControlName="progress" />
+        </mat-slider>
+      </div>
+  
+      <!-- Notes -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea
+          matInput
+          formControlName="notes"
+          rows="2"
+          placeholder="Additional notes..."
+        ></textarea>
+        <mat-hint align="end"
+          >{{ taskForm.get("notes")?.value?.length || 0 }}/1000</mat-hint
+        >
+        @if (taskForm.get("notes")?.hasError("maxlength")) {
+          <mat-error>Notes cannot exceed 1000 characters</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <!-- Actions -->
+    <div actions>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="dialogRef.close()"
+        class="cancel-btn"
+      >
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        type="submit"
+        [disabled]="taskForm.invalid || isSubmitting"
+        class="create-btn"
+      >
+        @if (!isSubmitting) {
+          <mat-icon>{{ mode === 'create' ? 'add' : 'save' }}</mat-icon>
+        }
+        @if (!isSubmitting) {
+          <span>{{ mode === 'create' ? 'Create Task' : 'Update Task' }}</span>
+        }
+        @if (isSubmitting) {
+          <span>{{ mode === 'create' ? 'Creating...' : 'Updating...' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</app-shared-modal>

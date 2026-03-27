@@ -8,7 +8,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TaskService, Task } from '../../services/task.service';
-import { CreateTaskModalComponent } from '../create-task-modal/create-task-modal.component';
+import { TaskModalComponent, TaskModalData } from '../task-modal/task-modal.component';
 
 @Component({
   selector: 'app-project-tasks',
@@ -76,9 +76,16 @@ export class ProjectTasksComponent implements OnInit {
   }
 
   openCreateTaskModal() {
-    const dialogRef = this.dialog.open(CreateTaskModalComponent, {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    const dialogRef = this.dialog.open(TaskModalComponent, {
       width: '600px',
-      data: { phaseId: this.phaseId },
+      data: { 
+        mode: 'create',
+        projectId: projectId,
+        phaseId: this.phaseId 
+      } as TaskModalData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

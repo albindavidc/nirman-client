@@ -11,13 +11,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import {
-  AddWorkerModalComponent,
-  AddWorkerDialogData,
-} from '../add-worker-modal/add-worker-modal.component';
-import {
-  EditWorkerModalComponent,
-  EditWorkerDialogData,
-} from '../edit-worker-modal/edit-worker-modal.component';
+  WorkerModalComponent,
+  WorkerModalData,
+} from '../worker-modal/worker-modal.component';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AttendanceVerificationModalComponent } from '../attendance-verification-modal/attendance-verification-modal.component';
 import { AttendanceRecord as ServiceAttendanceRecord } from '../../services/attendance.service';
@@ -134,11 +130,13 @@ export class ProjectWorkersComponent implements OnInit {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 
-    const dialogRef = this.dialog.open(AddWorkerModalComponent, {
+    const dialogRef = this.dialog.open(WorkerModalComponent, {
+      width: '600px',
       data: {
+        mode: 'create',
         projectId: projectId,
         projectName: 'Project',
-      } as AddWorkerDialogData,
+      } as WorkerModalData,
       panelClass: 'custom-dialog-container',
     });
 
@@ -153,13 +151,17 @@ export class ProjectWorkersComponent implements OnInit {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 
-    const dialogRef = this.dialog.open(EditWorkerModalComponent, {
+    const dialogRef = this.dialog.open(WorkerModalComponent, {
+      width: '600px',
       data: {
+        mode: 'edit',
         projectId,
-        userId: worker.workerId,
-        userName: worker.workerName,
-        currentRole: worker.workerRole,
-      } as EditWorkerDialogData,
+        worker: {
+          userId: worker.workerId,
+          userName: worker.workerName,
+          currentRole: worker.workerRole,
+        }
+      } as WorkerModalData,
       panelClass: 'custom-dialog-container',
     });
 

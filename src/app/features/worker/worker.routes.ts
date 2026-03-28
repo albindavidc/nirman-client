@@ -11,7 +11,7 @@ export const WORKER_ROUTES: Routes = [
   {
     path: 'tasks',
     loadComponent: () =>
-      import('./components/worker-tasks/worker-tasks.component').then(
+      import('../shared-features/worker-tasks/worker-tasks.component').then(
         (m) => m.WorkerTasksComponent,
       ),
   },

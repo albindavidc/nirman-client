@@ -1,0 +1,107 @@
+<app-shared-modal
+  [title]="data.mode === 'start' ? 'Start Task' : 'Update Task Progress'"
+  [subtitle]="data.mode === 'start' ? 'Begin working on this task' : 'Update the progress of your assigned task'"
+  (closeModal)="dialogRef.close()"
+>
+  <form [formGroup]="form">
+    <!-- Common: Task Name (Readonly) -->
+    <div class="form-group mb-4">
+      <label for="taskName" class="form-label block mb-1 font-medium">Task Name</label>
+      <input
+        id="taskName"
+        class="form-input readonly w-full p-2 bg-zinc-800 border-zinc-700 rounded text-gray-400"
+        [value]="data.task.name"
+        readonly
+      />
+    </div>
+
+    <!-- Mode: Start -->
+    @if (data.mode === 'start') {
+      <div class="form-group mb-4">
+        <label for="startTime" class="form-label block mb-1 font-medium">Start Time</label>
+        <div class="relative">
+          <input
+            id="startTime"
+            class="form-input readonly w-full p-2 bg-zinc-800 border-zinc-700 rounded text-gray-400"
+            [value]="startTime"
+            readonly
+          />
+          <mat-icon
+            class="input-icon absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+            >schedule</mat-icon
+          >
+        </div>
+      </div>
+    }
+
+    <!-- Mode: Update -->
+    @if (data.mode === 'update') {
+      <div class="form-group mb-4">
+        <label for="progress" class="form-label block mb-1 font-medium">Progress (%)</label>
+        <input
+          id="progress"
+          type="number"
+          class="form-input w-full p-2 bg-transparent border border-zinc-600 rounded text-white focus:border-blue-500 outline-none"
+          formControlName="progress"
+          min="0"
+          max="100"
+        />
+        @if (form.get('progress')?.touched && form.get('progress')?.invalid) {
+          <small class="text-red-500">Progress must be between 0 and 100</small>
+        }
+      </div>
+
+      <div class="form-group mb-4">
+        <label for="status" class="form-label block mb-1 font-medium">Status</label>
+        <div class="relative">
+          <select
+            id="status"
+            class="form-select w-full p-2 bg-transparent border border-zinc-600 rounded text-white appearance-none focus:border-blue-500 outline-none"
+            formControlName="status"
+          >
+            <option value="In Progress" class="bg-zinc-800">In Progress</option>
+            <option value="Completed" class="bg-zinc-800">Completed</option>
+            <option value="Delayed" class="bg-zinc-800">Delayed</option>
+            <option value="On Hold" class="bg-zinc-800">On Hold</option>
+          </select>
+          <mat-icon
+            class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
+            >arrow_drop_down</mat-icon
+          >
+        </div>
+      </div>
+    }
+
+    <!-- Common: Notes -->
+    <div class="form-group">
+      <label for="notes" class="form-label block mb-1 font-medium">
+        {{ data.mode === 'start' ? 'Initial Notes' : 'Notes / Comments' }}
+      </label>
+      <textarea
+        id="notes"
+        class="form-textarea w-full p-2 bg-transparent border border-zinc-600 rounded text-white min-h-[100px]"
+        formControlName="notes"
+        [placeholder]="data.mode === 'start' ? 'Add any initial observations...' : 'Add any notes...'"
+        rows="4"
+      ></textarea>
+      @if (form.get('notes')?.touched && form.get('notes')?.invalid) {
+         <small class="text-red-500">Notes cannot exceed 500 characters</small>
+      }
+    </div>
+  </form>
+
+  <div actions>
+    <button mat-button (click)="dialogRef.close()" class="cancel-btn">
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      [class]="data.mode === 'start' ? 'start-btn' : 'save-btn'"
+      (click)="onSubmit()"
+    >
+      <mat-icon>{{ data.mode === 'start' ? 'play_arrow' : 'save' }}</mat-icon>
+      {{ data.mode === 'start' ? 'Start Task' : 'Save Progress' }}
+    </button>
+  </div>
+</app-shared-modal>

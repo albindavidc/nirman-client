@@ -43,7 +43,7 @@ export const PROJECTS_ROUTES: Routes = [
       {
         path: 'workers',
         loadComponent: () =>
-          import('./components/project-workers/project-workers.component').then(
+          import('../project-workers/project-workers.component').then(
             (m) => m.ProjectWorkersComponent,
           ),
       },
@@ -71,7 +71,7 @@ export const PROJECTS_ROUTES: Routes = [
       {
         path: 'phases/:phaseId/approval',
         loadComponent: () =>
-          import('./components/phase-approval/phase-approval.component').then(
+          import('./components/project-phases/phase-approval/phase-approval.component').then(
             (m) => m.PhaseApprovalComponent,
           ),
       },
@@ -80,28 +80,28 @@ export const PROJECTS_ROUTES: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['admin', 'supervisor'] },
         loadComponent: () =>
-          import('./components/phase-approval/phase-approval-review.component').then(
+          import('./components/project-phases/phase-approval/phase-approval-review.component').then(
             (m) => m.PhaseApprovalReviewComponent,
           ),
       },
       {
         path: 'my-attendance',
         loadComponent: () =>
-          import('./components/attendance/attendance-page/attendance-page.component').then(
+          import('../attendance/attendance-page/attendance-page.component').then(
             (m) => m.AttendancePageComponent,
           ),
       },
       {
         path: 'tasks',
         loadComponent: () =>
-          import('./components/project-tasks-page/project-tasks-page.component').then(
+          import('./components/project-tasks/project-tasks-page/project-tasks-page.component').then(
             (m) => m.ProjectTasksPageComponent,
           ),
       },
       {
         path: 'tasks/:taskId',
         loadComponent: () =>
-          import('./components/task-details-page/task-details-page.component').then(
+          import('./components/project-tasks/task-details-page/task-details-page.component').then(
             (m) => m.TaskDetailsPageComponent,
           ),
       },

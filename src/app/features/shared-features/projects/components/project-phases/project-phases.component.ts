@@ -12,15 +12,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { AddPhaseModalComponent } from './add-phase-modal.component';
-import { UpdatePhaseModalComponent } from './update-phase-modal.component';
+import { PhaseModalComponent } from './phase-modal/phase-modal.component';
+import type { PhaseModalData } from './phase-modal/phase-modal.component';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
 import { ProjectPhase, TaskDependency } from '../../models/project.models';
 import { Task } from '../../services/task.service';
 import { Store } from '@ngrx/store';
-import { RequestApprovalModalComponent } from '../request-approval-modal/request-approval-modal.component';
+import { RequestApprovalModalComponent } from './request-approval-modal/request-approval-modal.component';
 
 export const PHASE_STATUSES = [
   'Not Started',
@@ -262,9 +262,13 @@ export class ProjectPhasesComponent implements OnInit {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 
-    const dialogRef = this.dialog.open(AddPhaseModalComponent, {
+    const data: PhaseModalData = {
+      mode: 'create',
+      nextSequence: this.totalPhases + 1,
+    };
+    const dialogRef = this.dialog.open(PhaseModalComponent, {
       width: '500px',
-      data: { nextSequence: 1 },
+      data,
       panelClass: 'custom-dialog-container',
     });
 
@@ -284,9 +288,10 @@ export class ProjectPhasesComponent implements OnInit {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 
-    const dialogRef = this.dialog.open(UpdatePhaseModalComponent, {
+    const data: PhaseModalData = { mode: 'edit', phase };
+    const dialogRef = this.dialog.open(PhaseModalComponent, {
       width: '600px',
-      data: { phase },
+      data,
       panelClass: 'custom-dialog-container',
     });
 

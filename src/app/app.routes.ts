@@ -115,10 +115,10 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'my-tasks',
+        path: 'worker-tasks',
         loadComponent: () =>
-          import('./features/shared-features/projects/components/my-tasks/my-tasks.component').then(
-            (m) => m.MyTasksComponent,
+          import('./features/shared-features/worker-tasks/worker-tasks.component').then(
+            (m) => m.WorkerTasksComponent,
           ),
       },
       {

@@ -1,0 +1,149 @@
+<app-shared-modal [title]="modalTitle" (closeModal)="onCancel()">
+  <form [formGroup]="phaseForm" (ngSubmit)="onSubmit()">
+    <div class="modal-content">
+
+      <!-- ── Phase Name ── -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phase Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g. Foundation" />
+        @if (phaseForm.get('name')?.hasError('required')) {
+          <mat-error>Name is required</mat-error>
+        } @else if (phaseForm.get('name')?.hasError('minlength')) {
+          <mat-error>Name must be at least 3 characters</mat-error>
+        } @else if (phaseForm.get('name')?.hasError('maxlength')) {
+          <mat-error>Name cannot exceed 100 characters</mat-error>
+        } @else if (phaseForm.get('name')?.hasError('whitespace')) {
+          <mat-error>Name cannot be blank</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- ── Description ── -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Phase details..."
+          rows="3"
+        ></textarea>
+        <mat-hint align="end">
+          {{ phaseForm.get('description')?.value?.length || 0 }}/500
+        </mat-hint>
+        @if (phaseForm.get('description')?.hasError('maxlength')) {
+          <mat-error>Description cannot exceed 500 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- ── Planned Dates ── -->
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Planned Start Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="plannedStartPicker"
+            formControlName="plannedStartDate"
+          />
+          <mat-datepicker-toggle matSuffix [for]="plannedStartPicker" />
+          <mat-datepicker #plannedStartPicker />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Planned End Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="plannedEndPicker"
+            formControlName="plannedEndDate"
+          />
+          <mat-datepicker-toggle matSuffix [for]="plannedEndPicker" />
+          <mat-datepicker #plannedEndPicker />
+          @if (phaseForm.hasError('dateRange')) {
+            <mat-error>End date must be after start date</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- ── Edit-only fields ── -->
+      @if (isEditMode) {
+        <!-- Actual Dates -->
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Actual Start Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="actualStartPicker"
+              formControlName="actualStartDate"
+            />
+            <mat-datepicker-toggle matSuffix [for]="actualStartPicker" />
+            <mat-datepicker #actualStartPicker />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Actual End Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="actualEndPicker"
+              formControlName="actualEndDate"
+            />
+            <mat-datepicker-toggle matSuffix [for]="actualEndPicker" />
+            <mat-datepicker #actualEndPicker />
+          </mat-form-field>
+        </div>
+
+        <!-- Status & Progress -->
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              @for (status of phaseStatuses; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+            @if (phaseForm.get('status')?.hasError('required')) {
+              <mat-error>Status is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Progress (%)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              max="100"
+              formControlName="progress"
+            />
+            @if (phaseForm.get('progress')?.hasError('min') || phaseForm.get('progress')?.hasError('max')) {
+              <mat-error>Progress must be between 0 and 100</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      }
+
+      <!-- ── Sequence ── -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Sequence</mat-label>
+        <input matInput type="number" formControlName="sequence" />
+        @if (phaseForm.get('sequence')?.hasError('required')) {
+          <mat-error>Sequence is required</mat-error>
+        } @else if (phaseForm.get('sequence')?.hasError('min')) {
+          <mat-error>Sequence must be at least 1</mat-error>
+        }
+      </mat-form-field>
+
+    </div>
+  </form>
+
+  <!-- ── Actions ── -->
+  <div actions>
+    <button mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="onSubmit()"
+      [disabled]="phaseForm.invalid || isSubmitting || (isEditMode && phaseForm.pristine)"
+    >
+      {{ submitLabel }}
+    </button>
+  </div>
+</app-shared-modal>

@@ -12,7 +12,7 @@ import {
   AttendanceRecord,
   AttendanceStats,
 } from '../../services/attendance.service';
-import { AttendanceVerificationModalComponent } from '../attendance-verification-modal/attendance-verification-modal.component';
+import { AttendanceVerificationModalComponent } from './attendance-verification-modal/attendance-verification-modal.component';
 
 @Component({
   selector: 'app-project-attendance',

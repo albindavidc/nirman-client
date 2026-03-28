@@ -1,0 +1,47 @@
+.form-label {
+  font-size: 0.875rem;
+  color: #94a3b8; /* text-zinc-400 */
+}
+
+.form-input, .form-select, .form-textarea {
+  background-color: transparent;
+  border-width: 1px;
+  border-color: #3f3f46; /* border-zinc-700 */
+  color: #ffffff;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: #3b82f6; /* focus:border-blue-500 */
+    outline: none;
+  }
+
+  &.readonly {
+    cursor: default;
+    background-color: #18181b; /* bg-zinc-900 or bg-zinc-800 from template */
+    border-color: #27272a; /* border-zinc-800 */
+    color: #71717a; /* text-zinc-500 */
+  }
+}
+
+.input-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+[actions] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 1rem;
+}
+
+.cancel-btn {
+  color: #a1a1aa; /* text-zinc-400 */
+}
+
+.start-btn, .save-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

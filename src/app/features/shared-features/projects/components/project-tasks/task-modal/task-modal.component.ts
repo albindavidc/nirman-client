@@ -107,7 +107,7 @@ export class TaskModalComponent implements OnInit {
         status: [task?.status || 'Not Started', Validators.required],
         assignedTo: [task?.assignedTo || null],
         plannedStartDate: [
-          task?.plannedStartDate ? new Date(task.plannedStartDate) : null,
+          task?.plannedStartDate ? new Date(task.plannedStartDate) : new Date(),
         ],
         plannedEndDate: [
           task?.plannedEndDate ? new Date(task.plannedEndDate) : null,
@@ -160,13 +160,14 @@ export class TaskModalComponent implements OnInit {
     const dto: any = {};
 
     if (formValue.name) dto.name = formValue.name;
-    if (formValue.description !== undefined)
-      dto.description = formValue.description;
+    if (formValue.description) dto.description = formValue.description;
     if (formValue.phaseId) dto.phaseId = formValue.phaseId;
     if (formValue.priority) dto.priority = formValue.priority;
     if (formValue.status) dto.status = formValue.status;
 
-    dto.assignedTo = formValue.assignedTo || null;
+    if (formValue.assignedTo) {
+      dto.assignedTo = formValue.assignedTo;
+    }
 
     if (formValue.plannedStartDate) {
       dto.plannedStartDate = new Date(formValue.plannedStartDate).toISOString();
@@ -174,6 +175,7 @@ export class TaskModalComponent implements OnInit {
     if (formValue.plannedEndDate) {
       dto.plannedEndDate = new Date(formValue.plannedEndDate).toISOString();
     }
+
 
     // Only send edit-specific fields if we are strictly updating
     if (this.mode === 'edit') {

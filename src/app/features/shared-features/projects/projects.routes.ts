@@ -80,7 +80,7 @@ export const PROJECTS_ROUTES: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['admin', 'supervisor'] },
         loadComponent: () =>
-          import('./components/project-phases/phase-approval/phase-approval-review.component').then(
+          import('./components/project-phases/phase-approval/phase-approval-review/phase-approval-review.component').then(
             (m) => m.PhaseApprovalReviewComponent,
           ),
       },

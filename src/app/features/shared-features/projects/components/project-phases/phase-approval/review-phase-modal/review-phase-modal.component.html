@@ -1,4 +1,7 @@
-<app-shared-modal title="Reject Phase" (closeModal)="onCancel()">
+<app-shared-modal
+  [title]="isApproveMode ? 'Approve Phase' : 'Reject Phase'"
+  (closeModal)="onCancel()"
+>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="phase-info">
       <span class="label">Phase</span>
@@ -6,22 +9,26 @@
     </div>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Manager Comments *</mat-label>
+      <mat-label>Manager Comments{{ isRejectMode ? ' *' : '' }}</mat-label>
       <textarea
         matInput
         formControlName="comments"
-        placeholder="Explain the reason for rejection..."
+        [placeholder]="
+          isApproveMode
+            ? 'Add any comments or observations (optional)'
+            : 'Explain the reason for rejection...'
+        "
         rows="4"
       ></textarea>
       <mat-hint align="end"
         >{{ form.get("comments")?.value?.length || 0 }}/1000</mat-hint
       >
       @if (form.get("comments")?.hasError("required")) {
-        <mat-error> Comments are required when rejecting a phase </mat-error>
+        <mat-error>Comments are required when rejecting a phase</mat-error>
       } @else if (form.get("comments")?.hasError("minlength")) {
-        <mat-error> Comments must be at least 10 characters </mat-error>
+        <mat-error>Comments must be at least 10 characters</mat-error>
       } @else if (form.get("comments")?.hasError("maxlength")) {
-        <mat-error> Comments cannot exceed 1000 characters </mat-error>
+        <mat-error>Comments cannot exceed 1000 characters</mat-error>
       }
     </mat-form-field>
   </form>
@@ -31,12 +38,12 @@
     <button
       mat-flat-button
       type="submit"
-      class="reject-btn"
+      [class]="isApproveMode ? 'approve-btn' : 'reject-btn'"
       [disabled]="form.invalid || isSubmitting"
       (click)="onSubmit()"
     >
-      <mat-icon>close</mat-icon>
-      <span>Submit Rejection</span>
+      <mat-icon>{{ isApproveMode ? "check" : "close" }}</mat-icon>
+      <span>{{ isApproveMode ? "Submit Approval" : "Submit Rejection" }}</span>
     </button>
   </div>
 </app-shared-modal>

@@ -8,9 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { ProjectPhaseService } from '../../../services/project-phase.service';
-import { ApprovePhaseModalComponent } from './approve-phase-modal.component';
-import { RejectPhaseModalComponent } from './reject-phase-modal.component';
+import { ProjectPhaseService } from '../../../../services/project-phase.service';
+import { ReviewPhaseModalComponent } from '../review-phase-modal/review-phase-modal.component';
 
 export interface MediaItem {
   type: string;
@@ -129,54 +128,28 @@ export class PhaseApprovalReviewComponent implements OnInit {
   }
 
   openApproveModal(data: PhaseForApproval) {
-    const dialogRef = this.dialog.open(ApprovePhaseModalComponent, {
+    const dialogRef = this.dialog.open(ReviewPhaseModalComponent, {
       width: '500px',
-      data: { phaseId: data.phase.id, phaseName: data.phase.name },
+      data: { phaseId: data.phase.id, phaseName: data.phase.name, mode: 'approve' },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Call backend to approve
-        this.phaseService
-          .approvePhase(data.phase.id, {
-            approvalStatus: 'approved',
-            comments: result.comments,
-          })
-          .subscribe({
-            next: () => {
-              // Refresh data or navigate back
-              this.router.navigate(['../../'], { relativeTo: this.route });
-            },
-            error: (err) => {
-              console.error('Failed to approve phase', err);
-              // Ideally show a snackbar or alert here
-            },
-          });
+      if (result && result.success) {
+        // Navigate or refresh since backend call is handled inside modal
+        this.router.navigate(['../../'], { relativeTo: this.route });
       }
     });
   }
 
   openRejectModal(data: PhaseForApproval) {
-    const dialogRef = this.dialog.open(RejectPhaseModalComponent, {
+    const dialogRef = this.dialog.open(ReviewPhaseModalComponent, {
       width: '500px',
-      data: { phaseId: data.phase.id, phaseName: data.phase.name },
+      data: { phaseId: data.phase.id, phaseName: data.phase.name, mode: 'reject' },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.phaseService
-          .rejectPhase(data.phase.id, {
-            approvalStatus: 'rejected',
-            comments: result.comments,
-          })
-          .subscribe({
-            next: () => {
-              this.router.navigate(['../../'], { relativeTo: this.route });
-            },
-            error: (err) => {
-              console.error('Failed to reject phase', err);
-            },
-          });
+      if (result && result.success) {
+        this.router.navigate(['../../'], { relativeTo: this.route });
       }
     });
   }

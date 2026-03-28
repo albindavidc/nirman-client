@@ -1,7 +1,21 @@
 .full-width {
   width: 100%;
   margin-bottom: 16px;
+  text-align: left;
 }
+
+input.mat-mdc-input-element {
+  text-align: left !important;
+}
+
+::ng-deep .modal-header .header-content {
+  text-align: left !important;
+  
+  h2 {
+    text-align: left !important;
+  }
+}
+
 
 .grid-2 {
   display: grid;

@@ -6,30 +6,30 @@ export const selectSettingsState =
 
 export const selectProfile = createSelector(
   selectSettingsState,
-  (state) => state.profile
+  (state) => state.profile,
 );
 
 export const selectLoading = createSelector(
   selectSettingsState,
-  (state) => state.loading
+  (state) => state.loading,
 );
 
 export const selectUpdating = createSelector(
   selectSettingsState,
-  (state) => state.updating
+  (state) => state.updating,
 );
 
 export const selectError = createSelector(
   selectSettingsState,
-  (state) => state.error
+  (state) => state.error,
 );
 
 export const selectUpdateSuccess = createSelector(
   selectSettingsState,
-  (state) => state.updateSuccess
+  (state) => state.updateSuccess,
 );
 
 export const selectPasswordUpdateSuccess = createSelector(
   selectSettingsState,
-  (state) => state.passwordUpdateSuccess
+  (state) => state.passwordUpdateSuccess,
 );

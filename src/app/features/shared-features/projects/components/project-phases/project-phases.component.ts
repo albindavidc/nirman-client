@@ -230,11 +230,12 @@ export class ProjectPhasesComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result: { comments: string }) => {
+    dialogRef.afterClosed().subscribe((result: { comments: string; media: { type: string; url: string }[] }) => {
       if (result) {
         this.projectPhaseService
           .requestApproval(projectId, phase.id, {
             comments: result.comments,
+            media: result.media,
           })
           .subscribe({
             next: () => {

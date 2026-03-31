@@ -4,30 +4,31 @@ import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  FormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject, map, shareReplay } from 'rxjs';
 
 // Material Imports
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import * as ProjectActions from '../../../store/project.actions';
-import { NotificationService } from '../../../../../../core/services/notification.service';
-import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
+// FilePond Imports
+import { FilePondModule, registerPlugin } from 'ngx-filepond';
+import { FilePondOptions } from 'filepond';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+
+import { UploadService } from '../../../../../../core/services/upload.service';
 import { ProjectService } from '../../../services/project.service';
 import { ProjectPhaseService } from '../../../services/project-phase.service';
-import { Professional, PhaseApproval } from '../../../models/project.models';
+
+registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
 
 @Component({
   selector: 'app-phase-approval',
@@ -35,146 +36,100 @@ import { Professional, PhaseApproval } from '../../../models/project.models';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
+    RouterModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatIconModule,
-    MatCardModule,
-    MatTableModule,
-    MatChipsModule,
+    MatProgressSpinnerModule,
+    FilePondModule,
   ],
   templateUrl: './phase-approval.component.html',
   styleUrls: ['./phase-approval.component.scss'],
 })
 export class PhaseApprovalComponent implements OnInit {
-  private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private store = inject(Store);
   private projectService = inject(ProjectService);
   private projectPhaseService = inject(ProjectPhaseService);
+  private uploadService = inject(UploadService);
 
-  approvalForm: FormGroup;
-  phaseId: string | null = null;
   projectId: string | null = null;
-  phaseName$: Observable<string> = of('');
+  phaseId: string | null = null;
+  
+  phaseInfo$: Observable<any> = of(null);
+  comments: string = '';
+  isSubmitting = false;
 
-  // Mock Professionals for 'Approved By' dropdown - ideally from store/service
-  approvers$: Observable<Professional[]>;
-  approvals$: Observable<PhaseApproval[]> = of([]); // TODO: Selector
-
-  // File Upload
-  selectedPhotos: File[] = [];
-  selectedVideos: File[] = [];
-
-  displayedColumns: string[] = [
-    'phase',
-    'approvedBy',
-    'status',
-    'date',
-    'comments',
-  ];
-
-  constructor() {
-    this.approvalForm = this.fb.group({
-      phase: [{ value: '', disabled: true }],
-      status: [{ value: 'Pending', disabled: true }],
-      approverId: ['', Validators.required],
-      comments: ['', [CustomValidators.noWhitespace()]],
-      date: [new Date(), Validators.required],
-    });
-
-    this.approvers$ = this.projectService.getProfessionals();
-  }
+  // FilePond Upload State
+  uploadedMedia: { type: string; url: string }[] = [];
+  pondOptions: FilePondOptions = {
+    allowMultiple: true,
+    maxFiles: 10,
+    acceptedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'],
+    labelIdle: `
+      <div class="upload-container">
+        <i class="material-icons upload-icon">cloud_upload</i>
+        <p class="upload-text">Drag files to upload</p>
+        <p class="upload-divider">or</p>
+        <span class="upload-browse">Browse File</span>
+        <p class="upload-info">Max file size: 100MB</p>
+        <p class="upload-types">Supported types: JPG, PNG, GIF, PDF, MP4</p>
+      </div>
+    `,
+    server: {
+      process: (fieldName: string, file: Blob, metadata: any, load: (id: string) => void, error: (msg: string) => void, _progress: any, abort: () => void) => {
+        const sub = this.uploadService.uploadFile(file as File, 'document').subscribe({
+          next: ({ viewUrl }) => {
+            const mediaType = (file as File).type.startsWith('video') ? 'video' : 'image';
+            this.uploadedMedia.push({ type: mediaType, url: viewUrl });
+            load(viewUrl);
+          },
+          error: (err: any) => error(err.message || 'Upload failed'),
+        });
+        return { abort: () => { sub.unsubscribe(); abort(); } };
+      },
+      revert: (uniqueFileId: string, load: () => void, _error: any) => {
+        this.uploadedMedia = this.uploadedMedia.filter(m => m.url !== uniqueFileId);
+        load();
+      },
+    },
+  };
 
   ngOnInit(): void {
     this.projectId = this.route.snapshot.paramMap.get('id');
     this.phaseId = this.route.snapshot.paramMap.get('phaseId');
 
     if (this.projectId && this.phaseId) {
-      // Load Approvals History
-      this.store.dispatch(
-        ProjectActions.loadProjectApprovals({ projectId: this.projectId }),
+      this.phaseInfo$ = this.projectPhaseService.getPhases(this.projectId).pipe(
+        map(phases => {
+          const phase = phases.find(p => p.id === this.phaseId);
+          return phase ? { ...phase, projectId: this.projectId, projectName: 'Project Work' } : null;
+        }),
+        shareReplay(1)
       );
-      // This should be a selector
-      this.approvals$ = this.projectService.getProjectApprovals(this.projectId);
+    }
+  }
 
-      // Get Phase Name (Bit hacky, ideally from store selector for project phases)
-      // We'll rely on route param or fetch phases if not avail.
-      // For now, let's assume we can find it in the project phases list if loaded,
-      // OR we just display "Current Phase" if we can't easily get the name without a selector.
-      // Let's try to get it from the service for now.
-      // Actually, we can fetch project phases and find it.
-      this.projectPhaseService.getPhases(this.projectId).subscribe((phases) => {
-        const phase = phases.find((p) => p.id === this.phaseId);
-        if (phase) {
-          this.approvalForm.patchValue({ phase: phase.name });
+  submitRequest(): void {
+    if (this.comments && this.projectId && this.phaseId) {
+      this.isSubmitting = true;
+      this.projectPhaseService.requestApproval(this.projectId, this.phaseId, {
+        comments: this.comments,
+        media: this.uploadedMedia
+      }).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.router.navigate(['/supervisor/projects', this.projectId]);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error('Failed to submit request', err);
         }
       });
     }
   }
-
-  onPhotoSelected(event: Event): void {
-    const element = event.target as HTMLInputElement;
-    const files = element.files;
-    if (files) {
-      this.selectedPhotos = Array.from(files);
-    }
-  }
-
-  onVideoSelected(event: Event): void {
-    const element = event.target as HTMLInputElement;
-    const files = element.files;
-    if (files) {
-      this.selectedVideos = Array.from(files);
-    }
-  }
-
-  onSubmit(): void {
-    if (this.approvalForm.valid && this.projectId && this.phaseId) {
-      const formValue = this.approvalForm.getRawValue();
-
-      // Mock Media Upload - In real app, upload first, get URLs
-      const media = [
-        ...this.selectedPhotos.map((f) => ({
-          type: 'image',
-          url: 'mock_url_' + f.name,
-        })),
-        ...this.selectedVideos.map((f) => ({
-          type: 'video',
-          url: 'mock_url_' + f.name,
-        })),
-      ];
-
-      this.store.dispatch(
-        ProjectActions.requestPhaseApproval({
-          projectId: this.projectId,
-          phaseId: this.phaseId,
-          comments: formValue.comments,
-          approverId: formValue.approverId,
-          media: media,
-        }),
-      );
-
-      // Navigate back after short delay or wait for success action (Effect handles success notification)
-      // Ideally redirect to phases list
-      setTimeout(() => {
-        this.router.navigate(['../../phases'], { relativeTo: this.route });
-      }, 1000);
-    }
-  }
-
-  getStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return 'bg-green-100 text-green-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-yellow-100 text-yellow-800';
-    }
-  }
 }
+

@@ -1,0 +1,215 @@
+.modal-container {
+  padding: 1.5rem 2rem;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--md-sys-color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.form-field-label {
+  display: block;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.comment-area {
+  width: 100%;
+  padding: 1.25rem;
+  background: var(--md-sys-color-surface-container-high);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 140px;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface-container-highest);
+    box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+  }
+
+  &::placeholder {
+    color: var(--md-sys-color-outline);
+    opacity: 0.6;
+  }
+}
+
+.evidence-zone {
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+
+  .mat-mdc-button {
+    font-weight: 600;
+    padding: 0 1.5rem;
+  }
+}
+
+::ng-deep {
+  /* Main FilePond Drop Area Design System Alignment */
+  .filepond--root {
+    margin-bottom: 0;
+    font-family: inherit;
+  }
+
+  /* Credits Removal */
+  .filepond--credits {
+    display: none !important;
+  }
+
+  /* Browser Native Input Fix - Forced Hidden */
+  .filepond--browser {
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+  }
+
+  .filepond--panel-root {
+    background-color: var(--md-sys-color-surface-container-high) !important;
+    border: 2px dashed var(--md-sys-color-outline-variant) !important;
+    border-radius: 24px !important;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .filepond--root:hover .filepond--panel-root {
+    border-color: var(--md-sys-color-primary) !important;
+    background-color: var(--md-sys-color-surface-container-highest) !important;
+    border-style: solid !important;
+  }
+
+  /* Drop Label Internal UI Styling */
+  .filepond--drop-label {
+    min-height: 280px !important;
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface-variant) !important;
+  }
+
+  /* Dashboard Label Container Injection Styling */
+  .upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+    
+    .upload-icon {
+      font-size: 72px;
+      width: 72px;
+      height: 72px;
+      color: var(--md-sys-color-secondary) !important;
+      margin-bottom: 1.25rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    .upload-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--md-sys-color-on-surface);
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .upload-divider {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--md-sys-color-outline);
+      margin: 0.75rem 0;
+    }
+
+    .upload-browse {
+      background: var(--md-sys-color-surface-container-lowest);
+      border: 2px solid var(--md-sys-color-secondary);
+      color: var(--md-sys-color-secondary);
+      padding: 0.6rem 2.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      pointer-events: auto;
+      text-transform: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+      &:hover {
+        background: var(--md-sys-color-secondary);
+        color: var(--md-sys-color-on-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    .upload-info {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface);
+      margin-top: 1.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .upload-types {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--md-sys-color-outline);
+      margin: 0;
+    }
+  }
+
+  /* File items styling alignment */
+  .filepond--item-panel {
+    background-color: var(--md-sys-color-surface-container-lowest) !important;
+    border-radius: 12px !important;
+  }
+
+  .filepond--label-action {
+    display: none !important;
+  }
+}

@@ -74,5 +74,5 @@ export const settingsReducer = createReducer(
     updateSuccess: false,
     passwordUpdateSuccess: false,
     error: null,
-  }))
+  })),
 );

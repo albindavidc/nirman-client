@@ -62,3 +62,61 @@
     margin-right: 8px;
   }
 }
+
+// ---- FilePond Evidence Upload ----
+.evidence-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.evidence-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  letter-spacing: 0.01em;
+}
+
+.evidence-optional {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--md-sys-color-outline);
+  margin-left: 4px;
+}
+
+.review-pond {
+  // Override FilePond defaults to match dark theme
+  --color-background: var(--md-sys-color-surface-container-highest);
+
+  ::ng-deep {
+    .filepond--root {
+      font-family: Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    .filepond--panel-root {
+      background: var(--md-sys-color-surface-container-highest);
+      border: 1px dashed var(--md-sys-color-outline-variant);
+      border-radius: 8px;
+    }
+
+    .filepond--drop-label {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 0.875rem;
+    }
+
+    .filepond--label-action {
+      color: var(--md-sys-color-primary);
+      font-weight: 500;
+      text-decoration-color: var(--md-sys-color-primary);
+    }
+
+    .filepond--item-panel {
+      background: var(--md-sys-color-surface-container-high);
+    }
+
+    .filepond--file-action-button {
+      background: var(--md-sys-color-surface-container-highest);
+    }
+  }
+}

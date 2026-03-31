@@ -1,27 +1,41 @@
-<app-shared-modal
-  [title]="'Request Approval for ' + data.phaseName"
-  (closeModal)="onCancel()"
->
-  <form [formGroup]="form" class="flex flex-col gap-4">
-    <p class="text-zinc-400">
-      Are you sure you want to request approval for this phase? Once requested,
-      the phase status will change to "Review Pending".
-    </p>
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Comments (Optional)</mat-label>
-      <textarea
-        matInput
-        formControlName="comments"
-        rows="4"
-        placeholder="Add any notes for the approver..."
-      ></textarea>
-    </mat-form-field>
-  </form>
-
-  <div actions>
-    <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="onSubmit()">
-      Submit Request
+<div class="modal-container">
+  <div class="modal-header">
+    <h2>
+      <mat-icon color="primary">fact_check</mat-icon>
+      <span>Submit Phase Completion</span>
+    </h2>
+    <button mat-icon-button [mat-dialog-close]="null" class="close-btn">
+      <mat-icon>close</mat-icon>
     </button>
   </div>
-</app-shared-modal>
+
+  <div class="modal-body">
+    <div class="comment-section">
+      <span class="form-field-label">Completion Comments</span>
+      <textarea 
+        class="comment-area" 
+        rows="8" 
+        [(ngModel)]="comments" 
+        placeholder="Provide details about the work completed in this phase. What tasks were finalized? Are there any minor pending items?">
+      </textarea>
+    </div>
+
+    <div class="evidence-zone">
+      <span class="form-field-label">Media Evidence</span>
+      <file-pond class="modal-request-pond" [options]="pondOptions"></file-pond>
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <button mat-button [mat-dialog-close]="null" color="warn">
+      Discard
+    </button>
+    <button mat-flat-button color="primary" 
+            [disabled]="isSubmitting || !comments" 
+            (click)="onSubmit()">
+      <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+      <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+      <span class="ml-2">Submit Request</span>
+    </button>
+  </div>
+</div>

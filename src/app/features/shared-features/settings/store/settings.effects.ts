@@ -22,12 +22,12 @@ export class SettingsEffects {
             of(
               SettingsActions.loadProfileFailure({
                 error: error.error?.message || 'Failed to load profile',
-              })
-            )
-          )
-        )
-      )
-    )
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
   updateProfile$ = createEffect(() =>
@@ -41,17 +41,17 @@ export class SettingsEffects {
           }),
           catchError((error) => {
             this.notification.error(
-              error.error?.message || 'Failed to update profile'
+              error.error?.message || 'Failed to update profile',
             );
             return of(
               SettingsActions.updateProfileFailure({
                 error: error.error?.message || 'Failed to update profile',
-              })
+              }),
             );
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   updatePassword$ = createEffect(() =>
@@ -65,16 +65,16 @@ export class SettingsEffects {
           }),
           catchError((error) => {
             this.notification.error(
-              error.error?.message || 'Failed to update password'
+              error.error?.message || 'Failed to update password',
             );
             return of(
               SettingsActions.updatePasswordFailure({
                 error: error.error?.message || 'Failed to update password',
-              })
+              }),
             );
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 }

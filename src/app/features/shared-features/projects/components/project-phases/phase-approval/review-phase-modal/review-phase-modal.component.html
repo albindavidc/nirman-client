@@ -31,6 +31,15 @@
         <mat-error>Comments cannot exceed 1000 characters</mat-error>
       }
     </mat-form-field>
+
+    <!-- Supporting Evidence (optional for both modes) -->
+    <div class="evidence-section">
+      <span class="evidence-label">Supporting Evidence <span class="evidence-optional">(optional)</span></span>
+      <file-pond
+        [options]="pondOptions"
+        class="review-pond"
+      ></file-pond>
+    </div>
   </form>
 
   <div actions>

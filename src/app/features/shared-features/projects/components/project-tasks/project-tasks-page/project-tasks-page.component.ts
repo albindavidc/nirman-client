@@ -92,6 +92,15 @@ export class ProjectTasksPageComponent implements OnInit {
       // Fetch Phases first for dropdown
       this.phaseService.getPhases(this.projectId).subscribe((phases) => {
         this.phases = phases;
+
+        // If the initial phase ID is a name, find the actual ID
+        const initialValue = this.phaseControl.value;
+        if (initialValue && initialValue !== 'All Phases') {
+          const found = phases.find(p => p.id === initialValue || p.name === initialValue);
+          if (found && found.id !== initialValue) {
+            this.phaseControl.setValue(found.id);
+          }
+        }
       });
 
       const allTasks$ = this.taskService.getProjectTasks(this.projectId);
@@ -140,7 +149,8 @@ export class ProjectTasksPageComponent implements OnInit {
 
           // Status Filter
           if (status && status !== 'All Status') {
-            filtered = filtered.filter((t: Task) => t.status === status);
+            const backendStatus = status.toLowerCase().replace(/\s+/g, '_');
+            filtered = filtered.filter((t: Task) => t.status?.toLowerCase() === backendStatus);
           }
 
           return filtered;
@@ -161,15 +171,20 @@ export class ProjectTasksPageComponent implements OnInit {
       this.stats$ = scopedTasks$.pipe(
         map((tasks) => {
           const total = tasks.length;
-          const completed = tasks.filter(
-            (t: Task) => t.status === 'Completed',
-          ).length;
-          const inProgress = tasks.filter(
-            (t: Task) => t.status === 'In Progress',
-          ).length;
-          const delayed = tasks.filter(
-            (t: Task) => t.status === 'Delayed',
-          ).length;
+          const completed = tasks.filter((t: Task) => {
+            const s = t.status.toLowerCase().replace(/\s+/g, '_');
+            return s === 'completed' || s === 'done';
+          }).length;
+
+          const inProgress = tasks.filter((t: Task) => {
+            const s = t.status.toLowerCase().replace(/\s+/g, '_');
+            return s === 'in_progress' || s === 'in progress';
+          }).length;
+
+          const delayed = tasks.filter((t: Task) => {
+            const s = t.status.toLowerCase().replace(/\s+/g, '_');
+            return s === 'delayed';
+          }).length;
 
           // Calculate Total Days (Duration)
           let totalDays = 0;
@@ -190,12 +205,8 @@ export class ProjectTasksPageComponent implements OnInit {
             if (startDates.length > 0 && endDates.length > 0) {
               const minStart = Math.min(...startDates);
               const maxEnd = Math.max(...endDates);
-              // distinct days inclusive? usually End - Start.
-              // If same day, it's 1 day? Or just difference?
-              // Standard gantt metrics usually imply span.
-              // 1 day = 24 hrs.
               const diffTime = Math.abs(maxEnd - minStart);
-              totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include start day
+              totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
             }
           }
 
@@ -213,6 +224,7 @@ export class ProjectTasksPageComponent implements OnInit {
   getPriorityColor(priority: string): string {
     switch (priority?.toLowerCase()) {
       case 'high':
+      case 'critical':
         return 'text-red-500 bg-red-500/10';
       case 'medium':
         return 'text-orange-500 bg-orange-500/10';
@@ -224,16 +236,29 @@ export class ProjectTasksPageComponent implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'Completed':
+    switch (status?.toLowerCase()) {
+      case 'completed':
         return 'status-completed';
-      case 'In Progress':
+      case 'in_progress':
+      case 'in progress':
         return 'status-inprogress';
-      case 'Delayed':
+      case 'delayed':
         return 'status-delayed';
+      case 'not_started':
+      case 'not started':
+        return 'status-pending';
       default:
         return 'status-pending';
     }
+  }
+
+  formatEnum(value: string): string {
+    if (!value) return '';
+    return value
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 
   formatDate(date: string | Date | null | undefined): string {

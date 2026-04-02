@@ -99,13 +99,17 @@ export class ProjectTasksComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'completed':
-        return 'primary'; // Greenish usually
+        return 'primary';
+      case 'in_progress':
       case 'in progress':
-        return 'accent'; // Blueish
+        return 'accent';
       case 'delayed':
         return 'warn';
+      case 'not_started':
+      case 'not started':
+        return 'default';
       default:
         return 'default';
     }
@@ -114,13 +118,23 @@ export class ProjectTasksComponent implements OnInit {
   getPriorityColor(priority: string): string {
     switch (priority?.toLowerCase()) {
       case 'high':
+      case 'critical':
         return 'warn';
       case 'medium':
         return 'accent';
       case 'low':
-        return 'primary'; // or default
+        return 'primary';
       default:
         return 'default';
     }
+  }
+
+  formatEnum(value: string): string {
+    if (!value) return '';
+    return value
+      .replace(/_/g, ' ') // Replace snake_case with spaces
+      .split(' ') // Split into words
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Title Case
+      .join(' '); // Join with spaces
   }
 }

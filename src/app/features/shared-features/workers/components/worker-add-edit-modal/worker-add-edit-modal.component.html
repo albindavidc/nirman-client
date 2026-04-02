@@ -75,10 +75,10 @@
             aria-label="Phone Number"
           />
           @if (form.get("phone")?.hasError("required")) {
-            <mat-error>Required</mat-error>
+            <mat-error>Phone number is required</mat-error>
           }
-          @if (form.get("phone")?.hasError("phoneNumber")) {
-            <mat-error>Please enter a valid 10-digit number</mat-error>
+          @if (form.get("phone")?.hasError("indianMobile")) {
+            <mat-error>Invalid mobile number (e.g. 9876543210)</mat-error>
           }
         </mat-form-field>
       </div>
@@ -89,6 +89,7 @@
           <mat-select id="role" formControlName="role">
             <mat-option value="supervisor">Supervisor</mat-option>
             <mat-option value="worker">Worker</mat-option>
+            <mat-option value="professional">Professional</mat-option>
           </mat-select>
           @if (form.get("role")?.hasError("required")) {
             <mat-error>Required</mat-error>
@@ -110,6 +111,9 @@
             formControlName="professionalTitle"
             placeholder="e.g. Site Engineer"
           />
+          @if (form.get("professionalTitle")?.hasError("maxTrimmedLength")) {
+            <mat-error>Max 100 characters</mat-error>
+          }
         </mat-form-field>
       </div>
       <div class="form-field">
@@ -125,6 +129,9 @@
             formControlName="experienceYears"
             placeholder="0"
           />
+          @if (form.get("experienceYears")?.hasError("experienceYears")) {
+            <mat-error>Invalid experience years</mat-error>
+          }
         </mat-form-field>
       </div>
     </div>
@@ -139,6 +146,12 @@
           formControlName="skills"
           placeholder="Welding, Plumbing"
         />
+        @if (form.get("skills")?.hasError("productsServicesCount")) {
+          <mat-error>Enter 1-20 skills separated by comma</mat-error>
+        }
+        @if (form.get("skills")?.hasError("maxTrimmedLength")) {
+          <mat-error>Skills description too long</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -154,6 +167,9 @@
           formControlName="addressStreet"
           placeholder="123 Main St"
         />
+        @if (form.get("addressStreet")?.hasError("addressLength")) {
+          <mat-error>Street address too long (max 150)</mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -168,6 +184,15 @@
             formControlName="addressCity"
             placeholder="City"
           />
+          @if (form.get("addressCity")?.hasError("addressLength")) {
+            <mat-error>City name too long (max 50)</mat-error>
+          }
+          @if (form.get("addressCity")?.hasError("nameFormat")) {
+            <mat-error>Invalid city name format</mat-error>
+          }
+          @if (form.get("addressCity")?.hasError("minlength")) {
+            <mat-error>City name must be at least 2 characters</mat-error>
+          }
         </mat-form-field>
       </div>
       <div class="form-field">
@@ -180,6 +205,9 @@
             formControlName="addressState"
             placeholder="State"
           />
+          @if (form.get("addressState")?.hasError("addressLength")) {
+            <mat-error>State name too long (max 50)</mat-error>
+          }
         </mat-form-field>
       </div>
     </div>
@@ -194,6 +222,9 @@
           formControlName="addressZipCode"
           placeholder="Zip Code"
         />
+        @if (form.get("addressZipCode")?.hasError("indianPinCode")) {
+          <mat-error>Invalid PIN code (e.g. 682301)</mat-error>
+        }
       </mat-form-field>
     </div>
 

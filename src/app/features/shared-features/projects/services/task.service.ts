@@ -18,6 +18,8 @@ export interface Task {
   priority: string;
   progress: number;
   notes?: string | null;
+  estimatedHours?: number | null;
+  actualHours?: number | null;
   assignee?: {
     firstName: string;
     lastName: string;
@@ -40,6 +42,8 @@ export interface CreateTaskDto {
   progress?: number;
   actualStartDate?: string;
   actualEndDate?: string;
+  estimatedHours?: number;
+  actualHours?: number;
   color?: string;
 }
 

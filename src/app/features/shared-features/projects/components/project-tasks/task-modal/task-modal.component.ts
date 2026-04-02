@@ -127,6 +127,9 @@ export class TaskModalComponent implements OnInit {
           task?.notes || '',
           [Validators.maxLength(1000), CustomValidators.noWhitespace()],
         ],
+        estimatedHours: [task?.estimatedHours || null, [Validators.min(0)]],
+        actualHours: [task?.actualHours || null, [Validators.min(0)]],
+        color: [task?.color || '#3b82f6'],
       },
       {
         validators: [
@@ -176,6 +179,13 @@ export class TaskModalComponent implements OnInit {
       dto.plannedEndDate = new Date(formValue.plannedEndDate).toISOString();
     }
 
+    if (formValue.estimatedHours !== null && formValue.estimatedHours !== undefined) {
+      dto.estimatedHours = Number(formValue.estimatedHours);
+    }
+    if (formValue.color) {
+      dto.color = formValue.color;
+    }
+
 
     // Only send edit-specific fields if we are strictly updating
     if (this.mode === 'edit') {
@@ -186,6 +196,9 @@ export class TaskModalComponent implements OnInit {
       }
       if (formValue.actualEndDate) {
         dto.actualEndDate = new Date(formValue.actualEndDate).toISOString();
+      }
+      if (formValue.actualHours !== null && formValue.actualHours !== undefined) {
+        dto.actualHours = Number(formValue.actualHours);
       }
     }
 

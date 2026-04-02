@@ -178,14 +178,17 @@
               <div class="col status">
                 <span class="badge" [ngClass]="getStatusClass(task.status)">
                   <mat-icon class="status-icon">
-                    @switch (task.status) {
-                      @case ("Completed") {
+                    @switch (task.status.toLowerCase()) {
+                      @case ("completed") {
                         check_circle
                       }
-                      @case ("In Progress") {
+                      @case ("in_progress") {
                         sync
                       }
-                      @case ("Delayed") {
+                      @case ("in progress") {
+                        sync
+                      }
+                      @case ("delayed") {
                         warning
                       }
                       @default {
@@ -193,7 +196,7 @@
                       }
                     }
                   </mat-icon>
-                  {{ task.status }}
+                  {{ formatEnum(task.status) }}
                 </span>
               </div>
               <div class="col progress">
@@ -202,9 +205,9 @@
                     <div
                       class="progress-fill"
                       [style.width.%]="task.progress"
-                      [class.fill-green]="task.status === 'Completed'"
-                      [class.fill-blue]="task.status === 'In Progress'"
-                      [class.fill-red]="task.status === 'Delayed'"
+                      [class.fill-green]="task.status.toLowerCase() === 'completed'"
+                      [class.fill-blue]="task.status.toLowerCase() === 'in_progress' || task.status.toLowerCase() === 'in progress'"
+                      [class.fill-red]="task.status.toLowerCase() === 'delayed'"
                     ></div>
                   </div>
                 </div>

@@ -129,6 +129,41 @@
       </mat-form-field>
     </div>
 
+    <!-- Hours and Color -->
+    <div class="grid-3">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Est. Hours</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="estimatedHours"
+          placeholder="0"
+        />
+        <mat-icon matSuffix>timer</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width" *ngIf="mode === 'edit'">
+        <mat-label>Act. Hours</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="actualHours"
+          placeholder="0"
+        />
+        <mat-icon matSuffix>history</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Color</mat-label>
+        <input
+          matInput
+          type="color"
+          formControlName="color"
+          class="color-input"
+        />
+      </mat-form-field>
+    </div>
+
     <!-- Edit Only Fields -->
     @if (mode === 'edit') {
       <!-- Actual Dates -->

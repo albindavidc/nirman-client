@@ -52,16 +52,16 @@
             class="px-2 py-1 rounded text-[10px] font-medium border uppercase tracking-wide inline-flex items-center justify-center"
             [ngClass]="{
               'bg-green-900/30 text-green-400 border-green-800':
-                task.status === 'Completed',
+                task.status?.toLowerCase() === 'completed',
               'bg-blue-900/30 text-blue-400 border-blue-800':
-                task.status === 'In Progress',
+                task.status?.toLowerCase() === 'in_progress' || task.status?.toLowerCase() === 'in progress',
               'bg-red-900/30 text-red-400 border-red-800':
-                task.status === 'Delayed',
+                task.status?.toLowerCase() === 'delayed',
               'bg-gray-800 text-gray-400 border-gray-700':
-                task.status === 'Not Started',
+                task.status?.toLowerCase() === 'not_started' || task.status?.toLowerCase() === 'not started',
             }"
           >
-            {{ task.status }}
+            {{ formatEnum(task.status) }}
           </span>
         </div>
       </td>
@@ -80,14 +80,14 @@
         <div class="inline-flex items-center gap-1.5">
           <mat-icon
             class="icon-sm"
-            [class.text-red-500]="task.priority === 'High'"
-            [class.text-yellow-500]="task.priority === 'Medium'"
-            [class.text-green-500]="task.priority === 'Low'"
+            [class.text-red-500]="task.priority?.toLowerCase() === 'high' || task.priority?.toLowerCase() === 'critical'"
+            [class.text-yellow-500]="task.priority?.toLowerCase() === 'medium'"
+            [class.text-green-500]="task.priority?.toLowerCase() === 'low'"
           >
             flag
           </mat-icon>
           <span class="text-gray-300 text-sm leading-none">{{
-            task.priority
+            formatEnum(task.priority)
           }}</span>
         </div>
       </td>

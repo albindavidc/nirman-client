@@ -6,11 +6,13 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { SharedModalComponent } from '../shared-modal/shared-modal.component';
 
 export interface ConfirmDialogData {
   title: string;
   message: string;
+  icon?: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
   confirmButtonColor?: 'primary' | 'accent' | 'warn';
@@ -19,7 +21,7 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, SharedModalComponent],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, SharedModalComponent],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.scss',
 })

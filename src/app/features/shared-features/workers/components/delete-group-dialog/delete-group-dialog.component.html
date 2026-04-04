@@ -1,0 +1,51 @@
+<div class="delete-dialog">
+
+  <!-- ─── Header ─────────────────────────────────────────────────────────── -->
+  <div class="dialog-header">
+    <div class="header-left">
+      <div class="warning-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+      </div>
+      <h2 class="dialog-title">Delete Worker Group</h2>
+    </div>
+    <button
+      class="close-btn"
+      type="button"
+      (click)="onCancel()"
+      id="delete-dialog-close-btn"
+      aria-label="Close"
+    >×</button>
+  </div>
+
+  <!-- ─── Body ───────────────────────────────────────────────────────────── -->
+  <div class="dialog-body">
+    <p class="dialog-message">
+      Are you sure you want to delete
+      <strong class="group-name-highlight">{{ data.groupName }}</strong>?
+      This will remove the group but workers will remain in the system.
+    </p>
+  </div>
+
+  <!-- ─── Footer ─────────────────────────────────────────────────────────── -->
+  <div class="dialog-footer">
+    <button
+      class="btn-cancel"
+      type="button"
+      (click)="onCancel()"
+      id="delete-dialog-cancel-btn"
+    >
+      Cancel
+    </button>
+    <button
+      class="btn-delete"
+      type="button"
+      (click)="onConfirm()"
+      id="delete-dialog-confirm-btn"
+    >
+      Delete Group
+    </button>
+  </div>
+
+</div>

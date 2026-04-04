@@ -1,0 +1,126 @@
+<div class="manage-modal">
+
+  <!-- ─── Header ─────────────────────────────────────────────────────────── -->
+  <div class="modal-header">
+    <div class="header-text">
+      <h2 class="modal-title">Manage Team Members</h2>
+      <p class="modal-subtitle">
+        {{ currentGroup.name }} &bull; {{ getActiveMembers().length }} members
+      </p>
+    </div>
+    <button class="close-btn" (click)="onClose()" id="close-manage-modal-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ─── Current Members ───────────────────────────────────────────────── -->
+  <div class="modal-body">
+    <div class="section">
+      <h3 class="section-label">
+        <mat-icon>group</mat-icon>
+        Current Members
+      </h3>
+
+      @if (getActiveMembers().length === 0) {
+        <div class="empty-members">
+          <mat-icon>people_outline</mat-icon>
+          <span>No members yet</span>
+        </div>
+      } @else {
+        <div class="members-list">
+          @for (member of getActiveMembers(); track member.id) {
+            <div class="member-row">
+              <div class="member-avatar">
+                @if (member.workerPhotoUrl) {
+                  <img [src]="member.workerPhotoUrl" [alt]="member.workerName" />
+                } @else {
+                  <span>{{ getInitials(member.workerName) }}</span>
+                }
+              </div>
+              <div class="member-info">
+                <span class="member-name">{{ member.workerName }}</span>
+                <span class="member-status active">Active</span>
+              </div>
+              <button
+                class="remove-btn"
+                [id]="'remove-member-' + member.id"
+                (click)="removeMember(member)"
+                matTooltip="Remove from group"
+              >
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ─── Add Workers ─────────────────────────────────────────────────── -->
+    <div class="section add-section">
+      <h3 class="section-label">
+        <mat-icon>person_add</mat-icon>
+        Add Workers
+      </h3>
+
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search workers to add..."
+          [formControl]="searchControl"
+          id="search-workers-input"
+        />
+      </div>
+
+      @if (allWorkers$ | async; as allWorkers) {
+        <div class="available-workers-list">
+          @for (worker of getAvailableWorkers(allWorkers); track worker.id) {
+            <div
+              class="worker-row"
+              [class.selected]="isWorkerSelected(worker.id)"
+              (click)="toggleWorkerSelection(worker.id)"
+              [id]="'select-worker-' + worker.id"
+            >
+              <div class="worker-avatar">
+                <span>{{ worker.firstName.charAt(0).toUpperCase() }}</span>
+              </div>
+              <div class="worker-info">
+                <span class="worker-name">{{ worker.firstName }} {{ worker.lastName }}</span>
+                <span class="worker-role-badge" [class]="worker.role.toLowerCase()">{{ worker.role | titlecase }}</span>
+              </div>
+              <div class="checkbox-wrap">
+                <div class="custom-checkbox" [class.checked]="isWorkerSelected(worker.id)">
+                  @if (isWorkerSelected(worker.id)) {
+                    <mat-icon>check</mat-icon>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+          @if (getAvailableWorkers(allWorkers).length === 0) {
+            <p class="no-workers-text">No workers available to add.</p>
+          }
+        </div>
+
+        <button
+          class="add-workers-btn"
+          id="add-selected-workers-btn"
+          [disabled]="selectedWorkerIds.size === 0 || (loading$ | async)"
+          (click)="addSelectedWorkers()"
+        >
+          @if (loading$ | async) {
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          } @else {
+            <mat-icon>person_add_alt</mat-icon>
+          }
+          Add Selected Workers
+          @if (selectedWorkerIds.size > 0) {
+            <span class="selected-count">({{ selectedWorkerIds.size }})</span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+</div>

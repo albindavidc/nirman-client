@@ -1,0 +1,155 @@
+<div class="group-list-container" [@fadeInUp]>
+  <!-- ─── Stats Row ──────────────────────────────────────────────────────── -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-body">
+        <span class="stat-label">Total Groups</span>
+        <span class="stat-value">{{ total$ | async }}</span>
+      </div>
+      <div class="stat-icon-wrapper">
+        <div class="stat-icon gold">
+          <mat-icon>layers</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-body">
+        <span class="stat-label">Active Groups</span>
+        <span class="stat-value">{{ activeCount$ | async }}</span>
+      </div>
+      <div class="stat-icon-wrapper">
+        <div class="stat-icon green">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Filters ────────────────────────────────────────────────────────── -->
+  <div class="filters-bar">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search groups..."
+        (input)="onSearch($any($event.target).value)"
+        class="search-input"
+      />
+    </div>
+
+    <div class="filter-select-wrapper">
+      <select [formControl]="tradeControl" class="trade-select">
+        <option value="">All Trades</option>
+        @for (trade of trades; track trade[0]) {
+          <option [value]="trade[0]">{{ trade[1] }}</option>
+        }
+      </select>
+      <mat-icon class="select-chevron">expand_more</mat-icon>
+    </div>
+  </div>
+
+  <!-- ─── Loading ───────────────────────────────────────────────────────── -->
+  @if (loading$ | async) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="44"></mat-spinner>
+      <span>Loading groups…</span>
+    </div>
+  } @else {
+    <!-- ─── Cards Grid ────────────────────────────────────────────────────── -->
+    @if ((groups$ | async)?.length === 0) {
+      <div class="empty-state" [@fadeInUp]>
+        <div class="empty-icon gold">
+          <mat-icon>group_work</mat-icon>
+        </div>
+        <h3>No groups found</h3>
+        <p>
+          Create your first worker group to start organizing teams by trade.
+        </p>
+        <button
+          class="create-group-btn large"
+          id="empty-create-group-btn"
+          (click)="openCreateModal()"
+        >
+          <mat-icon>add</mat-icon>
+          Create First Group
+        </button>
+      </div>
+    } @else {
+      <div class="card-grid" [@cardGrid]>
+        @for (group of groups$ | async; track group.id) {
+          <div class="group-card" [class.inactive]="!group.isActive">
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="title-row">
+                <h3 class="group-name">{{ group.name || 'Untitled Group' }}</h3>
+                <mat-icon class="status-icon" [class.active]="!!group.isActive"
+                  >check_circle</mat-icon
+                >
+              </div>
+              <p class="group-description">{{ group.description || 'No description provided' }}</p>
+            </div>
+
+            <!-- Chips -->
+            <div class="card-chips">
+              <span class="trade-chip">
+                <mat-icon class="chip-icon">{{
+                  group.trade ? tradeIcons[group.trade] : 'help_outline'
+                }}</mat-icon>
+                {{ group.trade ? tradeLabels[group.trade] : 'Unknown Trade' }}
+              </span>
+              <span class="worker-count-chip">
+                <mat-icon class="chip-icon">group</mat-icon>
+                {{ group.workerCount }} Workers
+              </span>
+            </div>
+
+            <!-- User Avatars and View All -->
+            <div class="card-footer-info">
+              <div class="avatars-stack">
+                @for (member of getVisibleMembers(group); track member.id) {
+                  @if (member.isActive) {
+                    <div class="member-avatar">
+                      {{ getMemberInitials(member.workerName) }}
+                    </div>
+                  }
+                }
+              </div>
+              <button
+                class="view-all-link"
+                (click)="toggleShowAllMembers(group.id)"
+              >
+                {{ showAllMembers[group.id] ? "Show less" : "View All" }}
+                <mat-icon>{{
+                  showAllMembers[group.id] ? "expand_less" : "expand_more"
+                }}</mat-icon>
+              </button>
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <button class="btn-manage" (click)="openManageModal(group)">
+                <mat-icon>manage_accounts</mat-icon>
+                Manage
+              </button>
+
+              <button
+                class="btn-action-icon edit"
+                (click)="openEditModal(group)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                class="btn-action-icon delete"
+                (click)="deleteGroup(group)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

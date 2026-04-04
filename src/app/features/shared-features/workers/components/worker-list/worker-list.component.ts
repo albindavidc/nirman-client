@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import {
   CommonModule,
   TitleCasePipe,
@@ -42,6 +42,7 @@ import {
   query,
   stagger,
 } from '@angular/animations';
+import { WorkerGroupListComponent } from '../worker-group-list/worker-group-list.component';
 
 @Component({
   selector: 'app-worker-list',
@@ -67,6 +68,7 @@ import {
     MatPaginatorModule,
     MatSortModule,
     MatProgressSpinnerModule,
+    WorkerGroupListComponent,
   ],
   templateUrl: './worker-list.component.html',
   styleUrl: './worker-list.component.scss',
@@ -103,6 +105,13 @@ export class WorkerListComponent implements OnInit {
   private store = inject(Store);
   private dialog = inject(MatDialog);
 
+  /** Reference to the embedded group list so the header button can delegate to it. */
+  @ViewChild(WorkerGroupListComponent)
+  private groupListRef!: WorkerGroupListComponent;
+
+  // ─── Tab State ───────────────────────────────────────────────────────────
+  activeTab: 'workers' | 'groups' = 'workers';
+
   columns: TableColumn[] = [
     { key: 'worker', header: 'Worker', type: 'template', sortable: true },
     { key: 'role', header: 'Role', type: 'template', sortable: true },
@@ -121,7 +130,6 @@ export class WorkerListComponent implements OnInit {
   supervisorCount$: Observable<number>;
   activeCount$: Observable<number>;
 
-  // searchControl = new FormControl(''); // Removed in favor of SearchBar
   roleControl = new FormControl('');
 
   pageSize = 10;
@@ -133,9 +141,6 @@ export class WorkerListComponent implements OnInit {
     this.loading$ = this.store.select(WorkerSelectors.selectWorkerLoading);
     this.workers$ = this.store.select(WorkerSelectors.selectAllWorkers);
 
-    // Compute counts from the workers list
-    // Note: This relies on loaded workers. If loading is paginated, this count only reflects current page?
-    // The original code did this, so preserving behavior. Ideally counts should come from backend stats.
     this.workerCount$ = this.workers$.pipe(
       map(
         (workers: Worker[]) =>
@@ -163,6 +168,10 @@ export class WorkerListComponent implements OnInit {
       this.pageIndex = 0;
       this.loadWorkers();
     });
+  }
+
+  setTab(tab: 'workers' | 'groups'): void {
+    this.activeTab = tab;
   }
 
   onSearch(term: string): void {
@@ -240,5 +249,12 @@ export class WorkerListComponent implements OnInit {
 
   getSkillsTooltip(skills: string[] | undefined): string {
     return skills ? skills.slice(2).join(', ') : '';
+  }
+
+  openCreateGroupModal(): void {
+    // Delegate to the embedded WorkerGroupListComponent so both
+    // entry-points (header button + empty-state button) share the
+    // same dialog config and post-create refresh logic.
+    this.groupListRef?.openCreateModal();
   }
 }

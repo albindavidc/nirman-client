@@ -1,4 +1,62 @@
-mat-dialog-content p {
+.confirm-dialog-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+  text-align: center;
+  gap: 16px;
+}
+
+.icon-container {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--md-sys-color-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-primary);
+
+  mat-icon {
+    font-family: 'Material Icons' !important;
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  &.warn {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+  }
+}
+
+.confirm-message {
   margin: 0;
-  color: var(--mat-dialog-supporting-text-color);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: 320px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 10px;
+
+  button {
+    height: 44px;
+    border-radius: 12px;
+    padding: 0 24px;
+    font-weight: 600;
+  }
+
+  .btn-cancel {
+    color: var(--md-sys-color-on-surface-variant);
+    background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .btn-confirm {
+    min-width: 120px;
+  }
 }

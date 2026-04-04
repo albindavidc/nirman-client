@@ -1,14 +1,20 @@
 <app-shared-modal [title]="data.title" (closeModal)="onCancel()">
-  <p class="text-gray-300">{{ data.message }}</p>
+  <div class="confirm-dialog-body">
+    <div class="icon-container" [class.warn]="data.confirmButtonColor === 'warn'">
+      <mat-icon>{{ data.icon || (data.confirmButtonColor === 'warn' ? 'warning' : 'help_outline') }}</mat-icon>
+    </div>
+    <p class="confirm-message">{{ data.message }}</p>
+  </div>
 
-  <div actions>
-    <button mat-button (click)="onCancel()" class="mr-2">
+  <div actions class="confirm-actions">
+    <button mat-button (click)="onCancel()" class="btn-cancel">
       {{ data.cancelButtonText || "Cancel" }}
     </button>
     <button
       mat-flat-button
       [color]="data.confirmButtonColor || 'primary'"
       (click)="onConfirm()"
+      class="btn-confirm"
     >
       {{ data.confirmButtonText || "Confirm" }}
     </button>

@@ -18,6 +18,26 @@ html {
   );
 }
 
+/* Global Material Icon Fix */
+.material-icons,
+.material-icons-outlined,
+mat-icon {
+  font-family: 'Material Icons' !important;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
 /* Global styles */
 html,
 body {
@@ -97,6 +117,25 @@ body {
 // Dialog overlay
 .cdk-overlay-dark-backdrop {
   background: rgba(0, 0, 0, 0.6);
+}
+
+// Zero-padding dialog — used by worker group modals that self-manage layout
+.zero-padding-dialog {
+  .mat-mdc-dialog-surface {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    background: var(--md-sys-color-surface-container) !important;
+    overflow: hidden !important;
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(233, 193, 108, 0.08) !important;
+  }
+
+  .mdc-dialog__surface {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
 }
 
 // Snackbar variants

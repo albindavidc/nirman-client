@@ -1,114 +1,151 @@
 <div class="worker-list-container">
   <!-- Header Section -->
   <header class="page-header" [@fadeInUp]>
-    <div class="header-content">
+    <div class="header-top">
       <div class="header-text">
-        <h1 class="page-title">Team Workers</h1>
-        <p class="page-subtitle">Manage project workers and roles</p>
+        <h1 class="page-title">Workers</h1>
+        <p class="page-subtitle">Manage workers and organize teams</p>
       </div>
+
+      <div class="header-actions">
+        @if (activeTab === 'workers') {
+          <button class="btn-create-gold" (click)="openAddModal()" id="header-add-worker-btn">
+            <mat-icon>add</mat-icon>
+            Add Worker
+          </button>
+        } @else {
+          <button class="btn-create-gold" (click)="openCreateGroupModal()" id="header-create-group-btn">
+            <mat-icon>add</mat-icon>
+            Create Group
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Segmented Tab Bar -->
+    <div class="segmented-tabs">
       <button
-        mat-flat-button
-        color="primary"
-        class="add-btn"
-        (click)="openAddModal()"
+        class="tab-item"
+        id="tab-workers"
+        [class.active]="activeTab === 'workers'"
+        (click)="setTab('workers')"
       >
-        <mat-icon>add</mat-icon>
-        Add Worker
+        <mat-icon>group</mat-icon>
+        Workers
+      </button>
+      <button
+        class="tab-item"
+        id="tab-groups"
+        [class.active]="activeTab === 'groups'"
+        (click)="setTab('groups')"
+      >
+        <mat-icon>layers</mat-icon>
+        Groups
       </button>
     </div>
   </header>
 
-  <!-- Stats Cards -->
-  <div class="stats-grid" [@staggerIn]>
-    <div class="stat-card primary">
-      <div class="stat-icon">
-        <mat-icon>group</mat-icon>
+  <!-- ───── WORKERS TAB ───────────────────────────────────────────────── -->
+  @if (activeTab === 'workers') {
+    <!-- Stats Cards -->
+    <div class="stats-grid" [@staggerIn]>
+      <div class="stat-card primary">
+        <div class="stat-icon">
+          <mat-icon>group</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ totalWorkers$ | async }}</span>
+          <span class="stat-label">Total Workers</span>
+        </div>
       </div>
-      <div class="stat-content">
-        <span class="stat-value">{{ totalWorkers$ | async }}</span>
-        <span class="stat-label">Total Workers</span>
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ activeCount$ | async }}</span>
+          <span class="stat-label">Active Now</span>
+        </div>
       </div>
-    </div>
-    <div class="stat-card success">
-      <div class="stat-icon">
-        <mat-icon>check_circle</mat-icon>
+      <div class="stat-card warning">
+        <div class="stat-icon">
+          <mat-icon>engineering</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ workerCount$ | async }}</span>
+          <span class="stat-label">Workers</span>
+        </div>
       </div>
-      <div class="stat-content">
-        <span class="stat-value">{{ activeCount$ | async }}</span>
-        <span class="stat-label">Active Now</span>
-      </div>
-    </div>
-    <div class="stat-card warning">
-      <div class="stat-icon">
-        <mat-icon>engineering</mat-icon>
-      </div>
-      <div class="stat-content">
-        <span class="stat-value">{{ workerCount$ | async }}</span>
-        <span class="stat-label">Workers</span>
-      </div>
-    </div>
-    <div class="stat-card tertiary">
-      <div class="stat-icon">
-        <mat-icon>supervisor_account</mat-icon>
-      </div>
-      <div class="stat-content">
-        <span class="stat-value">{{ supervisorCount$ | async }}</span>
-        <span class="stat-label">Supervisors</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Content Card -->
-  <div class="content-card">
-    <div class="card-header">
-      <h2>All Workers</h2>
-      <div class="toolbar">
-        <app-search-bar
-          placeholder="Search workers..."
-          (searchChange)="onSearch($event)"
-        ></app-search-bar>
-
-        <mat-form-field appearance="outline" class="toolbar-field">
-          <mat-select [formControl]="roleControl" placeholder="All Roles">
-            <mat-option value="">All Roles</mat-option>
-            <mat-option value="worker">Worker</mat-option>
-            <mat-option value="supervisor">Supervisor</mat-option>
-            <mat-option value="manager">Manager</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <button mat-stroked-button class="toolbar-btn" (click)="loadWorkers()">
-          <mat-icon>refresh</mat-icon>
-          Refresh
-        </button>
+      <div class="stat-card tertiary">
+        <div class="stat-icon">
+          <mat-icon>supervisor_account</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ supervisorCount$ | async }}</span>
+          <span class="stat-label">Supervisors</span>
+        </div>
       </div>
     </div>
 
-    <!-- Table -->
-    @if (loading$ | async) {
-      <div class="loading-state">
-        <mat-spinner diameter="40"></mat-spinner>
+    <!-- Content Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2>All Workers</h2>
+        <div class="toolbar">
+          <app-search-bar
+            placeholder="Search workers..."
+            (searchChange)="onSearch($event)"
+          ></app-search-bar>
+
+          <mat-form-field appearance="outline" class="toolbar-field">
+            <mat-select [formControl]="roleControl" placeholder="All Roles">
+              <mat-option value="">All Roles</mat-option>
+              <mat-option value="worker">Worker</mat-option>
+              <mat-option value="supervisor">Supervisor</mat-option>
+              <mat-option value="manager">Manager</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-stroked-button class="toolbar-btn" (click)="loadWorkers()">
+            <mat-icon>refresh</mat-icon>
+            Refresh
+          </button>
+        </div>
       </div>
-    } @else {
-      <app-table
-        [data]="(workers$ | async) || []"
-        [columns]="columns"
-        [total]="(totalWorkers$ | async) || 0"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[5, 10, 25, 50]"
-        [columnTemplates]="{
-          worker: workerTemplate,
-          role: roleTemplate,
-          skills: skillsTemplate,
-          email: emailTemplate,
-          status: statusTemplate,
-          actions: actionsTemplate,
-        }"
-        (pageChange)="onPageChange($event)"
-      >
-      </app-table>
-    }
-  </div>
+
+      <!-- Table -->
+      @if (loading$ | async) {
+        <div class="loading-state">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else {
+        <app-table
+          [data]="(workers$ | async) || []"
+          [columns]="columns"
+          [total]="(totalWorkers$ | async) || 0"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [columnTemplates]="{
+            worker: workerTemplate,
+            role: roleTemplate,
+            skills: skillsTemplate,
+            email: emailTemplate,
+            status: statusTemplate,
+            actions: actionsTemplate,
+          }"
+          (pageChange)="onPageChange($event)"
+        >
+        </app-table>
+      }
+    </div>
+  }
+
+  <!-- ───── GROUPS TAB ─────────────────────────────────────────────────── -->
+  @if (activeTab === 'groups') {
+    <!-- Groups List -->
+    <app-worker-group-list></app-worker-group-list>
+  }
+
 </div>
 
 <!-- Templates -->

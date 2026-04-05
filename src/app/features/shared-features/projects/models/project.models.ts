@@ -37,6 +37,7 @@ export interface ProjectPhase {
   actualEndDate?: string;
   sequence: number;
   approvalStatus?: ApprovalStatus;
+  workerGroups?: any[];
 }
 
 export interface PhaseApprovalRequest {

@@ -119,6 +119,17 @@
         </div>
       }
 
+      <!-- ── Worker Groups ── -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Worker Groups</mat-label>
+        <mat-select formControlName="workerGroupIds" multiple>
+          @for (group of workerGroups; track group.id) {
+            <mat-option [value]="group.id">{{ group.name }} ({{ group.trade }})</mat-option>
+          }
+        </mat-select>
+        <mat-hint>Select worker groups for this phase</mat-hint>
+      </mat-form-field>
+
       <!-- ── Sequence ── -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Sequence</mat-label>

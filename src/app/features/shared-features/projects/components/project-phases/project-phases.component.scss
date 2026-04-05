@@ -307,10 +307,40 @@
   width: 130px !important;
 }
 ::ng-deep .mat-column-progress {
+  flex: 1;
+  min-width: 120px;
+}
+::ng-deep .mat-column-workerGroups {
   flex: 1.5;
-  min-width: 150px;
+  min-width: 180px;
 }
 /* ... other columns ... */
+
+.worker-groups-cell {
+  padding: 8px 0;
+}
+
+.groups-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.group-chip {
+  padding: 2px 8px;
+  background: var(--md-sys-color-surface-container-high);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+  white-space: nowrap;
+}
+
+.no-groups {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-outline);
+  font-style: italic;
+}
 
 .status-badge {
   padding: 4px 8px;

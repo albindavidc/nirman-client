@@ -12,6 +12,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PhaseModalComponent } from './phase-modal/phase-modal.component';
 import type { PhaseModalData } from './phase-modal/phase-modal.component';
 import { ProjectPhaseService } from '../../services/project-phase.service';
@@ -51,6 +52,7 @@ interface PhaseStats {
     MatMenuModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatTooltipModule,
   ],
   templateUrl: './project-phases.component.html',
   styleUrl: './project-phases.component.scss',
@@ -83,6 +85,7 @@ export class ProjectPhasesComponent implements OnInit {
     'name',
     'status',
     'progress',
+    'workerGroups',
     'plannedDuration',
     'actualDuration',
     'tasks',

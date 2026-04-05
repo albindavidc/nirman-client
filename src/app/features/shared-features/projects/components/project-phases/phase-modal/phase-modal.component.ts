@@ -19,6 +19,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ProjectPhase } from '../../../models/project.models';
+import { WorkerGroupService } from '../../../../workers/services/worker-group.service';
+import { WorkerGroup } from '../../../../workers/models/worker-group.model';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
 import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
 
@@ -58,9 +60,11 @@ export class PhaseModalComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<PhaseModalComponent>);
   public readonly data = inject<PhaseModalData>(MAT_DIALOG_DATA);
+  private readonly workerGroupService = inject(WorkerGroupService);
 
   phaseForm!: FormGroup;
   isSubmitting = false;
+  workerGroups: WorkerGroup[] = [];
 
   readonly phaseStatuses = PHASE_STATUSES;
 
@@ -81,6 +85,14 @@ export class PhaseModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadWorkerGroups();
+  }
+
+  private loadWorkerGroups(): void {
+    this.workerGroupService.getGroups().subscribe({
+      next: (groups) => (this.workerGroups = groups),
+      error: (err) => console.error('Error loading worker groups', err),
+    });
   }
 
   private initForm(): void {
@@ -111,6 +123,7 @@ export class PhaseModalComponent implements OnInit {
             phase.progress,
             [Validators.min(0), Validators.max(100)],
           ],
+          workerGroupIds: [phase.workerGroups?.map((wg: any) => wg.id) || []],
         },
         {
           validators: [
@@ -139,6 +152,7 @@ export class PhaseModalComponent implements OnInit {
           plannedStartDate: [null],
           plannedEndDate: [null],
           sequence: [nextSequence, [Validators.required, Validators.min(1)]],
+          workerGroupIds: [[]],
         },
         {
           validators: [

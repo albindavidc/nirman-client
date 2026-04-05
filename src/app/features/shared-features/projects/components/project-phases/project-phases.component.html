@@ -192,6 +192,26 @@
             </td>
           </ng-container>
 
+          <!-- Worker Groups Column -->
+          <ng-container matColumnDef="workerGroups">
+            <th mat-header-cell *matHeaderCellDef>WORKER GROUPS</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="cell-content worker-groups-cell">
+                @if (element.workerGroups && element.workerGroups.length > 0) {
+                  <div class="groups-chips">
+                    @for (group of element.workerGroups; track group.id) {
+                      <span class="group-chip" [matTooltip]="group.trade">
+                        {{ group.name }}
+                      </span>
+                    }
+                  </div>
+                } @else {
+                  <span class="no-groups">None</span>
+                }
+              </div>
+            </td>
+          </ng-container>
+
           <!-- Planned Duration Column -->
           <ng-container matColumnDef="plannedDuration">
             <th mat-header-cell *matHeaderCellDef>PLANNED DURATION</th>

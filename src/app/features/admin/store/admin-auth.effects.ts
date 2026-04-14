@@ -111,8 +111,9 @@ export class AdminAuthEffects {
     function (this: AdminAuthEffects) {
       return this.actions$.pipe(
         ofType(AdminAuthActions.AdminAuthActions.loginSuccess),
-        tap(() => {
-          this.router.navigate(['/vendor-management']);
+        tap(({ response }) => {
+          localStorage.setItem('user', JSON.stringify(response.user));
+          this.router.navigate(['/admin/dashboard']);
         }),
       );
     }.bind(this),

@@ -124,17 +124,38 @@
           </div>
 
           <div class="assignee-section">
-            <div class="field-label">ASSIGNED TO</div>
-            <div class="assignee-box">
-              <div class="avatar">
-                {{ task.assignee?.firstName?.[0] || "?" }}
-              </div>
-              <div class="details">
-                <div class="name">
-                  {{ task.assignee?.firstName }} {{ task.assignee?.lastName }}
+            <div class="field-label">ASSIGNMENTS</div>
+            <div class="assignments-list">
+              @for (assignment of task.assignments; track assignment.id) {
+                <div class="assignee-box" style="margin-bottom: 12px;">
+                  <div class="avatar" [style.background-color]="assignment.workerGroupId ? '#6366f1' : '#3b82f6'">
+                    @if (assignment.userId) {
+                      {{ assignment.user?.firstName?.[0] || "U" }}
+                    } @else {
+                      {{ assignment.workerGroup?.name?.[0] || "G" }}
+                    }
+                  </div>
+                  <div class="details">
+                    <div class="name">
+                      @if (assignment.userId) {
+                        {{ assignment.user?.firstName }} {{ assignment.user?.lastName }}
+                      } @else {
+                        {{ assignment.workerGroup?.name }}
+                      }
+                    </div>
+                    <div class="role">
+                      @if (assignment.userId) {
+                        Individual Worker • {{ assignment.user?.email }}
+                      } @else {
+                        Worker Group • {{ assignment.workerGroup?.trade }}
+                      }
+                    </div>
+                  </div>
                 </div>
-                <div class="role">Assignee • {{ task.assignee?.email }}</div>
-              </div>
+              }
+              @if (!task.assignments || task.assignments.length === 0) {
+                <p style="color: #64748b; font-size: 0.875rem;">No one assigned yet.</p>
+              }
             </div>
           </div>
         </div>

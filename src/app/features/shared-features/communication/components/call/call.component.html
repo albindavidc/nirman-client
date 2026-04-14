@@ -1,0 +1,35 @@
+<div class="call-overlay">
+  <div class="video-container">
+    <!-- Remote Video (Large) -->
+    <video #remoteVideo class="remote-video" autoplay playsinline></video>
+    
+    <!-- Local Video (Small Overlay) -->
+    <div class="local-video-wrapper" [class.video-off]="isVideoOff">
+      <video #localVideo class="local-video" autoplay playsinline muted></video>
+      <div class="video-placeholder" *ngIf="isVideoOff">
+        <mat-icon>videocam_off</mat-icon>
+      </div>
+    </div>
+
+    <!-- Call Info Overlay -->
+    <div class="call-info">
+      <h3>{{chat?.name}}</h3>
+      <span class="duration">{{callDuration}}</span>
+    </div>
+
+    <!-- Call Controls -->
+    <div class="call-controls">
+      <button class="control-btn" [class.active]="isMuted" (click)="toggleMute()">
+        <mat-icon>{{isMuted ? 'mic_off' : 'mic'}}</mat-icon>
+      </button>
+      
+      <button class="control-btn hangup-btn" (click)="endCall()">
+        <mat-icon>call_end</mat-icon>
+      </button>
+
+      <button class="control-btn" [class.active]="isVideoOff" (click)="toggleVideo()">
+        <mat-icon>{{isVideoOff ? 'videocam_off' : 'videocam'}}</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

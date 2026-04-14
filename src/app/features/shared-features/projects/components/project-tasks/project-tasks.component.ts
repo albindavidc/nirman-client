@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TaskService, Task } from '../../services/task.service';
 import {
   TaskModalComponent,
@@ -24,6 +25,7 @@ import {
     MatChipsModule,
     MatMenuModule,
     MatDialogModule,
+    MatTooltipModule,
   ],
   templateUrl: './project-tasks.component.html',
   styleUrls: ['./project-tasks.component.scss'],
@@ -96,6 +98,34 @@ export class ProjectTasksComponent implements OnInit {
         this.loadTasks();
       }
     });
+  }
+
+  openEditTaskModal(task: Task) {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    const dialogRef = this.dialog.open(TaskModalComponent, {
+      width: '600px',
+      data: {
+        mode: 'edit',
+        projectId: projectId,
+        task: task,
+      } as TaskModalData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadTasks();
+      }
+    });
+  }
+
+  deleteTask(task: Task) {
+    if (confirm(`Are you sure you want to delete task "${task.name}"?`)) {
+      this.taskService.deleteTask(task.id).subscribe(() => {
+        this.loadTasks();
+      });
+    }
   }
 
   getStatusColor(status: string): string {

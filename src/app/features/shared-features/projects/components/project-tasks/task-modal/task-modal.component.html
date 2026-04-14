@@ -82,20 +82,138 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Assigned To</mat-label>
-        <mat-select formControlName="assignedTo">
-          <mat-option [value]="null">Unassigned</mat-option>
-          @for (worker of workers; track worker.user?.id) {
-            <mat-option [value]="worker.user?.id">
-              {{ worker.user?.firstName }} {{ worker.user?.lastName }} ({{ worker.role }})
+        <mat-label>Assign Specialized Teams</mat-label>
+        <mat-select
+          formControlName="workerGroupIds"
+          multiple
+          placeholder="Select groups for this task"
+        >
+          @for (group of workerGroups; track group.id) {
+            <mat-option [value]="group.id">
+              <div class="flex items-center justify-between w-full">
+                <span>{{ group.name }}</span>
+                <span
+                  class="text-[10px] text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded ml-2"
+                  >{{ group.trade }}</span
+                >
+              </div>
             </mat-option>
           }
         </mat-select>
+        <mat-hint>Entire teams will be assigned to the task</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Assign Individual Specialists</mat-label>
+        <mat-select
+          formControlName="workerIds"
+          multiple
+          placeholder="Select specific workers"
+        >
+          @for (worker of workers; track worker.user?.id) {
+            <mat-option [value]="worker.user?.id">
+              <div class="flex items-center justify-between w-full">
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium"
+                    >{{ worker.user?.firstName }}
+                    {{ worker.user?.lastName }}</span
+                  >
+                  @if (getWorkerGroupName(worker.user?.id || "")) {
+                    <span class="text-[10px] text-gray-400 italic"
+                      >Group:
+                      {{ getWorkerGroupName(worker.user?.id || "") }}</span
+                    >
+                  }
+                </div>
+                <span
+                  class="text-[10px] text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded ml-2"
+                  >{{ worker.role }}</span
+                >
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+        <mat-hint>Specific individuals for targeted tasks</mat-hint>
       </mat-form-field>
     </div>
 
+    <!-- Assignment & Individual Control -->
+    @if (assignmentControls.length > 0) {
+      <div class="assignment-details-section mt-6 mb-6">
+        <div class="section-header flex items-center gap-2 mb-3">
+          <mat-icon class="text-primary text-sm">assignment_ind</mat-icon>
+          <span
+            class="section-label font-bold text-white tracking-wide uppercase text-xs"
+            >Workforce Assignment Details</span
+          >
+        </div>
+        @for (assignment of assignmentControls; track $index; let i = $index) {
+          <div
+            [formGroupName]="i"
+            class="assignment-item p-3 mb-2 border rounded-lg bg-slate-800/30"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <mat-icon class="text-gray-400 text-sm h-4 w-4">{{
+                  assignment.get("type")?.value === "Worker"
+                    ? "person"
+                    : "group"
+                }}</mat-icon>
+                <span class="text-sm font-medium text-white">{{
+                  assignment.get("name")?.value
+                }}</span>
+                <span
+                  class="text-[10px] uppercase tracking-wider text-gray-500 bg-gray-900 px-1.5 py-0.5 rounded"
+                  >{{ assignment.get("type")?.value }}</span
+                >
+              </div>
+              <mat-checkbox formControlName="isActive" color="primary">
+                <span class="text-xs text-gray-400">Active</span>
+              </mat-checkbox>
+            </div>
+
+            @if (assignment.get("groupName")?.value) {
+              <div class="text-[10px] text-indigo-400 font-medium mb-1 px-1">
+                <mat-icon class="!text-[10px] h-2.5 w-2.5 mr-0.5 align-middle"
+                  >groups</mat-icon
+                >
+                Team: {{ assignment.get("groupName")?.value }}
+              </div>
+            }
+
+            @if (assignment.get("assignedAt")?.value) {
+              <div class="flex items-center gap-1.5 mb-3 px-1">
+                <mat-icon class="text-gray-500 !text-[12px] h-3 w-3"
+                  >info</mat-icon
+                >
+                <span class="text-[10px] text-gray-500">
+                  Assigned by {{ assignment.get("assignedByName")?.value }} on
+                  {{
+                    assignment.get("assignedAt")?.value | date: "MMM dd, h:mm a"
+                  }}
+                </span>
+              </div>
+            }
+
+            <mat-form-field
+              appearance="outline"
+              class="full-width dense-form-field mb-0"
+            >
+              <mat-label>Assignment Notes</mat-label>
+              <input
+                matInput
+                formControlName="notes"
+                placeholder="E.g., Responsible for electrical wiring"
+              />
+              <mat-icon matSuffix class="text-xs">edit_note</mat-icon>
+            </mat-form-field>
+          </div>
+        }
+      </div>
+    }
+
     <!-- Planned Dates -->
-    @if (mode === 'edit') {
+    @if (mode === "edit") {
       <div class="section-label">Planned Dates</div>
     }
     <div class="grid-2">
@@ -114,7 +232,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ mode === 'create' ? 'Due Date' : 'End Date' }}</mat-label>
+        <mat-label>{{ mode === "create" ? "Due Date" : "End Date" }}</mat-label>
         <input
           matInput
           [matDatepicker]="pickerEnd"
@@ -142,7 +260,11 @@
         <mat-icon matSuffix>timer</mat-icon>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width" *ngIf="mode === 'edit'">
+      <mat-form-field
+        appearance="outline"
+        class="full-width"
+        *ngIf="mode === 'edit'"
+      >
         <mat-label>Act. Hours</mat-label>
         <input
           matInput
@@ -165,7 +287,7 @@
     </div>
 
     <!-- Edit Only Fields -->
-    @if (mode === 'edit') {
+    @if (mode === "edit") {
       <!-- Actual Dates -->
       <div class="section-label">Actual Dates</div>
       <div class="grid-2">
@@ -182,7 +304,7 @@
           ></mat-datepicker-toggle>
           <mat-datepicker #pickerActualStart></mat-datepicker>
         </mat-form-field>
-  
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Actual End</mat-label>
           <input
@@ -198,12 +320,14 @@
           <mat-datepicker #pickerActualEnd></mat-datepicker>
         </mat-form-field>
       </div>
-  
+
       <!-- Progress Slider -->
       <div class="progress-section">
         <div class="progress-header">
           <span class="section-label">Progress</span>
-          <span class="progress-value">{{ taskForm.get("progress")?.value }}%</span>
+          <span class="progress-value"
+            >{{ taskForm.get("progress")?.value }}%</span
+          >
         </div>
         <mat-slider
           class="progress-slider"
@@ -216,7 +340,7 @@
           <input matSliderThumb formControlName="progress" />
         </mat-slider>
       </div>
-  
+
       <!-- Notes -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Notes</mat-label>
@@ -252,13 +376,13 @@
         class="create-btn"
       >
         @if (!isSubmitting) {
-          <mat-icon>{{ mode === 'create' ? 'add' : 'save' }}</mat-icon>
+          <mat-icon>{{ mode === "create" ? "add" : "save" }}</mat-icon>
         }
         @if (!isSubmitting) {
-          <span>{{ mode === 'create' ? 'Create Task' : 'Update Task' }}</span>
+          <span>{{ mode === "create" ? "Create Task" : "Update Task" }}</span>
         }
         @if (isSubmitting) {
-          <span>{{ mode === 'create' ? 'Creating...' : 'Updating...' }}</span>
+          <span>{{ mode === "create" ? "Creating..." : "Updating..." }}</span>
         }
       </button>
     </div>

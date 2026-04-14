@@ -18,7 +18,7 @@ export class PendingApprovalComponent {
   private readonly store = inject(Store);
 
   onLogout(): void {
-    localStorage.removeItem('user');
+    localStorage.clear();
     this.store.dispatch(LoginActions.logout());
   }
 }

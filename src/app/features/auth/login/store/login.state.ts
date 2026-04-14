@@ -4,6 +4,7 @@ export interface LoginState {
   isLoading: boolean;
   error: string | null;
   isLoggedIn: boolean;
+  authHydrated: boolean;
   user: UserProfile | null;
 
   // Forgot password flow
@@ -25,6 +26,7 @@ export const initialLoginState: LoginState = {
   isLoading: false,
   error: null,
   isLoggedIn: false,
+  authHydrated: false,
   user: null,
 
   forgotPasswordEmail: null,

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { initialLoginState } from './login.state';
 import * as LoginActions from './login.actions';
+import { initialLoginState } from './login.state';
 
 export const loginReducer = createReducer(
   initialLoginState,
@@ -16,6 +16,7 @@ export const loginReducer = createReducer(
     ...state,
     isLoading: false,
     isLoggedIn: true,
+    authHydrated: true,
     user: response.user,
     error: null,
   })),
@@ -30,17 +31,24 @@ export const loginReducer = createReducer(
   on(LoginActions.hydrateFromStorage, (state, { user }) => ({
     ...state,
     isLoggedIn: true,
+    authHydrated: true,
     user,
+  })),
+
+  // Handle explicitly complete hydration (e.g., when no user is in localStorage)
+  on(LoginActions.hydrateComplete, (state) => ({
+    ...state,
+    authHydrated: true,
   })),
 
   // Session validation from backend
   on(LoginActions.validateSessionSuccess, (state, { user }) => ({
     ...state,
     isLoggedIn: true,
-    user: {
-      ...state.user,
-      ...user, // Merge all fields from backend user (including profilePhotoUrl)
-    },
+    // Fully replace the user object — never merge with stale state.
+    // Merging allowed fields from a previous role (e.g. admin) to persist
+    // into a non-admin session when the token cookie was stale.
+    user,
   })),
 
   on(LoginActions.validateSessionFailure, (state) => ({
@@ -154,5 +162,5 @@ export const loginReducer = createReducer(
   on(LoginActions.updateUserProfile, (state, { user }) => ({
     ...state,
     user: state.user ? { ...state.user, ...user } : null,
-  }))
+  })),
 );

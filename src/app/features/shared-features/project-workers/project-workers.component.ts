@@ -70,6 +70,7 @@ export class ProjectWorkersComponent implements OnInit {
 
   today = new Date();
   currentUserRole = '';
+  phaseId: string | null = null;
 
   get isAdmin(): boolean {
     return ['admin'].includes(this.currentUserRole);
@@ -91,6 +92,11 @@ export class ProjectWorkersComponent implements OnInit {
       const user = JSON.parse(userJson);
       this.currentUserRole = user.role?.toLowerCase() || '';
     }
+
+    this.route.queryParamMap.subscribe(params => {
+      this.phaseId = params.get('phaseId');
+    });
+
     this.refreshData();
   }
 
@@ -136,6 +142,7 @@ export class ProjectWorkersComponent implements OnInit {
         mode: 'create',
         projectId: projectId,
         projectName: 'Project',
+        phaseId: this.phaseId || undefined
       } as WorkerModalData,
       panelClass: 'custom-dialog-container',
     });

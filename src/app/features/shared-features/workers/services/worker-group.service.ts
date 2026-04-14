@@ -21,12 +21,16 @@ export class WorkerGroupService {
     trade?: TradeType,
     isActive?: boolean,
     search?: string,
+    projectId?: string,
+    phaseId?: string,
   ): Observable<WorkerGroup[]> {
     let params = new HttpParams();
 
     if (trade) params = params.set('trade', trade);
     if (isActive !== undefined) params = params.set('isActive', String(isActive));
     if (search) params = params.set('search', search);
+    if (projectId) params = params.set('projectId', projectId);
+    if (phaseId) params = params.set('phaseId', phaseId);
 
     return this.http.get<WorkerGroup[]>(this.apiUrl, { params });
   }

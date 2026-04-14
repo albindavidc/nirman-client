@@ -160,16 +160,20 @@
                 {{ getPhaseName(task.phaseId) }}
               </div>
               <div class="col assigned">
-                @if (task.assignee) {
-                  <div class="avatar-cell">
-                    <div class="avatar">
-                      {{ task.assignee.firstName[0]
-                      }}{{ task.assignee.lastName[0] }}
-                    </div>
-                    <span
-                      >{{ task.assignee.firstName }}
-                      {{ task.assignee.lastName.slice(0, 1) }}.</span
-                    >
+                @if (task.assignments && task.assignments.length > 0) {
+                  <div class="avatar-stack">
+                    @for (assignment of task.assignments.slice(0, 2); track assignment.id) {
+                      <div class="avatar-circle"
+                           [matTooltip]="assignment.userId ? (assignment.user?.firstName + ' ' + assignment.user?.lastName) : assignment.workerGroup?.name"
+                           [style.background-color]="assignment.workerGroupId ? '#6366f1' : '#3b82f6'">
+                        {{ assignment.userId ? assignment.user?.firstName?.[0] : assignment.workerGroup?.name?.[0] }}
+                      </div>
+                    }
+                    @if (task.assignments.length > 2) {
+                      <div class="avatar-circle more" [matTooltip]="(task.assignments.length - 2) + ' more'">
+                        +{{ task.assignments.length - 2 }}
+                      </div>
+                    }
                   </div>
                 } @else {
                   <span class="text-muted">-</span>

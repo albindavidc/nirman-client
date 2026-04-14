@@ -4,10 +4,29 @@ import { ConfigService } from '../../../../core/services/config.service';
 import { Observable } from 'rxjs';
 import { TaskDependency } from '../models/project.models';
 
+export interface TaskAssignmentInput {
+  userId?: string;
+  workerGroupId?: string;
+  notes?: string;
+  isActive?: boolean;
+}
+
+export interface TaskAssignment {
+  id: string;
+  taskId: string;
+  workerGroupId?: string | null;
+  userId?: string | null;
+  assignedById: string;
+  assignedAt: Date;
+  isActive: boolean;
+  notes?: string | null;
+  workerGroup?: { id: string; name: string; trade: string } | null;
+  user?: { id: string; firstName: string; lastName: string; email: string } | null;
+}
+
 export interface Task {
   id: string;
   phaseId: string;
-  assignedTo: string | null;
   name: string;
   description: string | null;
   plannedStartDate: Date | null;
@@ -20,11 +39,7 @@ export interface Task {
   notes?: string | null;
   estimatedHours?: number | null;
   actualHours?: number | null;
-  assignee?: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  } | null;
+  assignments?: TaskAssignment[];
   color?: string | null;
   dependencies?: string[]; // IDs of predecessor tasks
 }
@@ -33,7 +48,8 @@ export interface CreateTaskDto {
   phaseId: string;
   name: string;
   description?: string;
-  assignedTo?: string;
+  workerGroupIds?: string[];
+  workerIds?: string[];
   plannedStartDate?: string;
   plannedEndDate?: string;
   priority?: string;
@@ -45,6 +61,7 @@ export interface CreateTaskDto {
   estimatedHours?: number;
   actualHours?: number;
   color?: string;
+  assignments?: TaskAssignmentInput[];
 }
 
 export interface CreateTaskDependencyDto {

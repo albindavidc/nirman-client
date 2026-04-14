@@ -48,9 +48,10 @@ export class RequestMaterialModalComponent implements OnInit {
   form = this.fb.group({
     materialName: ['', Validators.required],
     materialId: [''],
-    quantity: [1, [Validators.required, Validators.min(1)]],
+    quantityRequested: [1, [Validators.required, Validators.min(1)]],
     priority: ['medium', Validators.required],
     requiredDate: [new Date(), Validators.required],
+    deliveryLocation: ['', [Validators.maxLength(200)]],
     purpose: ['', [Validators.required, Validators.maxLength(500), CustomValidators.noWhitespace()]],
   });
 

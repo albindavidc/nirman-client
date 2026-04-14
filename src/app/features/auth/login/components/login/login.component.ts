@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import { Store } from '@ngrx/store';
@@ -49,14 +49,17 @@ export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   hidePassword = signal(true);
   isVendor = signal(false);
   isWorker = signal(false);
   isAdmin = signal(false);
+  isSupervisor = signal(false);
 
   get signupRoute(): string {
     if (this.isAdmin()) return '/auth/signup?role=admin';
+    if (this.isSupervisor()) return '/auth/signup/supervisor/complete';
     if (this.isVendor()) return '/auth/signup/vendor/step1';
     if (this.isWorker()) return '/auth/signup/worker/step1';
     return '/auth/signup';
@@ -81,9 +84,14 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
+      if (!params['role']) {
+        this.router.navigate(['/']);
+        return;
+      }
       this.isVendor.set(params['role'] === 'vendor');
       this.isWorker.set(params['role'] === 'worker');
       this.isAdmin.set(params['role'] === 'admin');
+      this.isSupervisor.set(params['role'] === 'supervisor');
     });
   }
 

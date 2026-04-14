@@ -26,6 +26,10 @@ export const hydrateFromStorage = createAction(
   props<{ user: UserProfile }>(),
 );
 
+export const hydrateComplete = createAction(
+  '[Login] Hydrate Complete'
+);
+
 // Validate session with backend after hydrating
 export const validateSession = createAction('[Login] Validate Session');
 

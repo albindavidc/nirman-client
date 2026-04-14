@@ -22,6 +22,7 @@ import { MatDividerModule } from '@angular/material/divider';
 // Store
 import * as SettingsActions from '../../store/settings.actions';
 import * as SettingsSelectors from '../../store/settings.selectors';
+import * as LoginActions from '../../../../auth/login/store/login.actions';
 
 // Validators
 import { CustomValidators } from '../../../../../shared/validators/custom-validators';
@@ -192,5 +193,10 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
         })
       );
     }
+  }
+
+  onLogout(): void {
+    localStorage.clear();
+    this.store.dispatch(LoginActions.logout());
   }
 }

@@ -1,6 +1,16 @@
 import { Routes } from '@angular/router';
+import { RoleGuard } from '../../core/guards/role.guard';
 
 export const WORKER_ROUTES: Routes = [
+  {
+    path: 'dashboard',
+    canActivate: [RoleGuard],
+    data: { roles: ['worker'] },
+    loadComponent: () =>
+      import('../../shared/components/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
+  },
   {
     path: 'attendance',
     loadComponent: () =>

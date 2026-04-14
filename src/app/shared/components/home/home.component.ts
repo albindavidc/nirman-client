@@ -13,4 +13,8 @@ export class HomeComponent {
   navigateToSignup(): void {
     this.router.navigate(['/auth/signup']);
   }
+
+  navigateToLogin(): void {
+    this.router.navigate(['/auth/supervisor']);
+  }
 }

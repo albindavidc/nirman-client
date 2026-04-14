@@ -25,7 +25,9 @@ import { debounceTime, distinctUntilChanged, switchMap, of, tap } from 'rxjs';
 import { SharedModalComponent } from '../../../../shared/components/shared-modal/shared-modal.component';
 import { ProjectService } from '../../projects/services/project.service';
 import { WorkerService } from '../../workers/services/worker.service';
+import { WorkerGroupService } from '../../workers/services/worker-group.service';
 import { Worker } from '../../workers/models/worker.model';
+import { WorkerGroupMember } from '../../workers/models/worker-group.model';
 import { Professional } from '../../projects/models/project.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CustomValidators } from '../../../../shared/validators/custom-validators';
@@ -34,6 +36,7 @@ export interface WorkerModalData {
   mode: 'create' | 'edit';
   projectId: string;
   projectName?: string;
+  phaseId?: string;
   worker?: {
     userId: string;
     userName: string;
@@ -68,6 +71,7 @@ export class WorkerModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private projectService = inject(ProjectService);
   private workerService = inject(WorkerService);
+  private workerGroupService = inject(WorkerGroupService);
   private notificationService = inject(NotificationService);
 
   mode: 'create' | 'edit' = 'create';
@@ -85,6 +89,10 @@ export class WorkerModalComponent implements OnInit {
   // Create New Logic (incorporating Prisma fields)
   createForm!: FormGroup;
 
+  // Phase Groups Logic
+  phaseWorkers: any[] = [];
+  loadingPhaseWorkers = false;
+
   // Edit Logic
   editRoleControl = new FormControl('', [Validators.required]);
 
@@ -96,6 +104,9 @@ export class WorkerModalComponent implements OnInit {
     if (this.mode === 'create') {
       this.initSearchLogic();
       this.initCreateForm();
+      if (this.data.phaseId) {
+        this.loadPhaseWorkers(this.data.phaseId);
+      }
     } else if (this.mode === 'edit') {
       if (this.data.worker) {
         this.editRoleControl.setValue(this.data.worker.currentRole);
@@ -167,6 +178,48 @@ export class WorkerModalComponent implements OnInit {
     });
   }
 
+  private loadPhaseWorkers(phaseId: string): void {
+    this.loadingPhaseWorkers = true;
+    this.workerGroupService.getGroups(undefined, true, undefined, undefined, phaseId)
+      .subscribe({
+        next: (groups) => {
+          const workersMap = new Map<string, any>();
+          groups.forEach(group => {
+            group.workers?.forEach(m => {
+              if (!workersMap.has(m.workerId)) {
+                workersMap.set(m.workerId, {
+                  id: m.workerId,
+                  fullName: m.workerName,
+                  title: group.trade || 'Worker',
+                  avatarUrl: m.workerPhotoUrl
+                });
+              }
+            });
+          });
+          this.phaseWorkers = Array.from(workersMap.values());
+          this.loadingPhaseWorkers = false;
+        },
+        error: () => {
+          this.loadingPhaseWorkers = false;
+          this.notificationService.error('Failed to load workers from groups');
+        }
+      });
+  }
+
+  selectPhaseWorker(worker: any): void {
+    const prof: Professional = {
+      id: worker.id,
+      fullName: worker.fullName,
+      firstName: worker.fullName.split(' ')[0],
+      lastName: worker.fullName.split(' ').slice(1).join(' '),
+      email: '', // Not used for selection display
+      title: worker.title,
+      experienceYears: 0,
+      skills: []
+    };
+    this.selectProfessional(prof);
+  }
+
   // --- Search Existing Helpers ---
   selectProfessional(professional: Professional): void {
     if (!this.selectedProfessionals.find((p) => p.id === professional.id)) {
@@ -180,6 +233,10 @@ export class WorkerModalComponent implements OnInit {
     this.selectedProfessionals = this.selectedProfessionals.filter(
       (p) => p.id !== professional.id,
     );
+  }
+
+  isWorkerSelected(workerId: string): boolean {
+    return !!this.selectedProfessionals.find((p) => p.id === workerId);
   }
 
   getInitials(name: string): string {

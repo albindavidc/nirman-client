@@ -1,46 +1,28 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { selectAuthHydrated, selectUser } from '../../features/auth/login/store/login.selectors';
+import { getDefaultRouteForUser } from '../utils/auth-routing.util';
+import { filter, take, switchMap, map } from 'rxjs/operators';
 
 export const GuestGuard: CanActivateFn = () => {
   const router = inject(Router);
-  const userJson = localStorage.getItem('user');
+  const store = inject(Store);
 
-  if (userJson) {
-    try {
-      const user = JSON.parse(userJson);
+  return store.select(selectAuthHydrated).pipe(
+    filter((hydrated) => hydrated),
+    take(1),
+    switchMap(() => store.select(selectUser)),
+    take(1),
+    map((user) => {
       if (!user) {
         return true;
       }
-      const role = user.role?.toLowerCase();
 
-      let targetRoute = '/dashboard';
-
-      if (role === 'vendor') {
-        const status = user.vendorStatus?.toLowerCase();
-        if (status === 'approved') {
-          targetRoute = '/dashboard/vendor';
-        } else if (status === 'rejected' || status === 'blacklisted') {
-          targetRoute = '/auth/application-rejected';
-        } else {
-          targetRoute = '/auth/pending-approval';
-        }
-      } else if (role === 'admin') {
-        targetRoute = '/dashboard';
-      } else if (role === 'supervisor') {
-        targetRoute = '/dashboard/supervisor';
-      } else if (role === 'worker') {
-        targetRoute = '/dashboard/worker';
-      }
-
+      // If they are logged in and hydrated, explicitly redirect to their dashboard
+      const targetRoute = getDefaultRouteForUser(user);
       router.navigate([targetRoute]);
       return false;
-    } catch (e) {
-      console.error('GuestGuard: Failed to parse user data', e);
-      localStorage.removeItem('user');
-      return true;
-    }
-  }
-
-  return true;
+    })
+  );
 };
-

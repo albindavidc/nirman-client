@@ -7,9 +7,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
-import * as LoginSelectors from '../../../features/auth/login/store/login.selectors';
 import { ConfigService } from '../../../core/services/config.service';
 import { LayoutService } from '../../../core/services/layout.service';
+import * as LoginSelectors from '../../../features/auth/login/store/login.selectors';
 
 @Component({
   selector: 'app-sidebar',
@@ -36,26 +36,11 @@ export class SidebarComponent {
 
   navItems$ = this.user$.pipe(
     map((user) => {
-      const role = user?.role?.toLowerCase();
+      const role = user?.role?.trim()?.toLowerCase();
       if (role === 'vendor') {
         return [
-          { label: 'Dashboard', icon: 'dashboard', route: '/dashboard/vendor' },
-          {
-            label: 'Communication',
-            icon: 'chat',
-            children: [
-              {
-                label: 'Messaging',
-                icon: 'mail',
-                route: '/dashboard/vendor/communication/messaging',
-              },
-              {
-                label: 'Notifications',
-                icon: 'notifications',
-                route: '/dashboard/vendor/communication/notifications',
-              },
-            ],
-          },
+          { label: 'Dashboard', icon: 'dashboard', route: '/vendor/dashboard' },
+          { label: 'Communication', icon: 'chat', route: '/communication' },
           {
             label: 'Finance & Procurement',
             icon: 'attach_money',
@@ -63,19 +48,19 @@ export class SidebarComponent {
               {
                 label: 'Procurement Request',
                 icon: 'shopping_cart',
-                route: '/dashboard/vendor/finance/procurement-request',
+                route: '/vendor/dashboard/finance/procurement-request',
               },
               {
                 label: 'Payment Invoices',
                 icon: 'receipt',
-                route: '/dashboard/vendor/finance/invoices',
+                route: '/vendor/dashboard/finance/invoices',
               },
             ],
           },
         ];
       } else if (role === 'worker') {
         return [
-          { label: 'Dashboard', icon: 'dashboard', route: '/dashboard/worker' },
+          { label: 'Dashboard', icon: 'dashboard', route: '/worker/dashboard' },
           { label: 'My Tasks', icon: 'task_alt', route: '/worker/tasks' },
           {
             label: 'Attendance',
@@ -85,31 +70,16 @@ export class SidebarComponent {
           {
             label: 'Scheduling',
             icon: 'calendar_month',
-            route: '/dashboard/worker/scheduling',
+            route: '/worker/dashboard/scheduling',
           },
-          {
-            label: 'Communication',
-            icon: 'chat',
-            children: [
-              {
-                label: 'Messaging',
-                icon: 'mail',
-                route: '/dashboard/worker/communication/messaging',
-              },
-              {
-                label: 'Notifications',
-                icon: 'notifications',
-                route: '/dashboard/worker/communication/notifications',
-              },
-            ],
-          },
+          { label: 'Communication', icon: 'chat', route: '/communication' },
         ];
       } else if (role === 'supervisor') {
         return [
           {
             label: 'Dashboard',
             icon: 'dashboard',
-            route: '/dashboard/supervisor',
+            route: '/supervisor/dashboard',
           },
           {
             label: 'Project Management',
@@ -129,26 +99,11 @@ export class SidebarComponent {
               {
                 label: 'Verify Attendance',
                 icon: 'fact_check',
-                route: '/dashboard/supervisor/verify-attendance',
+                route: '/supervisor/verify-attendance',
               },
             ],
           },
-          {
-            label: 'Communication',
-            icon: 'chat',
-            children: [
-              {
-                label: 'Chat Messaging',
-                icon: 'forum',
-                route: '/dashboard/supervisor/communication/messaging',
-              },
-              {
-                label: 'Notifications',
-                icon: 'notifications_active',
-                route: '/dashboard/supervisor/communication/notifications',
-              },
-            ],
-          },
+          { label: 'Communication', icon: 'chat', route: '/communication' },
           {
             label: 'Progress & Reports',
             icon: 'trending_up',
@@ -156,7 +111,7 @@ export class SidebarComponent {
               {
                 label: 'Daily Reports',
                 icon: 'assignment',
-                route: '/dashboard/supervisor/reports',
+                route: '/supervisor/reports',
               },
             ],
           },
@@ -167,12 +122,12 @@ export class SidebarComponent {
               {
                 label: 'Purchase Order',
                 icon: 'description',
-                route: '/dashboard/supervisor/finance/purchase-orders',
+                route: '/supervisor/finance/purchase-orders',
               },
               {
                 label: 'Payment Approvals',
                 icon: 'approval',
-                route: '/dashboard/supervisor/finance/approvals',
+                route: '/supervisor/finance/approvals',
               },
             ],
           },
@@ -181,7 +136,7 @@ export class SidebarComponent {
 
       // Default/Admin Menu
       return [
-        { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+        { label: 'Dashboard', icon: 'dashboard', route: '/admin/dashboard' },
         {
           label: 'Project Management',
           icon: 'folder_open',
@@ -220,22 +175,7 @@ export class SidebarComponent {
             },
           ],
         },
-        {
-          label: 'Communication',
-          icon: 'chat',
-          children: [
-            {
-              label: 'Messaging',
-              icon: 'mail',
-              route: '/communication/messaging',
-            },
-            {
-              label: 'Notifications',
-              icon: 'notifications',
-              route: '/communication/notifications',
-            },
-          ],
-        },
+        { label: 'Communication', icon: 'chat', route: '/communication' },
         {
           label: 'Finance & Procurement',
           icon: 'attach_money',

@@ -1,32 +1,19 @@
 import { Routes } from '@angular/router';
-import { RoleGuard } from '../../../core/guards/role.guard';
-import { VendorStatusGuard } from '../../../core/guards/vendor-status.guard';
 
 export const DASHBOARD_ROUTES: Routes = [
   {
-    path: '',
-    loadComponent: () =>
-      import('./dashboard.component').then((m) => m.DashboardComponent),
-  },
-  {
     path: 'supervisor',
-    canActivate: [RoleGuard],
-    data: { roles: ['supervisor'] },
-    loadComponent: () =>
-      import('./dashboard.component').then((m) => m.DashboardComponent),
+    redirectTo: '/supervisor/dashboard',
+    pathMatch: 'full',
   },
   {
     path: 'vendor',
-    canActivate: [RoleGuard, VendorStatusGuard],
-    data: { roles: ['vendor'] },
-    loadComponent: () =>
-      import('./dashboard.component').then((m) => m.DashboardComponent),
+    redirectTo: '/vendor/dashboard',
+    pathMatch: 'full',
   },
   {
     path: 'worker',
-    canActivate: [RoleGuard],
-    data: { roles: ['worker'] },
-    loadComponent: () =>
-      import('./dashboard.component').then((m) => m.DashboardComponent),
+    redirectTo: '/worker/dashboard',
+    pathMatch: 'full',
   },
 ];

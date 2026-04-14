@@ -84,9 +84,18 @@ export class ProjectService {
   }
 
   // Project Workers
-  getProjectWorkers(projectId: string): Observable<ProjectWorkerWithUser[]> {
+  getProjectWorkers(
+    projectId: string,
+    groupIds?: string[],
+  ): Observable<ProjectWorkerWithUser[]> {
+    let params = new HttpParams();
+    if (groupIds && groupIds.length > 0) {
+      params = params.set('groupIds', groupIds.join(','));
+    }
+
     return this.http.get<ProjectWorkerWithUser[]>(
       `${this.apiUrl}/${projectId}/workers`,
+      { params },
     );
   }
 

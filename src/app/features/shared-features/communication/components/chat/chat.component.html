@@ -1,0 +1,47 @@
+<div class="chat-header">
+  <div class="chat-user-info">
+    <div class="avatar">
+      <mat-icon>person</mat-icon>
+    </div>
+    <div class="user-details">
+      <h3>{{chat.name}}</h3>
+      <span class="status">Active now</span>
+    </div>
+  </div>
+  <div class="chat-actions">
+    <button class="icon-btn" (click)="triggerVideoCall()">
+      <mat-icon>videocam</mat-icon>
+    </button>
+    <button class="icon-btn" (click)="triggerVoiceCall()">
+      <mat-icon>call</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="chat-body">
+  <div 
+    class="message" 
+    *ngFor="let msg of messages" 
+    [ngClass]="{'message-me': msg.sender === 'me', 'message-them': msg.sender === 'them'}">
+    <div class="bubble">
+      {{msg.text}}
+    </div>
+    <span class="timestamp">{{msg.time}}</span>
+  </div>
+</div>
+
+<div class="chat-footer">
+  <button class="attachment-btn">
+    <mat-icon>attach_file</mat-icon>
+  </button>
+  <div class="input-wrapper">
+    <input 
+      type="text" 
+      placeholder="Type a message..." 
+      [(ngModel)]="newMessage" 
+      (keyup.enter)="sendMessage()" />
+  </div>
+  <button class="send-btn" (click)="sendMessage()">
+    <mat-icon>send</mat-icon>
+  </button>
+</div>

@@ -148,7 +148,7 @@ export class WorkerSignupComponent implements OnInit {
             this.notification.success(
               'Account activated successfully. Please login with your new password.',
             );
-            this.router.navigate(['/auth/login']);
+            this.router.navigate(['/auth/login'], { queryParams: { role: 'worker' } });
           }
         });
     } else {

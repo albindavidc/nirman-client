@@ -1,42 +1,44 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { selectAuthHydrated, selectUser } from '../../features/auth/login/store/login.selectors';
+import { filter, take, switchMap, map } from 'rxjs/operators';
 
 export const VendorStatusGuard: CanActivateFn = () => {
   const router = inject(Router);
-  const userJson = localStorage.getItem('user');
+  const store = inject(Store);
 
-  if (!userJson) {
-    router.navigate(['/auth/login']);
-    return false;
-  }
+  return store.select(selectAuthHydrated).pipe(
+    filter((hydrated) => hydrated),
+    take(1),
+    switchMap(() => store.select(selectUser)),
+    take(1),
+    map((user) => {
+      if (!user) {
+        router.navigate(['/']);
+        return false;
+      }
 
-  const user = JSON.parse(userJson);
+      // This guard only applies to vendors
+      if (user.role?.toLowerCase() !== 'vendor') {
+        return true;
+      }
 
-  // If not a vendor, this guard doesn't apply (or arguably should block if strict vendor route)
-  // Assuming this guard is used on vendor-only routes combined with RoleGuard, or standalone.
-  // If used standalone, we should verify role is vendor first.
-  if (user.role?.toLowerCase() !== 'vendor') {
-    // If not a vendor, let RoleGuard user handle it or block.
-    // For safety, if this guard is explicitly placed, we expect a vendor.
-    // But if admin tries to access, maybe allow? Let's check requirement.
-    // "expect for the vendor (for the vendor it should show the approval page if the application status is not updated)"
-    // Implies this logic is specific to vendors.
-    return true;
-  }
+      const status = (user as any).vendor?.vendorStatus?.toLowerCase()
+        ?? (user as any).vendorStatus?.toLowerCase();
 
-  const status = user.vendorStatus?.toLowerCase();
+      if (status === 'approved') {
+        return true;
+      }
 
-  if (status === 'approved') {
-    return true;
-  }
+      if (status === 'rejected' || status === 'blacklisted') {
+        router.navigate(['/auth/application-rejected']);
+      } else {
+        // pending or undefined
+        router.navigate(['/auth/pending-approval']);
+      }
 
-  // Redirect based on status
-  if (status === 'rejected' || status === 'blacklisted') {
-    router.navigate(['/auth/application-rejected']);
-  } else {
-    // pending or undefined
-    router.navigate(['/auth/pending-approval']);
-  }
-
-  return false;
+      return false;
+    }),
+  );
 };

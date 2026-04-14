@@ -302,7 +302,6 @@ export class ProjectMaterialsComponent implements OnInit {
   }
 
   openRequestModal() {
-    // Get current materials synchronously for the dialog
     this.materials$.pipe(take(1)).subscribe((materials) => {
       const dialogRef = this.dialog.open(RequestMaterialModalComponent, {
         width: '600px',
@@ -311,9 +310,31 @@ export class ProjectMaterialsComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          this.materialService.createRequest(result).subscribe(() => {
-            // Ideally show success message
-          });
+          const projectId = this.route.parent!.snapshot.paramMap.get('id');
+          if (projectId) {
+            const requestDto = {
+              projectId,
+              priority: result.priority,
+              deliveryLocation: result.deliveryLocation || undefined,
+              requiredDate: result.requiredDate,
+              items: [
+                {
+                  materialId: result.materialId,
+                  quantityRequested: result.quantityRequested,
+                  unit: result.unit,
+                  purpose: result.purpose,
+                },
+              ],
+            };
+
+            this.materialService.createRequest(requestDto).subscribe({
+              next: () => {
+                // Success - could add a notification here
+                this.refresh$.next();
+              },
+              error: (err) => console.error('Failed to create material request:', err)
+            });
+          }
         }
       });
     });

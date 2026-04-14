@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, exhaustMap, catchError, tap } from 'rxjs/operators';
-import { LoginService } from '../services/login.service';
-import { UserProfile } from '../../../../shared/models/profile.model';
+import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { SessionCleanupService } from '../../../../core/services/session-cleanup.service';
+import { getDefaultRouteForUser } from '../../../../core/utils/auth-routing.util';
+import { UserProfile } from '../../../../shared/models/profile.model';
+import { LoginService } from '../services/login.service';
 import * as LoginActions from './login.actions';
 
 @Injectable()
@@ -14,6 +16,7 @@ export class LoginEffects {
   private readonly loginService = inject(LoginService);
   private readonly router = inject(Router);
   private readonly notification = inject(NotificationService);
+  private readonly sessionCleanup = inject(SessionCleanupService);
 
   login$ = createEffect(() =>
     this.actions$.pipe(
@@ -55,73 +58,61 @@ export class LoginEffects {
    * Returns the default route for each user role
    */
   private getRouteByRole(user: UserProfile): string {
-    const role = user.role.toLowerCase();
-
-    console.log('Login Redirection Debug:', {
-      role,
-      vendorStatus: user.vendor?.vendorStatus,
-      rejectionReason: user.vendor?.rejectionReason,
-    });
-
-    if (role === 'vendor') {
-      const status = user.vendor?.vendorStatus?.toLowerCase();
-
-      console.log('Processed Vendor Status:', status);
-
-      if (status === 'approved') {
-        return '/dashboard/vendor';
-      } else if (status === 'rejected' || status === 'blacklisted') {
-        return '/auth/application-rejected';
-      }
-
-      // Default to pending for 'pending' status or undefined/unknown status
-      return '/auth/pending-approval';
-    }
-
-    switch (role) {
-      case 'admin':
-        return '/vendor-management';
-      case 'supervisor':
-        return '/dashboard/supervisor';
-      case 'worker':
-        return '/worker';
-      default:
-        return '/dashboard';
-    }
+    return getDefaultRouteForUser(user);
   }
 
   // Validate session with backend after hydrating from localStorage
   validateSession$ = createEffect(() =>
     this.actions$.pipe(
       ofType(LoginActions.validateSession),
-      exhaustMap(() =>
-        this.loginService.getMe().pipe(
-          map((user) => LoginActions.validateSessionSuccess({ user })),
-          tap(({ user }) => {
-            // Update localStorage with fresh data (e.g. including new profile photo)
-            // merge with existing to avoid losing other fields if API returns partial
-            const existing = JSON.parse(localStorage.getItem('user') || '{}');
-            localStorage.setItem(
-              'user',
-              JSON.stringify({ ...existing, ...user }),
-            );
+      exhaustMap(() => {
+        // Snapshot the user stored locally BEFORE making the /me request
+        let localUser: { id?: string; role?: string } | null = null;
+        try {
+          const raw = localStorage.getItem('user');
+          localUser = raw ? JSON.parse(raw) : null;
+        } catch {
+          localUser = null;
+        }
+
+        return this.loginService.getMe().pipe(
+          map((backendUser) => {
+            // ── Critical guard ────────────────────────────────────────────────
+            // The backend returns whoever owns the current access_token cookie.
+            // If that cookie is stale from a DIFFERENT user (e.g. an old admin
+            // session), backendUser.id won't match the id in localStorage.
+            // In that case we treat it as a failure so the stale cookie is
+            // purged and the user is returned to the home page.
+            if (
+              localUser?.id &&
+              backendUser?.id &&
+              localUser.id !== backendUser.id
+            ) {
+              // Mismatch — reject this session silently
+              return LoginActions.validateSessionFailure();
+            }
+
+            // Session is valid — write ONLY the fresh backend data to localStorage
+            // (do NOT merge with existing local data to avoid carrying stale fields)
+            localStorage.setItem('user', JSON.stringify(backendUser));
+            return LoginActions.validateSessionSuccess({ user: backendUser });
           }),
           catchError(() => of(LoginActions.validateSessionFailure())),
-        ),
-      ),
+        );
+      }),
     ),
   );
 
-  // On validation failure, clear user and redirect to login
+  // On validation failure, clear everything and redirect home
   validateSessionFailure$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(LoginActions.validateSessionFailure),
         tap(() => {
-          localStorage.removeItem('user');
+          this.sessionCleanup.purgeAll();
           // Don't redirect if already on auth pages
           if (!this.router.url.includes('/auth')) {
-            this.router.navigate(['/auth/login']);
+            this.router.navigate(['/']);
           }
         }),
       ),
@@ -245,14 +236,15 @@ export class LoginEffects {
         exhaustMap(() =>
           this.loginService.logout().pipe(
             tap(() => {
-              localStorage.clear();
+              // Wipe every client-side storage layer
+              this.sessionCleanup.purgeAll();
               this.notification.success('Logged out successfully');
-              this.router.navigate(['/auth/login']);
+              this.router.navigate(['/']);
             }),
             catchError(() => {
-              // Even if API fails, clear local data
-              localStorage.clear();
-              this.router.navigate(['/auth/login']);
+              // Even if the API call fails, purge locally so the user is never stuck
+              this.sessionCleanup.purgeAll();
+              this.router.navigate(['/']);
               return of(null);
             }),
           ),

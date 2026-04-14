@@ -1,0 +1,47 @@
+<div class="new-chat-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>New Chat</h2>
+    <button mat-icon-button class="close-btn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search Professionals</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input 
+        matInput 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="onSearchChange()" 
+        placeholder="Type a name or company..." 
+        autocomplete="off"
+      >
+      <mat-spinner *ngIf="isLoading" matSuffix diameter="20"></mat-spinner>
+    </mat-form-field>
+
+    <div class="vendors-list">
+      <div 
+        class="vendor-item" 
+        *ngFor="let partner of (partners$ | async)" 
+        (click)="selectPartner(partner)"
+      >
+        <div class="vendor-avatar" [ngClass]="partner.type">
+          {{ partner.avatar }}
+        </div>
+        <div class="vendor-info">
+          <h4>{{ partner.name }}</h4>
+          <span class="vendor-category">
+            {{ partner.role }}
+          </span>
+        </div>
+        <mat-icon class="action-icon">chat</mat-icon>
+      </div>
+
+      <div class="empty-state" *ngIf="(partners$ | async)?.length === 0 && !isLoading">
+        <mat-icon>search_off</mat-icon>
+        <p>No professionals found</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

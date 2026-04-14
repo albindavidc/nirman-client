@@ -73,7 +73,7 @@ export class ApplicationRejectedComponent implements OnInit {
 
   onLogout(): void {
     // Clear local storage immediately to prevent GuestGuard loops
-    localStorage.removeItem('user');
+    localStorage.clear();
     this.store.dispatch(LoginActions.logout());
   }
 }

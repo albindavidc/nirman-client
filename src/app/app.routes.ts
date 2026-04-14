@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { GuestGuard } from './core/guards/guest.guard';
+import { RoleGuard } from './core/guards/role.guard';
+import { VendorStatusGuard } from './core/guards/vendor-status.guard';
 import { HomeComponent } from './shared/components/home/home.component';
 
 export const routes: Routes = [
@@ -31,6 +33,40 @@ export const routes: Routes = [
   {
     path: 'auth/admin/login',
     redirectTo: '/auth/login?role=admin',
+    pathMatch: 'full',
+  },
+
+  // 2b. Unified Redirects for Supervisor Auth
+  {
+    path: 'supervisor/auth',
+    redirectTo: '/auth/login?role=supervisor',
+    pathMatch: 'prefix',
+  },
+  {
+    path: 'auth/supervisor',
+    redirectTo: '/auth/login?role=supervisor',
+    pathMatch: 'full',
+  },
+  {
+    path: 'auth/supervisor/login',
+    redirectTo: '/auth/login?role=supervisor',
+    pathMatch: 'full',
+  },
+
+  // 2c. Unified Redirects for Worker Auth
+  {
+    path: 'worker/auth',
+    redirectTo: '/auth/login?role=worker',
+    pathMatch: 'prefix',
+  },
+  {
+    path: 'auth/worker',
+    redirectTo: '/auth/login?role=worker',
+    pathMatch: 'full',
+  },
+  {
+    path: 'auth/worker/login',
+    redirectTo: '/auth/login?role=worker',
     pathMatch: 'full',
   },
 
@@ -87,6 +123,25 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'vendor',
+        children: [
+          {
+            path: 'dashboard',
+            canActivate: [RoleGuard, VendorStatusGuard],
+            data: { roles: ['admin', 'vendor'] },
+            loadComponent: () =>
+              import('./shared/components/dashboard/dashboard.component').then(
+                (m) => m.DashboardComponent,
+              ),
+          },
+          {
+            path: '',
+            redirectTo: 'dashboard',
+            pathMatch: 'full',
+          },
+        ],
+      },
+      {
         path: 'dashboard',
         loadChildren: () =>
           import('./shared/components/dashboard/dashboard.routes').then(
@@ -125,6 +180,13 @@ export const routes: Routes = [
         path: 'admin',
         loadChildren: () =>
           import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+      },
+      {
+        path: 'communication',
+        loadChildren: () =>
+          import('./features/shared-features/communication/communication.routes').then(
+            (m) => m.COMMUNICATION_ROUTES,
+          ),
       },
       {
         path: 'supervisor',

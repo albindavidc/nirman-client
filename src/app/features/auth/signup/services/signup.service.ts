@@ -36,7 +36,6 @@ export class SignupService {
       email: data.email,
       phoneNumber: data.phoneNumber,
       password: data.password,
-      confirmPassword: data.confirmPassword,
     });
   }
 
@@ -56,16 +55,18 @@ export class SignupService {
   }
 
   completeWorkerSignup(data: WorkerSignupData): Observable<unknown> {
+    const { confirmPassword, ...signupData } = data;
     return this.http.post(
       `${this.configService.apiUrl}/auth/worker/signup`,
-      data,
+      signupData,
     );
   }
 
   completeSupervisorSignup(data: WorkerSignupData): Observable<unknown> {
+    const { confirmPassword, ...signupData } = data;
     return this.http.post(
       `${this.configService.apiUrl}/auth/supervisor/signup`,
-      data,
+      signupData,
     );
   }
 

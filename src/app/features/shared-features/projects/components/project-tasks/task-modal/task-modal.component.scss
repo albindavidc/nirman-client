@@ -60,6 +60,35 @@ input.mat-mdc-input-element {
   }
 }
 
+.assignment-item {
+  border: 1px solid var(--md-sys-color-outline-variant, #CAC4D0);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: var(--md-sys-color-primary, #6750A4);
+  }
+}
+
+::ng-deep .dense-form-field {
+  .mat-mdc-form-field-flex {
+    height: 44px !important;
+  }
+  
+  .mat-mdc-form-field-infix {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    min-height: 44px !important;
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(var(--md-sys-color-surface-container-highest-rgb), 0.3) !important;
+  }
+
+  .mat-mdc-form-field-label {
+    top: 22px !important;
+  }
+}
+
 [actions] {
   display: flex;
   justify-content: flex-end;

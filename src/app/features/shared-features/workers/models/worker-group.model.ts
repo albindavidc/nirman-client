@@ -10,8 +10,9 @@ export interface WorkerGroupMember {
   workerName: string;
   workerPhotoUrl: string | null;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  joinedAt: Date | string;
+  updatedAt: Date | string;
   isDeleted: boolean;
   deletedAt?: Date;
 }

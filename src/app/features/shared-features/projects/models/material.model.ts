@@ -69,9 +69,10 @@ export interface CreateMaterialTransactionDto {
 
 export interface MaterialRequestItem {
   materialId: string;
-  materialName: string;
-  quantity: number;
+  materialName?: string;
+  quantityRequested: number;
   unit: string;
+  purpose?: string;
 }
 
 export interface MaterialRequest {
@@ -97,7 +98,6 @@ export interface CreateMaterialRequestDto {
   projectId: string;
   items: MaterialRequestItem[];
   priority?: 'low' | 'medium' | 'high' | 'urgent';
-  purpose?: string;
   deliveryLocation?: string;
   requiredDate: string;
 }

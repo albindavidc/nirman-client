@@ -210,7 +210,7 @@
 
       <div class="login-link">
         <span>Already have account?</span>
-        <a routerLink="/auth/login">Login</a>
+        <a routerLink="/auth/login" [queryParams]="{ role: 'vendor' }">Login</a>
       </div>
 
       <div class="form-actions">

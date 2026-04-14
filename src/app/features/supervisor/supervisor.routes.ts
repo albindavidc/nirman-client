@@ -3,9 +3,23 @@ import { RoleGuard } from '../../core/guards/role.guard';
 
 export const SUPERVISOR_ROUTES: Routes = [
   {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
+  },
+  {
+    path: 'dashboard',
+    canActivate: [RoleGuard],
+    data: { roles: ['admin', 'supervisor'] },
+    loadComponent: () =>
+      import('../../shared/components/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
+  },
+  {
     path: 'projects',
     canActivate: [RoleGuard],
-    data: { roles: ['supervisor'] },
+    data: { roles: ['admin', 'supervisor'] },
     loadChildren: () =>
       import('../shared-features/projects/projects.routes').then(
         (m) => m.PROJECTS_ROUTES,
@@ -14,7 +28,7 @@ export const SUPERVISOR_ROUTES: Routes = [
   {
     path: 'project-workers',
     canActivate: [RoleGuard],
-    data: { roles: ['supervisor'] },
+    data: { roles: ['admin', 'supervisor'] },
     loadChildren: () =>
       import('../shared-features/workers/workers.routes').then(
         (m) => m.WORKER_ROUTES,

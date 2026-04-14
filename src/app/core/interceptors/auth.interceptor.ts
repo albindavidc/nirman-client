@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfigService } from '../services/config.service';
+import { SessionCleanupService } from '../services/session-cleanup.service';
 
 let isRefreshing = false;
 
@@ -11,6 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
   const router = inject(Router);
   const configService = inject(ConfigService);
+  const sessionCleanup = inject(SessionCleanupService);
 
   // Clone request with credentials for cookie handling
   const authReq = req.clone({
@@ -37,11 +39,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
         // Try to refresh the token
         return http
-          .post<{ message: string }>(
-            `${configService.apiUrl}/auth/refresh`,
-            {},
-            { withCredentials: true }
-          )
+          .post<{
+            message: string;
+          }>(`${configService.apiUrl}/auth/refresh`, {}, { withCredentials: true })
           .pipe(
             switchMap(() => {
               isRefreshing = false;
@@ -50,15 +50,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             }),
             catchError((refreshError) => {
               isRefreshing = false;
-              // Refresh failed, redirect to login
-              localStorage.removeItem('user');
-              router.navigate(['/auth/login']);
+              // Refresh failed — wipe every storage layer and return to home
+              sessionCleanup.purgeAll();
+              router.navigate(['/']);
               return throwError(() => refreshError);
-            })
+            }),
           );
       }
 
       return throwError(() => error);
-    })
+    }),
   );
 };

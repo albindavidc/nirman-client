@@ -1,3 +1,4 @@
+import { WorkerGroup } from '../../workers/models/worker-group.model';
 export type ProjectStatus = 'active' | 'paused' | 'completed' | 'on_hold';
 
 export enum ApprovalStatus {
@@ -37,7 +38,7 @@ export interface ProjectPhase {
   actualEndDate?: string;
   sequence: number;
   approvalStatus?: ApprovalStatus;
-  workerGroups?: any[];
+  workerGroups?: WorkerGroup[];
 }
 
 export interface PhaseApprovalRequest {

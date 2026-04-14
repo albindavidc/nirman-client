@@ -80,6 +80,7 @@
         </div>
       </mat-tab>
   
+  
       <!-- Tab 2: Create New User Profile -->
       <mat-tab label="Create New">
         <div class="tab-content create-form-content" [formGroup]="createForm">
@@ -155,6 +156,50 @@
 
         </div>
       </mat-tab>
+
+      <!-- Tab 3: From Phase Groups -->
+      @if (data.phaseId) {
+        <mat-tab label="From Phase Groups">
+          <div class="tab-content">
+            @if (loadingPhaseWorkers) {
+              <div class="loading-indicator">
+                <mat-spinner diameter="24"></mat-spinner>
+                <span>Loading group members...</span>
+              </div>
+            } @else if (phaseWorkers.length > 0) {
+              <div class="workers-list-scroll">
+                @for (worker of phaseWorkers; track worker.id) {
+                  <div class="search-result-item">
+                    <div class="avatar" [style.background]="getAvatarColor(worker.fullName)">
+                      {{ getInitials(worker.fullName) }}
+                    </div>
+                    <div class="result-info">
+                      <span class="name">{{ worker.fullName }}</span>
+                      <span class="title">{{ worker.title }}</span>
+                    </div>
+                    <div class="action-btn-wrapper">
+                      <button 
+                        mat-stroked-button 
+                        color="primary" 
+                        size="small"
+                        (click)="selectPhaseWorker(worker)"
+                        [disabled]="isWorkerSelected(worker.id)"
+                      >
+                        {{ isWorkerSelected(worker.id) ? 'Selected' : 'Add' }}
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon>group_off</mat-icon>
+                <p>No members found in phase groups.</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+      }
     </mat-tab-group>
   } @else {
     <!-- Edit Mode -->

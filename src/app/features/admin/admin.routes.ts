@@ -49,8 +49,8 @@ export const ADMIN_ROUTES: Routes = [
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },
     loadComponent: () =>
-      import(
-        './components/material-approval/material-approvals.component'
-      ).then((m) => m.MaterialApprovalsComponent),
+      import('./components/material-approval/material-approvals.component').then(
+        (m) => m.MaterialApprovalsComponent,
+      ),
   },
 ];

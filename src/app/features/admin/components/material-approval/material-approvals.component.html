@@ -1,0 +1,64 @@
+<div class="approvals-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>Material Requests Approvals</h1>
+      <p class="subtitle">{{ isAdmin ? 'Manage and approve material procurement requests' : 'View and manage material request quotes' }}</p>
+    </div>
+  </header>
+
+  <app-material-stats-cards [stats]="stats()"></app-material-stats-cards>
+
+  <div class="filter-bar">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Search by request number, project, or requester..." 
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange($event)"
+      >
+    </div>
+    
+    <div class="actions">
+      <button mat-stroked-button class="filter-btn">
+        <mat-icon>filter_list</mat-icon>
+        Filters
+        <mat-icon iconPositionEnd>expand_more</mat-icon>
+      </button>
+      
+      <div class="sort-group">
+        <span class="sort-label">Sort by:</span>
+        <button class="sort-btn active">Date <mat-icon>south</mat-icon></button>
+        <button class="sort-btn">Priority</button>
+        <button class="sort-btn">Cost</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-info">
+    Showing 1-{{ requests().length }} of {{ totalRequests() }} requests
+  </div>
+
+  <div class="request-list">
+    @for (request of filteredRequests(); track request.id) {
+      <div class="card-wrapper">
+        <app-material-request-card 
+          [request]="request"
+          (click)="openRequestDetail(request)"
+        ></app-material-request-card>
+        
+        <div class="card-actions" *ngIf="isAdmin && request.status === 'approved' && !request.converted_to_po">
+          <button mat-flat-button color="primary" class="po-btn" (click)="convertToPO(request, $event)">
+            <mat-icon>receipt_long</mat-icon>
+            Convert to PO
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <mat-icon>inventory_2</mat-icon>
+        <p>No material requests found matching your filters.</p>
+      </div>
+    }
+  </div>
+</div>

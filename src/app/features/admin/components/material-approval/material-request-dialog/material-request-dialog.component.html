@@ -1,0 +1,86 @@
+<div class="dialog-container">
+  <header class="dialog-header">
+    <div class="title-area">
+      <mat-icon class="header-icon">description</mat-icon>
+      <div>
+        <h2>Request Detail: {{ data.request.request_number }}</h2>
+        <p class="subtitle">{{ data.request.project_name }} • {{ data.request.requested_by_name }}</p>
+      </div>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </header>
+
+  <mat-dialog-content>
+    <div class="content-grid">
+      <div class="items-section">
+        <h3 class="section-title">Requested Materials</h3>
+        <div class="items-table">
+          <div class="table-header">
+            <span>Material</span>
+            <span>Code</span>
+            <span>Quantity</span>
+            <span>Unit</span>
+          </div>
+          <div class="table-body">
+            @for (item of data.request.items; track item.id) {
+              <div class="table-row">
+                <span class="m-name">{{ item.material_name }}</span>
+                <span class="m-code">{{ item.material_code }}</span>
+                <span class="m-qty">{{ item.quantity_requested }}</span>
+                <span class="m-unit">{{ item.unit }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <h3 class="section-title">Approval Actions</h3>
+        
+        @if (data.request.status === 'pending') {
+          <div class="action-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Approval Comments / Rejection Reason</mat-label>
+              <textarea 
+                matInput 
+                placeholder="Enter your comments or reason..." 
+                [(ngModel)]="comments"
+                rows="4"
+              ></textarea>
+            </mat-form-field>
+
+            <div class="button-row">
+              <button 
+                mat-flat-button 
+                color="warn" 
+                [disabled]="submitting() || !comments.trim()"
+                (click)="onReject()"
+              >
+                <mat-icon>close</mat-icon> Reject Request
+              </button>
+              <button 
+                mat-flat-button 
+                class="approve-btn"
+                [disabled]="submitting()"
+                (click)="onApprove()"
+              >
+                <mat-icon>check</mat-icon> Approve Request
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="status-box" [class]="data.request.status">
+            <mat-icon>{{ data.request.status === 'approved' ? 'check_circle' : 'cancel' }}</mat-icon>
+            <div class="status-info">
+              <p class="status-label">This request has been {{ data.request.status }}</p>
+              @if (data.request.approval_comments || data.request.rejection_reason) {
+                <p class="status-comments">"{{ data.request.approval_comments || data.request.rejection_reason }}"</p>
+              }
+              <p class="status-meta">Processed on {{ (data.request.approved_at || data.request.updated_at) | date:'medium' }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

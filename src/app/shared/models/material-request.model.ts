@@ -40,6 +40,8 @@ export interface MaterialRequestResponseDto {
   approval_comments?: string;
   rejection_reason?: string;
   converted_to_po: boolean;
+  vendor_id?: string;
+  vendor_name?: string;
   created_at: string;
   updated_at: string;
 }

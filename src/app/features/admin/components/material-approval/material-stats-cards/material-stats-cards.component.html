@@ -1,0 +1,51 @@
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="icon-box info">
+      <mat-icon>description</mat-icon>
+    </div>
+    <div class="stat-content">
+      <span class="value">{{ stats.totalRequests }}</span>
+      <span class="label">Total Requests</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="icon-box warning">
+      <mat-icon>schedule</mat-icon>
+    </div>
+    <div class="stat-content">
+      <span class="value">{{ stats.pendingReview }}</span>
+      <span class="label">Pending Review</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="icon-box success">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+    <div class="stat-content">
+      <span class="value">{{ stats.approved }}</span>
+      <span class="label">Approved</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="icon-box secondary">
+      <mat-icon>inventory_2</mat-icon>
+    </div>
+    <div class="stat-content">
+      <span class="value">{{ stats.inProgress }}</span>
+      <span class="label">In Progress</span>
+    </div>
+  </div>
+
+  <div class="stat-card highlight">
+    <div class="icon-box primary">
+      <mat-icon>trending_up</mat-icon>
+    </div>
+    <div class="stat-content">
+      <span class="value">{{ stats.totalValue | currency:'USD':'symbol':'1.0-0' }}</span>
+      <span class="label">Total Value</span>
+    </div>
+  </div>
+</div>

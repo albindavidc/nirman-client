@@ -1,0 +1,61 @@
+<div class="request-card">
+  <div class="card-body">
+    <div class="header-row">
+      <div class="title-section">
+        <h3 class="title">{{ request.project_name }} - Material Request</h3>
+        <div class="badges">
+          <span class="status-badge" [class]="request.status">{{ request.status | uppercase }}</span>
+          <span class="priority-badge" [class]="request.priority">{{ request.priority | uppercase }}</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="description">{{ request.items[0]?.purpose || 'Procurement request for ' + request.project_name }}</p>
+
+    <div class="meta-row">
+      <span class="meta-item"><mat-icon>label</mat-icon> {{ request.request_number }}</span>
+      <span class="meta-item"><mat-icon>person</mat-icon> {{ request.requested_by_name }}</span>
+      <span class="meta-item"><mat-icon>location_city</mat-icon> {{ request.project_name }}</span>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric">
+        <span class="label"><mat-icon>calendar_today</mat-icon> Request Date</span>
+        <span class="value">{{ request.created_at | date:'MMM d, y' }}</span>
+      </div>
+      <div class="metric">
+        <span class="label"><mat-icon>schedule</mat-icon> Required By</span>
+        <span class="value">{{ request.required_date | date:'MMM d, y' }}</span>
+      </div>
+      <div class="metric">
+        <span class="label"><mat-icon>inventory_2</mat-icon> Materials</span>
+        <span class="value">{{ request.items.length }} items</span>
+      </div>
+      <div class="metric highlight">
+        <span class="label"><mat-icon>payments</mat-icon> Estimated Cost</span>
+        <span class="value">{{ estimatedCost | currency:'USD':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="metric">
+        <span class="label"><mat-icon>assignment_ind</mat-icon> Delivery Location</span>
+        <span class="value">{{ request.delivery_location || 'Project Site' }}</span>
+      </div>
+    </div>
+
+    <div class="items-preview">
+      <div class="preview-header">
+        <mat-icon>inventory</mat-icon>
+        <span>Top Materials</span>
+      </div>
+      <div class="chips-container">
+        @for (item of request.items.slice(0, 3); track item.id) {
+          <span class="item-chip">
+            {{ item.material_name }} • {{ item.quantity_requested }} {{ item.unit }}
+          </span>
+        }
+        @if (request.items.length > 3) {
+          <span class="more-chip">+{{ request.items.length - 3 }} more</span>
+        }
+      </div>
+    </div>
+  </div>
+</div>

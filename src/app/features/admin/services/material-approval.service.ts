@@ -8,6 +8,7 @@ import {
   MaterialRequestResponseDto,
   PaginatedMaterialRequestResponseDto,
 } from '../../../shared/models/material-request.model';
+import { CreatePurchaseOrderDto, PurchaseOrderResponseDto } from '../../../shared/models/purchase-order.model';
 
 @Injectable({
   providedIn: 'root',
@@ -58,6 +59,16 @@ export class MaterialApprovalService {
     return this.http.patch<MaterialRequestResponseDto>(
       `${this.apiUrl}/requests/${id}/reject`,
       { reason },
+    );
+  }
+
+  createPurchaseOrder(
+    projectId: string,
+    dto: CreatePurchaseOrderDto,
+  ): Observable<PurchaseOrderResponseDto> {
+    return this.http.post<PurchaseOrderResponseDto>(
+      `${this.apiUrl}/project/${projectId}/purchase-orders`,
+      dto,
     );
   }
 }

@@ -191,6 +191,11 @@ export class SidebarComponent {
               icon: 'payments',
               route: '/vendor-payments',
             },
+            {
+              label: 'Material Approvals',
+              icon: 'fact_check',
+              route: '/admin/material-approvals',
+            },
           ],
         },
       ];

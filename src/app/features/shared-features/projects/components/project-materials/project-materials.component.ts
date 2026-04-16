@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
@@ -21,6 +22,7 @@ import { AddMaterialModalComponent } from './modals/add-material-modal.component
 import { EditMaterialModalComponent } from './modals/edit-material-modal.component';
 import { RequestMaterialModalComponent } from './modals/request-material-modal.component';
 import { UpdateStockModalComponent } from './modals/update-stock-modal.component';
+import { ProjectPurchaseOrdersComponent } from './purchase-orders/project-purchase-orders.component';
 
 @Component({
   selector: 'app-project-materials',
@@ -35,6 +37,8 @@ import { UpdateStockModalComponent } from './modals/update-stock-modal.component
     MatInputModule,
     MatPaginatorModule,
     ReactiveFormsModule,
+    MatTabsModule,
+    ProjectPurchaseOrdersComponent,
   ],
   host: {
     class: 'materials-container-host',

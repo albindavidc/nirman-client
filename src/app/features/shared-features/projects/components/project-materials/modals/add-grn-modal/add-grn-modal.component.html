@@ -1,0 +1,109 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <div>
+      <h2>Add Goods Receipt Note</h2>
+      <div class="po-info">PO: {{ data.po.poNumber }} • {{ data.po.vendor_name || 'Vendor' }}</div>
+    </div>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="grnForm" (ngSubmit)="onSubmit()">
+    <div class="modal-content">
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Delivery Challan / Invoice Number</mat-label>
+          <input matInput formControlName="deliveryChallanNumber" placeholder="DC-12345">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Received Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="recievedAt">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Inspection Status</mat-label>
+          <mat-select formControlName="inspectionStatus">
+            <mat-option value="accepted">Accepted</mat-option>
+            <mat-option value="partially_accepted">Partially Accepted</mat-option>
+            <mat-option value="rejected">Rejected</mat-option>
+            <mat-option value="pending">Pending</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Inspected By</mat-label>
+          <input matInput formControlName="inspectedBy" placeholder="Name of inspector">
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Inspection Notes</mat-label>
+        <textarea matInput formControlName="inspectionNotes" rows="3" placeholder="Any comments about the quality..."></textarea>
+      </mat-form-field>
+
+      <div class="items-section">
+        <h3>Received Items</h3>
+        <div formArrayName="items">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>MATERIAL</th>
+                <th>RECEIVED QTY</th>
+                <th>ACCEPTED QTY</th>
+                <th>REJECTED QTY</th>
+                <th>REJECTION REASON</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                <td>
+                  <span class="material-name">{{ data.po.items[i].materialName || 'Material' }}</span>
+                  <span class="ordered-qty">Ordered: {{ data.po.items[i].quantity }}</span>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="qty-field">
+                    <input matInput type="number" formControlName="quantityRecieved" (input)="updateRejected(i)">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="qty-field">
+                    <input matInput type="number" formControlName="quantityAccepted" (input)="updateRejected(i)">
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="qty-field">
+                    <input matInput type="number" formControlName="quantityRejected" readonly>
+                  </mat-form-field>
+                </td>
+                <td>
+                  <mat-form-field appearance="outline" class="reason-field">
+                    <input matInput formControlName="rejectionReason" placeholder="Reason...">
+                  </mat-form-field>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button mat-button type="button" mat-dialog-close>Cancel</button>
+      <button 
+        mat-flat-button 
+        color="primary" 
+        type="submit" 
+        [disabled]="grnForm.invalid || isSubmitting"
+        class="btn-submit"
+      >
+        <mat-icon *ngIf="!isSubmitting">save</mat-icon>
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        <span>{{ isSubmitting ? 'Saving...' : 'Submit GRN' }}</span>
+      </button>
+    </div>
+  </form>
+</div>

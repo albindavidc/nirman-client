@@ -124,22 +124,10 @@ export const routes: Routes = [
       },
       {
         path: 'vendor',
-        children: [
-          {
-            path: 'dashboard',
-            canActivate: [RoleGuard, VendorStatusGuard],
-            data: { roles: ['admin', 'vendor'] },
-            loadComponent: () =>
-              import('./shared/components/dashboard/dashboard.component').then(
-                (m) => m.DashboardComponent,
-              ),
-          },
-          {
-            path: '',
-            redirectTo: 'dashboard',
-            pathMatch: 'full',
-          },
-        ],
+        loadChildren: () =>
+          import('./features/vendor/vendor.routes').then(
+            (m) => m.VENDOR_ROUTES,
+          ),
       },
       {
         path: 'dashboard',

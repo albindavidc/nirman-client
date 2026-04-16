@@ -1,0 +1,92 @@
+<div class="vendor-po-container p-6">
+  <div class="header mb-8 flex justify-between items-center bg-surface-container rounded-2xl p-6 shadow-lg glass-effect">
+    <div>
+      <h1 class="text-3xl font-bold text-primary mb-2 flex items-center">
+        <mat-icon class="mr-3">shopping_cart</mat-icon>
+        Purchase Orders
+      </h1>
+      <p class="text-on-surface-variant">Review and manage your incoming purchase orders and create invoices.</p>
+    </div>
+    <div class="stats flex gap-6">
+      <div class="stat-card p-4 rounded-xl bg-primary-container text-on-primary-container">
+        <span class="text-sm block opacity-80 uppercase font-semibold">Total POs</span>
+        <span class="text-2xl font-bold">{{ purchaseOrders.length }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar mb-6 flex gap-4 items-center">
+    <mat-form-field appearance="outline" class="flex-1 max-w-md">
+      <mat-label>Search PO Number or Project</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. PO-2024-001">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-chip-listbox (change)="filterByStatus($event.value)" class="status-filters">
+      <mat-chip-option selected value="ALL">All</mat-chip-option>
+      <mat-chip-option value="pending" color="accent">Pending</mat-chip-option>
+      <mat-chip-option value="paid" color="primary">Paid</mat-chip-option>
+    </mat-chip-listbox>
+  </div>
+
+  <!-- PO Grid -->
+  <div class="po-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="filteredPurchaseOrders.length > 0; else noData">
+    <div class="po-card group" *ngFor="let po of filteredPurchaseOrders" [@fadeIn]>
+      <mat-card class="h-full rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-outline-variant bg-surface-container-low">
+        <mat-card-header class="p-4 border-b border-outline-variant bg-surface-container-high">
+          <div mat-card-avatar class="bg-primary rounded-lg flex items-center justify-center text-on-primary">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+          <mat-card-title class="text-lg font-bold">{{ po.poNumber }}</mat-card-title>
+          <mat-card-subtitle class="text-sm flex items-center">
+            <mat-icon class="text-xs mr-1 h-3 w-3">calendar_today</mat-icon>
+            Issued: {{ po.issuedAt | date:'mediumDate' }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content class="p-6">
+          <div class="info-row flex justify-between mb-4">
+            <span class="text-on-surface-variant text-sm">Amount</span>
+            <span class="font-bold text-lg text-secondary">{{ po.totalAmount | currency:po.currency }}</span>
+          </div>
+
+          <div class="info-row grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <span class="text-xs text-on-surface-variant block uppercase">Delivery</span>
+              <span class="status-pill" [ngClass]="po.deliveryStatus">{{ po.deliveryStatus }}</span>
+            </div>
+            <div>
+              <span class="text-xs text-on-surface-variant block uppercase">Payment</span>
+              <span class="status-pill" [ngClass]="po.paymentStatus">{{ po.paymentStatus }}</span>
+            </div>
+          </div>
+
+          <div class="project-info mt-6 p-3 rounded-lg bg-surface-container-highest border border-outline-variant">
+            <span class="text-xs text-primary font-bold block mb-1">PROJECT DETAILS</span>
+            <span class="text-sm font-medium">{{ po.projectId }}</span> <!-- Ideally should show project name -->
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="p-4 bg-surface-container-high border-t border-outline-variant flex justify-end gap-2">
+          <button mat-button class="text-primary hover:bg-primary-container" (click)="viewDetails(po)">
+            <mat-icon>visibility</mat-icon> VIEW
+          </button>
+          <button mat-flat-button color="primary" 
+                  [disabled]="po.paymentStatus === 'paid'"
+                  (click)="createInvoice(po)">
+            <mat-icon>add_chart</mat-icon> CREATE INVOICE
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <div class="empty-state flex flex-col items-center justify-center p-20 bg-surface-container rounded-3xl border-2 border-dashed border-outline-variant grayscale">
+      <mat-icon class="text-6xl mb-4 opacity-20">inventory_2</mat-icon>
+      <h3 class="text-xl font-bold opacity-50">No Purchase Orders Found</h3>
+      <p class="text-on-surface-variant opacity-50 text-center">There are no purchase orders matching your current filters.</p>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,68 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <div>
+      <h2>Goods Receipt History</h2>
+      <div class="po-info">PO: {{ data.po.poNumber }} • {{ data.po.vendor_name || 'Vendor' }}</div>
+    </div>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="modal-content">
+    <div *ngIf="isLoading" class="flex justify-center p-12">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!isLoading && grns.length === 0" class="empty-state">
+      <mat-icon>history</mat-icon>
+      <p>No receipt history found for this purchase order.</p>
+    </div>
+
+    <div *ngIf="!isLoading && grns.length > 0">
+      <div *ngFor="let grn of grns" class="grn-card">
+        <header>
+          <div>
+            <span class="grn-id">GRN #{{ grn.grnNumber }}</span>
+            <span class="grn-date ml-4">{{ grn.recievedAt | date:'MMM d, yyyy' }}</span>
+          </div>
+          <div class="flex items-center gap-4">
+              <span class="text-xs text-gray-400">Challan: {{ grn.deliveryChallanNumber || 'N/A' }}</span>
+          </div>
+        </header>
+
+        <div class="inspection-info">
+            <div><span class="label">Inspected By:</span> <span class="value">{{ grn.inspectedBy }}</span></div>
+            <div><span class="label">Status:</span> <span class="value capitalize">{{ grn.inspectionStatus.replace('_', ' ') }}</span></div>
+        </div>
+
+        <div *ngIf="grn.inspectionNotes" class="mb-4 p-3 bg-opacity-10 bg-black rounded text-sm italic">
+            "{{ grn.inspectionNotes }}"
+        </div>
+
+        <table class="item-list">
+          <thead>
+            <tr>
+              <th>MATERIAL</th>
+              <th class="text-right">RECEIVED</th>
+              <th class="text-right">ACCEPTED</th>
+              <th class="text-right">REJECTED</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of grn.items">
+              <td>{{ getMaterialName(item.materialId) }}</td>
+              <td class="text-right">{{ item.quantityRecieved }}</td>
+              <td class="text-right qty-accepted">{{ item.quantityAccepted }}</td>
+              <td class="text-right qty-rejected">{{ item.quantityRejected }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-actions p-6 border-t border-gray-100 flex justify-end">
+    <button mat-flat-button color="primary" mat-dialog-close>Close</button>
+  </div>
+</div>

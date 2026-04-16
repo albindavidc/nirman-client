@@ -11,6 +11,19 @@ import {
   MaterialRequest,
   CreateMaterialRequestDto,
 } from '../models/material.model';
+import {
+  PurchaseOrderResponseDto,
+  CreatePurchaseOrderDto,
+} from '../../../../shared/models/purchase-order.model';
+import {
+  GrnResponseDto,
+  CreateGrnDto,
+} from '../../../../shared/models/grn.model';
+import {
+  InvoicePrepResponseDto,
+  CreateInvoiceDto,
+  InvoiceResponseDto,
+} from '../../../../shared/models/invoice.model';
 
 @Injectable({
   providedIn: 'root',
@@ -91,4 +104,46 @@ export class MaterialService {
       `${this.apiUrl}/materials/project/${projectId}/requests`,
     );
   }
+
+  getProjectPurchaseOrders(
+    projectId: string,
+  ): Observable<PurchaseOrderResponseDto[]> {
+    return this.http.get<PurchaseOrderResponseDto[]>(
+      `${this.apiUrl}/materials/project/${projectId}/purchase-orders`,
+    );
+  }
+
+  createGoodsReceipt(
+    projectId: string,
+    data: CreateGrnDto,
+  ): Observable<GrnResponseDto> {
+    return this.http.post<GrnResponseDto>(
+      `${this.apiUrl}/materials/project/${projectId}/goods-receipts`,
+      data,
+    );
+  }
+
+  getPoGoodsReceipts(
+    projectId: string,
+    poId: string,
+  ): Observable<GrnResponseDto[]> {
+    return this.http.get<GrnResponseDto[]>(
+      `${this.apiUrl}/materials/project/${projectId}/purchase-orders/${poId}/goods-receipts`,
+    );
+  }
+
+  getInvoicePrepData(projectId: string, poId: string): Observable<InvoicePrepResponseDto> {
+    return this.http.get<InvoicePrepResponseDto>(
+      `${this.apiUrl}/materials/purchase-orders/${poId}/invoices-prep-data`,
+      { params: { projectId } } // Optional param depending on backend requirement
+    );
+  }
+
+  createInvoice(projectId: string, data: CreateInvoiceDto): Observable<InvoiceResponseDto> {
+    return this.http.post<InvoiceResponseDto>(
+      `${this.apiUrl}/materials/project/${projectId}/invoices`,
+      data
+    );
+  }
 }
+

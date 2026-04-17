@@ -1,0 +1,61 @@
+.invoice-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.invoice-table {
+  width: 100%;
+  background: transparent;
+}
+
+.invoice-row {
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.invoice-row:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.amount-cell {
+  font-weight: 600;
+  color: #bb86fc;
+}
+
+.pay-btn {
+  border-color: #03dac6;
+  color: #03dac6;
+}
+
+.refresh-btn {
+  border-radius: 20px;
+  padding: 0 24px;
+}
+
+::ng-deep .mat-mdc-table {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  padding: 20px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+::ng-deep .mat-mdc-cell {
+  color: rgba(255, 255, 255, 0.87) !important;
+  padding: 20px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}

@@ -135,7 +135,19 @@ export class MaterialService {
   getInvoicePrepData(projectId: string, poId: string): Observable<InvoicePrepResponseDto> {
     return this.http.get<InvoicePrepResponseDto>(
       `${this.apiUrl}/materials/purchase-orders/${poId}/invoices-prep-data`,
-      { params: { projectId } } // Optional param depending on backend requirement
+      { params: { projectId } }
+    );
+  }
+
+  getInvoices(projectId: string): Observable<InvoiceResponseDto[]> {
+    return this.http.get<InvoiceResponseDto[]>(
+      `${this.apiUrl}/materials/project/${projectId}/invoices-list`
+    );
+  }
+
+  getInvoiceById(id: string): Observable<InvoiceResponseDto> {
+    return this.http.get<InvoiceResponseDto>(
+      `${this.apiUrl}/materials/invoices/${id}`
     );
   }
 

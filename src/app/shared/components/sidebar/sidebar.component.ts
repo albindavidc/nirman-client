@@ -185,7 +185,7 @@ export class SidebarComponent {
               icon: 'storefront',
               route: '/vendor-management',
             },
-            { label: 'Payment Invoices', icon: 'receipt', route: '/invoices' },
+            { label: 'Payment Invoices', icon: 'receipt', route: '/admin/finance/invoices' },
             {
               label: 'Vendor Payments',
               icon: 'payments',

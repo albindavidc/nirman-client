@@ -1,0 +1,46 @@
+<div class="stripe-dialog">
+  <div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold text-white mb-0">Secure Checkout</h2>
+      <button mat-icon-button (click)="close()" [disabled]="processing()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="invoice-summary mb-8 p-4 rounded-xl bg-white/5 border border-white/10">
+      <div class="flex justify-between mb-2">
+        <span class="text-gray-400">Invoice:</span>
+        <span class="text-white font-medium">#{{ data.invoiceNumber }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400">Payable Amount:</span>
+        <span class="text-2xl font-bold text-primary">{{ data.amount | currency: data.currency }}</span>
+      </div>
+    </div>
+
+    <form (submit)="handleSubmit($event)" class="payment-form">
+      <label class="block text-sm text-gray-400 mb-3 ml-1">Card Details</label>
+      <div #cardElement class="stripe-input mb-8"></div>
+      
+      <div id="card-errors" role="alert" class="text-red-400 text-sm mb-4 px-2" *ngIf="error()">
+        {{ error() }}
+      </div>
+
+      <button 
+        mat-flat-button 
+        color="primary" 
+        type="submit" 
+        class="pay-submit-btn w-full"
+        [disabled]="processing() || !stripeLoaded()"
+      >
+        <mat-spinner diameter="24" *ngIf="processing()" class="inline-block mr-2"></mat-spinner>
+        {{ processing() ? 'Processing...' : 'Pay with Stripe' }}
+      </button>
+    </form>
+
+    <div class="security-footer mt-6 flex items-center justify-center gap-2 text-gray-500 text-xs">
+      <mat-icon class="text-base h-4 w-4">lock</mat-icon>
+      <span>End-to-end encrypted by Stripe</span>
+    </div>
+  </div>
+</div>

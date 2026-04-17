@@ -42,6 +42,25 @@ export interface CreateInvoiceDto {
   }[];
 }
 
+export interface InvoiceItemResponseDto {
+  id: string;
+  materialId: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  totalItemCost: number;
+}
+
+export interface InvoiceAttachmentResponseDto {
+  id: string;
+  fileUrl: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  uploadedAt: string;
+  uploadedBy: string;
+}
+
 export interface InvoiceResponseDto {
   id: string;
   invoiceNumber: string;
@@ -52,6 +71,11 @@ export interface InvoiceResponseDto {
   total: number;
   currency: string;
   dueDate: string;
+  status: string;
+  vendorName?: string;
+  projectName?: string;
+  items?: InvoiceItemResponseDto[];
+  attachments?: InvoiceAttachmentResponseDto[];
   createdAt: string;
   updatedAt: string;
 }

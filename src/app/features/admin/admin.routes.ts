@@ -12,8 +12,8 @@ export const ADMIN_ROUTES: Routes = [
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },
     loadComponent: () =>
-      import('../../shared/components/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent,
+      import('./components/dashboard/admin-dashboard.component').then(
+        (m) => m.AdminDashboardComponent,
       ),
   },
   {
@@ -52,5 +52,26 @@ export const ADMIN_ROUTES: Routes = [
       import('./components/material-approval/material-approvals.component').then(
         (m) => m.MaterialApprovalsComponent,
       ),
+  },
+  {
+    path: 'finance/invoices',
+    canActivate: [RoleGuard],
+    data: { roles: ['admin'] },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./components/invoices/admin-invoice-list/admin-invoice-list.component').then(
+            (m) => m.AdminInvoiceListComponent,
+          ),
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./components/invoices/admin-invoice-detail/admin-invoice-detail.component').then(
+            (m) => m.AdminInvoiceDetailComponent,
+          ),
+      },
+    ],
   },
 ];

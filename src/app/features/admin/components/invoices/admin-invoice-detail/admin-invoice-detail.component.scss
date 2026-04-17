@@ -1,0 +1,45 @@
+.detail-container {
+  min-height: 100vh;
+  background: #0f0f0f;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.items-table {
+  width: 100%;
+  background: transparent;
+}
+
+.pay-btn-large {
+  padding: 0 32px;
+  height: 54px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 27px;
+  box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+}
+
+::ng-deep .mat-mdc-card-header {
+  padding: 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::ng-deep .mat-mdc-card-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.attachment-item {
+  text-decoration: none;
+}

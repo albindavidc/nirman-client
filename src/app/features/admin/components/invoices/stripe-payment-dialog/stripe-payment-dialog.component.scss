@@ -1,0 +1,35 @@
+.stripe-dialog {
+  background: #1e1e1e;
+  border-radius: 20px;
+}
+
+.stripe-input {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.stripe-input-focus {
+  border-color: #bb86fc;
+  background: rgba(187, 134, 252, 0.03);
+  box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.1);
+}
+
+.pay-submit-btn {
+  height: 56px;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+::ng-deep .stripe-dialog-container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+  max-width: 95vw !important;
+}

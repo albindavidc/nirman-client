@@ -28,8 +28,10 @@
     "@ngrx/effects": "^20.0.0",
     "@ngrx/store": "^20.0.0",
     "@ngrx/store-devtools": "^20.0.0",
+    "@stripe/stripe-js": "^9.2.0",
     "date-fns": "^4.1.0",
     "dhtmlx-gantt": "^9.1.1",
+    "echarts": "^6.0.0",
     "filepond": "^4.32.10",
     "filepond-plugin-file-validate-type": "^1.2.9",
     "filepond-plugin-image-exif-orientation": "^1.0.11",
@@ -37,6 +39,7 @@
     "ngx-filepond": "^7.0.3",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.8.3",
+    "stripe": "^22.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

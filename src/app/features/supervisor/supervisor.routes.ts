@@ -12,8 +12,8 @@ export const SUPERVISOR_ROUTES: Routes = [
     canActivate: [RoleGuard],
     data: { roles: ['admin', 'supervisor'] },
     loadComponent: () =>
-      import('../../shared/components/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent,
+      import('./components/dashboard/supervisor-dashboard.component').then(
+        (m) => m.SupervisorDashboardComponent,
       ),
   },
   {

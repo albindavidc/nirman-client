@@ -10,8 +10,15 @@ export const VENDOR_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'purchase-orders',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => 
+          import('./components/vendor-dashboard/vendor-dashboard.component').then(
+            (m) => m.VendorDashboardComponent
+          ),
       },
       {
         path: 'purchase-orders',

@@ -49,6 +49,12 @@
             [matAutocomplete]="managerAuto"
             placeholder="Select project manager"
           />
+          @if (
+            projectForm.get("managerIds")?.invalid &&
+            projectForm.get("managerIds")?.touched
+          ) {
+            <mat-error> Project manager is required </mat-error>
+          }
           <mat-autocomplete
             #managerAuto="matAutocomplete"
             (optionSelected)="selectManager($event.option.value)"

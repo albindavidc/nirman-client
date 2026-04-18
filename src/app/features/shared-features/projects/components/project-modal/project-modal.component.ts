@@ -220,7 +220,10 @@ export class ProjectModalComponent implements OnInit {
           CustomValidators.noWhitespace(),
         ],
       ],
-      managerIds: [this.data?.managerIds || []],
+      managerIds: [
+        this.data?.managerIds || [],
+        [Validators.required, Validators.minLength(1)],
+      ],
       status: [this.data?.status || 'active'],
       description: [
         this.data?.description || '',
@@ -228,11 +231,17 @@ export class ProjectModalComponent implements OnInit {
       ],
       startDate: [
         this.data?.startDate ? new Date(this.data.startDate) : new Date(),
-        [Validators.required, CustomValidators.futureOrTodayDate()],
+        [
+          Validators.required,
+          ...(this.isEditing ? [] : [CustomValidators.futureOrTodayDate()]),
+        ],
       ],
       endDate: [
         this.data?.dueDate ? new Date(this.data.dueDate) : new Date(),
-        [Validators.required, CustomValidators.futureOrTodayDate()],
+        [
+          Validators.required,
+          ...(this.isEditing ? [] : [CustomValidators.futureOrTodayDate()]),
+        ],
       ],
       budget: [this.data?.budget || null, [Validators.min(0)]],
       progress: [
@@ -530,8 +539,8 @@ export class ProjectModalComponent implements OnInit {
           : undefined,
         budget: formValue.budget != null ? Number(formValue.budget) : undefined,
         progress: formValue.progress != null ? Number(formValue.progress) : undefined,
-        latitude: formValue.latitude || undefined,
-        longitude: formValue.longitude || undefined,
+        latitude: formValue.latitude !== null ? formValue.latitude : undefined,
+        longitude: formValue.longitude !== null ? formValue.longitude : undefined,
       };
 
       this.store.dispatch(

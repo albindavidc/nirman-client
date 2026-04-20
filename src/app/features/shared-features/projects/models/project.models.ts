@@ -98,7 +98,7 @@ export interface Project {
   longitude?: number;
   workers?: ProjectWorker[];
   phases?: ProjectPhase[];
-  teamMembers: TeamWorker[];
+  teamMembers?: TeamWorker[];
   budget?: number;
   spent?: number;
   createdBy?: string;
@@ -131,6 +131,7 @@ export interface UpdateProjectDto {
   progress?: number;
   latitude?: number;
   longitude?: number;
+  workers?: ProjectWorker[];
 }
 
 export interface ProjectStats {

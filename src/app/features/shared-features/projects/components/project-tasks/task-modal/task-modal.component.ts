@@ -90,6 +90,27 @@ export class TaskModalComponent implements OnInit {
   projectStartDate: Date | null = null;
   projectEndDate: Date | null = null;
 
+  phaseStartDate: Date | null = null;
+  phaseEndDate: Date | null = null;
+
+  get effectiveMinDate(): Date | null {
+    if (this.phaseStartDate && this.projectStartDate) {
+      return this.phaseStartDate > this.projectStartDate
+        ? this.phaseStartDate
+        : this.projectStartDate;
+    }
+    return this.phaseStartDate || this.projectStartDate;
+  }
+
+  get effectiveMaxDate(): Date | null {
+    if (this.phaseEndDate && this.projectEndDate) {
+      return this.phaseEndDate < this.projectEndDate
+        ? this.phaseEndDate
+        : this.projectEndDate;
+    }
+    return this.phaseEndDate || this.projectEndDate;
+  }
+
   ngOnInit(): void {
     this.mode = this.data.mode;
     this.initForm();
@@ -175,8 +196,13 @@ export class TaskModalComponent implements OnInit {
     this.phaseService.getPhases(this.data.projectId).subscribe((phases) => {
       this.phases = phases;
 
-      // In edit mode, load the phase data and then assignments
+      // Update phase dates if a phase is selected
       const phaseId = this.taskForm.get('phaseId')?.value;
+      if (phaseId) {
+        this.updatePhaseDates(phaseId);
+      }
+
+      // In edit mode, load the phase data and then assignments
       if (phaseId && this.mode === 'edit') {
         this.loadWorkerGroups(phaseId, false);
       }
@@ -196,9 +222,12 @@ export class TaskModalComponent implements OnInit {
       .subscribe((phaseId) => {
         if (phaseId) {
           this.loadWorkerGroups(phaseId);
+          this.updatePhaseDates(phaseId);
         } else {
           this.workerGroups = [];
           this.workers = [];
+          this.phaseStartDate = null;
+          this.phaseEndDate = null;
         }
         // Clear dependent selections
         this.taskForm.get('workerGroupIds')?.setValue([]);
@@ -390,6 +419,21 @@ export class TaskModalComponent implements OnInit {
         );
       }
     });
+  }
+
+  private updatePhaseDates(phaseId: string): void {
+    const selectedPhase = this.phases.find((p) => p.id === phaseId);
+    if (selectedPhase) {
+      this.phaseStartDate = selectedPhase.plannedStartDate
+        ? new Date(selectedPhase.plannedStartDate)
+        : null;
+      this.phaseEndDate = selectedPhase.plannedEndDate
+        ? new Date(selectedPhase.plannedEndDate)
+        : null;
+    } else {
+      this.phaseStartDate = null;
+      this.phaseEndDate = null;
+    }
   }
 
   private loadWorkerGroups(phaseId: string, autoSelect = true): void {

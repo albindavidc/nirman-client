@@ -51,6 +51,30 @@ export interface SearchableWorker {
   email: string;
 }
 
+interface NormalizedLocation extends google.maps.places.AutocompletePrediction {
+  mainText?: string;
+  secondaryText?: string;
+}
+
+interface MapAutocompleteResponse {
+  suggestions: {
+    placePrediction: {
+      placeId: string;
+      text: { text: string } | string;
+      description?: string;
+      structuredFormat?: {
+        mainText: { text: string };
+        secondaryText: { text: string };
+      };
+      structured_formatting?: {
+        main_text: string;
+        secondary_text: string;
+      };
+      place_id?: string;
+    };
+  }[];
+}
+
 @Component({
   selector: 'app-project-modal',
   standalone: true,
@@ -199,7 +223,7 @@ export class ProjectModalComponent implements OnInit {
   // Observables
   filteredManagers$!: Observable<SearchableWorker[]>;
   filteredWorkers$!: Observable<SearchableWorker[]>;
-  filteredLocations$!: Observable<google.maps.places.AutocompletePrediction[]>;
+  filteredLocations$!: Observable<NormalizedLocation[]>;
   selectedWorkers: SearchableWorker[] = [];
   selectedManager: SearchableWorker | null = null;
 
@@ -261,6 +285,7 @@ export class ProjectModalComponent implements OnInit {
 
   private autocompleteService: google.maps.places.AutocompleteService | null =
     null;
+  private useNewAutocomplete = false;
 
   ngOnInit(): void {
     // Get current user to exclude from selection
@@ -340,45 +365,124 @@ export class ProjectModalComponent implements OnInit {
 
   private initAutocompleteService(): void {
     if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+      // Always initialize legacy service as a guaranteed fallback
       this.autocompleteService = new google.maps.places.AutocompleteService();
+      
+      // Check if the new AutocompleteSuggestion is available
+      if ('AutocompleteSuggestion' in google.maps.places) {
+        this.useNewAutocomplete = true;
+      }
     } else {
       setTimeout(() => this.initAutocompleteService(), 500);
     }
   }
 
   displayLocation(
-    location: google.maps.places.AutocompletePrediction | null,
+    location: NormalizedLocation | null,
   ): string {
     return location ? location.description : '';
   }
 
   private filterLocations(
-    term: string | google.maps.places.AutocompletePrediction,
-  ): Observable<google.maps.places.AutocompletePrediction[]> {
-    if (!term || typeof term !== 'string' || !this.autocompleteService) {
+    term: string | NormalizedLocation,
+  ): Observable<NormalizedLocation[]> {
+    if (!term || typeof term !== 'string' || term.length < 2) {
       return of([]);
     }
 
     return new Observable((observer) => {
-      this.autocompleteService!.getPlacePredictions(
-        { input: term },
-        (predictions, status) => {
-          if (
-            status === google.maps.places.PlacesServiceStatus.OK &&
-            predictions
-          ) {
-            observer.next(predictions);
-          } else {
-            observer.next([]);
-          }
+      const handleResults = (predictions: (google.maps.places.AutocompletePrediction | { placePrediction: unknown })[] | null) => {
+        if (!predictions) {
+          observer.next([]);
           observer.complete();
-        },
-      );
+          return;
+        }
+
+        const normalized = predictions.map((p) => {
+          const prediction: any = (p as any).placePrediction || p;
+          const description = prediction.description || (typeof prediction.text === 'string' ? prediction.text : prediction.text?.text) || '';
+          
+          let mainText = prediction.structuredFormat?.mainText?.text || 
+                         prediction.structured_formatting?.main_text;
+                         
+          let secondaryText = prediction.structuredFormat?.secondaryText?.text || 
+                             prediction.structured_formatting?.secondary_text;
+
+          // If structured formatting is missing, try to split description
+          if (!mainText && description) {
+            const firstComma = description.indexOf(',');
+            if (firstComma !== -1) {
+              mainText = description.substring(0, firstComma).trim();
+              secondaryText = description.substring(firstComma + 1).trim();
+            } else {
+              mainText = description;
+            }
+          }
+
+          return {
+            place_id: prediction.placeId || prediction.place_id,
+            description: description,
+            mainText: mainText || description,
+            secondaryText: secondaryText || '',
+            ...prediction,
+          };
+        });
+
+        observer.next(normalized);
+        observer.complete();
+      };
+
+      try {
+        if (
+          this.useNewAutocomplete &&
+          'AutocompleteSuggestion' in google.maps.places
+        ) {
+          const service = (google.maps.places as unknown as { AutocompleteSuggestion: unknown }).AutocompleteSuggestion as { fetchAutocompleteSuggestions: (req: { input: string }) => Promise<MapAutocompleteResponse> };
+          service.fetchAutocompleteSuggestions(
+            { input: term },
+          )
+            .then((response: MapAutocompleteResponse) => {
+              handleResults(response.suggestions || []);
+            })
+            .catch((err: { status?: number; message?: string }) => {
+              // If it's a 403 (Forbidden), it means the New API is not enabled.
+              // We should stop trying to use it for this session.
+              if (err.status === 403 || err.message?.includes('not been used') || err.message?.includes('disabled')) {
+                this.useNewAutocomplete = false;
+              }
+              
+              console.error('New Autocomplete Error:', err);
+              // Fallback to legacy
+              this.fallbackToLegacy(term, handleResults);
+            });
+        } else if (this.autocompleteService) {
+          this.fallbackToLegacy(term, handleResults);
+        } else {
+          handleResults([]);
+        }
+      } catch (error) {
+        console.error('Autocomplete exception:', error);
+        handleResults([]);
+      }
     });
   }
 
+  private fallbackToLegacy(term: string, callback: (results: NormalizedLocation[]) => void): void {
+    if (!this.autocompleteService) return callback([]);
+    this.autocompleteService.getPlacePredictions(
+      { input: term },
+      (predictions, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+          callback(predictions);
+        } else {
+          callback([]);
+        }
+      },
+    );
+  }
+
   async onLocationSelected(
-    prediction: google.maps.places.AutocompletePrediction,
+    prediction: NormalizedLocation,
   ): Promise<void> {
     if (!prediction) return;
 
@@ -541,6 +645,7 @@ export class ProjectModalComponent implements OnInit {
         progress: formValue.progress != null ? Number(formValue.progress) : undefined,
         latitude: formValue.latitude !== null ? formValue.latitude : undefined,
         longitude: formValue.longitude !== null ? formValue.longitude : undefined,
+        workers: workers,
       };
 
       this.store.dispatch(

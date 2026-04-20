@@ -223,8 +223,8 @@
           matInput
           [matDatepicker]="pickerStart"
           formControlName="plannedStartDate"
-          [min]="projectStartDate"
-          [max]="projectEndDate"
+          [min]="effectiveMinDate"
+          [max]="effectiveMaxDate"
         />
         <mat-datepicker-toggle
           matIconSuffix
@@ -239,8 +239,8 @@
           matInput
           [matDatepicker]="pickerEnd"
           formControlName="plannedEndDate"
-          [min]="taskForm.get('plannedStartDate')?.value || projectStartDate"
-          [max]="projectEndDate"
+          [min]="taskForm.get('plannedStartDate')?.value || effectiveMinDate"
+          [max]="effectiveMaxDate"
         />
         <mat-datepicker-toggle
           matIconSuffix
@@ -301,8 +301,8 @@
             matInput
             [matDatepicker]="pickerActualStart"
             formControlName="actualStartDate"
-            [min]="projectStartDate"
-            [max]="projectEndDate"
+            [min]="effectiveMinDate"
+            [max]="effectiveMaxDate"
           />
           <mat-datepicker-toggle
             matIconSuffix
@@ -317,8 +317,8 @@
             matInput
             [matDatepicker]="pickerActualEnd"
             formControlName="actualEndDate"
-            [min]="taskForm.get('actualStartDate')?.value || projectStartDate"
-            [max]="projectEndDate"
+            [min]="taskForm.get('actualStartDate')?.value || effectiveMinDate"
+            [max]="effectiveMaxDate"
           />
           <mat-datepicker-toggle
             matIconSuffix

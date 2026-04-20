@@ -26,8 +26,18 @@ import { CustomValidators } from '../../../../../../shared/validators/custom-val
 
 /** Discriminated union data contract for the unified phase modal. */
 export type PhaseModalData =
-  | { mode: 'create'; nextSequence: number }
-  | { mode: 'edit'; phase: ProjectPhase };
+  | {
+      mode: 'create';
+      nextSequence: number;
+      projectStartDate?: string | Date;
+      projectEndDate?: string | Date;
+    }
+  | {
+      mode: 'edit';
+      phase: ProjectPhase;
+      projectStartDate?: string | Date;
+      projectEndDate?: string | Date;
+    };
 
 /** All phase statuses available in the edit form. */
 export const PHASE_STATUSES = [
@@ -71,6 +81,16 @@ export class PhaseModalComponent implements OnInit {
   /** Convenience getter to avoid repeated ternary checks in the template. */
   get isEditMode(): boolean {
     return this.data.mode === 'edit';
+  }
+
+  get minDate(): Date | null {
+    return this.data.projectStartDate
+      ? new Date(this.data.projectStartDate)
+      : null;
+  }
+
+  get maxDate(): Date | null {
+    return this.data.projectEndDate ? new Date(this.data.projectEndDate) : null;
   }
 
   get modalTitle(): string {

@@ -42,6 +42,8 @@
             matInput
             [matDatepicker]="plannedStartPicker"
             formControlName="plannedStartDate"
+            [min]="minDate"
+            [max]="maxDate"
           />
           <mat-datepicker-toggle matSuffix [for]="plannedStartPicker" />
           <mat-datepicker #plannedStartPicker />
@@ -53,6 +55,8 @@
             matInput
             [matDatepicker]="plannedEndPicker"
             formControlName="plannedEndDate"
+            [min]="phaseForm.get('plannedStartDate')?.value || minDate"
+            [max]="maxDate"
           />
           <mat-datepicker-toggle matSuffix [for]="plannedEndPicker" />
           <mat-datepicker #plannedEndPicker />
@@ -72,6 +76,8 @@
               matInput
               [matDatepicker]="actualStartPicker"
               formControlName="actualStartDate"
+              [min]="minDate"
+              [max]="maxDate"
             />
             <mat-datepicker-toggle matSuffix [for]="actualStartPicker" />
             <mat-datepicker #actualStartPicker />
@@ -83,6 +89,8 @@
               matInput
               [matDatepicker]="actualEndPicker"
               formControlName="actualEndDate"
+              [min]="phaseForm.get('actualStartDate')?.value || minDate"
+              [max]="maxDate"
             />
             <mat-datepicker-toggle matSuffix [for]="actualEndPicker" />
             <mat-datepicker #actualEndPicker />

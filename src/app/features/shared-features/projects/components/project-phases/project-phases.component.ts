@@ -18,7 +18,11 @@ import type { PhaseModalData } from './phase-modal/phase-modal.component';
 import { ProjectPhaseService } from '../../services/project-phase.service';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
-import { ProjectPhase, TaskDependency } from '../../models/project.models';
+import {
+  Project as ProjectModel,
+  ProjectPhase,
+  TaskDependency,
+} from '../../models/project.models';
 import { Task } from '../../services/task.service';
 import { Store } from '@ngrx/store';
 import { RequestApprovalModalComponent } from './request-approval-modal/request-approval-modal.component';
@@ -102,6 +106,8 @@ export class ProjectPhasesComponent implements OnInit {
   totalPhases = 0;
 
   private refreshSubject = new BehaviorSubject<void>(undefined);
+  private projectSubject = new BehaviorSubject<ProjectModel | null>(null);
+  project$ = this.projectSubject.asObservable();
 
   ganttData$ = new Observable<{
     tasks: Task[];
@@ -121,6 +127,11 @@ export class ProjectPhasesComponent implements OnInit {
     this.phases$ = this.refreshSubject.pipe(
       switchMap(() => this.projectPhaseService.getPhases(projectId)),
     );
+
+    this.projectService.getProjectById(projectId).subscribe({
+      next: (project) => this.projectSubject.next(project),
+      error: (err) => console.error('Failed to fetch project', err),
+    });
 
     // Fetch tasks and dependencies for the project
     this.ganttData$ = this.phases$.pipe(
@@ -142,13 +153,17 @@ export class ProjectPhasesComponent implements OnInit {
         this.totalPhases = phases.length;
         return {
           total: phases.length,
-          inProgress: phases.filter(
-            (p) => p.status === 'In Progress' || p.status === 'Active',
+          inProgress: phases.filter((p) => {
+            const s = this.normalizeStatus(p.status);
+            return s === 'in progress' || s === 'active';
+          }).length,
+          completed: phases.filter(
+            (p) => this.normalizeStatus(p.status) === 'completed',
           ).length,
-          completed: phases.filter((p) => p.status === 'Completed').length,
-          notStarted: phases.filter(
-            (p) => p.status === 'Not Started' || p.status === 'Scheduled',
-          ).length,
+          notStarted: phases.filter((p) => {
+            const s = this.normalizeStatus(p.status);
+            return s === 'not started' || s === 'scheduled';
+          }).length,
         };
       }),
     );
@@ -161,7 +176,17 @@ export class ProjectPhasesComponent implements OnInit {
         // Apply filter
         let filtered = phases;
         if (this.currentFilter !== 'all') {
-          filtered = phases.filter((p) => p.status === this.currentFilter);
+          const normalizedFilter = this.normalizeStatus(this.currentFilter);
+          filtered = phases.filter((p) => {
+            const s = this.normalizeStatus(p.status);
+            if (normalizedFilter === 'in progress') {
+              return s === 'in progress' || s === 'active';
+            }
+            if (normalizedFilter === 'not started') {
+              return s === 'not started' || s === 'scheduled';
+            }
+            return s === normalizedFilter;
+          });
         }
         this.totalPhases = filtered.length;
         // Apply pagination
@@ -171,15 +196,21 @@ export class ProjectPhasesComponent implements OnInit {
     );
   }
 
+  private normalizeStatus(status: string): string {
+    if (!status) return '';
+    return status.toLowerCase().replace(/_/g, ' ').trim();
+  }
+
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'Completed':
+    const s = this.normalizeStatus(status);
+    switch (s) {
+      case 'completed':
         return 'completed';
-      case 'In Progress':
-      case 'Active':
+      case 'in progress':
+      case 'active':
         return 'in-progress';
-      case 'Not Started':
-      case 'Scheduled':
+      case 'not started':
+      case 'scheduled':
         return 'not-started';
       default:
         return 'not-started';
@@ -266,9 +297,12 @@ export class ProjectPhasesComponent implements OnInit {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 
+    const project = this.projectSubject.value;
     const data: PhaseModalData = {
       mode: 'create',
       nextSequence: this.totalPhases + 1,
+      projectStartDate: project?.startDate,
+      projectEndDate: project?.dueDate,
     };
     const dialogRef = this.dialog.open(PhaseModalComponent, {
       width: '500px',
@@ -292,7 +326,13 @@ export class ProjectPhasesComponent implements OnInit {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 
-    const data: PhaseModalData = { mode: 'edit', phase };
+    const project = this.projectSubject.value;
+    const data: PhaseModalData = {
+      mode: 'edit',
+      phase,
+      projectStartDate: project?.startDate,
+      projectEndDate: project?.dueDate,
+    };
     const dialogRef = this.dialog.open(PhaseModalComponent, {
       width: '600px',
       data,

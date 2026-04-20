@@ -80,7 +80,7 @@
         </div>
         <div class="detail-item">
           <span class="detail-label">PROJECT MANAGER</span>
-          <span class="detail-value">John Doe</span>
+          <span class="detail-value">{{ (project.teamMembers && project.teamMembers.length > 0) ? project.teamMembers[0].name : 'Not Assigned' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">START DATE</span>
@@ -111,7 +111,7 @@
         <span class="detail-label">DESCRIPTION</span>
         <p class="description-text">{{ project.description }}</p>
       </div>
-      @if (project.latitude && project.longitude) {
+      @if (project.latitude !== undefined && project.latitude !== null && project.longitude !== undefined && project.longitude !== null) {
         <div class="location-section">
           <span class="detail-label">LOCATION</span>
           <a

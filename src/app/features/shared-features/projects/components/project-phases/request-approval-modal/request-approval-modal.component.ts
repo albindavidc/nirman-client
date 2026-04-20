@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ApiError } from '../../../../../../shared/models/api.models';
 
 // FilePond Imports
 import { FilePondModule, registerPlugin } from 'ngx-filepond';
@@ -40,13 +41,13 @@ registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
   templateUrl: './request-approval-modal.component.html',
   styleUrls: ['./request-approval-modal.component.scss'],
 })
-export class RequestApprovalModalComponent implements OnInit {
+export class RequestApprovalModalComponent {
   public dialogRef = inject(MatDialogRef<RequestApprovalModalComponent>);
   public data = inject<{ phaseName: string }>(MAT_DIALOG_DATA);
   private uploadService = inject(UploadService);
 
   uploadedMedia: { type: string; url: string }[] = [];
-  comments: string = '';
+  comments = '';
   isSubmitting = false;
 
   pondOptions: FilePondOptions = {
@@ -64,30 +65,28 @@ export class RequestApprovalModalComponent implements OnInit {
       </div>
     `,
     server: {
-      process: (fieldName: string, file: Blob, metadata: any, load: (id: string) => void, error: (msg: string) => void, _progress: any, abort: () => void) => {
+      process: (fieldName, file, metadata, load, error, _progress, abort) => {
         const sub = this.uploadService.uploadFile(file as File, 'document').subscribe({
           next: ({ viewUrl }) => {
             const mediaType = (file as File).type.startsWith('video') ? 'video' : 'image';
             this.uploadedMedia.push({ type: mediaType, url: viewUrl });
             load(viewUrl);
           },
-          error: (err: any) => error(err.message || 'Upload failed'),
+          error: (err: ApiError) => error(err.message || 'Upload failed'),
         });
         return { abort: () => { sub.unsubscribe(); abort(); } };
       },
-      revert: (uniqueFileId: string, load: () => void, _error: any) => {
+      revert: (uniqueFileId: string, load: () => void) => {
         this.uploadedMedia = this.uploadedMedia.filter(m => m.url !== uniqueFileId);
         load();
       }
     }
   };
 
-  ngOnInit(): void {}
 
   onSubmit(): void {
     if (this.comments.trim()) {
       this.isSubmitting = true;
-      // The actual submission is handled by the parent component after this modal closes
       this.dialogRef.close({
         comments: this.comments,
         media: this.uploadedMedia

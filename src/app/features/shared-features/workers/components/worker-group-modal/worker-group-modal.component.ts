@@ -1,9 +1,8 @@
 import {
   Component,
-  Inject,
+  inject,
   OnInit,
   OnDestroy,
-  inject,
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
@@ -22,7 +21,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { WorkerGroup } from '../../models/worker-group.model';
 import { TradeType } from '../../models/trade-type.model';
@@ -86,7 +85,9 @@ export class WorkerGroupModalComponent implements OnInit, OnDestroy {
   memberSearchControl = new FormControl('');
   memberSearchTerm = '';
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: WorkerGroupModalData) {
+  public data = inject<WorkerGroupModalData>(MAT_DIALOG_DATA);
+
+  constructor() {
     // 1. Synchronous Initialization
     this.data = this.data || { mode: 'create' };
     this.isEdit = this.data.mode === 'edit';

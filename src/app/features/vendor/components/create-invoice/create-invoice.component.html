@@ -6,16 +6,22 @@
     <div class="flex justify-between items-end">
       <div>
         <h1 class="text-3xl font-bold text-primary mb-1">Generate Invoice</h1>
-        <p class="text-on-surface-variant" *ngIf="prepData">Creating invoice for PO: <span class="text-secondary font-semibold">{{ prepData.poNumber }}</span></p>
+        @if (prepData) {
+          <p class="text-on-surface-variant">Creating invoice for PO: <span class="text-secondary font-semibold">{{ prepData.poNumber }}</span></p>
+        }
       </div>
-      <div class="currency-badge p-2 px-4 rounded-full bg-secondary-container text-on-secondary-container text-sm font-bold" *ngIf="prepData">
-        CURRENCY: {{ prepData.currency }}
-      </div>
+      @if (prepData) {
+        <div class="currency-badge p-2 px-4 rounded-full bg-secondary-container text-on-secondary-container text-sm font-bold">
+          CURRENCY: {{ prepData.currency }}
+        </div>
+      }
     </div>
   </div>
 
   <div class="content card-main relative" [class.loading]="isLoading">
-    <mat-spinner *ngIf="isLoading" class="absolute-center"></mat-spinner>
+    @if (isLoading) {
+      <mat-spinner class="absolute-center"></mat-spinner>
+    }
 
     <mat-stepper linear #stepper class="rounded-2xl overflow-hidden bg-surface-container-low border border-outline-variant">
       <!-- Step 1: Review Billable Items -->
@@ -36,13 +42,15 @@
                 </tr>
               </thead>
               <tbody class="text-sm divide-y divide-outline-variant">
-                <tr *ngFor="let item of prepData?.billableItems" class="hover:bg-surface-container transition-colors">
-                  <td class="p-4 font-medium">{{ item.materialName }}</td>
-                  <td class="p-4">{{ item.acceptedQuantity }}</td>
-                  <td class="p-4">{{ item.unitPrice | currency:prepData?.currency }}</td>
-                  <td class="p-4">{{ item.taxRate }}%</td>
-                  <td class="p-4 font-bold text-primary">{{ item.recommendedTotal | currency:prepData?.currency }}</td>
-                </tr>
+                @for (item of prepData?.billableItems; track item.materialId) {
+                  <tr class="hover:bg-surface-container transition-colors">
+                    <td class="p-4 font-medium">{{ item.materialName }}</td>
+                    <td class="p-4">{{ item.acceptedQuantity }}</td>
+                    <td class="p-4">{{ item.unitPrice | currency:prepData?.currency }}</td>
+                    <td class="p-4">{{ item.taxRate }}%</td>
+                    <td class="p-4 font-bold text-primary">{{ item.recommendedTotal | currency:prepData?.currency }}</td>
+                  </tr>
+                }
               </tbody>
               <tfoot class="bg-surface-container-highest">
                 <tr>
@@ -71,7 +79,9 @@
               <mat-form-field appearance="outline" class="w-full mb-2">
                 <mat-label>Invoice Number</mat-label>
                 <input matInput formControlName="invoiceNumber" placeholder="INV-2024-XXX">
-                <mat-error *ngIf="detailsForm.get('invoiceNumber')?.hasError('required')">Invoice number is required</mat-error>
+                @if (detailsForm.get('invoiceNumber')?.hasError('required')) {
+                  <mat-error>Invoice number is required</mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="w-full">
@@ -79,7 +89,9 @@
                 <input matInput [matDatepicker]="picker" formControlName="dueDate">
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="detailsForm.get('dueDate')?.hasError('required')">Due date is required</mat-error>
+                @if (detailsForm.get('dueDate')?.hasError('required')) {
+                  <mat-error>Due date is required</mat-error>
+                }
               </mat-form-field>
             </div>
 

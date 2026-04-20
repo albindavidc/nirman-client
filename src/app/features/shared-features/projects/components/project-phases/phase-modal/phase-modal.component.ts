@@ -123,7 +123,7 @@ export class PhaseModalComponent implements OnInit {
             phase.progress,
             [Validators.min(0), Validators.max(100)],
           ],
-          workerGroupIds: [phase.workerGroups?.map((wg: any) => wg.id) || []],
+          workerGroupIds: [phase.workerGroups?.map((wg) => wg.id) || []],
         },
         {
           validators: [

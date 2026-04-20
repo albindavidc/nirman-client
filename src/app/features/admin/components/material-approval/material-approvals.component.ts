@@ -13,7 +13,6 @@ import {
   GetMaterialRequestDto,
   MaterialApprovalStatsDto,
   MaterialRequestResponseDto,
-  MaterialRequestStatus,
 } from '../../../../shared/models/material-request.model';
 import { MaterialRequestActionDialogComponent } from './material-request-dialog/material-request-dialog.component';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +39,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
     FormsModule,
   ],
   templateUrl: './material-approvals.component.html',
-  styleUrls: ['./material-approvals.component.css'],
+  styleUrls: ['./material-approvals.component.scss'],
 })
 export class MaterialApprovalsComponent implements OnInit {
   private readonly approvalService = inject(MaterialApprovalService);

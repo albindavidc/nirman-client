@@ -1,8 +1,8 @@
 export enum Role {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-  PROFESSIONAL = 'PROFESSIONAL',
-  VENDOR = 'VENDOR',
+  ADMIN = 'admin',
+  SUPERVISOR = 'supervisor',
+  VENDOR = 'vendor',
+  WORKER = 'worker',
 }
 
 export enum AccountStatus {

@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { io, Socket } from 'socket.io-client';
 import { Observable, Observer } from 'rxjs';
@@ -10,14 +10,11 @@ import { selectUser } from '../../features/auth/login/store/login.selectors';
   providedIn: 'root'
 })
 export class SocketService {
+  private configService = inject(ConfigService);
+  private platformId = inject(PLATFORM_ID);
+  private store = inject(Store);
   private chatSocket!: Socket;
   private callSocket!: Socket;
-  private store = inject(Store);
-
-  constructor(
-    private configService: ConfigService,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
 
   initSockets() {
     if (isPlatformBrowser(this.platformId)) {
@@ -71,11 +68,11 @@ export class SocketService {
     this.chatSocket?.emit('joinThread', { threadId });
   }
 
-  sendMessage(payload: any) {
+  sendMessage(payload: unknown) {
     this.chatSocket?.emit('sendMessage', payload);
   }
 
-  onNewMessage(): Observable<any> {
+  onNewMessage(): Observable<unknown> {
     return new Observable(observer => {
       this.chatSocket?.on('newMessage', (msg) => observer.next(msg));
     });
@@ -86,15 +83,15 @@ export class SocketService {
     this.callSocket?.emit('startCall', payload);
   }
 
-  offerCall(payload: { callId: string, offer: any, targetUserId: string }) {
+  offerCall(payload: { callId: string, offer: unknown, targetUserId: string }) {
     this.callSocket?.emit('offer', payload);
   }
 
-  answerCall(payload: { callId: string, answer: any, targetUserId: string }) {
+  answerCall(payload: { callId: string, answer: unknown, targetUserId: string }) {
     this.callSocket?.emit('answer', payload);
   }
 
-  sendIceCandidate(payload: { callId: string, candidate: any, targetUserId: string }) {
+  sendIceCandidate(payload: { callId: string, candidate: unknown, targetUserId: string }) {
     this.callSocket?.emit('iceCandidate', payload);
   }
 
@@ -107,32 +104,32 @@ export class SocketService {
   }
 
   // Call Event Listeners
-  onIncomingCall(): Observable<any> {
-    return new Observable((observer: Observer<any>) => {
+  onIncomingCall(): Observable<unknown> {
+    return new Observable((observer: Observer<unknown>) => {
       this.callSocket?.on('incomingCall', (data) => observer.next(data));
     });
   }
 
-  onCallOffer(): Observable<any> {
-    return new Observable((observer: Observer<any>) => {
+  onCallOffer(): Observable<unknown> {
+    return new Observable((observer: Observer<unknown>) => {
       this.callSocket?.on('offer', (data) => observer.next(data));
     });
   }
 
-  onCallAnswer(): Observable<any> {
-    return new Observable((observer: Observer<any>) => {
+  onCallAnswer(): Observable<unknown> {
+    return new Observable((observer: Observer<unknown>) => {
       this.callSocket?.on('answer', (data) => observer.next(data));
     });
   }
 
-  onIceCandidate(): Observable<any> {
-    return new Observable((observer: Observer<any>) => {
+  onIceCandidate(): Observable<unknown> {
+    return new Observable((observer: Observer<unknown>) => {
       this.callSocket?.on('iceCandidate', (data) => observer.next(data));
     });
   }
 
-  onCallEnded(): Observable<any> {
-    return new Observable((observer: Observer<any>) => {
+  onCallEnded(): Observable<unknown> {
+    return new Observable((observer: Observer<unknown>) => {
       this.callSocket?.on('callEnded', (data) => observer.next(data));
     });
   }

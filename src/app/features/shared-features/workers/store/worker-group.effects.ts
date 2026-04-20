@@ -191,7 +191,7 @@ export class WorkerGroupEffects {
         this.store.select(WorkerGroupSelectors.selectSearchTerm),
       ),
       // We trigger a silent loadGroups without a spinner
-      map(([_, trade, search]) =>
+      map(([, trade, search]) =>
         WorkerGroupActions.loadGroups({
           trade,
           search,

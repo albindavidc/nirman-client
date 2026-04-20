@@ -3,79 +3,86 @@
     <div class="sidebar-header">
       <div class="header-title-row">
         <h2>Recent Chats</h2>
-        <button mat-icon-button class="new-chat-btn" (click)="openNewChatModal()">
+        <button mat-icon-button class="new-chat-btn" (click)="openNewChatModal()" aria-label="Start a new chat">
           <mat-icon>add</mat-icon>
         </button>
       </div>
       <div class="search-box">
-        <mat-icon>search</mat-icon>
-        <input type="text" placeholder="Search" [(ngModel)]="searchQuery" />
+        <mat-icon aria-hidden="true">search</mat-icon>
+        <input type="text" placeholder="Search" [(ngModel)]="searchQuery" aria-label="Search chats" />
       </div>
     </div>
-    <div class="chat-list">
-      <div 
-        class="chat-item" 
-        *ngFor="let chat of recentChats" 
-        [class.active]="chat.id === selectedChat?.id"
-        (click)="selectChat(chat)">
-        <div class="avatar-container">
-          <div class="avatar">
-            <mat-icon>person</mat-icon>
+    <div class="chat-list" role="listbox">
+      @for (chat of recentChats; track chat.id) {
+        <div 
+          role="option"
+          [attr.aria-selected]="chat.id === selectedChat?.id"
+          class="chat-item" 
+          [class.active]="chat.id === selectedChat?.id"
+          (click)="selectChat(chat)"
+          (keydown.enter)="selectChat(chat)"
+          tabindex="0"
+        >
+          <div class="avatar-container">
+            <div class="avatar">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="status-indicator"></div>
           </div>
-          <div class="status-indicator"></div>
-        </div>
-        <div class="chat-details">
-          <div class="chat-top">
-            <span class="chat-name">{{chat.name}}</span>
-            <span class="chat-time">{{chat.time}}</span>
+          <div class="chat-details">
+            <div class="chat-top">
+              <span class="chat-name">{{chat.name}}</span>
+              <span class="chat-time">{{chat.time}}</span>
+            </div>
+            <p class="last-message">{{chat.lastMessage}}</p>
           </div>
-          <p class="last-message">{{chat.lastMessage}}</p>
         </div>
-      </div>
+      }
     </div>
   </div>
 
   <div class="main-content">
-    <ng-container *ngIf="!isCalling; else callView">
-      <app-chat 
-        *ngIf="selectedChat" 
-        [chat]="selectedChat"
-        (onVideoCall)="startCall('video')"
-        (onVoiceCall)="startCall('audio')">
-      </app-chat>
-    </ng-container>
-    
-    <ng-template #callView>
+    @if (!isCalling) {
+      @if (selectedChat) {
+        <app-chat 
+          [chat]="selectedChat"
+          (onVideoCall)="startCall('video')"
+          (onVoiceCall)="startCall('audio')">
+        </app-chat>
+      }
+    } @else {
       <app-call 
         [chat]="selectedChat" 
         [callType]="callType"
         [callId]="callId"
         [isInitiator]="isInitiator"
         [targetUserId]="targetUserId"
-        (onEndCall)="endCall()">
+        (endCall)="endCall()">
       </app-call>
-    </ng-template>
-
+    }
+    
     <!-- Incoming Call Overlay -->
-    <div class="incoming-call-overlay" *ngIf="incomingCall && !isCalling">
-      <div class="incoming-call-box">
-        <div class="incoming-call-header">
-          <div class="status-dot pulsing"></div>
-          <h3>Incoming {{incomingCall.type}} call</h3>
-        </div>
-        <p>{{selectedChat?.name}} is calling you...</p>
-        <div class="incoming-actions">
-          <button class="accept-btn" (click)="acceptCall()">
-            <mat-icon>call</mat-icon>
-            Accept
-          </button>
-          <button class="reject-btn" (click)="rejectCall()">
-            <mat-icon>call_end</mat-icon>
-            Decline
-          </button>
+    @if (incomingCall && !isCalling) {
+      <div class="incoming-call-overlay">
+        <div class="incoming-call-box">
+          <div class="incoming-call-header">
+            <div class="status-dot pulsing"></div>
+            <h3>Incoming {{incomingCall.type}} call</h3>
+          </div>
+          <p>{{selectedChat?.name}} is calling you...</p>
+          <div class="incoming-actions">
+            <button class="accept-btn" (click)="acceptCall()">
+              <mat-icon>call</mat-icon>
+              Accept
+            </button>
+            <button class="reject-btn" (click)="rejectCall()">
+              <mat-icon>call_end</mat-icon>
+              Decline
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    }
   </div>
 </div>
 

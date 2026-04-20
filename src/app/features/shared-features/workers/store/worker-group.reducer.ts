@@ -1,6 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import { WorkerGroupState } from '../models/worker-group.model';
 import * as WorkerGroupActions from './worker-group.actions';
+import { ApiError } from '../../../../shared/models/api.models';
+import { WorkerGroup } from '../models/worker-group.model';
 
 export const initialWorkerGroupState: WorkerGroupState = {
   groups: [],
@@ -13,7 +15,7 @@ export const initialWorkerGroupState: WorkerGroupState = {
   searchTerm: undefined,
 };
 
-const standardizeGroup = (g: any) => ({
+const standardizeGroup = (g: WorkerGroup): WorkerGroup => ({
   ...g,
   name: g.name || 'Untitled Group',
   description: g.description || '',
@@ -44,8 +46,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     listLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 
@@ -64,8 +66,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     actionLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 
@@ -85,8 +87,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     actionLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 
@@ -114,8 +116,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     actionLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 
@@ -135,8 +137,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     actionLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 
@@ -163,8 +165,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     actionLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 
@@ -190,8 +192,8 @@ export const workerGroupReducer = createReducer(
     ...state,
     actionLoading: false,
     error:
-      (error as any)?.error?.message ??
-      (error as any)?.message ??
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
       'Unknown error',
   })),
 

@@ -10,105 +10,111 @@
     </button>
   </div>
 
-  <div *ngIf="loading" class="loading-overlay">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading statistics...</p>
-  </div>
-
-  <div *ngIf="error" class="error-container">
-    <mat-icon color="warn">error</mat-icon>
-    <h3>Failed to load dashboard data</h3>
-    <p>Please check your connection and try again.</p>
-    <button mat-flat-button color="primary" (click)="loadStats()">Retry</button>
-  </div>
-
-  <div *ngIf="!loading && !error && stats" class="dashboard-content">
-    <!-- Top Summary Cards -->
-    <div class="stats-grid">
-      <mat-card class="stat-card users">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>people</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Total Users</span>
-            <span class="value">{{ stats.overview.users.totalUsers }}</span>
-          </div>
-          <div class="stat-footer">
-            <span class="trend positive">
-              <mat-icon>arrow_upward</mat-icon>
-              {{ stats.overview.users.activeUsers }} Active
-            </span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card projects">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>business_center</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Total Projects</span>
-            <span class="value">{{ stats.overview.projects.totalProjects }}</span>
-          </div>
-          <div class="stat-footer">
-            <span class="trend">
-              {{ stats.overview.projects.activeProjects }} In Progress
-            </span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card requests">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>inventory_2</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Material Requests</span>
-            <span class="value">{{ stats.overview.materialRequests.totalMaterialRequests }}</span>
-          </div>
-          <div class="stat-footer">
-            <span class="trend highlight">
-              {{ stats.overview.materialRequests.pendingMaterialRequests }} Pending
-            </span>
-          </div>
-        </mat-card-content>
-      </mat-card>
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading statistics...</p>
     </div>
+  }
 
-    <!-- Charts Section -->
-    <div class="charts-container">
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>User Engagement Distribution</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div #userChart class="chart"></div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Project Status Breakdown</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div #projectChart class="chart"></div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Material Request Approval Rate</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div #materialChart class="chart mini"></div>
-          <div class="approval-info">
-            <p><strong>{{ stats.overview.materialRequests.approvedMaterialRequests }}</strong> requests approved out of <strong>{{ stats.overview.materialRequests.totalMaterialRequests }}</strong></p>
-          </div>
-        </mat-card-content>
-      </mat-card>
+  @if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <h3>Failed to load dashboard data</h3>
+      <p>Please check your connection and try again.</p>
+      <button mat-flat-button color="primary" (click)="loadStats()">Retry</button>
     </div>
-  </div>
+  }
+
+  @if (!loading && !error && stats) {
+    <div class="dashboard-content">
+      <!-- Top Summary Cards -->
+      <div class="stats-grid">
+        <mat-card class="stat-card users">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Total Users</span>
+              <span class="value">{{ stats.overview.users.totalUsers }}</span>
+            </div>
+            <div class="stat-footer">
+              <span class="trend positive">
+                <mat-icon>arrow_upward</mat-icon>
+                {{ stats.overview.users.activeUsers }} Active
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card projects">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>business_center</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Total Projects</span>
+              <span class="value">{{ stats.overview.projects.totalProjects }}</span>
+            </div>
+            <div class="stat-footer">
+              <span class="trend">
+                {{ stats.overview.projects.activeProjects }} In Progress
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card requests">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>inventory_2</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Material Requests</span>
+              <span class="value">{{ stats.overview.materialRequests.totalMaterialRequests }}</span>
+            </div>
+            <div class="stat-footer">
+              <span class="trend highlight">
+                {{ stats.overview.materialRequests.pendingMaterialRequests }} Pending
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-container">
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>User Engagement Distribution</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div #userChart class="chart"></div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Project Status Breakdown</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div #projectChart class="chart"></div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Material Request Approval Rate</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div #materialChart class="chart mini"></div>
+            <div class="approval-info">
+              <p><strong>{{ stats.overview.materialRequests.approvedMaterialRequests }}</strong> requests approved out of <strong>{{ stats.overview.materialRequests.totalMaterialRequests }}</strong></p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
 </div>

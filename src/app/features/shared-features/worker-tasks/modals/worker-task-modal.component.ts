@@ -43,7 +43,7 @@ export class WorkerTaskModalComponent implements OnInit {
   public data = inject<WorkerTaskModalData>(MAT_DIALOG_DATA);
 
   form!: FormGroup;
-  startTime: string = '';
+  startTime = '';
 
   ngOnInit() {
     this.initForm();

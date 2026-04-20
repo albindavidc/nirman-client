@@ -124,7 +124,7 @@ export class StripePaymentDialogComponent implements OnInit, AfterViewInit {
           this.handleError(err.error?.message || 'Failed to initiate payment');
         }
       });
-    } catch (err) {
+    } catch {
       this.handleError('An unexpected error occurred');
     }
   }

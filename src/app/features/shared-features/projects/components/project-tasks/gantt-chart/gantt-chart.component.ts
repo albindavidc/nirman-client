@@ -28,6 +28,7 @@ import {
   Task,
   TaskService,
 } from '../../../services/task.service';
+import { TaskDependency, ProjectPhase } from '../../../models/project.models';
 
 // Interface for internal Gantt Task (extending the service Task or mapping to it)
 export interface GanttTask {
@@ -82,10 +83,8 @@ export interface GanttDay {
 })
 export class GanttChartComponent implements OnInit, OnChanges {
   @Input() tasks: Task[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Input() dependencies: any[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Input() phases: any[] = [];
+  @Input() dependencies: TaskDependency[] = [];
+  @Input() phases: ProjectPhase[] = [];
   @Output() taskClick = new EventEmitter<GanttTask>();
 
   /**

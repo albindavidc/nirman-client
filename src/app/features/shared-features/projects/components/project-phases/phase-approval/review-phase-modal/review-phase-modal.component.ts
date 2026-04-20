@@ -14,7 +14,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { of, Subscription } from 'rxjs';
 
 // FilePond Imports
 import { FilePondModule, registerPlugin } from 'ngx-filepond';
@@ -97,7 +96,7 @@ export class ReviewPhaseModalComponent implements OnInit {
           },
         };
       },
-      revert: (uniqueFileId, load, _error) => {
+      revert: (uniqueFileId, load) => {
         this.uploadedMedia = this.uploadedMedia.filter(
           (m) => m.url !== uniqueFileId
         );
@@ -145,8 +144,8 @@ export class ReviewPhaseModalComponent implements OnInit {
     };
 
     const request$ = this.isApproveMode
-      ? this.phaseService.approvePhase(this.data.phaseId, payload as any)
-      : this.phaseService.rejectPhase(this.data.phaseId, payload as any);
+      ? this.phaseService.approvePhase(this.data.phaseId, payload)
+      : this.phaseService.rejectPhase(this.data.phaseId, payload);
 
     request$.subscribe({
       next: () => {

@@ -63,16 +63,17 @@
           <button mat-icon-button color="primary" matTooltip="View Details" (click)="viewDetail(inv)">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button 
-            mat-stroked-button 
-            color="accent" 
-            *ngIf="canPay(inv.status)"
-            (click)="payNow(inv, $event)"
-            class="ml-2 pay-btn"
-          >
-            <mat-icon>payments</mat-icon>
-            Pay Now
-          </button>
+          @if (canPay(inv.status)) {
+            <button 
+              mat-stroked-button 
+              color="accent" 
+              (click)="payNow(inv, $event)"
+              class="ml-2 pay-btn"
+            >
+              <mat-icon>payments</mat-icon>
+              Pay Now
+            </button>
+          }
         </td>
       </ng-container>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,7 +25,7 @@ import { finalize } from 'rxjs';
   templateUrl: './supervisor-dashboard.component.html',
   styleUrl: './supervisor-dashboard.component.scss',
 })
-export class SupervisorDashboardComponent implements OnInit, AfterViewInit {
+export class SupervisorDashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
 
   @ViewChild('userChart') userChartRef!: ElementRef;
@@ -44,10 +44,7 @@ export class SupervisorDashboardComponent implements OnInit, AfterViewInit {
     this.loadStats();
   }
 
-  ngAfterViewInit(): void {
-    // We can't init charts here if they are conditionally rendered by *ngIf on a parent
-    // They will be initialized inside initCharts() after data loads
-  }
+
 
   loadStats(): void {
     this.loading = true;

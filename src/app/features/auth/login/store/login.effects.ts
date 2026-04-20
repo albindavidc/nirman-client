@@ -77,6 +77,11 @@ export class LoginEffects {
 
         return this.loginService.getMe().pipe(
           map((backendUser) => {
+            // If backend returns null, session is invalid/missing
+            if (!backendUser) {
+              return LoginActions.validateSessionFailure();
+            }
+
             // ── Critical guard ────────────────────────────────────────────────
             // The backend returns whoever owns the current access_token cookie.
             // If that cookie is stale from a DIFFERENT user (e.g. an old admin

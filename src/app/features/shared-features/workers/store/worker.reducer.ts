@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { WorkerState } from '../models/worker.model';
 import * as WorkerActions from './worker.actions';
+import { ApiError } from '../../../../shared/models/api.models';
 
 export const initialState: WorkerState = {
   workers: [],
@@ -33,8 +34,8 @@ export const workerReducer = createReducer(
     ...state,
     loading: false,
     error:
-      (error as any).error?.message ||
-      (error as any).message ||
+      (error as ApiError).error?.message ||
+      (error as ApiError).message ||
       'Unknown error',
   })),
 
@@ -48,8 +49,8 @@ export const workerReducer = createReducer(
     ...state,
     loading: false,
     error:
-      (error as any).error?.message ||
-      (error as any).message ||
+      (error as ApiError).error?.message ||
+      (error as ApiError).message ||
       'Unknown error',
   })),
 
@@ -63,8 +64,8 @@ export const workerReducer = createReducer(
     ...state,
     loading: false,
     error:
-      (error as any).error?.message ||
-      (error as any).message ||
+      (error as ApiError).error?.message ||
+      (error as ApiError).message ||
       'Unknown error',
   })),
 
@@ -79,8 +80,8 @@ export const workerReducer = createReducer(
     ...state,
     loading: false,
     error:
-      (error as any).error?.message ||
-      (error as any).message ||
+      (error as ApiError).error?.message ||
+      (error as ApiError).message ||
       'Unknown error',
   })),
 );

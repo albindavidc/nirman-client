@@ -2,7 +2,7 @@
   <div class="modal-header">
     <div>
       <h2>Add Goods Receipt Note</h2>
-      <div class="po-info">PO: {{ data.po.poNumber }} • {{ data.po.vendor_name || 'Vendor' }}</div>
+      <div class="po-info">PO: {{ data.po.poNumber }} • {{ data.po.vendorName || 'Vendor' }}</div>
     </div>
     <button mat-icon-button mat-dialog-close>
       <mat-icon>close</mat-icon>
@@ -59,7 +59,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+              @for (item of items.controls; track $index; let i = $index) {
+                <tr [formGroupName]="i">
                 <td>
                   <span class="material-name">{{ data.po.items[i].materialName || 'Material' }}</span>
                   <span class="ordered-qty">Ordered: {{ data.po.items[i].quantity }}</span>
@@ -85,7 +86,8 @@
                   </mat-form-field>
                 </td>
               </tr>
-            </tbody>
+            }
+          </tbody>
           </table>
         </div>
       </div>
@@ -100,8 +102,12 @@
         [disabled]="grnForm.invalid || isSubmitting"
         class="btn-submit"
       >
-        <mat-icon *ngIf="!isSubmitting">save</mat-icon>
-        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        @if (!isSubmitting) {
+          <mat-icon>save</mat-icon>
+        }
+        @if (isSubmitting) {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
         <span>{{ isSubmitting ? 'Saving...' : 'Submit GRN' }}</span>
       </button>
     </div>

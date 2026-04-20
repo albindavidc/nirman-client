@@ -22,7 +22,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleMapsModule, GoogleMap, MapMarker } from '@angular/google-maps';
 import { Store } from '@ngrx/store';
-import { Observable, BehaviorSubject, map, firstValueFrom, of } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import {
   debounceTime,

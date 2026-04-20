@@ -10,109 +10,115 @@
     </button>
   </div>
 
-  <div *ngIf="loading" class="loading-overlay">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading your dashboard...</p>
-  </div>
-
-  <div *ngIf="error" class="error-container">
-    <mat-icon color="warn">error</mat-icon>
-    <h3>Something went wrong</h3>
-    <p>We couldn't load your dashboard statistics.</p>
-    <button mat-flat-button color="primary" (click)="loadStats()">Try Again</button>
-  </div>
-
-  <div *ngIf="!loading && !error && stats" class="dashboard-content">
-    <!-- Summary Cards -->
-    <div class="stats-grid">
-      <mat-card class="stat-card revenue">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>payments</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Total Revenue</span>
-            <span class="value">{{ stats.summary.totalRevenue | currency:'INR' }}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card pending">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>pending_actions</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Pending Payments</span>
-            <span class="value">{{ stats.summary.pendingPayments | currency:'INR' }}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card active">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>shopping_cart</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Active Orders</span>
-            <span class="value">{{ stats.summary.activeOrders }}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card completed">
-        <mat-card-content>
-          <div class="stat-icon">
-            <mat-icon>check_circle</mat-icon>
-          </div>
-          <div class="stat-details">
-            <span class="label">Completed Orders</span>
-            <span class="value">{{ stats.summary.completedOrders }}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading your dashboard...</p>
     </div>
+  }
 
-    <!-- Main Charts -->
-    <div class="charts-layout">
-      <mat-card class="chart-card large">
-        <mat-card-header>
-          <mat-card-title>Revenue Trend (Last 6 Months)</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div #revenueChart class="chart"></div>
-        </mat-card-content>
-      </mat-card>
+  @if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <h3>Something went wrong</h3>
+      <p>We couldn't load your dashboard statistics.</p>
+      <button mat-flat-button color="primary" (click)="loadStats()">Try Again</button>
+    </div>
+  }
 
-      <div class="secondary-charts">
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Order Distribution</mat-card-title>
-          </mat-card-header>
+  @if (!loading && !error && stats) {
+    <div class="dashboard-content">
+      <!-- Summary Cards -->
+      <div class="stats-grid">
+        <mat-card class="stat-card revenue">
           <mat-card-content>
-            <div #orderDistChart class="chart"></div>
+            <div class="stat-icon">
+              <mat-icon>payments</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Total Revenue</span>
+              <span class="value">{{ stats.summary.totalRevenue | currency:'INR' }}</span>
+            </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Payment Status</mat-card-title>
-          </mat-card-header>
+        <mat-card class="stat-card pending">
           <mat-card-content>
-            <div #paymentDistChart class="chart"></div>
+            <div class="stat-icon">
+              <mat-icon>pending_actions</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Pending Payments</span>
+              <span class="value">{{ stats.summary.pendingPayments | currency:'INR' }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card active">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>shopping_cart</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Active Orders</span>
+              <span class="value">{{ stats.summary.activeOrders }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card completed">
+          <mat-card-content>
+            <div class="stat-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="stat-details">
+              <span class="label">Completed Orders</span>
+              <span class="value">{{ stats.summary.completedOrders }}</span>
+            </div>
           </mat-card-content>
         </mat-card>
       </div>
 
-      <mat-card class="chart-card large">
-        <mat-card-header>
-          <mat-card-title>Top Selling Materials by Revenue</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div #topItemsChart class="chart"></div>
-        </mat-card-content>
-      </mat-card>
+      <!-- Main Charts -->
+      <div class="charts-layout">
+        <mat-card class="chart-card large">
+          <mat-card-header>
+            <mat-card-title>Revenue Trend (Last 6 Months)</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div #revenueChart class="chart"></div>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="secondary-charts">
+          <mat-card class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Order Distribution</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div #orderDistChart class="chart"></div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="chart-card">
+            <mat-card-header>
+              <mat-card-title>Payment Status</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div #paymentDistChart class="chart"></div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <mat-card class="chart-card large">
+          <mat-card-header>
+            <mat-card-title>Top Selling Materials by Revenue</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div #topItemsChart class="chart"></div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
-  </div>
+  }
 </div>

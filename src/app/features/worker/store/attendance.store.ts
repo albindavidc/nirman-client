@@ -29,7 +29,7 @@ export class AttendanceStore {
   readonly canCheckIn = computed(() => !this.checkedIn());
   readonly canCheckOut = computed(() => this.checkedIn() && !this.checkedOut());
   readonly hoursToday = computed(() => {
-    let rec = this.today();
+    const rec = this.today();
     if (!rec?.checkIn) return 0;
 
     const checkIn = new Date(rec.checkIn);
@@ -40,7 +40,7 @@ export class AttendanceStore {
   });
 
   readonly formattedHoursToday = computed(() => {
-    let rec = this.today();
+    const rec = this.today();
     if (!rec?.checkIn) return '0h 0m';
 
     const checkIn = new Date(rec.checkIn);

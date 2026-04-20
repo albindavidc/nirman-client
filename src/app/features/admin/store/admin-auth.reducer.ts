@@ -68,7 +68,7 @@ export const adminAuthReducer = createReducer(
     error: null,
   })),
 
-  on(AdminAuthActions.AdminAuthActions.loginSuccess, (state, { response }) => ({
+  on(AdminAuthActions.AdminAuthActions.loginSuccess, (state) => ({
     ...state,
     loading: false,
     isAuthenticated: true,

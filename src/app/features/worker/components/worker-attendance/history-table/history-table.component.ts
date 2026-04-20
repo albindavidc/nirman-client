@@ -28,7 +28,7 @@ export class HistoryTableComponent {
   formatTime(iso: string | null | undefined): string {
     if (!iso) return '--:--';
 
-    let date = new Date(iso);
+    const date = new Date(iso);
     if (isNaN(date.getTime())) {
       return '--:--';
     }
@@ -41,7 +41,7 @@ export class HistoryTableComponent {
   }
 
   formatDate(iso: string): string {
-    let date = new Date(iso);
+    const date = new Date(iso);
     if (isNaN(date.getTime())) {
       return '--:--';
     }

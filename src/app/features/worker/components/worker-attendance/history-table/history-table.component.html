@@ -32,7 +32,7 @@
               <td>{{ formatTime(row.checkIn) }}</td>
               <td>{{ formatTime(row.checkOut) }}</td>
               <td class="td--mono">
-                {{ row.workHours != null ? row.workHours + "h" : "—" }}
+                {{ row.workHours !== null ? row.workHours + "h" : "—" }}
               </td>
               <td>{{ row.project?.name ?? row.location ?? "—" }}</td>
               <td>

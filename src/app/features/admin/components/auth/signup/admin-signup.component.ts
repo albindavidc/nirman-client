@@ -125,7 +125,8 @@ export class AdminSignupComponent {
 
   onSubmit() {
     if (this.signupForm.valid) {
-      const { confirmPassword, ...signupData } = this.signupForm.value;
+      const signupData = { ...this.signupForm.value };
+      delete signupData.confirmPassword;
       this.store.dispatch(
         AdminAuthActions.savePendingSignupData({ signupData }),
       );
@@ -136,10 +137,10 @@ export class AdminSignupComponent {
   }
 
   togglePasswordVisibility(): void {
-    this.hidePassword.update((v: boolean) => !v);
+    this.hidePassword.update((v) => !v);
   }
 
   toggleConfirmPasswordVisibility(): void {
-    this.hideConfirmPassword.update((v: boolean) => !v);
+    this.hideConfirmPassword.update((v) => !v);
   }
 }

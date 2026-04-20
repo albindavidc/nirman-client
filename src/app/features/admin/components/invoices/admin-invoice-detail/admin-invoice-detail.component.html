@@ -1,4 +1,5 @@
-<div class="detail-container p-6" *ngIf="invoice() as inv">
+@if (invoice(); as inv) {
+<div class="detail-container p-6">
   <div class="header mb-8 flex items-center justify-between">
     <div class="flex items-center gap-4">
       <button mat-icon-button routerLink="/admin/finance/invoices" class="back-btn">
@@ -14,16 +15,17 @@
       <mat-chip-listbox>
          <mat-chip [color]="getStatusColor(inv.status)" selected>{{ inv.status | titlecase }}</mat-chip>
       </mat-chip-listbox>
-      <button 
-        mat-flat-button 
-        color="primary" 
-        *ngIf="canPay(inv.status)"
-        (click)="openPaymentDialog()"
-        class="pay-btn-large"
-      >
-        <mat-icon>payments</mat-icon>
-        Pay Balance ({{ inv.total | currency: inv.currency }})
-      </button>
+      @if (canPay(inv.status)) {
+        <button 
+          mat-flat-button 
+          color="primary" 
+          (click)="openPaymentDialog()"
+          class="pay-btn-large"
+        >
+          <mat-icon>payments</mat-icon>
+          Pay Balance ({{ inv.total | currency: inv.currency }})
+        </button>
+      }
     </div>
   </div>
 
@@ -93,19 +95,19 @@
         </mat-card-header>
         <mat-card-content class="pt-4">
           <div class="info-item mb-4">
-            <label class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Vendor</label>
+            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Vendor</span>
             <span class="text-white font-medium">{{ inv.vendorName }}</span>
           </div>
           <div class="info-item mb-4">
-            <label class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Purchase Order</label>
+            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Purchase Order</span>
             <span class="text-white font-medium">#{{ inv.poId }}</span>
           </div>
           <div class="info-item mb-4">
-            <label class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Created At</label>
+            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Created At</span>
             <span class="text-white font-medium">{{ inv.createdAt | date:'mediumDate' }}</span>
           </div>
           <div class="info-item">
-            <label class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Due Date</label>
+            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Due Date</span>
             <span class="text-warn font-medium">{{ inv.dueDate | date:'mediumDate' }}</span>
           </div>
         </mat-card-content>
@@ -117,21 +119,27 @@
           <mat-card-title>Attachments</mat-card-title>
         </mat-card-header>
         <mat-card-content class="pt-4">
-          <div *ngIf="!inv.attachments?.length" class="text-gray-500 text-sm py-4 italic">
-            No files attached to this invoice.
-          </div>
-          <div class="attachment-list" *ngFor="let att of inv.attachments">
-            <a [href]="att.fileUrl" target="_blank" class="attachment-item flex items-center p-3 rounded-lg hover:bg-white/5 transition-all gap-3">
-              <mat-icon class="text-primary">insert_drive_file</mat-icon>
-              <div class="flex-1 overflow-hidden">
-                <p class="text-sm text-gray-200 truncate mb-0">{{ att.fileName }}</p>
-                <span class="text-xs text-gray-500">{{ att.fileSize | number:'1.0-0' }} bytes</span>
+          @if (!inv.attachments?.length) {
+            <div class="text-gray-500 text-sm py-4 italic">
+              No files attached to this invoice.
+            </div>
+          } @else {
+            @for (att of inv.attachments; track att.fileUrl) {
+              <div class="attachment-list">
+                <a [href]="att.fileUrl" target="_blank" class="attachment-item flex items-center p-3 rounded-lg hover:bg-white/5 transition-all gap-3">
+                  <mat-icon class="text-primary">insert_drive_file</mat-icon>
+                  <div class="flex-1 overflow-hidden">
+                    <p class="text-sm text-gray-200 truncate mb-0">{{ att.fileName }}</p>
+                    <span class="text-xs text-gray-500">{{ att.fileSize | number:'1.0-0' }} bytes</span>
+                  </div>
+                  <mat-icon class="text-gray-600 text-sm">open_in_new</mat-icon>
+                </a>
               </div>
-              <mat-icon class="text-gray-600 text-sm">open_in_new</mat-icon>
-            </a>
-          </div>
+            }
+          }
         </mat-card-content>
       </mat-card>
     </div>
   </div>
 </div>
+}

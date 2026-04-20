@@ -12,7 +12,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as LoginActions from '../../store/login.actions';
 import * as LoginSelectors from '../../store/login.selectors';
 import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
-import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-forgot-password',

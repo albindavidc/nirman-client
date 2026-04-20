@@ -12,8 +12,8 @@ import { Store } from '@ngrx/store';
 import { selectUser } from '../../../../../auth/login/store/login.selectors';
 import { Role } from '../../../../../../shared/models/profile.model';
 import { take } from 'rxjs';
-import { AddGrnModalComponent } from '../../modals/add-grn-modal/add-grn-modal.component';
-import { ViewGrnsModalComponent } from '../../modals/view-grns-modal/view-grns-modal.component';
+import { AddGrnModalComponent } from '../modals/add-grn-modal/add-grn-modal.component';
+import { ViewGrnsModalComponent } from '../modals/view-grns-modal/view-grns-modal.component';
 
 @Component({
   selector: 'app-project-purchase-orders',

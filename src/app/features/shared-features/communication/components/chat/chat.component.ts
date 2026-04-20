@@ -7,6 +7,7 @@ import { CommunicationService } from '../../services/communication.service';
 import { Store } from '@ngrx/store';
 import * as LoginSelectors from '../../../../auth/login/store/login.selectors';
 import { Subscription } from 'rxjs';
+import { ChatSocketMessage } from '../../models/communication.models';
 
 @Component({
   selector: 'app-chat',
@@ -16,12 +17,12 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() chat: any;
-  @Output() onVideoCall = new EventEmitter<void>();
-  @Output() onVoiceCall = new EventEmitter<void>();
+  @Input() chat: { threadId: string; name: string } | null = null;
+  @Output() videoCallTriggered = new EventEmitter<void>();
+  @Output() voiceCallTriggered = new EventEmitter<void>();
 
-  newMessage: string = '';
-  messages: any[] = [];
+  newMessage = '';
+  messages: { id: string; sender: 'me' | 'them'; text: string; time: string }[] = [];
   
   private socketService = inject(SocketService);
   private communicationService = inject(CommunicationService);
@@ -38,7 +39,8 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
     );
 
     this.subs.add(
-      this.socketService.onNewMessage().subscribe(msg => {
+      this.socketService.onNewMessage().subscribe((data) => {
+        const msg = data as ChatSocketMessage;
         if (msg.threadId === this.chat?.threadId) {
           const isMe = msg.senderId === this.currentUserId;
           // Avoid duplicating if we just sent it
@@ -84,7 +86,7 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.newMessage.trim() || !this.currentUserId) return;
 
     this.socketService.sendMessage({
-      threadId: this.chat.threadId,
+      threadId: this.chat?.threadId,
       senderId: this.currentUserId,
       content: this.newMessage
     });
@@ -100,10 +102,10 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   triggerVideoCall() {
-    this.onVideoCall.emit();
+    this.videoCallTriggered.emit();
   }
 
   triggerVoiceCall() {
-    this.onVoiceCall.emit();
+    this.voiceCallTriggered.emit();
   }
 }

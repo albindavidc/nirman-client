@@ -1,4 +1,4 @@
-import { Component, Inject, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MAT_DIALOG_DATA,
@@ -14,7 +14,6 @@ import { MaterialApprovalService } from '../../../services/material-approval.ser
 import { NotificationService } from '../../../../../core/services/notification.service';
 import {
   MaterialRequestResponseDto,
-  MaterialRequestStatus,
 } from '../../../../../shared/models/material-request.model';
 
 @Component({
@@ -41,11 +40,7 @@ export class MaterialRequestActionDialogComponent {
 
   comments = '';
   submitting = signal(false);
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA)
-    public data: { request: MaterialRequestResponseDto },
-  ) {}
+  public data = inject<{ request: MaterialRequestResponseDto }>(MAT_DIALOG_DATA);
 
   onApprove(): void {
     this.submitting.set(true);

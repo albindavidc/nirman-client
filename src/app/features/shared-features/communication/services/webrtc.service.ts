@@ -19,7 +19,7 @@ export class WebRtcService {
     ]
   };
 
-  constructor() {}
+
 
   async getLocalStream(type: 'audio' | 'video'): Promise<MediaStream> {
     const constraints = {

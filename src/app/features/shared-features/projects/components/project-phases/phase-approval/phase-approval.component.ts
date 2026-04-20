@@ -1,15 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormBuilder,
-  FormGroup,
   ReactiveFormsModule,
   FormsModule,
-  Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of, BehaviorSubject, map, shareReplay } from 'rxjs';
+import { Observable, of, map, shareReplay } from 'rxjs';
 
 // Material Imports
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,6 +24,9 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import { UploadService } from '../../../../../../core/services/upload.service';
 import { ProjectService } from '../../../services/project.service';
 import { ProjectPhaseService } from '../../../services/project-phase.service';
+
+import { ProjectPhase } from '../../../models/project.models';
+import { ApiError } from '../../../../../../shared/models/api.models';
 
 registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
 
@@ -59,8 +59,8 @@ export class PhaseApprovalComponent implements OnInit {
   projectId: string | null = null;
   phaseId: string | null = null;
   
-  phaseInfo$: Observable<any> = of(null);
-  comments: string = '';
+  phaseInfo$: Observable<ProjectPhase | null> = of(null);
+  comments = '';
   isSubmitting = false;
 
   // FilePond Upload State
@@ -80,18 +80,18 @@ export class PhaseApprovalComponent implements OnInit {
       </div>
     `,
     server: {
-      process: (fieldName: string, file: Blob, metadata: any, load: (id: string) => void, error: (msg: string) => void, _progress: any, abort: () => void) => {
+      process: (fieldName, file, metadata, load, error, _progress, abort) => {
         const sub = this.uploadService.uploadFile(file as File, 'document').subscribe({
           next: ({ viewUrl }) => {
             const mediaType = (file as File).type.startsWith('video') ? 'video' : 'image';
             this.uploadedMedia.push({ type: mediaType, url: viewUrl });
             load(viewUrl);
           },
-          error: (err: any) => error(err.message || 'Upload failed'),
+          error: (err: ApiError) => error(err.message || 'Upload failed'),
         });
         return { abort: () => { sub.unsubscribe(); abort(); } };
       },
-      revert: (uniqueFileId: string, load: () => void, _error: any) => {
+      revert: (uniqueFileId: string, load: () => void) => {
         this.uploadedMedia = this.uploadedMedia.filter(m => m.url !== uniqueFileId);
         load();
       },
@@ -103,10 +103,11 @@ export class PhaseApprovalComponent implements OnInit {
     this.phaseId = this.route.snapshot.paramMap.get('phaseId');
 
     if (this.projectId && this.phaseId) {
+      const pid = this.projectId;
       this.phaseInfo$ = this.projectPhaseService.getPhases(this.projectId).pipe(
         map(phases => {
           const phase = phases.find(p => p.id === this.phaseId);
-          return phase ? { ...phase, projectId: this.projectId, projectName: 'Project Work' } : null;
+          return phase ? { ...phase, projectId: pid, projectName: 'Project Work' } : null;
         }),
         shareReplay(1)
       );

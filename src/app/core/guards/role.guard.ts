@@ -24,7 +24,9 @@ export const RoleGuard: CanActivateFn = (route) => {
         if (local) {
           try {
             user = JSON.parse(local);
-          } catch {}
+          } catch (e) {
+            console.error('Error parsing user from localStorage', e);
+          }
         }
       }
 

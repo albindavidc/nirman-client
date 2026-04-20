@@ -5,6 +5,8 @@ import { WebRtcService } from '../../services/webrtc.service';
 import { SocketService } from '../../../../../core/services/socket.service';
 import { CommunicationService } from '../../services/communication.service';
 import { Subscription } from 'rxjs';
+import { SignalingPayload } from '../../models/communication.models';
+import { Chat } from '../../communication-layout.component';
 
 @Component({
   selector: 'app-call',
@@ -14,12 +16,12 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./call.component.scss']
 })
 export class CallComponent implements OnInit, OnDestroy {
-  @Input() chat: any;
+  @Input() chat: Chat | null = null;
   @Input() callType: 'audio' | 'video' = 'audio';
   @Input() callId: string | null = null;
-  @Input() isInitiator: boolean = false;
+  @Input() isInitiator = false;
   @Input() targetUserId: string | null = null;
-  @Output() onEndCall = new EventEmitter<void>();
+  @Output() endCall = new EventEmitter<void>();
 
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
@@ -28,12 +30,12 @@ export class CallComponent implements OnInit, OnDestroy {
   private socketService = inject(SocketService);
   private commService = inject(CommunicationService);
   
-  callDuration: string = '00:00';
-  isMuted: boolean = false;
-  isVideoOff: boolean = false;
+  callDuration = '00:00';
+  isMuted = false;
+  isVideoOff = false;
 
-  private timer: any;
-  private seconds: number = 0;
+  private timer: ReturnType<typeof setInterval> | undefined;
+  private seconds = 0;
   private subs = new Subscription();
 
   async ngOnInit() {
@@ -80,8 +82,9 @@ export class CallComponent implements OnInit, OnDestroy {
   private setupSignaling() {
     this.subs.add(
       this.socketService.onCallOffer().subscribe(async (data) => {
-        if (data.callId === this.callId) {
-          const answer = await this.webRtcService.handleOffer(data.offer);
+        const payload = data as SignalingPayload;
+        if (payload.callId === this.callId) {
+          const answer = await this.webRtcService.handleOffer(payload.offer!);
           this.socketService.answerCall({
             callId: this.callId!,
             answer,
@@ -93,24 +96,27 @@ export class CallComponent implements OnInit, OnDestroy {
 
     this.subs.add(
       this.socketService.onCallAnswer().subscribe(async (data) => {
-        if (data.callId === this.callId) {
-          await this.webRtcService.handleAnswer(data.answer);
+        const payload = data as SignalingPayload;
+        if (payload.callId === this.callId) {
+          await this.webRtcService.handleAnswer(payload.answer!);
         }
       })
     );
 
     this.subs.add(
       this.socketService.onIceCandidate().subscribe(async (data) => {
-        if (data.callId === this.callId) {
-          await this.webRtcService.addIceCandidate(data.candidate);
+        const payload = data as SignalingPayload;
+        if (payload.callId === this.callId) {
+          await this.webRtcService.addIceCandidate(payload.candidate!);
         }
       })
     );
 
     this.subs.add(
       this.socketService.onCallEnded().subscribe((data) => {
-        if (data.callId === this.callId) {
-          this.onEndCall.emit();
+        const payload = data as SignalingPayload;
+        if (payload.callId === this.callId) {
+          this.endCall.emit();
         }
       })
     );
@@ -152,12 +158,12 @@ export class CallComponent implements OnInit, OnDestroy {
     }
   }
 
-  async endCall() {
+  async endCallSession() {
     if (this.callId) {
       this.socketService.endCall(this.callId, this.targetUserId || undefined);
       this.commService.updateCallStatus(this.callId, 'ended').subscribe();
     }
-    this.onEndCall.emit();
+    this.endCall.emit();
   }
 
   private cleanup() {

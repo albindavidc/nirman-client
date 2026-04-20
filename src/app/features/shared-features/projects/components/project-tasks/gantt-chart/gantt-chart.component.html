@@ -13,7 +13,8 @@
           </div>
         </div>
 
-        <div class="action-buttons" *ngIf="showExportPrint">
+        @if (showExportPrint) {
+          <div class="action-buttons">
           <button
             mat-stroked-button
             class="custom-stroked-btn"
@@ -32,8 +33,9 @@
             Print View
           </button>
         </div>
-      </div>
+      }
     </div>
+  </div>
 
     <!-- Main Gantt Chart Section -->
     <div class="chart-section">

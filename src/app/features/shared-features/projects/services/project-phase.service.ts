@@ -90,7 +90,11 @@ export class ProjectPhaseService {
 
   approvePhase(
     phaseId: string,
-    data: { approvalStatus: string; comments?: string },
+    data: { 
+      approvalStatus: string; 
+      comments?: string; 
+      media?: { type: string; url: string }[] 
+    },
   ): Observable<PhaseApprovalResponse> {
     return this.http.post<PhaseApprovalResponse>(
       `${this.apiUrl}/_/phases/${phaseId}/approval`,
@@ -100,7 +104,11 @@ export class ProjectPhaseService {
 
   rejectPhase(
     phaseId: string,
-    data: { approvalStatus: string; comments: string },
+    data: { 
+      approvalStatus: string; 
+      comments: string; 
+      media?: { type: string; url: string }[] 
+    },
   ): Observable<PhaseApprovalResponse> {
     return this.http.post<PhaseApprovalResponse>(
       `${this.apiUrl}/_/phases/${phaseId}/approval`,

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,7 +25,7 @@ import { finalize } from 'rxjs';
   templateUrl: './vendor-dashboard.component.html',
   styleUrl: './vendor-dashboard.component.scss',
 })
-export class VendorDashboardComponent implements OnInit, AfterViewInit {
+export class VendorDashboardComponent implements OnInit {
   private dashboardService = inject(VendorDashboardService);
 
   @ViewChild('revenueChart') revenueChartRef!: ElementRef;
@@ -46,9 +46,7 @@ export class VendorDashboardComponent implements OnInit, AfterViewInit {
     this.loadStats();
   }
 
-  ngAfterViewInit(): void {
-    // Initialized inside initCharts() after data loads
-  }
+
 
   loadStats(): void {
     this.loading = true;

@@ -24,10 +24,12 @@
         </button>
       }
       <!-- export button hidden according to requirement -->
-      <button *ngIf="showExportButton" class="export-btn">
-        <mat-icon>download</mat-icon>
-        <span>Export Report</span>
-      </button>
+      @if (showExportButton) {
+        <button class="export-btn">
+          <mat-icon>download</mat-icon>
+          <span>Export Report</span>
+        </button>
+      }
     </div>
   </div>
 

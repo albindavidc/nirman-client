@@ -19,12 +19,14 @@
     </div>
 
     <form (submit)="handleSubmit($event)" class="payment-form">
-      <label class="block text-sm text-gray-400 mb-3 ml-1">Card Details</label>
+      <span class="block text-sm text-gray-400 mb-3 ml-1">Card Details</span>
       <div #cardElement class="stripe-input mb-8"></div>
       
-      <div id="card-errors" role="alert" class="text-red-400 text-sm mb-4 px-2" *ngIf="error()">
-        {{ error() }}
-      </div>
+      @if (error()) {
+        <div id="card-errors" role="alert" class="text-red-400 text-sm mb-4 px-2">
+          {{ error() }}
+        </div>
+      }
 
       <button 
         mat-flat-button 
@@ -33,7 +35,9 @@
         class="pay-submit-btn w-full"
         [disabled]="processing() || !stripeLoaded()"
       >
-        <mat-spinner diameter="24" *ngIf="processing()" class="inline-block mr-2"></mat-spinner>
+        @if (processing()) {
+          <mat-spinner diameter="24" class="inline-block mr-2"></mat-spinner>
+        }
         {{ processing() ? 'Processing...' : 'Pay with Stripe' }}
       </button>
     </form>

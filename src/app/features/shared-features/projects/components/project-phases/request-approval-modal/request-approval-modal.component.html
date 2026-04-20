@@ -33,8 +33,12 @@
     <button mat-flat-button color="primary" 
             [disabled]="isSubmitting || !comments" 
             (click)="onSubmit()">
-      <mat-icon *ngIf="!isSubmitting">send</mat-icon>
-      <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+      @if (!isSubmitting) {
+        <mat-icon>send</mat-icon>
+      }
+      @if (isSubmitting) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
       <span class="ml-2">Submit Request</span>
     </button>
   </div>

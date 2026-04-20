@@ -8,11 +8,24 @@ import { CallComponent } from './components/call/call.component';
 import { Store } from '@ngrx/store';
 
 import { CommunicationService } from './services/communication.service';
-import { ChatThreadResponseDto } from './models/communication.models';
 import { Subscription } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NewChatModalComponent } from './components/new-chat-modal/new-chat-modal.component';
 import { selectUser } from '../../auth/login/store/login.selectors';
+import { ThreadParticipantDto, SignalingPayload } from './models/communication.models';
+
+export interface Chat {
+  id: string;
+  threadId: string;
+  name: string;
+  participants: ThreadParticipantDto[];
+  lastMessage: string;
+  time: string;
+  active: boolean;
+  type?: string;
+  callId?: string;
+  initiatorId?: string;
+}
 
 @Component({
   selector: 'app-communication-layout',
@@ -35,16 +48,16 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
 
   activeThreadId: string | null = null;
-  searchQuery: string = '';
+  searchQuery = '';
   
-  recentChats: any[] = [];
-  selectedChat: any = null;
+  recentChats: Chat[] = [];
+  selectedChat: Chat | null = null;
 
-  isCalling: boolean = false;
-  incomingCall: any = null;
+  isCalling = false;
+  incomingCall: SignalingPayload | null = null;
   callType: 'audio' | 'video' = 'audio';
   callId: string | null = null;
-  isInitiator: boolean = false;
+  isInitiator = false;
   targetUserId: string | null = null;
   
   projectId: string | null = null;
@@ -55,21 +68,23 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
 
     this.subs.add(
       this.socketService.onIncomingCall().subscribe((data) => {
-        this.incomingCall = data;
+        const payload = data as SignalingPayload;
+        this.incomingCall = payload;
         // Search for the chat if it's not the current one
-        const chat = this.recentChats.find(c => c.threadId === data.threadId);
+        const chat = this.recentChats.find(c => c.threadId === payload.threadId);
         if (chat) this.selectedChat = chat;
         
         // Update status to ringing on backend
-        if (data.callId) {
-          this.communicationService.updateCallStatus(data.callId, 'ringing').subscribe();
+        if (payload.callId) {
+          this.communicationService.updateCallStatus(payload.callId, 'ringing').subscribe();
         }
       })
     );
 
     this.subs.add(
       this.socketService.onCallEnded().subscribe((data) => {
-        if (data.callId === this.callId || (this.incomingCall && this.incomingCall.callId === data.callId)) {
+        const payload = data as SignalingPayload;
+        if (payload.callId === this.callId || (this.incomingCall && this.incomingCall.callId === payload.callId)) {
           this.endCall();
         }
       })
@@ -103,7 +118,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
     );
   }
 
-  selectChat(chat: any) {
+  selectChat(chat: Chat) {
     this.recentChats.forEach(c => c.active = false);
     chat.active = true;
     this.selectedChat = chat;
@@ -123,7 +138,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
           participants: [
             { userId: partner.userId, role: partner.type }
           ]
-        }).subscribe(newThread => {
+        }).subscribe(() => {
           this.loadMyThreads(); // refresh list
         });
       }
@@ -131,7 +146,8 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   }
 
   async startCall(type: 'audio' | 'video') {
-    if (!this.selectedChat || !this.selectedChat.participants) return;
+    const chat = this.selectedChat;
+    if (!chat || !chat.participants) return;
 
     // Find the other participant for 1v1
     // For now, we assume the first participant that isn't the current user is the target
@@ -140,7 +156,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
       this.store.select(selectUser).subscribe(user => {
         if (!user) return;
         
-        const otherParticipant = this.selectedChat.participants.find((p: any) => p.userId !== user.id);
+        const otherParticipant = chat.participants.find((p) => p.userId !== user.id);
         if (!otherParticipant) return;
 
         this.targetUserId = otherParticipant.userId;
@@ -148,7 +164,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
         this.isInitiator = true;
 
         this.communicationService.startCall({
-          threadId: this.selectedChat.threadId,
+          threadId: chat.threadId,
           type: type,
           projectId: this.projectId || undefined
         }).subscribe(session => {
@@ -156,7 +172,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
           this.isCalling = true;
           
           this.socketService.startCall({
-            threadId: this.selectedChat.threadId,
+            threadId: chat.threadId,
             type,
             targetUserId: this.targetUserId!,
             callId: this.callId // Pass the call session ID
@@ -169,9 +185,9 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   acceptCall() {
     if (!this.incomingCall) return;
     
-    this.callId = this.incomingCall.callId;
-    this.callType = this.incomingCall.type;
-    this.targetUserId = this.incomingCall.initiatorId; // In incoming event, we should send initiatorId
+    this.callId = this.incomingCall.callId || null;
+    this.callType = (this.incomingCall.type as 'audio' | 'video') || 'audio';
+    this.targetUserId = this.incomingCall.initiatorId || null;
     this.isInitiator = false;
     this.isCalling = true;
     this.incomingCall = null;
@@ -186,7 +202,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
     if (this.incomingCall && this.incomingCall.callId) {
       this.socketService.rejectCall({
         callId: this.incomingCall.callId,
-        targetUserId: this.incomingCall.initiatorId
+        targetUserId: this.incomingCall.initiatorId!
       });
       this.communicationService.updateCallStatus(this.incomingCall.callId, 'rejected').subscribe();
     }

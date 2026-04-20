@@ -37,6 +37,7 @@ import {
   CreateTaskDto,
   Task,
   TaskService,
+  TaskAssignmentInput,
 } from '../../../services/task.service';
 
 export interface TaskModalData {
@@ -85,6 +86,9 @@ export class TaskModalComponent implements OnInit {
   workers: ProjectWorkerWithUser[] = [];
   workerGroups: WorkerGroup[] = [];
   phases: ProjectPhase[] = [];
+
+  projectStartDate: Date | null = null;
+  projectEndDate: Date | null = null;
 
   ngOnInit(): void {
     this.mode = this.data.mode;
@@ -161,6 +165,12 @@ export class TaskModalComponent implements OnInit {
   }
 
   private initialLoad(): void {
+    // Load project details to get date constraints
+    this.projectService.getProjectById(this.data.projectId).subscribe((project) => {
+      this.projectStartDate = project.startDate ? new Date(project.startDate) : null;
+      this.projectEndDate = project.dueDate ? new Date(project.dueDate) : null;
+    });
+
     // Initial load of phases is always needed
     this.phaseService.getPhases(this.data.projectId).subscribe((phases) => {
       this.phases = phases;
@@ -264,7 +274,17 @@ export class TaskModalComponent implements OnInit {
     const currentItems = assignmentsArray.controls.map((c) => c.value);
 
     // Create new list of desired assignments
-    const newItems: any[] = [];
+    const newItems: {
+      workerGroupId: string | null;
+      userId: string | null;
+      name: string;
+      groupName?: string;
+      type: 'Group' | 'Worker';
+      isActive: boolean;
+      notes: string;
+      assignedByName: string;
+      assignedAt: Date | string | null;
+    }[] = [];
 
     // 1. Process Groups
     groupIds.forEach((id) => {
@@ -372,7 +392,7 @@ export class TaskModalComponent implements OnInit {
     });
   }
 
-  private loadWorkerGroups(phaseId: string, autoSelect: boolean = true): void {
+  private loadWorkerGroups(phaseId: string, autoSelect = true): void {
     // If we're explicitly loading for a phase, we should probably see all groups assigned to it
     // isActive: undefined ensures we don't accidentally hide groups during configuration
     this.workerGroupService
@@ -521,7 +541,7 @@ export class TaskModalComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.taskForm.value;
 
-    const dto: any = {};
+    const dto: Partial<CreateTaskDto & { progress?: number; notes?: string; actualStartDate?: string; actualEndDate?: string; actualHours?: number }> = {};
     if (formValue.name) dto.name = formValue.name;
     if (formValue.description) dto.description = formValue.description;
     if (formValue.phaseId) dto.phaseId = formValue.phaseId;
@@ -532,7 +552,7 @@ export class TaskModalComponent implements OnInit {
     if (formValue.workerGroupIds) dto.workerGroupIds = formValue.workerGroupIds;
 
     if (formValue.assignments && formValue.assignments.length > 0) {
-      dto.assignments = formValue.assignments.map((a: any) => ({
+      dto.assignments = formValue.assignments.map((a: TaskAssignmentInput) => ({
         userId: a.userId,
         workerGroupId: a.workerGroupId,
         isActive: a.isActive,

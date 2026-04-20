@@ -24,8 +24,9 @@ export const VendorStatusGuard: CanActivateFn = () => {
         return true;
       }
 
-      const status = (user as any).vendor?.vendorStatus?.toLowerCase()
-        ?? (user as any).vendorStatus?.toLowerCase();
+      const u = user as { vendor?: { vendorStatus?: string }, vendorStatus?: string };
+      const status = u.vendor?.vendorStatus?.toLowerCase()
+        ?? u.vendorStatus?.toLowerCase();
 
       if (status === 'approved') {
         return true;

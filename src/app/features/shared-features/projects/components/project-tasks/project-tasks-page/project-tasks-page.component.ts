@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TaskService, Task } from '../../../services/task.service';
 import { ProjectPhaseService } from '../../../services/project-phase.service'; // Assuming available for Phase Name lookup
-import { TaskDependency } from '../../../models/project.models';
+import { TaskDependency, ProjectPhase } from '../../../models/project.models';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -76,7 +76,7 @@ export class ProjectTasksPageComponent implements OnInit {
       }>
     | undefined;
 
-  phases: { id: string; name: string }[] = []; // Simple list for dropdown
+  phases: ProjectPhase[] = []; // Simple list for dropdown
   viewMode: 'list' | 'gantt' = 'list'; // View Switcher State
 
   ngOnInit() {

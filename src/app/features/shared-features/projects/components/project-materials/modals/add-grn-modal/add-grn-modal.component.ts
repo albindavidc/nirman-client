@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormArray,
@@ -20,9 +20,10 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MaterialService } from '../../../services/material.service';
-import { NotificationService } from '../../../../../../core/services/notification.service';
-import { PurchaseOrderResponseDto } from '../../../../../../shared/models/purchase-order.model';
+import { MaterialService } from '../../../../services/material.service';
+import { NotificationService } from '../../../../../../../core/services/notification.service';
+import { PurchaseOrderResponseDto } from '../../../../../../../shared/models/purchase-order.model';
+import { ApiError } from '../../../../../../../shared/models/api.models';
 
 @Component({
   selector: 'app-add-grn-modal',
@@ -48,14 +49,10 @@ export class AddGrnModalComponent implements OnInit {
   private readonly materialService = inject(MaterialService);
   private readonly notificationService = inject(NotificationService);
   private readonly dialogRef = inject(MatDialogRef<AddGrnModalComponent>);
+  public readonly data = inject<{ po: PurchaseOrderResponseDto; projectId: string }>(MAT_DIALOG_DATA);
 
   grnForm!: FormGroup;
   isSubmitting = false;
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA)
-    public data: { po: any; projectId: string },
-  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -69,7 +66,7 @@ export class AddGrnModalComponent implements OnInit {
       inspectedBy: ['', Validators.required],
       inspectionNotes: [''],
       items: this.fb.array(
-        this.data.po.items.map((item: any) =>
+        this.data.po.items.map((item) =>
           this.fb.group({
             materialId: [item.materialId],
             quantityRecieved: [item.quantity, [Validators.required, Validators.min(0)]],
@@ -120,7 +117,7 @@ export class AddGrnModalComponent implements OnInit {
         this.notificationService.success('GRN submitted successfully');
         this.dialogRef.close(true);
       },
-      error: (err) => {
+      error: (err: ApiError) => {
         this.notificationService.error('Failed to submit GRN');
         this.isSubmitting = false;
         console.error(err);

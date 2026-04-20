@@ -28,12 +28,15 @@ export interface ProjectWorker {
 
 export interface ProjectPhase {
   id: string;
+  projectId?: string;
+  projectName?: string;
   name: string;
   description?: string;
   status: string;
   progress: number;
   plannedStartDate?: string;
   plannedEndDate?: string;
+  endDate?: string;
   actualStartDate?: string;
   actualEndDate?: string;
   sequence: number;

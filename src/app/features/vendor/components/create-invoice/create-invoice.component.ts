@@ -40,8 +40,8 @@ export class CreateInvoiceComponent implements OnInit {
   private readonly materialService = inject(MaterialService);
   private readonly notificationService = inject(NotificationService);
 
-  poId: string = '';
-  projectId: string = '';
+  poId = '';
+  projectId = '';
   prepData?: InvoicePrepResponseDto;
   isLoading = false;
 
@@ -80,7 +80,7 @@ export class CreateInvoiceComponent implements OnInit {
         this.isLoading = false;
         this.itemsForm.patchValue({ confirmed: true }); // Auto-confirm since it's based on GRNs
       },
-      error: (err) => {
+      error: () => {
         this.notificationService.error('Failed to load invoice preparation data');
         this.isLoading = false;
         this.goBack();
@@ -109,7 +109,7 @@ export class CreateInvoiceComponent implements OnInit {
     };
 
     this.materialService.createInvoice(this.projectId, createDto).subscribe({
-      next: (res) => {
+      next: () => {
         this.notificationService.success('Invoice submitted successfully');
         this.isLoading = false;
         this.router.navigate(['/vendor/purchase-orders']);

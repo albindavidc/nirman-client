@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../../../../core/services/config.service';
-import { ChatThreadResponseDto, ChatMessageResponseDto, CallSessionResponseDto } from '../models/communication.models';
+import { ChatThreadResponseDto, ChatMessageResponseDto, CallSessionResponseDto, CreateChatThreadDto } from '../models/communication.models';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +27,7 @@ export class CommunicationService {
     return this.http.get<ChatMessageResponseDto[]>(`${this.apiUrl}/threads/${threadId}/messages`);
   }
 
-  createThread(dto: any): Observable<ChatThreadResponseDto> {
+  createThread(dto: CreateChatThreadDto): Observable<ChatThreadResponseDto> {
     return this.http.post<ChatThreadResponseDto>(`${this.apiUrl}/threads`, dto);
   }
 

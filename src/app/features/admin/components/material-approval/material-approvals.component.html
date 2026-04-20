@@ -47,12 +47,14 @@
           (click)="openRequestDetail(request)"
         ></app-material-request-card>
         
-        <div class="card-actions" *ngIf="isAdmin && request.status === 'approved' && !request.converted_to_po">
-          <button mat-flat-button color="primary" class="po-btn" (click)="convertToPO(request, $event)">
-            <mat-icon>receipt_long</mat-icon>
-            Convert to PO
-          </button>
-        </div>
+        @if (isAdmin && request.status === 'approved' && !request.converted_to_po) {
+          <div class="card-actions">
+            <button mat-flat-button color="primary" class="po-btn" (click)="convertToPO(request, $event)">
+              <mat-icon>receipt_long</mat-icon>
+              Convert to PO
+            </button>
+          </div>
+        }
       </div>
     } @empty {
       <div class="empty-state">

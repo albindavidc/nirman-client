@@ -9,10 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { MaterialService } from '../../../shared-features/projects/services/material.service';
 import { ProjectService } from '../../../shared-features/projects/services/project.service';
+import { Project } from '../../../shared-features/projects/models/project.models';
 import { PurchaseOrderResponseDto } from '../../../../shared/models/purchase-order.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { forkJoin, map, of, catchError } from 'rxjs';
+import { forkJoin, of, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-vendor-purchase-orders',
@@ -46,8 +47,8 @@ export class VendorPurchaseOrdersComponent implements OnInit {
   purchaseOrders: PurchaseOrderResponseDto[] = [];
   filteredPurchaseOrders: PurchaseOrderResponseDto[] = [];
   isLoading = false;
-  currentFilter: string = 'ALL';
-  searchText: string = '';
+  currentFilter = 'ALL';
+  searchText = '';
 
   ngOnInit(): void {
     this.loadAllPurchaseOrders();
@@ -58,33 +59,33 @@ export class VendorPurchaseOrdersComponent implements OnInit {
     // Step 1: Get all projects
     this.projectService.getProjects().subscribe({
       next: (response) => {
-        const projects = response.projects;
+        const projects = response.data;
         if (projects.length === 0) {
           this.isLoading = false;
           return;
         }
 
         // Step 2: For each project, get POs
-        const poRequests = projects.map(p => 
+        const poRequests = projects.map((p: Project) => 
           this.materialService.getProjectPurchaseOrders(p.id).pipe(
             catchError(() => of([])) // Handle individual project errors gracefully
           )
         );
 
         forkJoin(poRequests).subscribe({
-          next: (allPoResults) => {
+          next: (allPoResults: PurchaseOrderResponseDto[][]) => {
             // Step 3: Flatten results and store
             this.purchaseOrders = allPoResults.flat();
             this.applyCurrentFilters();
             this.isLoading = false;
           },
-          error: (err) => {
+          error: () => {
             this.notificationService.error('Failed to load purchase orders');
             this.isLoading = false;
           }
         });
       },
-      error: (err) => {
+      error: () => {
         this.notificationService.error('Failed to load projects');
         this.isLoading = false;
       }

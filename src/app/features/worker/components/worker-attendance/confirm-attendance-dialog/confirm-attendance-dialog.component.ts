@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MAT_DIALOG_DATA,
@@ -16,16 +16,15 @@ export interface ConfirmAttendanceDialogData {
 
 @Component({
   selector: 'app-confirm-attendance-dialog',
+  standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './confirm-attendance-dialog.component.html',
   styleUrl: './confirm-attendance-dialog.component.scss',
 })
 export class ConfirmAttendanceDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmAttendanceDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ConfirmAttendanceDialogData,
-  ) {}
+  public dialogRef = inject(MatDialogRef<ConfirmAttendanceDialogComponent>);
+  public data = inject<ConfirmAttendanceDialogData>(MAT_DIALOG_DATA);
 
   onCancel(): void {
     this.dialogRef.close(false);

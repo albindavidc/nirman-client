@@ -1,6 +1,7 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
   LoginRequest,
+  LoginResponse,
   SendOtpResponse,
   SignupRequest,
   SignupResponse,
@@ -25,7 +26,7 @@ export const AdminAuthActions = createActionGroup({
     'Resend OTP Failure': props<{ error: string }>(),
 
     Login: props<{ loginData: LoginRequest }>(),
-    'Login Success': props<{ response: any }>(),
+    'Login Success': props<{ response: LoginResponse }>(),
     'Login Failure': props<{ error: string }>(),
 
     'Save Pending Signup Data': props<{ signupData: SignupRequest }>(),

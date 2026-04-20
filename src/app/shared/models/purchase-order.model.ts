@@ -22,6 +22,7 @@ export interface PurchaseOrderResponseDto {
   poNumber: string;
   projectId: string;
   vendorId: string;
+  vendorName?: string;
   materialRequestId: string;
   currency: string;
   subTotal: number;
@@ -36,4 +37,15 @@ export interface PurchaseOrderResponseDto {
   termsAndConditions: string;
   createdAt: string;
   updatedAt: string;
+  items: PurchaseOrderItemResponseDto[];
+}
+
+export interface PurchaseOrderItemResponseDto {
+  id: string;
+  materialId: string;
+  materialName?: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  totalItemCost: number;
 }

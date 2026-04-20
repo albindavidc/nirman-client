@@ -1,4 +1,5 @@
-<div class="approval-workspace" *ngIf="phaseInfo$ | async as phaseInfo">
+@if (phaseInfo$ | async; as phaseInfo) {
+<div class="approval-workspace">
   <div class="page-header">
     <div class="header-content">
       <h1>Request Phase Approval</h1>
@@ -65,9 +66,14 @@
     <button mat-flat-button color="primary" 
             [disabled]="isSubmitting || !comments" 
             (click)="submitRequest()">
-      <mat-icon *ngIf="!isSubmitting">send</mat-icon>
-      <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+      @if (!isSubmitting) {
+        <mat-icon>send</mat-icon>
+      }
+      @if (isSubmitting) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
       <span class="ml-2">Submit for Approval</span>
     </button>
   </div>
 </div>
+}

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -54,6 +54,7 @@ export class WorkerGroupManageModalComponent implements OnInit, OnDestroy {
   private store = inject(Store);
   private dialogRef = inject(MatDialogRef<WorkerGroupManageModalComponent>);
   private destroy$ = new Subject<void>();
+  public data = inject<WorkerGroupManageModalData>(MAT_DIALOG_DATA);
 
   selectedGroup$: Observable<WorkerGroup | null>;
   loading$: Observable<boolean>;
@@ -67,10 +68,8 @@ export class WorkerGroupManageModalComponent implements OnInit, OnDestroy {
   selectedWorkerIds = new Set<string>();
   searchTerm = '';
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: WorkerGroupManageModalData,
-  ) {
-    this.currentGroup = data.group;
+  constructor() {
+    this.currentGroup = this.data.group;
     this.selectedGroup$ = this.store.select(
       WorkerGroupSelectors.selectSelectedGroup,
     );

@@ -6,9 +6,11 @@
     <!-- Local Video (Small Overlay) -->
     <div class="local-video-wrapper" [class.video-off]="isVideoOff">
       <video #localVideo class="local-video" autoplay playsinline muted></video>
-      <div class="video-placeholder" *ngIf="isVideoOff">
-        <mat-icon>videocam_off</mat-icon>
-      </div>
+      @if (isVideoOff) {
+        <div class="video-placeholder">
+          <mat-icon>videocam_off</mat-icon>
+        </div>
+      }
     </div>
 
     <!-- Call Info Overlay -->
@@ -23,7 +25,7 @@
         <mat-icon>{{isMuted ? 'mic_off' : 'mic'}}</mat-icon>
       </button>
       
-      <button class="control-btn hangup-btn" (click)="endCall()">
+      <button class="control-btn hangup-btn" (click)="endCallSession()">
         <mat-icon>call_end</mat-icon>
       </button>
 

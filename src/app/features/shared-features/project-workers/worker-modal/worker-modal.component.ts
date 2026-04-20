@@ -20,17 +20,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { debounceTime, distinctUntilChanged, switchMap, of, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 
 import { SharedModalComponent } from '../../../../shared/components/shared-modal/shared-modal.component';
 import { ProjectService } from '../../projects/services/project.service';
 import { WorkerService } from '../../workers/services/worker.service';
 import { WorkerGroupService } from '../../workers/services/worker-group.service';
 import { Worker } from '../../workers/models/worker.model';
-import { WorkerGroupMember } from '../../workers/models/worker-group.model';
 import { Professional } from '../../projects/models/project.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CustomValidators } from '../../../../shared/validators/custom-validators';
+
+interface PhaseWorker {
+  id: string;
+  fullName: string;
+  title: string;
+  avatarUrl?: string;
+}
 
 export interface WorkerModalData {
   mode: 'create' | 'edit';
@@ -90,7 +96,7 @@ export class WorkerModalComponent implements OnInit {
   createForm!: FormGroup;
 
   // Phase Groups Logic
-  phaseWorkers: any[] = [];
+  phaseWorkers: PhaseWorker[] = [];
   loadingPhaseWorkers = false;
 
   // Edit Logic
@@ -183,7 +189,7 @@ export class WorkerModalComponent implements OnInit {
     this.workerGroupService.getGroups(undefined, true, undefined, undefined, phaseId)
       .subscribe({
         next: (groups) => {
-          const workersMap = new Map<string, any>();
+          const workersMap = new Map<string, PhaseWorker>();
           groups.forEach(group => {
             group.workers?.forEach(m => {
               if (!workersMap.has(m.workerId)) {
@@ -191,7 +197,7 @@ export class WorkerModalComponent implements OnInit {
                   id: m.workerId,
                   fullName: m.workerName,
                   title: group.trade || 'Worker',
-                  avatarUrl: m.workerPhotoUrl
+                  avatarUrl: m.workerPhotoUrl || undefined
                 });
               }
             });
@@ -206,7 +212,7 @@ export class WorkerModalComponent implements OnInit {
       });
   }
 
-  selectPhaseWorker(worker: any): void {
+  selectPhaseWorker(worker: PhaseWorker): void {
     const prof: Professional = {
       id: worker.id,
       fullName: worker.fullName,
@@ -292,12 +298,12 @@ export class WorkerModalComponent implements OnInit {
     this.projectService
       .addProjectWorkers(this.data.projectId, userIds, role)
       .subscribe({
-        next: (result) => {
+        next: () => {
           this.submitting = false;
           this.notificationService.success('Worker(s) added successfully');
           this.dialogRef.close(true);
         },
-        error: (error) => {
+        error: () => {
           this.submitting = false;
           this.notificationService.error('Error adding workers');
         },
@@ -355,7 +361,7 @@ export class WorkerModalComponent implements OnInit {
           );
           this.dialogRef.close(true);
         },
-        error: (error: any) => {
+        error: () => {
           this.submitting = false;
           this.notificationService.error('Error creating new worker');
         },
@@ -380,7 +386,7 @@ export class WorkerModalComponent implements OnInit {
           this.notificationService.success('Worker role updated successfully');
           this.dialogRef.close(true);
         },
-        error: (err) => {
+        error: () => {
           this.submitting = false;
           this.notificationService.error('Failed to update worker role');
         },

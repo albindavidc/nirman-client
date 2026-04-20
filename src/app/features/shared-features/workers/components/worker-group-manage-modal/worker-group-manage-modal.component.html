@@ -80,6 +80,8 @@
               class="worker-row"
               [class.selected]="isWorkerSelected(worker.id)"
               (click)="toggleWorkerSelection(worker.id)"
+              (keydown.enter)="toggleWorkerSelection(worker.id)"
+              tabindex="0"
               [id]="'select-worker-' + worker.id"
             >
               <div class="worker-avatar">

@@ -223,6 +223,8 @@
           matInput
           [matDatepicker]="pickerStart"
           formControlName="plannedStartDate"
+          [min]="projectStartDate"
+          [max]="projectEndDate"
         />
         <mat-datepicker-toggle
           matIconSuffix
@@ -237,7 +239,8 @@
           matInput
           [matDatepicker]="pickerEnd"
           formControlName="plannedEndDate"
-          [min]="taskForm.get('plannedStartDate')?.value"
+          [min]="taskForm.get('plannedStartDate')?.value || projectStartDate"
+          [max]="projectEndDate"
         />
         <mat-datepicker-toggle
           matIconSuffix
@@ -260,20 +263,21 @@
         <mat-icon matSuffix>timer</mat-icon>
       </mat-form-field>
 
-      <mat-form-field
-        appearance="outline"
-        class="full-width"
-        *ngIf="mode === 'edit'"
-      >
-        <mat-label>Act. Hours</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="actualHours"
-          placeholder="0"
-        />
-        <mat-icon matSuffix>history</mat-icon>
-      </mat-form-field>
+      @if (mode === 'edit') {
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+        >
+          <mat-label>Act. Hours</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="actualHours"
+            placeholder="0"
+          />
+          <mat-icon matSuffix>history</mat-icon>
+        </mat-form-field>
+      }
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Color</mat-label>
@@ -297,6 +301,8 @@
             matInput
             [matDatepicker]="pickerActualStart"
             formControlName="actualStartDate"
+            [min]="projectStartDate"
+            [max]="projectEndDate"
           />
           <mat-datepicker-toggle
             matIconSuffix
@@ -311,7 +317,8 @@
             matInput
             [matDatepicker]="pickerActualEnd"
             formControlName="actualEndDate"
-            [min]="taskForm.get('actualStartDate')?.value"
+            [min]="taskForm.get('actualStartDate')?.value || projectStartDate"
+            [max]="projectEndDate"
           />
           <mat-datepicker-toggle
             matIconSuffix

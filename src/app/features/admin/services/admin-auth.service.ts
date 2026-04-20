@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -8,9 +8,8 @@ import { LoginRequest, LoginResponse, SendOtpResponse, SignupRequest, SignupResp
   providedIn: 'root',
 })
 export class AdminAuthService {
+  private http = inject(HttpClient);
   private apiUrl = `${environment.api.baseUrl}/api/${environment.api.version}/auth`;
-
-  constructor(private http: HttpClient) {}
 
   adminSignup(signupData: SignupRequest): Observable<SignupResponse> {
     return this.http.post<SignupResponse>(`${this.apiUrl}/admin/signup`, signupData);

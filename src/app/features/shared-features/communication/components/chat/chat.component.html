@@ -4,7 +4,7 @@
       <mat-icon>person</mat-icon>
     </div>
     <div class="user-details">
-      <h3>{{chat.name}}</h3>
+      <h3>{{chat?.name}}</h3>
       <span class="status">Active now</span>
     </div>
   </div>
@@ -19,15 +19,16 @@
 </div>
 
 <div class="chat-body">
-  <div 
-    class="message" 
-    *ngFor="let msg of messages" 
-    [ngClass]="{'message-me': msg.sender === 'me', 'message-them': msg.sender === 'them'}">
-    <div class="bubble">
-      {{msg.text}}
+  @for (msg of messages; track msg.id) {
+    <div 
+      class="message" 
+      [ngClass]="{'message-me': msg.sender === 'me', 'message-them': msg.sender === 'them'}">
+      <div class="bubble">
+        {{msg.text}}
+      </div>
+      <span class="timestamp">{{msg.time}}</span>
     </div>
-    <span class="timestamp">{{msg.time}}</span>
-  </div>
+  }
 </div>
 
 <div class="chat-footer">

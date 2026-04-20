@@ -9,8 +9,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { VendorService } from '../../../../vendor/services/vendor.service';
 import { WorkerService } from '../../../../shared-features/workers/services/worker.service';
-import { Vendor } from '../../../../vendor/models/vendor.models';
-import { Worker } from '../../../../shared-features/workers/models/worker.model';
 import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 

@@ -55,7 +55,8 @@ export class SignupService {
   }
 
   completeWorkerSignup(data: WorkerSignupData): Observable<unknown> {
-    const { confirmPassword, ...signupData } = data;
+    const signupData = { ...data } as Record<string, unknown>;
+    delete signupData['confirmPassword'];
     return this.http.post(
       `${this.configService.apiUrl}/auth/worker/signup`,
       signupData,
@@ -63,7 +64,8 @@ export class SignupService {
   }
 
   completeSupervisorSignup(data: WorkerSignupData): Observable<unknown> {
-    const { confirmPassword, ...signupData } = data;
+    const signupData = { ...data } as Record<string, unknown>;
+    delete signupData['confirmPassword'];
     return this.http.post(
       `${this.configService.apiUrl}/auth/supervisor/signup`,
       signupData,

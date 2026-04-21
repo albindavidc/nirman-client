@@ -136,7 +136,10 @@ export const loginReducer = createReducer(
   })),
 
   // Logout
-  on(LoginActions.logout, () => initialLoginState),
+  on(LoginActions.logout, () => ({
+    ...initialLoginState,
+    authHydrated: true,
+  })),
 
   // Clear Error
   on(LoginActions.clearError, (state) => ({

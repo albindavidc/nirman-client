@@ -96,6 +96,40 @@
       height: 20px;
     }
   }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    @include mobile {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .filter-select {
+    width: 250px;
+
+    @include mobile {
+      width: 100%;
+    }
+
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background-color: var(--md-sys-color-surface-container) !important;
+        border-radius: 12px !important;
+      }
+      .mat-mdc-form-field-flex {
+        padding-top: 0 !important;
+      }
+      .mat-mdc-form-field-infix {
+        padding: 12px 0 !important;
+        min-height: auto !important;
+      }
+    }
+  }
 }
 
 // Stats Grid

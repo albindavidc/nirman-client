@@ -39,6 +39,7 @@ import {
   TaskService,
   TaskAssignmentInput,
 } from '../../../services/task.service';
+import { NotificationService } from '../../../../../../core/services/notification.service';
 
 export interface TaskModalData {
   mode: 'create' | 'edit';
@@ -77,6 +78,7 @@ export class TaskModalComponent implements OnInit {
   private workerGroupService = inject(WorkerGroupService);
   public dialogRef = inject(MatDialogRef<TaskModalComponent>);
   public data = inject<TaskModalData>(MAT_DIALOG_DATA);
+  private notification = inject(NotificationService);
   private destroyRef = inject(DestroyRef);
 
   taskForm!: FormGroup;
@@ -644,6 +646,10 @@ export class TaskModalComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error creating task:', err);
+          this.notification.error(err.error?.message || 'Error creating task');
+          if (err.status === 409 || err.error?.message?.toLowerCase().includes('already exists')) {
+            this.taskForm.get('name')?.setErrors({ alreadyExists: true });
+          }
           this.isSubmitting = false;
         },
       });
@@ -656,6 +662,10 @@ export class TaskModalComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error updating task:', err);
+          this.notification.error(err.error?.message || 'Error updating task');
+          if (err.status === 409 || err.error?.message?.toLowerCase().includes('already exists')) {
+            this.taskForm.get('name')?.setErrors({ alreadyExists: true });
+          }
           this.isSubmitting = false;
         },
       });

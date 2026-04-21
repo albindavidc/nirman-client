@@ -27,83 +27,109 @@ export class TaskDetailsPageComponent implements OnInit {
 
   task$: Observable<Task> | undefined;
   phaseName$: Observable<string> | undefined;
-  dependencies$: Observable<TaskDependency[]> | undefined; // We'll filter project deps for now
+  dependencies$: Observable<TaskDependency[]> | undefined;
 
   ngOnInit() {
-    this.taskId = this.route.snapshot.paramMap.get('taskId') || '';
-    // Project ID is likely in parent, but let's grab from URL
-    // Route structure: projects/:id/tasks/:taskId
-    // Parent is 'tasks', its parent is 'projects/:id'
-    this.projectId = this.route.parent?.snapshot.paramMap.get('id') || '';
+    // Use paramMap observable for better reactivity when navigating between tasks
+    this.route.paramMap.subscribe(params => {
+      this.taskId = params.get('taskId') || '';
+      // Project ID is in the parent route (:id)
+      this.projectId = this.route.parent?.snapshot.paramMap.get('id') || '';
 
-    if (this.taskId) {
-      this.task$ = this.taskService
-        .getTaskDetails(this.taskId)
-        .pipe(shareReplay(1));
+      if (this.taskId && this.projectId) {
+        this.loadTaskData();
+      }
+    });
+  }
 
-      this.phaseName$ = this.task$.pipe(
-        switchMap((task) =>
-          this.phaseService
-            .getPhases(this.projectId)
-            .pipe(
-              map(
-                (phases) =>
-                  phases.find((p) => p.id === task.phaseId)?.name ||
-                  'Unknown Phase',
-              ),
-            ),
-        ),
-      );
+  private loadTaskData() {
+    this.task$ = this.taskService
+      .getTaskDetails(this.taskId)
+      .pipe(shareReplay(1));
 
-      // Fetch dependencies
-      this.dependencies$ = this.taskService
-        .getProjectDependencies(this.projectId)
-        .pipe(
-          map((deps) =>
-            deps.filter(
-              (d) =>
-                d.successorTaskId === this.taskId ||
-                d.predecessorTaskId === this.taskId,
+    this.phaseName$ = this.task$.pipe(
+      switchMap((task) =>
+        this.phaseService
+          .getPhases(this.projectId)
+          .pipe(
+            map(
+              (phases) =>
+                phases.find((p) => p.id === task.phaseId)?.name ||
+                'Unknown Phase',
             ),
           ),
-        );
-    }
+      ),
+    );
+
+    // Fetch dependencies
+    this.dependencies$ = this.taskService
+      .getProjectDependencies(this.projectId)
+      .pipe(
+        map((deps) =>
+          deps.filter(
+            (d) =>
+              d.successorTaskId === this.taskId ||
+              d.predecessorTaskId === this.taskId,
+          ),
+        ),
+      );
   }
 
   getDaysTaken(task: Task): number {
     if (!task.actualStartDate) return 0;
     const end = task.actualEndDate ? new Date(task.actualEndDate) : new Date();
-    return differenceInDays(end, new Date(task.actualStartDate)) || 1;
+    const diff = differenceInDays(end, new Date(task.actualStartDate));
+    return diff < 0 ? 0 : diff + 1;
   }
 
   formatDate(date: string | Date | null | undefined): string {
     if (!date) return 'TBD';
-    return format(new Date(date), 'MMM d, yyyy');
+    try {
+      return format(new Date(date), 'MMM d, yyyy');
+    } catch {
+      return 'Invalid Date';
+    }
   }
 
   formatDateTime(date: string | Date | null | undefined): string {
     if (!date) return '';
-    return format(new Date(date), 'MMM d, yyyy - h:mm a');
+    try {
+      return format(new Date(date), 'MMM d, yyyy - h:mm a');
+    } catch {
+      return '';
+    }
   }
 
   isPredecessor(dep: TaskDependency): boolean {
     return dep.successorTaskId === this.taskId;
-    // If I am the successor, that means the other one (predecessor) COMES BEFORE me.
-    // "Depends On" = Predecessor
+  }
+
+  private normalizeStatus(status: string): string {
+    if (!status) return '';
+    return status.toLowerCase().replace(/_/g, ' ').trim();
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'Completed':
+    const s = this.normalizeStatus(status);
+    switch (s) {
+      case 'completed':
+      case 'done':
         return 'status-completed';
-      case 'In Progress':
+      case 'in progress':
+      case 'active':
         return 'status-inprogress';
-      case 'Delayed':
+      case 'delayed':
+      case 'overdue':
         return 'status-delayed';
+      case 'not started':
+      case 'scheduled':
+      case 'pending':
+        return 'status-pending';
       default:
         return 'status-pending';
     }
   }
+
   goBack() {
     this.router.navigate(['../../tasks'], { relativeTo: this.route });
   }

@@ -333,7 +333,15 @@
   }
 
   &.inactive {
-    opacity: 0.5;
+    opacity: 0.6;
+    filter: grayscale(0.4);
+
+    .btn-action-icon.toggle-status {
+      opacity: 1 !important;
+      background: rgba(233, 193, 108, 0.15);
+      color: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+    }
   }
 }
 
@@ -475,6 +483,54 @@
   }
 }
 
+.members-list-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid rgba(233, 193, 108, 0.1);
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(233, 193, 108, 0.2);
+    border-radius: 4px;
+  }
+}
+
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
+}
+
+.member-avatar-small {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(233, 193, 108, 0.1);
+  color: var(--md-sys-color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  border: 1px solid rgba(233, 193, 108, 0.2);
+}
+
+.member-name-text {
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface);
+  font-weight: 400;
+}
+
 .card-actions {
   display: flex;
   align-items: center;
@@ -538,7 +594,13 @@
     border-color: var(--md-sys-color-primary);
   }
 
-  &.delete:hover {
+  &.toggle-status:hover {
+    background: rgba(139, 208, 239, 0.1);
+    color: var(--md-sys-color-secondary);
+    border-color: var(--md-sys-color-secondary);
+  }
+
+  &.toggle-status.active:hover {
     background: rgba(255, 180, 171, 0.1);
     color: var(--md-sys-color-error);
     border-color: var(--md-sys-color-error);

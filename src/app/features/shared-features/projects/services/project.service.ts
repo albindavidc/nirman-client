@@ -39,6 +39,9 @@ export class ProjectService {
     if (filters?.search) {
       params = params.set('search', filters.search);
     }
+    if (filters?.supervisorId) {
+      params = params.set('supervisorId', filters.supervisorId);
+    }
 
     return this.http.get<ProjectListResponse>(this.apiUrl, { params });
   }
@@ -70,6 +73,7 @@ export class ProjectService {
   getProfessionals(
     search?: string,
     excludeProjectId?: string,
+    role?: string,
   ): Observable<Professional[]> {
     let params = new HttpParams();
     if (search) {
@@ -77,6 +81,9 @@ export class ProjectService {
     }
     if (excludeProjectId) {
       params = params.set('excludeProjectId', excludeProjectId);
+    }
+    if (role) {
+      params = params.set('role', role);
     }
     return this.http.get<Professional[]>(`${this.apiUrl}/professionals`, {
       params,

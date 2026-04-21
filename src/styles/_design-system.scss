@@ -1,0 +1,1068 @@
+// ============================================================
+// GLOBAL DESIGN SYSTEM — Warm Gold · Dark Amber · Glassmorphism
+// MD3 token palette merged with structural design system
+// ============================================================
+
+// ------------------------------------------------------------
+// 1. MATERIAL DESIGN 3 — SOURCE TOKENS
+//    Keep all original MD3 vars intact for Angular Material
+// ------------------------------------------------------------
+:root {
+  --md-sys-color-primary: rgb(233 193 108);
+  --md-sys-color-surface-tint: rgb(233 193 108);
+  --md-sys-color-on-primary: rgb(63 46 0);
+  --md-sys-color-primary-container: rgb(91 67 0);
+  --md-sys-color-on-primary-container: rgb(255 223 158);
+  --md-sys-color-secondary: rgb(139 208 239);
+  --md-sys-color-on-secondary: rgb(0 53 70);
+  --md-sys-color-secondary-container: rgb(0 77 100);
+  --md-sys-color-on-secondary-container: rgb(189 233 255);
+  --md-sys-color-tertiary: rgb(161 211 154);
+  --md-sys-color-on-tertiary: rgb(10 57 15);
+  --md-sys-color-tertiary-container: rgb(35 80 36);
+  --md-sys-color-on-tertiary-container: rgb(188 240 180);
+  --md-sys-color-error: rgb(255 180 171);
+  --md-sys-color-on-error: rgb(86 30 25);
+  --md-sys-color-error-container: rgb(115 52 45);
+  --md-sys-color-on-error-container: rgb(255 218 213);
+  --md-sys-color-background: rgb(23 19 11);
+  --md-sys-color-on-background: rgb(235 225 212);
+  --md-sys-color-surface: rgb(23 19 11);
+  --md-sys-color-on-surface: rgb(235 225 212);
+  --md-sys-color-surface-variant: rgb(77 70 57);
+  --md-sys-color-on-surface-variant: rgb(208 197 180);
+  --md-sys-color-outline: rgb(153 143 128);
+  --md-sys-color-outline-variant: rgb(77 70 57);
+  --md-sys-color-shadow: rgb(0 0 0);
+  --md-sys-color-scrim: rgb(0 0 0);
+  --md-sys-color-inverse-surface: rgb(235 225 212);
+  --md-sys-color-inverse-on-surface: rgb(53 48 39);
+  --md-sys-color-inverse-primary: rgb(119 90 11);
+  --md-sys-color-primary-fixed: rgb(255 223 158);
+  --md-sys-color-on-primary-fixed: rgb(38 26 0);
+  --md-sys-color-primary-fixed-dim: rgb(233 193 108);
+  --md-sys-color-on-primary-fixed-variant: rgb(91 67 0);
+  --md-sys-color-secondary-fixed: rgb(189 233 255);
+  --md-sys-color-on-secondary-fixed: rgb(0 31 42);
+  --md-sys-color-secondary-fixed-dim: rgb(139 208 239);
+  --md-sys-color-on-secondary-fixed-variant: rgb(0 77 100);
+  --md-sys-color-tertiary-fixed: rgb(188 240 180);
+  --md-sys-color-on-tertiary-fixed: rgb(0 34 4);
+  --md-sys-color-tertiary-fixed-dim: rgb(161 211 154);
+  --md-sys-color-on-tertiary-fixed-variant: rgb(35 80 36);
+  --md-sys-color-surface-dim: rgb(23 19 11);
+  --md-sys-color-surface-bright: rgb(62 56 47);
+  --md-sys-color-surface-container-lowest: rgb(17 14 7);
+  --md-sys-color-surface-container-low: rgb(31 27 19);
+  --md-sys-color-surface-container: rgb(35 31 23);
+  --md-sys-color-surface-container-high: rgb(46 41 33);
+  --md-sys-color-surface-container-highest: rgb(57 52 43);
+  --md-extended-color-success-color: rgb(161 211 154);
+  --md-extended-color-success-on-color: rgb(10 57 15);
+  --md-extended-color-success-color-container: rgb(36 80 36);
+  --md-extended-color-success-on-color-container: rgb(188 240 180);
+  --md-extended-color-warning-color: rgb(255 183 134);
+  --md-extended-color-warning-on-color: rgb(80 36 0);
+  --md-extended-color-warning-color-container: rgb(110 57 13);
+  --md-extended-color-warning-on-color-container: rgb(255 220 198);
+}
+
+// ------------------------------------------------------------
+// 2. DESIGN TOKENS — Semantic system mapped to MD3 palette
+// ------------------------------------------------------------
+:root {
+  // --- Surfaces (warm dark amber from MD3 surface scale) ---
+  --surface-base: rgb(17 14 7); // surface-container-lowest
+  --surface-raised: rgb(35 31 23); // surface-container
+  --surface-overlay: rgb(46 41 33); // surface-container-high
+  --surface-hover: rgb(57 52 43); // surface-container-highest
+  --surface-active: rgb(77 70 57); // surface-variant
+
+  // --- Borders (warm cream-tinted) ---
+  --border-subtle: rgba(208, 197, 180, 0.06);
+  --border-default: rgba(208, 197, 180, 0.12);
+  --border-emphasis: rgba(208, 197, 180, 0.22);
+  --border-gold: rgba(233, 193, 108, 0.3);
+
+  // --- Text (warm cream from MD3 on-surface) ---
+  --text-primary: rgb(235 225 212); // on-surface
+  --text-secondary: rgb(208 197 180); // on-surface-variant
+  --text-muted: rgb(153 143 128); // outline
+  --text-faint: rgb(77 70 57); // outline-variant
+
+  // --- Accent / Brand ---
+  --accent-primary: rgb(233 193 108); // gold
+  --accent-primary-dim: rgb(119 90 11); // deep gold
+  --accent-primary-bg: rgba(233, 193, 108, 0.12);
+  --accent-primary-container: rgb(91 67 0);
+  --accent-secondary: rgb(139 208 239); // sky blue
+  --accent-secondary-bg: rgba(139, 208, 239, 0.1);
+  --accent-tertiary: rgb(161 211 154); // sage green
+  --accent-tertiary-bg: rgba(161, 211, 154, 0.1);
+
+  // --- Semantic — Status ---
+  --status-completed-text: rgb(161 211 154);
+  --status-completed-bg: rgba(35, 80, 36, 0.4);
+  --status-completed-border: rgb(35 80 36);
+
+  --status-in-progress-text: rgb(139 208 239);
+  --status-in-progress-bg: rgba(0, 77, 100, 0.4);
+  --status-in-progress-border: rgb(0 77 100);
+
+  --status-delayed-text: rgb(255 180 171);
+  --status-delayed-bg: rgba(115, 52, 45, 0.4);
+  --status-delayed-border: rgb(115 52 45);
+
+  --status-not-started-text: rgb(153 143 128);
+  --status-not-started-bg: rgb(31 27 19);
+  --status-not-started-border: rgb(77 70 57);
+
+  // --- Semantic — Approval Status ---
+  --approval-pending-text: rgb(139 208 239);        // sky blue
+  --approval-pending-bg: rgba(0, 77, 100, 0.25);
+  --approval-pending-border: rgba(139, 208, 239, 0.3);
+  --approval-pending-glow: rgba(139, 208, 239, 0.12);
+
+  --approval-approved-text: rgb(161 211 154);       // sage green
+  --approval-approved-bg: rgba(35, 80, 36, 0.25);
+  --approval-approved-border: rgba(161, 211, 154, 0.3);
+
+  --approval-rejected-text: rgb(255 180 171);       // error red
+  --approval-rejected-bg: rgba(115, 52, 45, 0.25);
+  --approval-rejected-border: rgba(255, 180, 171, 0.3);
+
+  --approval-blocked-text: rgb(208 197 180);        // muted cream
+  --approval-blocked-bg: rgba(23, 19, 11, 0.5);
+  --approval-blocked-border: rgba(208, 197, 180, 0.1);
+
+  // --- Semantic — Priority ---
+  --priority-critical: rgb(255 180 171); // error
+  --priority-high: rgb(255 180 171); // error
+  --priority-medium: rgb(255 183 134); // warning
+  --priority-low: rgb(161 211 154); // success / tertiary
+
+  // --- Progress ---
+  --progress-bar-track: rgb(77 70 57);
+  --progress-bar-fill: rgb(233 193 108);
+
+  // --- Glassmorphism tokens ---
+  --glass-bg: rgba(35, 31, 23, 0.55);
+  --glass-bg-strong: rgba(46, 41, 33, 0.72);
+  --glass-bg-subtle: rgba(23, 19, 11, 0.35);
+  --glass-blur: blur(16px);
+  --glass-blur-sm: blur(8px);
+  --glass-blur-lg: blur(28px);
+  --glass-border: rgba(233, 193, 108, 0.14);
+  --glass-border-strong: rgba(233, 193, 108, 0.26);
+  --glass-highlight: rgba(255, 223, 158, 0.06);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --glass-shadow-gold:
+    0 8px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(233, 193, 108, 0.08);
+
+  // --- Gradient palette ---
+  --gradient-gold: linear-gradient(
+    135deg,
+    rgb(233 193 108) 0%,
+    rgb(255 183 134) 100%
+  );
+  --gradient-gold-soft: linear-gradient(
+    135deg,
+    rgba(233, 193, 108, 0.18) 0%,
+    rgba(255, 183, 134, 0.08) 100%
+  );
+  --gradient-surface: linear-gradient(
+    160deg,
+    rgb(46 41 33) 0%,
+    rgb(23 19 11) 100%
+  );
+  --gradient-surface-warm: linear-gradient(
+    160deg,
+    rgb(57 52 43) 0%,
+    rgb(17 14 7) 100%
+  );
+  --gradient-ambient: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(233, 193, 108, 0.08) 0%,
+    transparent 70%
+  );
+  --gradient-ambient-blue: radial-gradient(
+    ellipse 60% 40% at 80% 80%,
+    rgba(139, 208, 239, 0.06) 0%,
+    transparent 70%
+  );
+  --gradient-text-gold: linear-gradient(
+    90deg,
+    rgb(255 223 158),
+    rgb(233 193 108),
+    rgb(255 183 134)
+  );
+
+  // --- Spacing ---
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  // --- Radius ---
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  // --- Typography ---
+  --font-sans: "DM Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  --text-xs: 0.625rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.08em;
+  --tracking-widest: 0.12em;
+
+  // --- Shadows ---
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.65);
+  --shadow-glow-gold: 0 0 20px rgba(233, 193, 108, 0.22);
+  --shadow-glow-accent: 0 0 16px rgba(233, 193, 108, 0.18);
+
+  // --- Transitions ---
+  --transition-fast: 100ms ease;
+  --transition-base: 180ms ease;
+  --transition-slow: 300ms ease;
+
+  // --- Z-index ---
+  --z-base: 0;
+  --z-raised: 10;
+  --z-overlay: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+// ------------------------------------------------------------
+// 3. GLOBAL RESET & BASE
+// ------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // Ambient warm glow on page background
+  background-image: var(--gradient-ambient), var(--gradient-ambient-blue);
+  background-attachment: fixed;
+}
+
+// ------------------------------------------------------------
+// 4. TYPOGRAPHY UTILITIES
+// ------------------------------------------------------------
+
+.heading-page {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+.heading-section {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+.heading-card {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+.text-body {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+.text-caption {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.text-micro {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.text-gold {
+  color: var(--accent-primary);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+
+// Gold gradient heading — hero / page titles
+.heading-page--gold {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  background: var(--gradient-text-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+// ALL CAPS column / section label
+.label-caps {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+// ------------------------------------------------------------
+// 5. LAYOUT PRIMITIVES
+// ------------------------------------------------------------
+
+.panel {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.panel--sm {
+  padding: var(--space-4);
+}
+.panel--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-default);
+  border: none;
+  margin: var(--space-4) 0;
+}
+.divider--subtle {
+  background: var(--border-subtle);
+}
+.divider--gold {
+  background: var(--border-gold);
+}
+
+// ------------------------------------------------------------
+// 6. GLASSMORPHISM SYSTEM
+// ------------------------------------------------------------
+
+// Base glass card
+.glass {
+  position: relative;
+  overflow: hidden;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+
+  // Top-edge light reflection
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight) 0%,
+      transparent 40%
+    );
+    z-index: 0;
+  }
+}
+
+// Stronger blur — modals, sidebars
+.glass--strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-lg);
+  -webkit-backdrop-filter: var(--glass-blur-lg);
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-gold);
+}
+
+// Subtle — table rows, hover states
+.glass--subtle {
+  background: var(--glass-bg-subtle);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border-color: var(--border-subtle);
+}
+
+// Gold-accent glass — featured cards, CTAs
+.glass--gold {
+  position: relative;
+  overflow: hidden;
+  background: rgba(91, 67, 0, 0.35);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-gold);
+
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 223, 158, 0.08) 0%,
+      transparent 60%
+    );
+    z-index: 0;
+  }
+}
+
+// Gradient glass — hero banners, feature sections
+.glass--gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 41, 33, 0.65) 0%,
+    rgba(23, 19, 11, 0.55) 100%
+  );
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-gold);
+}
+
+// Frosted panel — overlays, dropdowns
+.glass--frosted {
+  background: rgba(57, 52, 43, 0.8);
+  backdrop-filter: var(--glass-blur-lg);
+  -webkit-backdrop-filter: var(--glass-blur-lg);
+  border: 1px solid var(--border-emphasis);
+  box-shadow: var(--shadow-lg);
+}
+
+// ------------------------------------------------------------
+// 7. BADGE / STATUS CHIP
+// ------------------------------------------------------------
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+  line-height: 1.4;
+
+  &--completed {
+    color: var(--status-completed-text);
+    background: var(--status-completed-bg);
+    border-color: var(--status-completed-border);
+  }
+  &--in-progress {
+    color: var(--status-in-progress-text);
+    background: var(--status-in-progress-bg);
+    border-color: var(--status-in-progress-border);
+  }
+  &--delayed {
+    color: var(--status-delayed-text);
+    background: var(--status-delayed-bg);
+    border-color: var(--status-delayed-border);
+  }
+  &--not-started {
+    color: var(--status-not-started-text);
+    background: var(--status-not-started-bg);
+    border-color: var(--status-not-started-border);
+  }
+  &--neutral {
+    color: var(--text-muted);
+    background: var(--surface-active);
+    border-color: var(--border-default);
+  }
+
+  // MD3-mapped tones
+  &--gold {
+    color: var(--md-sys-color-on-primary-container);
+    background: rgba(91, 67, 0, 0.5);
+    border-color: rgba(233, 193, 108, 0.35);
+  }
+  &--blue {
+    color: var(--accent-secondary);
+    background: var(--accent-secondary-bg);
+    border-color: rgba(139, 208, 239, 0.25);
+  }
+  &--green {
+    color: var(--accent-tertiary);
+    background: var(--accent-tertiary-bg);
+    border-color: rgba(161, 211, 154, 0.25);
+  }
+}
+
+// ------------------------------------------------------------
+// 8. PRIORITY INDICATOR
+// ------------------------------------------------------------
+
+.priority-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+
+  span {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1;
+  }
+
+  &--critical .mat-icon,
+  &--high .mat-icon {
+    color: var(--priority-high);
+  }
+  &--medium .mat-icon {
+    color: var(--priority-medium);
+  }
+  &--low .mat-icon {
+    color: var(--priority-low);
+  }
+}
+
+// ------------------------------------------------------------
+// 9. AVATAR STACK
+// ------------------------------------------------------------
+
+.avatar-stack {
+  display: flex;
+  align-items: center;
+
+  .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xs);
+    font-weight: var(--weight-bold);
+    color: #fff;
+    margin-left: -6px;
+    cursor: default;
+    transition: transform var(--transition-fast);
+
+    &:first-child {
+      margin-left: 0;
+    }
+    &:hover {
+      transform: translateY(-2px);
+      z-index: var(--z-raised);
+    }
+
+    &--user {
+      background-color: rgb(0 77 100);
+    } // secondary-container
+    &--group {
+      background-color: rgb(91 67 0);
+    } // primary-container (gold)
+    &--overflow {
+      background-color: rgb(77 70 57);
+    } // surface-variant
+  }
+}
+
+// ------------------------------------------------------------
+// 10. PROGRESS BAR
+// ------------------------------------------------------------
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  &__track {
+    flex: 1;
+    min-width: 80px;
+    height: 6px;
+    background: var(--progress-bar-track);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: var(--gradient-gold);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+    box-shadow: 0 0 8px rgba(233, 193, 108, 0.35);
+  }
+
+  &__label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 30px;
+  }
+}
+
+// ------------------------------------------------------------
+// 11. BUTTONS
+// ------------------------------------------------------------
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  transition:
+    background var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+
+  .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  // Gold primary CTA
+  &--primary {
+    background: var(--gradient-gold);
+    color: var(--md-sys-color-on-primary);
+    box-shadow: 0 2px 8px rgba(233, 193, 108, 0.25);
+
+    &:hover {
+      box-shadow: var(--shadow-glow-gold);
+      filter: brightness(1.08);
+    }
+  }
+
+  // Glass secondary
+  &--secondary {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    backdrop-filter: var(--glass-blur-sm);
+
+    &:hover {
+      background: var(--glass-bg-strong);
+      border-color: var(--border-gold);
+      color: var(--text-primary);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--text-muted);
+
+    &:hover {
+      background: var(--glass-bg-subtle);
+      color: var(--text-primary);
+    }
+  }
+
+  &--danger {
+    background: rgba(115, 52, 45, 0.35);
+    color: var(--status-delayed-text);
+    border: 1px solid var(--status-delayed-border);
+
+    &:hover {
+      background: rgba(115, 52, 45, 0.55);
+    }
+  }
+
+  &--icon {
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+
+    &:hover {
+      background: var(--glass-bg-subtle);
+      color: var(--accent-primary);
+    }
+  }
+
+  &[disabled] {
+    opacity: 0.38;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// ------------------------------------------------------------
+// 12. ANGULAR MATERIAL GLOBAL OVERRIDES
+// ------------------------------------------------------------
+
+// Tables
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-header-row {
+  height: 48px !important;
+}
+
+.mat-mdc-header-cell {
+  border-bottom-color: var(--border-default) !important;
+  vertical-align: middle;
+  padding: 0 var(--space-4) !important;
+  font-size: var(--text-xs) !important;
+  font-weight: var(--weight-semibold) !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.mat-mdc-row {
+  height: 56px !important;
+  transition: background var(--transition-fast);
+
+  &:hover .mat-mdc-cell {
+    background: var(--glass-bg-subtle);
+  }
+}
+
+.mat-mdc-cell {
+  border-bottom-color: var(--border-subtle) !important;
+  vertical-align: middle;
+  padding: 0 var(--space-4) !important;
+  height: 56px;
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+}
+
+// Menus — glassmorphism
+.mat-mdc-menu-panel {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--glass-shadow-gold) !important;
+}
+
+.mat-mdc-menu-item {
+  color: var(--text-secondary) !important;
+  font-size: var(--text-base) !important;
+
+  .mat-icon {
+    color: var(--text-muted) !important;
+  }
+
+  &:hover:not([disabled]) {
+    background: rgba(233, 193, 108, 0.08) !important;
+    color: var(--accent-primary) !important;
+  }
+
+  &[disabled] {
+    opacity: 0.38;
+  }
+}
+
+// Icon buttons
+.mat-mdc-icon-button {
+  color: var(--text-muted) !important;
+
+  &:hover {
+    background: var(--glass-bg-subtle) !important;
+    color: var(--accent-primary) !important;
+  }
+}
+
+// Form fields
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur-sm) !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--border-default) !important;
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--accent-primary) !important;
+    }
+  }
+
+  input,
+  textarea {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-floating-label {
+    color: var(--text-muted) !important;
+  }
+}
+
+// Primary buttons
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-flat-button.mat-primary {
+  background: var(--gradient-gold) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(233, 193, 108, 0.25) !important;
+
+  &:hover {
+    box-shadow: var(--shadow-glow-gold) !important;
+    filter: brightness(1.06);
+  }
+}
+
+// Dialogs — glassmorphism
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-lg) !important;
+  -webkit-backdrop-filter: var(--glass-blur-lg) !important;
+  border: 1px solid var(--glass-border-strong) !important;
+  border-radius: var(--radius-xl) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--glass-shadow-gold) !important;
+}
+
+.mat-mdc-dialog-title {
+  color: var(--text-primary) !important;
+  font-size: var(--text-lg) !important;
+  font-weight: var(--weight-bold) !important;
+}
+
+// Tooltips
+.mdc-tooltip__surface {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-sm) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: var(--text-xs) !important;
+}
+
+// Chips
+.mat-mdc-chip {
+  background: var(--surface-active) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+// Select
+.mat-mdc-select-value {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-select-panel {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.mat-mdc-option {
+  color: var(--text-secondary) !important;
+
+  &:hover,
+  &.mat-mdc-option-active {
+    background: rgba(233, 193, 108, 0.08) !important;
+  }
+
+  &.mdc-list-item--selected {
+    background: rgba(91, 67, 0, 0.45) !important;
+    color: var(--accent-primary) !important;
+  }
+}
+
+// Snackbar / Toast
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+}
+
+// ------------------------------------------------------------
+// 13. ICON UTILITIES
+// ------------------------------------------------------------
+
+.icon-xs {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  line-height: 14px !important;
+}
+.icon-sm {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  vertical-align: middle;
+}
+.icon-md {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+}
+.icon-lg {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+}
+
+// ------------------------------------------------------------
+// 14. SCROLLBAR
+// ------------------------------------------------------------
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(233, 193, 108, 0.2) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(233, 193, 108, 0.2);
+    border-radius: var(--radius-full);
+
+    &:hover {
+      background: rgba(233, 193, 108, 0.38);
+    }
+  }
+}
+
+// ------------------------------------------------------------
+// 15. FOCUS RING
+// ------------------------------------------------------------
+
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+// ------------------------------------------------------------
+// 16. SELECTION
+// ------------------------------------------------------------
+
+::selection {
+  background: rgba(233, 193, 108, 0.2);
+  color: var(--text-primary);
+}
+
+// ------------------------------------------------------------
+// 17. UTILITY HELPERS
+// ------------------------------------------------------------
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.glow-gold {
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.gradient-text {
+  background: var(--gradient-text-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+  color: var(--text-muted);
+  font-size: var(--text-base);
+  font-style: italic;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

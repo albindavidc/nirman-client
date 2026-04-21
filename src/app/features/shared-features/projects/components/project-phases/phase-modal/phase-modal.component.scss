@@ -1,16 +1,57 @@
 .modal-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-top: 8px;
+  gap: 20px;
+  padding: 12px 4px;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  /* Custom scrollbar for better look */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: 10px;
+  }
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 .full-width {
   width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: -4px;
+  padding-left: 4px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.date-section {
+  background: rgba(var(--primary-rgb), 0.03);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(var(--primary-rgb), 0.08);
 }

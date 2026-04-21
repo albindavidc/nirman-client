@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -48,6 +49,7 @@ export class ProfilePageComponent implements OnInit {
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
 
   private readonly store = inject(Store);
 
@@ -244,5 +246,9 @@ export class ProfilePageComponent implements OnInit {
     if (!this.profile?.profilePhotoUrl) return null;
     // S3 URLs are already absolute, return as-is
     return this.profile.profilePhotoUrl;
+  }
+
+  onLogout(): void {
+    this.store.dispatch(LoginActions.logout());
   }
 }

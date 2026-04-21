@@ -108,11 +108,9 @@
             <div class="card-footer-info">
               <div class="avatars-stack">
                 @for (member of getVisibleMembers(group); track member.id) {
-                  @if (member.isActive) {
-                    <div class="member-avatar">
-                      {{ getMemberInitials(member.workerName) }}
-                    </div>
-                  }
+                  <div class="member-avatar">
+                    {{ getMemberInitials(member.workerName) }}
+                  </div>
                 }
               </div>
               <button
@@ -125,6 +123,20 @@
                 }}</mat-icon>
               </button>
             </div>
+
+            <!-- Detailed Members List (Visible when 'View All' is clicked) -->
+            @if (showAllMembers[group.id]) {
+              <div class="members-list-expanded" [@fadeInUp]>
+                @for (member of getActiveMembers(group); track member.id) {
+                  <div class="member-row">
+                    <div class="member-avatar-small">
+                      {{ getMemberInitials(member.workerName) }}
+                    </div>
+                    <span class="member-name-text">{{ member.workerName }}</span>
+                  </div>
+                }
+              </div>
+            }
 
             <!-- Actions -->
             <div class="card-actions">
@@ -141,10 +153,14 @@
               </button>
 
               <button
-                class="btn-action-icon delete"
-                (click)="deleteGroup(group)"
+                class="btn-action-icon toggle-status"
+                [class.active]="group.isActive"
+                (click)="toggleGroupStatus(group)"
+                [matTooltip]="group.isActive ? 'Deactivate Group' : 'Activate Group'"
               >
-                <mat-icon>delete</mat-icon>
+                <mat-icon>{{
+                  group.isActive ? "toggle_on" : "toggle_off"
+                }}</mat-icon>
               </button>
             </div>
           </div>

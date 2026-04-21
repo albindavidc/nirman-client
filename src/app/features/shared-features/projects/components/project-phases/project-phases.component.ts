@@ -26,6 +26,7 @@ import {
 import { Task } from '../../services/task.service';
 import { Store } from '@ngrx/store';
 import { RequestApprovalModalComponent } from './request-approval-modal/request-approval-modal.component';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 export const PHASE_STATUSES = [
   'Not Started',
@@ -68,12 +69,13 @@ export class ProjectPhasesComponent implements OnInit {
   private projectPhaseService = inject(ProjectPhaseService);
   private projectService = inject(ProjectService);
   private taskService = inject(TaskService);
-  private store = inject(Store);
+  private notification = inject(NotificationService);
+  private store = inject(Store<any>);
 
   currentUserRole = '';
 
   get canAddPhase(): boolean {
-    return ['admin', 'project_manager'].includes(this.currentUserRole);
+    return this.currentUserRole === 'admin';
   }
 
   get canReviewApproval(): boolean {
@@ -126,6 +128,21 @@ export class ProjectPhasesComponent implements OnInit {
 
     this.phases$ = this.refreshSubject.pipe(
       switchMap(() => this.projectPhaseService.getPhases(projectId)),
+      map(phases => {
+        // Sort phases by sequence just in case
+        const sortedPhases = [...phases].sort((a, b) => a.sequence - b.sequence);
+        return sortedPhases.map((phase, index) => {
+          const previousPhase = index > 0 ? sortedPhases[index - 1] : null;
+          const isBlocked = previousPhase ? previousPhase.approvalStatus !== 'approved' : false;
+          return {
+            ...phase,
+            isBlocked,
+            previousPhaseName: previousPhase?.name,
+            previousPhaseId: previousPhase?.id,
+            previousPhaseApprovalStatus: previousPhase?.approvalStatus
+          };
+        });
+      })
     );
 
     this.projectService.getProjectById(projectId).subscribe({
@@ -196,7 +213,7 @@ export class ProjectPhasesComponent implements OnInit {
     );
   }
 
-  private normalizeStatus(status: string): string {
+  public normalizeStatus(status: string): string {
     if (!status) return '';
     return status.toLowerCase().replace(/_/g, ' ').trim();
   }
@@ -274,11 +291,40 @@ export class ProjectPhasesComponent implements OnInit {
           .subscribe({
             next: () => {
               this.refreshSubject.next();
+              this.notification.success('Approval request sent successfully');
             },
-            error: (err) => console.error('Failed to request approval', err),
+            error: (err) => {
+              console.error('Failed to request approval', err);
+              this.notification.error(err.error?.message || 'Failed to request approval');
+            },
           });
       }
     });
+  }
+
+  approvePhase(phase: any): void {
+    this.projectPhaseService
+      .approvePhase(phase.id, { approvalStatus: 'approved' })
+      .subscribe({
+        next: () => {
+          this.notification.success(`Phase "${phase.name}" approved successfully`);
+          this.refreshSubject.next();
+        },
+        error: (err) => {
+          console.error('Failed to approve phase', err);
+          this.notification.error(err.error?.message || 'Failed to approve phase');
+        },
+      });
+  }
+
+  openRequestPreviousApproval(phase: any): void {
+    const projectId = this.route.parent?.snapshot.paramMap.get('id');
+    if (!projectId) return;
+
+    this.openRequestApprovalModal({
+      id: phase.previousPhaseId,
+      name: phase.previousPhaseName,
+    } as ProjectPhase);
   }
 
   updateStatus(phase: ProjectPhase, newStatus: string): void {
@@ -289,7 +335,10 @@ export class ProjectPhasesComponent implements OnInit {
       .updatePhase(projectId, phase.id, { status: newStatus })
       .subscribe({
         next: () => this.refreshSubject.next(),
-        error: (err) => console.error('Failed to update phase status', err),
+        error: (err) => {
+          console.error('Failed to update phase status', err);
+          this.notification.error(err.error?.message || 'Failed to update phase status');
+        },
       });
   }
 
@@ -300,6 +349,7 @@ export class ProjectPhasesComponent implements OnInit {
     const project = this.projectSubject.value;
     const data: PhaseModalData = {
       mode: 'create',
+      projectId,
       nextSequence: this.totalPhases + 1,
       projectStartDate: project?.startDate,
       projectEndDate: project?.dueDate,
@@ -312,12 +362,7 @@ export class ProjectPhasesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.projectPhaseService
-          .createPhase(projectId, { ...result, projectId })
-          .subscribe({
-            next: () => this.refreshSubject.next(),
-            error: (err) => console.error('Failed to create phase', err),
-          });
+        this.refreshSubject.next();
       }
     });
   }
@@ -329,6 +374,7 @@ export class ProjectPhasesComponent implements OnInit {
     const project = this.projectSubject.value;
     const data: PhaseModalData = {
       mode: 'edit',
+      projectId,
       phase,
       projectStartDate: project?.startDate,
       projectEndDate: project?.dueDate,
@@ -341,12 +387,7 @@ export class ProjectPhasesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.projectPhaseService
-          .updatePhase(projectId, phase.id, result)
-          .subscribe({
-            next: () => this.refreshSubject.next(),
-            error: (err) => console.error('Failed to update phase', err),
-          });
+        this.refreshSubject.next();
       }
     });
   }
@@ -371,7 +412,7 @@ export class ProjectPhasesComponent implements OnInit {
     });
   }
 
-  navigateToApprovalReview(phase: ProjectPhase): void {
+  navigateToApprovalReview(phase: { id: string }): void {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
     this.router.navigate([phase.id, 'review'], { relativeTo: this.route });

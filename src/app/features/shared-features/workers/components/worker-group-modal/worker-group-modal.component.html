@@ -79,6 +79,22 @@
         }
       </div>
 
+      <!-- Group Status (Edit only or visible in create if preferred) -->
+      <div class="field-group status-toggle-group">
+        <label class="field-label">Group Status</label>
+        <div class="toggle-container">
+          <mat-slide-toggle
+            formControlName="isActive"
+            color="primary"
+          >
+            {{ form.get('isActive')?.value ? 'Active' : 'Inactive' }}
+          </mat-slide-toggle>
+          <p class="toggle-hint">
+            Inactive groups are hidden from some project assignments
+          </p>
+        </div>
+      </div>
+
       <!-- Add Team Members Section (Create mode only) -->
       @if (!isEdit) {
         <div class="members-picker">

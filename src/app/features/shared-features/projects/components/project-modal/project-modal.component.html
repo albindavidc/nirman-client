@@ -30,53 +30,56 @@
         @if (projectForm.get("name")?.hasError("minlength")) {
           <mat-error> Minimum 2 characters </mat-error>
         }
+        @if (projectForm.get("name")?.hasError("alreadyExists")) {
+          <mat-error> A project with this name already exists </mat-error>
+        }
       </mat-form-field>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Project Manager -->
+      <!-- Project Supervisor -->
       <div class="form-field">
         <label
           class="block text-sm font-medium text-gray-300 mb-1"
-          for="projectManager"
-          >Project Manager</label
+          for="projectSupervisor"
+          >Project Supervisor</label
         >
         <mat-form-field appearance="outline" class="w-full">
           <input
             matInput
-            id="projectManager"
-            [formControl]="managerSearchControl"
-            [matAutocomplete]="managerAuto"
-            placeholder="Select project manager"
+            id="projectSupervisor"
+            [formControl]="supervisorSearchControl"
+            [matAutocomplete]="supervisorAuto"
+            placeholder="Select project supervisor"
           />
           @if (
             projectForm.get("managerIds")?.invalid &&
             projectForm.get("managerIds")?.touched
           ) {
-            <mat-error> Project manager is required </mat-error>
+            <mat-error> Project supervisor is required </mat-error>
           }
           <mat-autocomplete
-            #managerAuto="matAutocomplete"
-            (optionSelected)="selectManager($event.option.value)"
+            #supervisorAuto="matAutocomplete"
+            (optionSelected)="selectSupervisor($event.option.value)"
           >
-            @for (manager of filteredManagers$ | async; track manager.id) {
-              <mat-option [value]="manager">
-                <span class="font-medium">{{ manager.name }}</span>
-                <span class="text-sm opacity-70 ml-2">({{ manager.email }})</span>
+            @for (supervisor of filteredSupervisors$ | async; track supervisor.id) {
+              <mat-option [value]="supervisor">
+                <span class="font-medium">{{ supervisor.name }}</span>
+                <span class="text-sm opacity-70 ml-2">({{ supervisor.email }})</span>
               </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
 
-        <!-- Selected Manager Pill -->
-        @if (selectedManager) {
+        <!-- Selected Supervisor Pill -->
+        @if (selectedSupervisor) {
           <div class="custom-pill-container">
             <div class="custom-pill">
-              <span class="pill-text">{{ selectedManager.name }}</span>
+              <span class="pill-text">{{ selectedSupervisor.name }}</span>
               <button
                 type="button"
                 class="pill-remove"
-                (click)="removeManager()"
+                (click)="removeSupervisor()"
               >
                 <mat-icon>close</mat-icon>
               </button>
@@ -136,7 +139,6 @@
             [matDatepicker]="startPicker"
             formControlName="startDate"
             placeholder="dd-mm-yyyy"
-            [min]="minDate"
           />
           <mat-datepicker-toggle
             matSuffix
@@ -152,9 +154,6 @@
           <div>
             @if (projectForm.get("startDate")?.hasError("required")) {
               <mat-error> Start date is required </mat-error>
-            }
-            @if (projectForm.get("startDate")?.hasError("matDatepickerMin") || projectForm.get("startDate")?.hasError("pastDate")) {
-              <mat-error> Start date cannot be in the past </mat-error>
             }
           </div>
         }
@@ -174,7 +173,6 @@
             [matDatepicker]="endPicker"
             formControlName="endDate"
             placeholder="dd-mm-yyyy"
-            [min]="minDate"
           />
           <mat-datepicker-toggle
             matSuffix
@@ -213,6 +211,9 @@
             formControlName="budget"
             placeholder="0.00"
           />
+          @if (projectForm.get("budget")?.hasError("min")) {
+            <mat-error> Budget cannot be negative </mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -237,60 +238,6 @@
       }
     </div>
 
-    <!-- Add People -->
-    <div class="form-field">
-      <label
-        class="block text-sm font-medium text-gray-300 mb-1"
-        for="addPeople"
-        >Add workers*</label
-      >
-      <mat-form-field appearance="outline" class="w-full">
-        <input
-          matInput
-          id="addPeople"
-          [formControl]="workerSearchControl"
-          [matAutocomplete]="workerAuto"
-          placeholder="Search"
-        />
-        <mat-autocomplete
-          #workerAuto="matAutocomplete"
-          (optionSelected)="addWorker($event.option.value)"
-        >
-          @for (worker of filteredWorkers$ | async; track worker.id) {
-            <mat-option [value]="worker">
-              <span class="font-medium">{{ worker.name }}</span>
-              <span class="text-sm opacity-70 ml-2">({{ worker.email }})</span>
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <!-- Selected Workers Chips -->
-      @if (selectedWorkers.length > 0) {
-        <div class="custom-pill-container">
-          @for (worker of selectedWorkers; track worker.id) {
-            <div class="custom-pill">
-              <span class="pill-text">{{ worker.name }}</span>
-              <button
-                type="button"
-                class="pill-remove"
-                (click)="removeWorker(worker)"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          }
-        </div>
-      }
-      @if (
-        projectForm.get("workers")?.touched &&
-        projectForm.get("workers")?.hasError("required")
-      ) {
-        <mat-error class="mt-2 text-xs">
-          At least one worker is required
-        </mat-error>
-      }
-    </div>
 
     <!-- Location Section -->
     <div class="location-section">

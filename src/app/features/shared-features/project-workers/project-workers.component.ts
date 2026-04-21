@@ -76,10 +76,6 @@ export class ProjectWorkersComponent implements OnInit {
     return ['admin'].includes(this.currentUserRole);
   }
 
-  get canAddWorker(): boolean {
-    return ['admin'].includes(this.currentUserRole);
-  }
-
   get canVerify(): boolean {
     return ['admin', 'supervisor', 'project_manager'].includes(
       this.currentUserRole,
@@ -130,28 +126,6 @@ export class ProjectWorkersComponent implements OnInit {
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
-  }
-
-  openAddWorkerModal(): void {
-    const projectId = this.route.parent?.snapshot.paramMap.get('id');
-    if (!projectId) return;
-
-    const dialogRef = this.dialog.open(WorkerModalComponent, {
-      width: '600px',
-      data: {
-        mode: 'create',
-        projectId: projectId,
-        projectName: 'Project',
-        phaseId: this.phaseId || undefined
-      } as WorkerModalData,
-      panelClass: 'custom-dialog-container',
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.refreshData();
-      }
-    });
   }
 
   editWorker(worker: AttendanceRecord): void {

@@ -20,6 +20,7 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -47,6 +48,7 @@ export interface WorkerGroupModalData {
     MatDialogModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './worker-group-modal.component.html',
   styleUrl: './worker-group-modal.component.scss',
@@ -112,6 +114,7 @@ export class WorkerGroupModalComponent implements OnInit, OnDestroy {
         [Validators.maxLength(500)],
       ],
       trade: [this.data.group?.trade ?? '', Validators.required],
+      isActive: [this.data.group?.isActive ?? true],
     });
   }
 
@@ -159,7 +162,7 @@ export class WorkerGroupModalComponent implements OnInit, OnDestroy {
     const term = (this.memberSearchTerm || '').trim().toLowerCase();
 
     return this.allWorkers.filter((w) => {
-      if (!w) return false;
+      if (!w || w.role !== 'worker') return false;
 
       const fn = (w.firstName || '').toLowerCase();
       const ln = (w.lastName || '').toLowerCase();
@@ -230,13 +233,13 @@ export class WorkerGroupModalComponent implements OnInit, OnDestroy {
     }
 
     this.submitting = true;
-    const { name, description, trade } = this.form.value;
+    const { name, description, trade, isActive } = this.form.value;
 
     if (this.isEdit && this.data.group) {
       this.store.dispatch(
         WorkerGroupActions.updateGroup({
           id: this.data.group.id,
-          dto: { name, description, trade: trade as TradeType },
+          dto: { name, description, trade: trade as TradeType, isActive },
         }),
       );
     } else {

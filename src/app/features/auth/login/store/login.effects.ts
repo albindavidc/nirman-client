@@ -117,7 +117,7 @@ export class LoginEffects {
           this.sessionCleanup.purgeAll();
           // Don't redirect if already on auth pages
           if (!this.router.url.includes('/auth')) {
-            this.router.navigate(['/']);
+            this.router.navigate(['/auth/login']);
           }
         }),
       ),
@@ -238,18 +238,16 @@ export class LoginEffects {
     () =>
       this.actions$.pipe(
         ofType(LoginActions.logout),
+        tap(() => {
+          // Navigate IMMEDIATELY for a snappy, "dynamic" feel
+          this.sessionCleanup.purgeAll();
+          this.router.navigate(['/']);
+          this.notification.success('Logged out successfully');
+        }),
         exhaustMap(() =>
           this.loginService.logout().pipe(
-            tap(() => {
-              // Wipe every client-side storage layer
-              this.sessionCleanup.purgeAll();
-              this.notification.success('Logged out successfully');
-              this.router.navigate(['/']);
-            }),
             catchError(() => {
-              // Even if the API call fails, purge locally so the user is never stuck
-              this.sessionCleanup.purgeAll();
-              this.router.navigate(['/']);
+              // Silently catch errors as we've already cleared local state
               return of(null);
             }),
           ),

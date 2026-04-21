@@ -23,6 +23,9 @@
       @if (taskForm.get("name")?.hasError("whitespace")) {
         <mat-error>Task name cannot be only whitespace</mat-error>
       }
+      @if (taskForm.get("name")?.hasError("alreadyExists")) {
+        <mat-error>A task with this name already exists in this phase</mat-error>
+      }
     </mat-form-field>
 
     <!-- Description -->
@@ -260,6 +263,9 @@
           formControlName="estimatedHours"
           placeholder="0"
         />
+        @if (taskForm.get("estimatedHours")?.hasError("min")) {
+          <mat-error>Hours cannot be negative</mat-error>
+        }
         <mat-icon matSuffix>timer</mat-icon>
       </mat-form-field>
 
@@ -275,6 +281,9 @@
             formControlName="actualHours"
             placeholder="0"
           />
+          @if (taskForm.get("actualHours")?.hasError("min")) {
+            <mat-error>Hours cannot be negative</mat-error>
+          }
           <mat-icon matSuffix>history</mat-icon>
         </mat-form-field>
       }

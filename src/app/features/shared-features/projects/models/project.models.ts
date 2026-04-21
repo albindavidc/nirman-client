@@ -157,6 +157,7 @@ export interface ProjectFilters {
   search?: string;
   page?: number;
   limit?: number;
+  supervisorId?: string;
 }
 
 /** Response wrapper for paginated project lists */

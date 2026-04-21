@@ -1,45 +1,161 @@
-<div class="modal-container">
-  <div class="modal-header">
-    <h2>
-      <mat-icon color="primary">fact_check</mat-icon>
-      <span>Submit Phase Completion</span>
-    </h2>
-    <button mat-icon-button [mat-dialog-close]="null" class="close-btn">
+<div class="ram">
+
+  <!-- ── Header ── -->
+  <header class="ram__header">
+    <div class="ram__header-left">
+      <div class="ram__icon-box">
+        <mat-icon>fact_check</mat-icon>
+      </div>
+      <div>
+        <p class="ram__eyebrow">{{ data.phaseName }}</p>
+        <h2 class="ram__title">
+          {{ currentUserRole === 'admin' ? 'Review Phase Completion' : 'Request Phase Approval' }}
+        </h2>
+      </div>
+    </div>
+    <button class="ram__close" [mat-dialog-close]="null" aria-label="Close">
       <mat-icon>close</mat-icon>
     </button>
-  </div>
+  </header>
 
-  <div class="modal-body">
-    <div class="comment-section">
-      <span class="form-field-label">Completion Comments</span>
-      <textarea 
-        class="comment-area" 
-        rows="8" 
-        [(ngModel)]="comments" 
-        placeholder="Provide details about the work completed in this phase. What tasks were finalized? Are there any minor pending items?">
-      </textarea>
+  <!-- ── Body ── -->
+  <div class="ram__body">
+
+    <!-- Completion Notes -->
+    <div class="ram__field">
+      <label class="ram__label">
+        <mat-icon>edit_note</mat-icon>
+        Completion Notes
+        <span class="ram__required">*</span>
+      </label>
+      <div class="ram__textarea-wrap" [class.ram__textarea-wrap--focus]="textareaFocused">
+        <textarea
+          class="ram__textarea"
+          [(ngModel)]="comments"
+          (focus)="textareaFocused = true"
+          (blur)="textareaFocused = false"
+          placeholder="Summarize what was completed — tasks, site status, handovers, pending items…"
+          rows="5">
+        </textarea>
+        <span class="ram__char" [class.ram__char--warn]="comments.length > 480">
+          {{ comments.length }}/500
+        </span>
+      </div>
     </div>
 
-    <div class="evidence-zone">
-      <span class="form-field-label">Media Evidence</span>
-      <file-pond class="modal-request-pond" [options]="pondOptions"></file-pond>
-    </div>
-  </div>
+    <!-- Media Evidence -->
+    <div class="ram__field">
+      <label class="ram__label">
+        <mat-icon>attach_file</mat-icon>
+        Media Evidence
+        <span class="ram__optional">Optional</span>
+      </label>
 
-  <div class="modal-actions">
-    <button mat-button [mat-dialog-close]="null" color="warn">
-      Discard
-    </button>
-    <button mat-flat-button color="primary" 
-            [disabled]="isSubmitting || !comments" 
-            (click)="onSubmit()">
-      @if (!isSubmitting) {
-        <mat-icon>send</mat-icon>
+      <!-- Drop / Click zone -->
+      <div
+        class="ram__upload-zone"
+        [class.ram__upload-zone--drag]="isDragOver"
+        (click)="mediaInput.click()"
+        (keyup.enter)="mediaInput.click()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        tabindex="0"
+        role="button"
+        aria-label="Upload media files">
+
+        <input
+          type="file"
+          #mediaInput
+          multiple
+          accept="image/jpeg,image/png,image/webp,video/mp4"
+          class="ram__file-input"
+          (change)="onFilesSelected($event)"
+        />
+
+        <div class="ram__upload-idle">
+          <div class="ram__upload-icon">
+            <mat-icon>cloud_upload</mat-icon>
+          </div>
+          <p class="ram__upload-text">Drag &amp; drop files or <span class="ram__upload-link">Browse</span></p>
+          <p class="ram__upload-types">JPG · PNG · WEBP · MP4 &nbsp;·&nbsp; Max 5 files · 100 MB each</p>
+        </div>
+      </div>
+
+      <!-- Thumbnail grid of uploaded files -->
+      @if (mediaFiles.length > 0) {
+        <div class="ram__thumbs">
+          @for (item of mediaFiles; track item.localUrl) {
+            <div class="ram__thumb" [class.ram__thumb--uploading]="item.uploading" [class.ram__thumb--error]="item.error">
+
+              <!-- Image preview -->
+              @if (item.isImage) {
+                <img [src]="item.localUrl" [alt]="item.file.name" class="ram__thumb-img" />
+              } @else {
+                <div class="ram__thumb-video">
+                  <mat-icon>videocam</mat-icon>
+                </div>
+              }
+
+              <!-- Upload progress overlay -->
+              @if (item.uploading) {
+                <div class="ram__thumb-overlay ram__thumb-overlay--progress">
+                  <mat-spinner diameter="24" class="ram__thumb-spinner"></mat-spinner>
+                </div>
+              }
+
+              <!-- Error overlay -->
+              @if (item.error) {
+                <div class="ram__thumb-overlay ram__thumb-overlay--error">
+                  <mat-icon>error_outline</mat-icon>
+                </div>
+              }
+
+              <!-- Success badge -->
+              @if (!item.uploading && !item.error && item.viewUrl) {
+                <div class="ram__thumb-badge">
+                  <mat-icon>check_circle</mat-icon>
+                </div>
+              }
+
+              <!-- Remove button -->
+              <button class="ram__thumb-remove" (click)="removeFile(item, $event)" aria-label="Remove">
+                <mat-icon>close</mat-icon>
+              </button>
+
+            </div>
+          }
+
+          <!-- Add more (if < 5) -->
+          @if (mediaFiles.length < 5) {
+            <button class="ram__thumb-add" (click)="mediaInput.click()" aria-label="Add more files">
+              <mat-icon>add</mat-icon>
+            </button>
+          }
+        </div>
       }
+
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="ram__footer">
+    <button class="ram__btn ram__btn--ghost" [mat-dialog-close]="null">
+      Cancel
+    </button>
+    <button
+      class="ram__btn ram__btn--primary"
+      [disabled]="isSubmitting || comments.trim().length < 10 || hasUploadsInProgress"
+      (click)="onSubmit()">
       @if (isSubmitting) {
-        <mat-spinner diameter="20"></mat-spinner>
+        <mat-spinner diameter="15" class="ram__spinner"></mat-spinner>
+        Submitting…
+      } @else {
+        <mat-icon>{{ currentUserRole === 'admin' ? 'verified' : 'send' }}</mat-icon>
+        {{ currentUserRole === 'admin' ? 'Submit Review' : 'Submit Request' }}
       }
-      <span class="ml-2">Submit Request</span>
     </button>
-  </div>
+  </footer>
+
 </div>

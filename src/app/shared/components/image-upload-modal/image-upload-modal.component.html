@@ -1,79 +1,96 @@
-<app-shared-modal title="Upload Profile Photo" (closeModal)="onClose()">
-  <div
-    class="relative border-2 border-dashed border-zinc-700 rounded-lg p-8 text-center transition-colors hover:border-zinc-500 focus:outline-none focus:border-indigo-500"
-    [class.border-indigo-500]="isDragOver"
-    [class.bg-zinc-800]="isDragOver"
-    [class.border-indigo-500]="selectedFile"
-    (click)="fileInput.click()"
-    (keyup.enter)="fileInput.click()"
-    tabindex="0"
-    (dragover)="onDragOver($event)"
-    (dragleave)="onDragLeave($event)"
-    (drop)="onDrop($event)"
-  >
-    <input
-      type="file"
-      #fileInput
-      (change)="onFileSelected($event)"
-      accept="image/*"
-      class="hidden"
-    />
+<div class="ium">
 
-    @if (isUploading) {
-      <div class="flex flex-col items-center justify-center py-4">
-        <mat-spinner diameter="48"></mat-spinner>
-        <p class="mt-4 text-gray-400">Uploading...</p>
+  <!-- Header -->
+  <header class="ium__header">
+    <div class="ium__header-left">
+      <div class="ium__icon-box">
+        <mat-icon>photo_camera</mat-icon>
       </div>
-    } @else if (previewUrl) {
-      <div class="flex flex-col items-center">
-        <img
-          [src]="previewUrl"
-          alt="Preview"
-          class="max-h-64 rounded-lg shadow-lg mb-4"
-        />
-        <p class="text-sm text-indigo-400 font-medium">
-          Click or drag to change
-        </p>
+      <div>
+        <p class="ium__eyebrow">Profile</p>
+        <h2 class="ium__title">Upload Profile Photo</h2>
       </div>
-    } @else {
-      <div class="flex flex-col items-center py-4">
-        <mat-icon
-          class="text-5xl text-gray-500 mb-4 h-12 w-12 !text-[48px] !leading-[48px]"
-          >cloud_upload</mat-icon
-        >
-        <h3 class="text-lg font-medium text-white mb-2">
-          Drag & Drop your image here
-        </h3>
-        <p class="text-gray-400 mb-2">or click to browse</p>
-        <span class="text-xs text-gray-500"
-          >Supports: JPG, PNG, GIF, WEBP (Max 5MB)</span
-        >
+    </div>
+    <button class="ium__close" (click)="onClose()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <!-- Drop Zone -->
+  <div class="ium__body">
+    <div
+      class="ium__drop-zone"
+      [class.ium__drop-zone--drag]="isDragOver"
+      [class.ium__drop-zone--has-file]="!!previewUrl"
+      (click)="fileInput.click()"
+      (keyup.enter)="fileInput.click()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      tabindex="0"
+      role="button"
+      aria-label="Upload area">
+
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="ium__file-input"
+      />
+
+      @if (isUploading) {
+        <div class="ium__state ium__state--loading">
+          <mat-spinner diameter="40" class="ium__spinner"></mat-spinner>
+          <p>Processing…</p>
+        </div>
+      } @else if (previewUrl) {
+        <div class="ium__state ium__state--preview">
+          <div class="ium__preview-wrap">
+            <img [src]="previewUrl" alt="Preview" class="ium__preview-img" />
+            <div class="ium__preview-overlay">
+              <mat-icon>edit</mat-icon>
+              <span>Change photo</span>
+            </div>
+          </div>
+          <p class="ium__preview-hint">Click or drag to replace</p>
+        </div>
+      } @else {
+        <div class="ium__state ium__state--idle">
+          <div class="ium__upload-icon-wrap">
+            <mat-icon>cloud_upload</mat-icon>
+          </div>
+          <h3>Drag &amp; drop your photo</h3>
+          <p>or click to browse</p>
+          <span class="ium__types">JPG · PNG · GIF · WEBP &nbsp;·&nbsp; Max 5 MB</span>
+        </div>
+      }
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage) {
+      <div class="ium__error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
       </div>
     }
   </div>
 
-  @if (errorMessage) {
-    <div
-      class="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-500"
-    >
-      <mat-icon class="text-base h-4 w-4">error</mat-icon>
-      <span class="text-sm">{{ errorMessage }}</span>
-    </div>
-  }
-
-  <div actions>
-    <button mat-stroked-button (click)="onClose()">Cancel</button>
+  <!-- Footer -->
+  <footer class="ium__footer">
+    <button class="ium__btn ium__btn--ghost" (click)="onClose()">Cancel</button>
     <button
-      mat-flat-button
-      color="primary"
+      class="ium__btn ium__btn--primary"
       [disabled]="!selectedFile || isUploading"
-      (click)="onUpload()"
-    >
+      (click)="onUpload()">
       @if (isUploading) {
-        <mat-spinner diameter="20"></mat-spinner>
+        <mat-spinner diameter="15" class="ium__spinner"></mat-spinner>
+        Uploading…
       } @else {
-        Upload
+        <mat-icon>upload</mat-icon>
+        Use This Photo
       }
     </button>
-  </div>
-</app-shared-modal>
+  </footer>
+
+</div>

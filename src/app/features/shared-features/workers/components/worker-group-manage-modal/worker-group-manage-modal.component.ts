@@ -138,7 +138,9 @@ export class WorkerGroupManageModalComponent implements OnInit, OnDestroy {
     if (!allWorkers) return [];
 
     // 1. First, strip out anybody already in the group
-    const filtered = allWorkers.filter((w) => !this.isMember(w.id));
+    const filtered = allWorkers.filter(
+      (w) => !this.isMember(w.id) && w.role === 'worker',
+    );
 
     // 2. Then apply the search term if any
     const term = this.searchTerm.trim().toLowerCase();

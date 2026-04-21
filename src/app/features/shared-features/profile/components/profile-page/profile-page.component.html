@@ -10,6 +10,12 @@
         <p class="subtitle">Manage your account information</p>
       </div>
     </div>
+    <div class="header-actions">
+      <button mat-stroked-button color="warn" (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
   </div>
 
   @if (isLoading) {

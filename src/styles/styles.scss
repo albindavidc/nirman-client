@@ -2,6 +2,7 @@
 // For more information: https://material.angular.dev/guide/theming
 @use "@angular/material" as mat;
 @use "material-theme";
+@use "design-system";
 
 // Use dark theme for Material components
 html {

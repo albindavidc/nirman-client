@@ -9,14 +9,35 @@
         </div>
         <p class="page-subtitle">Manage all construction projects</p>
       </div>
-      <button
-        mat-flat-button
-        color="primary"
-        class="create-btn"
-        (click)="openCreateProjectModal()"
-      >
-        Create Project
-      </button>
+
+      <div class="header-actions">
+        <!-- Supervisor Filter -->
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>Filter by Supervisor</mat-label>
+          <mat-select
+            [(value)]="selectedSupervisorId"
+            (selectionChange)="onSupervisorFilterChange($event.value)"
+          >
+            <mat-option [value]="null">All Supervisors</mat-option>
+            @for (supervisor of supervisors; track supervisor.id) {
+              <mat-option [value]="supervisor.id">
+                {{ supervisor.fullName }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (canCreateProject) {
+          <button
+            mat-flat-button
+            color="primary"
+            class="create-btn"
+            (click)="openCreateProjectModal()"
+          >
+            Create Project
+          </button>
+        }
+      </div>
     </div>
   </header>
 
@@ -64,27 +85,33 @@
             [ngClass]="getStatusClass(project.status)"
             >{{ project.status | titlecase }}</span
           >
-          <button
-            mat-icon-button
-            [matMenuTriggerFor]="menu"
-            (click)="$event.stopPropagation()"
-            class="more-btn"
-          >
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
+          @if (isAdmin) {
             <button
-              mat-menu-item
-              (click)="openEditProjectModal(project, $event)"
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              (click)="$event.stopPropagation()"
+              class="more-btn"
             >
-              <mat-icon>edit</mat-icon>
-              <span>Edit</span>
+              <mat-icon>more_vert</mat-icon>
             </button>
-            <button mat-menu-item (click)="onDeleteProject(project, $event)">
-              <mat-icon>delete</mat-icon>
-              <span>Delete</span>
-            </button>
-          </mat-menu>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                (click)="openEditProjectModal(project, $event)"
+              >
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button mat-menu-item (click)="openPhases(project, $event)">
+                <mat-icon>timeline</mat-icon>
+                <span>Manage Phases</span>
+              </button>
+              <button mat-menu-item (click)="onDeleteProject(project, $event)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          }
         </div>
 
         <div class="card-body">

@@ -37,10 +37,6 @@ import { TradeType, WorkerGroup } from '../../models/worker-group.model';
 import * as WorkerGroupActions from '../../store/worker-group.actions';
 import * as WorkerGroupSelectors from '../../store/worker-group.selectors';
 import {
-  DeleteGroupDialogComponent,
-  DeleteGroupDialogData,
-} from '../delete-group-dialog/delete-group-dialog.component';
-import {
   WorkerGroupManageModalComponent,
   WorkerGroupManageModalData,
 } from '../worker-group-manage-modal/worker-group-manage-modal.component';
@@ -201,19 +197,14 @@ export class WorkerGroupListComponent implements OnInit, OnDestroy {
       });
   }
 
-  deleteGroup(group: WorkerGroup): void {
-    const dialogRef = this.dialog.open(DeleteGroupDialogComponent, {
-      panelClass: 'zero-padding-dialog',
-      width: '420px',
-      maxWidth: '95vw',
-      data: { groupName: group.name } as DeleteGroupDialogData,
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        this.store.dispatch(WorkerGroupActions.deleteGroup({ id: group.id }));
-      }
-    });
+  toggleGroupStatus(group: WorkerGroup): void {
+    const newStatus = !group.isActive;
+    this.store.dispatch(
+      WorkerGroupActions.updateGroup({
+        id: group.id,
+        dto: { isActive: newStatus },
+      }),
+    );
   }
 
   toggleShowAllMembers(groupId: string): void {
@@ -230,7 +221,7 @@ export class WorkerGroupListComponent implements OnInit, OnDestroy {
 
   getVisibleMembers(group: WorkerGroup) {
     const active = this.getActiveMembers(group);
-    return this.showAllMembers[group.id] ? active : active.slice(0, 4);
+    return active.slice(0, 4);
   }
 
   getMemberInitials(name: string): string {

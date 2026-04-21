@@ -1,10 +1,8 @@
 import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
-
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedModalComponent } from '../shared-modal/shared-modal.component';
 
 @Component({
   selector: 'app-image-upload-modal',
@@ -14,7 +12,6 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    SharedModalComponent,
   ],
   templateUrl: './image-upload-modal.component.html',
   styleUrl: './image-upload-modal.component.scss',
@@ -23,7 +20,7 @@ export class ImageUploadModalComponent {
   private dialogRef =
     inject<MatDialogRef<ImageUploadModalComponent>>(MatDialogRef);
 
-  @Input() maxSizeBytes = 5 * 1024 * 1024; // 5MB default
+  @Input() maxSizeBytes = 5 * 1024 * 1024; // 5 MB default
   @Output() fileUploaded = new EventEmitter<File>();
 
   isDragOver = false;
@@ -65,23 +62,18 @@ export class ImageUploadModalComponent {
   processFile(file: File): void {
     this.errorMessage = null;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.errorMessage = 'Please select an image file';
+      this.errorMessage = 'Please select an image file (JPG, PNG, GIF, WEBP)';
       return;
     }
 
-    // Validate file size
     if (file.size > this.maxSizeBytes) {
-      this.errorMessage = `File size must be less than ${
-        this.maxSizeBytes / 1024 / 1024
-      }MB`;
+      this.errorMessage = `File size must be less than ${this.maxSizeBytes / 1024 / 1024} MB`;
       return;
     }
 
     this.selectedFile = file;
 
-    // Create preview
     const reader = new FileReader();
     reader.onload = () => {
       this.previewUrl = reader.result as string;

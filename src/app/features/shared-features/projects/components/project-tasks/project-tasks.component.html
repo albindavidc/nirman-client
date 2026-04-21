@@ -2,15 +2,17 @@
   <!-- Tasks Header - Title Left, Button Right -->
   <div class="tasks-header">
     <h3 class="tasks-title">Tasks</h3>
-    <button
-      mat-flat-button
-      color="primary"
-      class="create-task-btn"
-      (click)="openCreateTaskModal()"
-    >
-      <mat-icon>add</mat-icon>
-      <span>Create Task</span>
-    </button>
+    @if (canAddTask) {
+      <button
+        mat-flat-button
+        color="primary"
+        class="create-task-btn"
+        (click)="openCreateTaskModal()"
+      >
+        <mat-icon>add</mat-icon>
+        <span>Create Task</span>
+      </button>
+    }
   </div>
 
   <table mat-table [dataSource]="tasks" class="w-full bg-transparent">
@@ -166,14 +168,21 @@
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openEditTaskModal(task)">
-            <mat-icon>edit</mat-icon>
-            <span>Edit</span>
-          </button>
-          <button mat-menu-item class="text-red-500" (click)="deleteTask(task)">
-            <mat-icon class="text-red-500">delete</mat-icon>
-            <span>Delete</span>
-          </button>
+          @if (canAddTask) {
+            <button mat-menu-item (click)="openEditTaskModal(task)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item class="text-red-500" (click)="deleteTask(task)">
+              <mat-icon class="text-red-500">delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          } @else {
+             <button mat-menu-item disabled>
+              <mat-icon>lock</mat-icon>
+              <span>No Actions Available</span>
+            </button>
+          }
         </mat-menu>
       </td>
     </ng-container>

@@ -23,17 +23,21 @@ import { WorkerGroupService } from '../../../../workers/services/worker-group.se
 import { WorkerGroup } from '../../../../workers/models/worker-group.model';
 import { SharedModalComponent } from '../../../../../../shared/components/shared-modal/shared-modal.component';
 import { CustomValidators } from '../../../../../../shared/validators/custom-validators';
+import { ProjectPhaseService } from '../../../services/project-phase.service';
+import { NotificationService } from '../../../../../../core/services/notification.service';
 
 /** Discriminated union data contract for the unified phase modal. */
 export type PhaseModalData =
   | {
       mode: 'create';
+      projectId: string;
       nextSequence: number;
       projectStartDate?: string | Date;
       projectEndDate?: string | Date;
     }
   | {
       mode: 'edit';
+      projectId: string;
       phase: ProjectPhase;
       projectStartDate?: string | Date;
       projectEndDate?: string | Date;
@@ -71,6 +75,8 @@ export class PhaseModalComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<PhaseModalComponent>);
   public readonly data = inject<PhaseModalData>(MAT_DIALOG_DATA);
   private readonly workerGroupService = inject(WorkerGroupService);
+  private readonly phaseService = inject(ProjectPhaseService);
+  private readonly notification = inject(NotificationService);
 
   phaseForm!: FormGroup;
   isSubmitting = false;
@@ -203,15 +209,44 @@ export class PhaseModalComponent implements OnInit {
     };
 
     if (this.isEditMode) {
+      const phaseId = (this.data as { phase: ProjectPhase }).phase.id;
       payload['actualStartDate'] = formValue.actualStartDate
         ? new Date(formValue.actualStartDate).toISOString()
         : null;
       payload['actualEndDate'] = formValue.actualEndDate
         ? new Date(formValue.actualEndDate).toISOString()
         : null;
-    }
 
-    this.dialogRef.close(payload);
+      this.phaseService.updatePhase(this.data.projectId, phaseId, payload).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error('Failed to update phase', err);
+          this.notification.error(err.error?.message || 'Failed to update phase');
+          if (err.status === 409 || err.error?.message?.toLowerCase().includes('already exists')) {
+            this.phaseForm.get('name')?.setErrors({ alreadyExists: true });
+          }
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      this.phaseService.createPhase(this.data.projectId, payload).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error('Failed to create phase', err);
+          this.notification.error(err.error?.message || 'Failed to create phase');
+          if (err.status === 409 || err.error?.message?.toLowerCase().includes('already exists')) {
+            this.phaseForm.get('name')?.setErrors({ alreadyExists: true });
+          }
+          this.isSubmitting = false;
+        },
+      });
+    }
   }
 
   onCancel(): void {

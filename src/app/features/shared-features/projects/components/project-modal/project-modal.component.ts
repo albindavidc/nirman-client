@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -21,15 +21,18 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleMapsModule, GoogleMap, MapMarker } from '@angular/google-maps';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map, of, filter } from 'rxjs';
 import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
   take,
+  takeUntil,
 } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import * as AuthSelectors from '../../../../auth/login/store/login.selectors';
 
 import {
@@ -97,18 +100,21 @@ interface MapAutocompleteResponse {
   templateUrl: './project-modal.component.html',
   styleUrls: ['./project-modal.component.scss'],
 })
-export class ProjectModalComponent implements OnInit {
+export class ProjectModalComponent implements OnInit, OnDestroy {
   @ViewChild(GoogleMap) googleMap!: GoogleMap;
   @ViewChild(MapMarker) mapMarker!: MapMarker;
 
   private readonly fb = inject(FormBuilder);
-  private readonly store = inject(Store);
+  private readonly store = inject(Store<any>);
+  private readonly actions$ = inject(Actions);
   private readonly workerService = inject(WorkerService);
   private readonly projectService = inject(ProjectService);
   private readonly dialogRef = inject(MatDialogRef<ProjectModalComponent>);
   private readonly data = inject<Project | undefined>(MAT_DIALOG_DATA, {
     optional: true,
   });
+
+  private readonly destroy$ = new Subject<void>();
 
   isCreating$ = this.store.select(ProjectSelectors.selectIsCreating);
   isUpdating$ = this.store.select(ProjectSelectors.selectIsUpdating);
@@ -221,15 +227,12 @@ export class ProjectModalComponent implements OnInit {
   };
 
   // Observables
-  filteredManagers$!: Observable<SearchableWorker[]>;
-  filteredWorkers$!: Observable<SearchableWorker[]>;
+  filteredSupervisors$!: Observable<SearchableWorker[]>;
   filteredLocations$!: Observable<NormalizedLocation[]>;
-  selectedWorkers: SearchableWorker[] = [];
-  selectedManager: SearchableWorker | null = null;
+  selectedSupervisor: SearchableWorker | null = null;
 
   // Form controls
-  managerSearchControl = new FormControl('');
-  workerSearchControl = new FormControl('');
+  supervisorSearchControl = new FormControl('');
   mapSearchControl = new FormControl('');
 
   // Main form
@@ -255,17 +258,11 @@ export class ProjectModalComponent implements OnInit {
       ],
       startDate: [
         this.data?.startDate ? new Date(this.data.startDate) : new Date(),
-        [
-          Validators.required,
-          ...(this.isEditing ? [] : [CustomValidators.futureOrTodayDate()]),
-        ],
+        [Validators.required],
       ],
       endDate: [
         this.data?.dueDate ? new Date(this.data.dueDate) : new Date(),
-        [
-          Validators.required,
-          ...(this.isEditing ? [] : [CustomValidators.futureOrTodayDate()]),
-        ],
+        [Validators.required],
       ],
       budget: [this.data?.budget || null, [Validators.min(0)]],
       progress: [
@@ -274,11 +271,6 @@ export class ProjectModalComponent implements OnInit {
       ],
       latitude: [this.data?.latitude || null],
       longitude: [this.data?.longitude || null],
-      // Renaming 'members' form control to 'workers'
-      workers: [
-        (this.data?.workers || []) as unknown as SearchableWorker[],
-        [Validators.required, Validators.minLength(1)],
-      ],
     },
     { validators: CustomValidators.dateRange('startDate', 'endDate') },
   );
@@ -292,7 +284,7 @@ export class ProjectModalComponent implements OnInit {
     this.store
       .select(AuthSelectors.selectUser)
       .pipe(take(1))
-      .subscribe((user) => {
+      .subscribe((user: any) => {
         this.currentUserId = user?.id || null;
       });
 
@@ -309,50 +301,29 @@ export class ProjectModalComponent implements OnInit {
         this.markerPosition = { ...this.center };
       }
 
-      // Pre-fill selected workers by fetching from backend
-      if (this.data.id) {
-        this.projectService.getProjectWorkers(this.data.id).subscribe((workers) => {
-          this.selectedWorkers = workers
-            .filter((w) => w.role !== 'Admin')
-            .map((w) => ({
-              id: w.user?.id || w.userId,
-              name: w.user?.fullName || w.user?.firstName || 'Unknown',
-              email: w.user?.email || '',
-            }));
-          this.projectForm.patchValue({ workers: this.selectedWorkers });
-        });
-      }
-
-      // Pre-fill manager name if exists by fetching professionals
+      // Pre-fill supervisor name if exists by fetching professionals
       if (this.data.managerIds && this.data.managerIds.length > 0) {
-        const managerId = this.data.managerIds[0];
+        const supervisorId = this.data.managerIds[0];
         this.projectService.getProfessionals().subscribe((pros) => {
-          const manager = pros.find(p => p.id === managerId);
-          if (manager) {
-            this.selectedManager = {
-              id: manager.id,
-              name: manager.fullName || manager.firstName,
-              email: manager.email || ''
+          const supervisor = pros.find(p => p.id === supervisorId);
+          if (supervisor) {
+            this.selectedSupervisor = {
+              id: supervisor.id,
+              name: supervisor.fullName || supervisor.firstName,
+              email: supervisor.email || ''
             };
-            this.managerSearchControl.setValue('');
-            this.projectForm.patchValue({ managerIds: [manager.id] });
+            this.supervisorSearchControl.setValue('');
+            this.projectForm.patchValue({ managerIds: [supervisor.id] });
           }
         });
       }
     }
 
-    // Setup manager search
-    this.filteredManagers$ = this.managerSearchControl.valueChanges.pipe(
+    // Setup supervisor search
+    this.filteredSupervisors$ = this.supervisorSearchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((term) => this.filterManagers(term || '')),
-    );
-
-    // Setup worker search
-    this.filteredWorkers$ = this.workerSearchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((term) => this.filterWorkers(term || '')),
+      switchMap((term) => this.filterSupervisors(term || '')),
     );
 
     // Setup location search
@@ -361,6 +332,36 @@ export class ProjectModalComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((term) => this.filterLocations(term || '')),
     );
+
+    // Listen for success actions to close dialog
+    this.actions$.pipe(
+      ofType(
+        ProjectActions.createProjectSuccess,
+        ProjectActions.updateProjectSuccess
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.dialogRef.close(true);
+    });
+
+    // Listen for failure actions to show validation errors
+    this.actions$.pipe(
+      ofType(
+        ProjectActions.createProjectFailure,
+        ProjectActions.updateProjectFailure
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe(({ error }) => {
+      if (error && error.toLowerCase().includes('already exists')) {
+        this.projectForm.get('name')?.setErrors({ alreadyExists: true });
+        this.projectForm.get('name')?.markAsTouched();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initAutocompleteService(): void {
@@ -407,7 +408,7 @@ export class ProjectModalComponent implements OnInit {
                          
           let secondaryText = prediction.structuredFormat?.secondaryText?.text || 
                              prediction.structured_formatting?.secondary_text;
-
+ 
           // If structured formatting is missing, try to split description
           if (!mainText && description) {
             const firstComma = description.indexOf(',');
@@ -536,8 +537,8 @@ export class ProjectModalComponent implements OnInit {
     }
   }
 
-  private filterManagers(term: string): Observable<SearchableWorker[]> {
-    return this.workerService.getWorkers(1, 10, undefined, term).pipe(
+  private filterSupervisors(term: string): Observable<SearchableWorker[]> {
+    return this.workerService.getWorkers(1, 10, 'Supervisor', term).pipe(
       map((response) =>
         response.data
           .filter((m) => m.id !== this.currentUserId)
@@ -550,51 +551,16 @@ export class ProjectModalComponent implements OnInit {
     );
   }
 
-  private filterWorkers(term: string): Observable<SearchableWorker[]> {
-    if (!term) return of([]);
-
-    return this.workerService.getWorkers(1, 10, undefined, term).pipe(
-      map((response) =>
-        response.data
-          .filter(
-            (m) =>
-              !this.selectedWorkers.some((sm) => sm.id === m.id) &&
-              m.id !== this.currentUserId,
-          )
-          .map((m) => ({
-            id: m.id,
-            name: `${m.firstName} ${m.lastName}`,
-            email: m.email,
-          })),
-      ),
-    );
+  selectSupervisor(supervisor: SearchableWorker): void {
+    this.selectedSupervisor = supervisor;
+    this.projectForm.patchValue({ managerIds: [supervisor.id] });
+    this.supervisorSearchControl.setValue('');
   }
 
-  selectManager(manager: SearchableWorker): void {
-    this.selectedManager = manager;
-    this.projectForm.patchValue({ managerIds: [manager.id] });
-    this.managerSearchControl.setValue('');
-  }
-
-  removeManager(): void {
-    this.selectedManager = null;
+  removeSupervisor(): void {
+    this.selectedSupervisor = null;
     this.projectForm.patchValue({ managerIds: [] });
-    this.managerSearchControl.setValue('');
-  }
-
-  addWorker(worker: SearchableWorker): void {
-    if (!this.selectedWorkers.some((m) => m.id === worker.id)) {
-      this.selectedWorkers.push(worker);
-      this.projectForm.patchValue({ workers: this.selectedWorkers });
-    }
-    this.workerSearchControl.setValue('');
-  }
-
-  removeWorker(worker: SearchableWorker): void {
-    this.selectedWorkers = this.selectedWorkers.filter(
-      (m) => m.id !== worker.id,
-    );
-    this.projectForm.patchValue({ workers: this.selectedWorkers });
+    this.supervisorSearchControl.setValue('');
   }
 
   async searchLocation(): Promise<void> {
@@ -623,12 +589,6 @@ export class ProjectModalComponent implements OnInit {
 
     const formValue = this.projectForm.value;
 
-    const workers: ProjectWorker[] = this.selectedWorkers.map((m) => ({
-      userId: m.id,
-      role: 'Worker' as const,
-      joinedAt: new Date().toISOString(),
-    }));
-
     if (this.isEditing && this.data) {
       const updateData: UpdateProjectDto = {
         name: formValue.name || undefined,
@@ -645,7 +605,6 @@ export class ProjectModalComponent implements OnInit {
         progress: formValue.progress != null ? Number(formValue.progress) : undefined,
         latitude: formValue.latitude !== null ? formValue.latitude : undefined,
         longitude: formValue.longitude !== null ? formValue.longitude : undefined,
-        workers: workers,
       };
 
       this.store.dispatch(
@@ -670,12 +629,11 @@ export class ProjectModalComponent implements OnInit {
         progress: formValue.progress != null ? Number(formValue.progress) : 0,
         latitude: formValue.latitude || undefined,
         longitude: formValue.longitude || undefined,
-        workers,
       };
       this.store.dispatch(ProjectActions.createProject({ data: createData }));
     }
-    this.dialogRef.close(true);
   }
+
 
   onCancel(): void {
     this.dialogRef.close();

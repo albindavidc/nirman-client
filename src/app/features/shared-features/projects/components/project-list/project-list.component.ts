@@ -1,13 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule, DatePipe } from '@angular/common';
-import { map } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { map, BehaviorSubject, combineLatest } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Store } from '@ngrx/store';
 import {
   trigger,
@@ -18,11 +20,15 @@ import {
   query,
 } from '@angular/animations';
 
-import { Project } from '../../models/project.models';
+import { Project, ProjectFilters } from '../../models/project.models';
 import { ProjectModalComponent } from '../project-modal/project-modal.component';
 import * as ProjectActions from '../../store/project.actions';
 import * as ProjectSelectors from '../../store/project.selectors';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ProjectService } from '../../services/project.service';
+import * as AuthSelectors from '../../../../auth/login/store/login.selectors';
+import { UserProfile, Role } from '../../../../../shared/models/profile.model';
+import { Professional } from '../../models/project.models';
 
 @Component({
   selector: 'app-project-list',
@@ -35,7 +41,8 @@ import { ConfirmDialogComponent } from '../../../../../shared/components/confirm
     MatProgressBarModule,
     MatTooltipModule,
     MatDialogModule,
-    DatePipe,
+    MatSelectModule,
+    MatFormFieldModule,
   ],
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss',
@@ -69,15 +76,41 @@ import { ConfirmDialogComponent } from '../../../../../shared/components/confirm
   ],
 })
 export class ProjectListComponent implements OnInit {
-  private readonly store = inject(Store);
+  private readonly store = inject(Store<any>);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly projectService = inject(ProjectService);
+
+  private readonly selectedSupervisorIdSubject = new BehaviorSubject<string | null>(null);
 
   // Store selectors
-  projects$ = this.store.select(ProjectSelectors.selectProjects);
+  projects$ = combineLatest([
+    this.store.select(ProjectSelectors.selectProjects),
+    this.selectedSupervisorIdSubject.asObservable(),
+  ]).pipe(
+    map(([projects, supervisorId]) => {
+      if (!supervisorId) return projects;
+      return projects.filter((p) => p.managerIds?.includes(supervisorId));
+    })
+  );
+
   stats$ = this.store.select(ProjectSelectors.selectStats);
   isLoading$ = this.store.select(ProjectSelectors.selectIsLoading);
+  currentUser$ = this.store.select(AuthSelectors.selectUser);
+
+  // Filter state
+  supervisors: Professional[] = [];
+  get selectedSupervisorId(): string | null {
+    return this.selectedSupervisorIdSubject.value;
+  }
+  set selectedSupervisorId(value: string | null) {
+    this.selectedSupervisorIdSubject.next(value);
+  }
+  
+  canCreateProject = false;
+  isAdmin = false;
+  currentUser: UserProfile | null = null;
 
   // Dashboard Stats Observable
   dashboardStats$ = this.stats$.pipe(
@@ -124,9 +157,53 @@ export class ProjectListComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    // Load projects from API
-    this.store.dispatch(ProjectActions.loadProjects({}));
-    this.store.dispatch(ProjectActions.loadProjectStats());
+    this.currentUser$.subscribe((user) => {
+      if (user) {
+        this.currentUser = user;
+        this.isAdmin = user.role === Role.ADMIN;
+        this.canCreateProject = this.isAdmin;
+        
+        // If supervisor, set default filter to self
+        if (user.role === Role.SUPERVISOR) {
+          this.selectedSupervisorId = user.id;
+        }
+        
+        this.loadProjects();
+        this.store.dispatch(ProjectActions.loadProjectStats());
+        this.fetchSupervisors();
+      }
+    });
+  }
+
+  loadProjects(): void {
+    const filters: ProjectFilters = {
+      page: 1,
+      limit: 10,
+    };
+    
+    if (this.selectedSupervisorId) {
+      filters.supervisorId = this.selectedSupervisorId;
+    }
+    
+    this.store.dispatch(ProjectActions.loadProjects({ filters }));
+  }
+
+  fetchSupervisors(): void {
+    this.projectService
+      .getProfessionals(undefined, undefined, 'supervisor')
+      .pipe(
+        map((professionals) =>
+          professionals.sort((a, b) => a.fullName.localeCompare(b.fullName))
+        )
+      )
+      .subscribe((sortedSupervisors) => {
+        this.supervisors = sortedSupervisors;
+      });
+  }
+
+  onSupervisorFilterChange(supervisorId: string | null): void {
+    this.selectedSupervisorId = supervisorId;
+    this.loadProjects();
   }
 
   getStatusClass(status: string): string {
@@ -160,6 +237,11 @@ export class ProjectListComponent implements OnInit {
 
   openProjectDetails(project: Project): void {
     this.router.navigate([project.id], { relativeTo: this.route });
+  }
+
+  openPhases(project: Project, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate([project.id, 'phases'], { relativeTo: this.route });
   }
 
   onDeleteProject(project: Project, event: Event): void {

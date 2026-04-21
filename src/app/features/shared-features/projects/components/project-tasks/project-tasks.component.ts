@@ -38,6 +38,12 @@ export class ProjectTasksComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   tasks: Task[] = [];
+  currentUserRole = '';
+
+  get canAddTask(): boolean {
+    return this.currentUserRole === 'admin';
+  }
+
   displayedColumns: string[] = [
     'name',
     'status',
@@ -49,6 +55,12 @@ export class ProjectTasksComponent implements OnInit {
   ];
 
   ngOnInit() {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      this.currentUserRole = user.role?.toLowerCase() || '';
+    }
+
     this.route.queryParams.subscribe((params: Params) => {
       if (params['phaseId']) {
         this.phaseId = params['phaseId'];

@@ -129,6 +129,7 @@ export class ProjectPhaseService {
       actualStartDate?: string;
       actualEndDate?: string;
       sequence?: number;
+      workerGroupIds?: string[];
     },
   ): Observable<ProjectPhase> {
     return this.http.patch<ProjectPhase>(

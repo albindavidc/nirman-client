@@ -6,22 +6,21 @@ import {
   MAT_DIALOG_DATA,
   MatDialogModule,
 } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ApiError } from '../../../../../../shared/models/api.models';
-
-// FilePond Imports
-import { FilePondModule, registerPlugin } from 'ngx-filepond';
-import { FilePondOptions } from 'filepond';
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 
 import { UploadService } from '../../../../../../core/services/upload.service';
 
-registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
+// ── Media item model ──────────────────────────────────────────
+export interface MediaItem {
+  file: File;
+  localUrl: string;   // immediate FileReader data-URL for preview
+  viewUrl: string | null; // S3 view URL after successful upload
+  isImage: boolean;
+  uploading: boolean;
+  error: boolean;
+}
 
 @Component({
   selector: 'app-request-approval-modal',
@@ -31,12 +30,9 @@ registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
     ReactiveFormsModule,
     FormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    FilePondModule,
   ],
   templateUrl: './request-approval-modal.component.html',
   styleUrls: ['./request-approval-modal.component.scss'],
@@ -46,50 +42,130 @@ export class RequestApprovalModalComponent {
   public data = inject<{ phaseName: string }>(MAT_DIALOG_DATA);
   private uploadService = inject(UploadService);
 
-  uploadedMedia: { type: string; url: string }[] = [];
   comments = '';
   isSubmitting = false;
+  textareaFocused = false;
+  currentUserRole = '';
+  isDragOver = false;
 
-  pondOptions: FilePondOptions = {
-    allowMultiple: true,
-    maxFiles: 5,
-    acceptedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'],
-    labelIdle: `
-      <div class="upload-container">
-        <i class="material-icons upload-icon">cloud_upload</i>
-        <p class="upload-text">Drag files to upload</p>
-        <p class="upload-divider">or</p>
-        <span class="upload-browse">Browse File</span>
-        <p class="upload-info">Max file size: 100MB</p>
-        <p class="upload-types">Supported types: JPG, PNG, GIF, PDF, MP4</p>
-      </div>
-    `,
-    server: {
-      process: (fieldName, file, metadata, load, error, _progress, abort) => {
-        const sub = this.uploadService.uploadFile(file as File, 'document').subscribe({
-          next: ({ viewUrl }) => {
-            const mediaType = (file as File).type.startsWith('video') ? 'video' : 'image';
-            this.uploadedMedia.push({ type: mediaType, url: viewUrl });
-            load(viewUrl);
-          },
-          error: (err: ApiError) => error(err.message || 'Upload failed'),
-        });
-        return { abort: () => { sub.unsubscribe(); abort(); } };
-      },
-      revert: (uniqueFileId: string, load: () => void) => {
-        this.uploadedMedia = this.uploadedMedia.filter(m => m.url !== uniqueFileId);
-        load();
-      }
+  /** All selected media files with their upload state */
+  mediaFiles: MediaItem[] = [];
+
+  constructor() {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      this.currentUserRole = user.role?.toLowerCase() || '';
     }
-  };
+  }
 
+  // ── Derived getters ──────────────────────────────────────────
+
+  get hasUploadsInProgress(): boolean {
+    return this.mediaFiles.some(m => m.uploading);
+  }
+
+  get uploadedMedia(): { type: string; url: string }[] {
+    return this.mediaFiles
+      .filter(m => m.viewUrl && !m.error)
+      .map(m => ({ type: m.isImage ? 'image' : 'video', url: m.viewUrl! }));
+  }
+
+  // ── Drag & drop handlers ─────────────────────────────────────
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    this.addFiles(files);
+  }
+
+  // ── File selection ───────────────────────────────────────────
+
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    this.addFiles(files);
+    // Reset so the same file can be re-selected if removed
+    input.value = '';
+  }
+
+  private addFiles(files: File[]): void {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
+    const remaining = 5 - this.mediaFiles.length;
+
+    files
+      .filter(f => allowed.includes(f.type))
+      .slice(0, remaining)
+      .forEach(file => this.enqueueFile(file));
+  }
+
+  private enqueueFile(file: File): void {
+    const isImage = file.type.startsWith('image/');
+
+    const item: MediaItem = {
+      file,
+      localUrl: '',
+      viewUrl: null,
+      isImage,
+      uploading: true,
+      error: false,
+    };
+
+    this.mediaFiles.push(item);
+
+    // Show preview immediately via FileReader
+    if (isImage) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        item.localUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      item.localUrl = 'video'; // placeholder
+    }
+
+    // Upload to S3
+    this.uploadService.uploadFile(file, 'document').subscribe({
+      next: ({ viewUrl }) => {
+        item.viewUrl = viewUrl;
+        item.uploading = false;
+      },
+      error: () => {
+        item.uploading = false;
+        item.error = true;
+      },
+    });
+  }
+
+  // ── Remove file ──────────────────────────────────────────────
+
+  removeFile(item: MediaItem, event: Event): void {
+    event.stopPropagation();
+    this.mediaFiles = this.mediaFiles.filter(m => m !== item);
+  }
+
+  // ── Submit ───────────────────────────────────────────────────
 
   onSubmit(): void {
-    if (this.comments.trim()) {
+    if (this.comments.trim().length >= 10 && !this.hasUploadsInProgress) {
       this.isSubmitting = true;
       this.dialogRef.close({
         comments: this.comments,
-        media: this.uploadedMedia
+        media: this.uploadedMedia,
       });
     }
   }
@@ -98,4 +174,3 @@ export class RequestApprovalModalComponent {
     this.dialogRef.close();
   }
 }
-

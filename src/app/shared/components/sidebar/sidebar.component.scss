@@ -54,11 +54,11 @@
   padding: 0 8px;
 
   /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 .nav-group {

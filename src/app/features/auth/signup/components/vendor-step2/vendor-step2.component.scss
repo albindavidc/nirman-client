@@ -64,7 +64,8 @@
     justify-content: center;
     position: relative;
     z-index: 1;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
@@ -93,7 +94,7 @@
 
 .form-card {
   width: 100%;
-  max-width: 600px;
+  max-width: 680px;
   background: var(--md-sys-color-surface-container-high);
   border-radius: 28px;
   padding: 32px;
@@ -159,8 +160,8 @@
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: 20px;
+  margin-bottom: 12px;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
@@ -170,8 +171,8 @@
 .form-row-three {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: 20px;
+  margin-bottom: 12px;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
@@ -184,7 +185,7 @@
 
 .form-field {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 
   &.full-width {
     grid-column: 1 / -1;
@@ -253,21 +254,11 @@
       background: var(--md-sys-color-surface-container);
       border-radius: 12px !important;
 
-      .mdc-notched-outline__leading {
-        border-radius: 12px 0 0 12px !important;
-        border-color: var(--md-sys-color-outline-variant) !important;
-        border-width: 1px;
-      }
-
-      .mdc-notched-outline__notch {
-        border-color: var(--md-sys-color-outline-variant) !important;
-        border-width: 1px;
-      }
-
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-radius: 0 12px 12px 0 !important;
         border-color: var(--md-sys-color-outline-variant) !important;
-        border-width: 1px;
+        border-width: 1.5px !important;
       }
     }
 

@@ -18,9 +18,9 @@ import { ChatSocketMessage } from '../../models/communication.models';
 })
 export class ChatComponent implements OnInit, OnDestroy, OnChanges {
   @Input() chat: { threadId: string; name: string; otherParticipantRole?: string } | null = null;
-  @Output() onVideoCall = new EventEmitter<void>();
-  @Output() onVoiceCall = new EventEmitter<void>();
-  @Output() onBack = new EventEmitter<void>();
+  @Output() videoCall = new EventEmitter<void>();
+  @Output() voiceCall = new EventEmitter<void>();
+  @Output() back = new EventEmitter<void>();
 
   newMessage = '';
   messages: { id: string; sender: 'me' | 'them'; text: string; time: string }[] = [];
@@ -103,11 +103,11 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   triggerVideoCall() {
-    this.onVideoCall.emit();
+    this.videoCall.emit();
   }
 
   triggerVoiceCall() {
-    this.onVoiceCall.emit();
+    this.voiceCall.emit();
   }
 
   isCallLog(text: string): boolean {
@@ -124,6 +124,6 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   goBack() {
-    this.onBack.emit();
+    this.back.emit();
   }
 }

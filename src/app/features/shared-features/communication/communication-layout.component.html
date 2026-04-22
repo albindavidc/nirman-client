@@ -66,9 +66,9 @@
       @if (selectedChat) {
         <app-chat
           [chat]="selectedChat"
-          (onVideoCall)="startCall('video')"
-          (onVoiceCall)="startCall('audio')"
-          (onBack)="showSidebar = true"
+          (videoCall)="startCall('video')"
+          (voiceCall)="startCall('audio')"
+          (back)="showSidebar = true"
         >
         </app-chat>
       } @else {

@@ -76,7 +76,7 @@ import { Professional } from '../../models/project.models';
   ],
 })
 export class ProjectListComponent implements OnInit {
-  private readonly store = inject(Store<any>);
+  private readonly store = inject(Store);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

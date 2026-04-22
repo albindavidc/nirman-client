@@ -41,7 +41,9 @@
             (keydown)="onKeyDown($event, $index)"
             class="otp-input"
             [class.filled]="control.value !== ''"
-            [class.invalid]="control.invalid && (control.dirty || control.touched)"
+            [class.invalid]="
+              control.invalid && (control.dirty || control.touched)
+            "
           />
         }
       </div>

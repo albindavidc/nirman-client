@@ -22,6 +22,8 @@ export interface VendorCompanyData {
   addressState?: string;
   addressZipCode?: string;
   productsServices?: string[];
+  contactEmail?: string;
+  contactPhone?: string;
 }
 
 export interface Step1Response {

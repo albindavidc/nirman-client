@@ -1,3 +1,4 @@
+// Worker Tasks Component Styles - Refactored for Modern Sass Compliance
 // =============================================================================
 // Worker Tasks Component — Styles
 //
@@ -129,6 +130,12 @@
   position: relative;
   overflow: hidden;
 
+  // Hardware-accelerated hover — no layout-triggering props
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+  will-change: transform, box-shadow;
+
   // Specular top-edge highlight — simulates light hitting frosted glass
   &::before {
     content: "";
@@ -149,12 +156,6 @@
     position: relative;
     z-index: 2;
   }
-
-  // Hardware-accelerated hover — no layout-triggering props
-  transition:
-    transform var(--transition-base),
-    box-shadow var(--transition-base);
-  will-change: transform, box-shadow;
 
   &:hover {
     transform: translateY(-8px);
@@ -296,11 +297,6 @@
 
 // ─── Task Card ───────────────────────────────────────────────────────────────
 .wt-task {
-  margin-bottom: var(--space-5);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--glass-border);
-  overflow: hidden; // Clips progress bar to the card's border-radius
-
   // GPU-composited transition — kept before nested rules to satisfy
   // Sass's mixed-declarations spec (avoids deprecation warning).
   transition:
@@ -308,6 +304,11 @@
     border-color var(--transition-base),
     box-shadow var(--transition-base);
   will-change: transform, border-color;
+
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  overflow: hidden; // Clips progress bar to the card's border-radius
 
   // @supports guard: only apply backdrop-filter in capable browsers.
   // Browsers that don't support it still get glass-bg fallback from
@@ -459,6 +460,7 @@
     transition: width var(--transition-slow);
     will-change: width;
     box-shadow: 0 0 10px var(--accent-primary-bg);
+    position: relative;
 
     // --- Alternative Color Variants ---
     &--active {
@@ -476,8 +478,6 @@
       box-shadow: 0 0 10px var(--status-delayed-bg);
     }
 
-    // Glossy specular highlight — pure CSS, no image cost
-    position: relative;
     &::after {
       content: "";
       position: absolute;

@@ -33,10 +33,11 @@ export const signupReducer = createReducer(
       loading: false,
       error: null,
     };
-    // Persist userId, email, and step to localStorage
+    // Persist userId, email, step1Data, and step to localStorage
     persistSignupState({
       userId: newState.userId,
       email: newState.email,
+      step1Data: newState.step1Data,
       currentStep: newState.currentStep,
     });
     return newState;

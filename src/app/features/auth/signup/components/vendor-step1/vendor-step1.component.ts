@@ -83,7 +83,14 @@ export class VendorStep1Component implements OnInit {
           '',
           [Validators.required, CustomValidators.nameValidator(2)],
         ],
-        email: ['', [Validators.required, Validators.email]],
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.email,
+            CustomValidators.noWhitespace(),
+          ],
+        ],
         phoneNumber: [
           '',
           [Validators.required, CustomValidators.phoneNumber()],

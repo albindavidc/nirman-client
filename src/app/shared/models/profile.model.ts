@@ -63,6 +63,9 @@ export interface UserProfile {
 
   role: Role;
   userStatus: AccountStatus;
+  vendorStatus?: string;
+  rejectionReason?: string;
+  vendorId?: string;
 
   isEmailVerified: boolean;
   isPhoneVerified: boolean;

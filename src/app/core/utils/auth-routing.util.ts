@@ -19,9 +19,9 @@ export function getDefaultRouteForUser(user: UserProfile | null): string {
   }
 
   if (role === 'vendor') {
-    const status = normalizeRole(
-      user.vendor?.vendorStatus as unknown as string | null,
-    );
+    // Robustly check for vendor status in both nested and flattened structures
+    const rawStatus = user.vendor?.vendorStatus || user.vendorStatus;
+    const status = normalizeRole(rawStatus as string | null);
 
     if (status === 'approved') {
       return '/vendor/dashboard';

@@ -23,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleMapsModule, GoogleMap, MapMarker } from '@angular/google-maps';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable, map, of, filter } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { CustomValidators } from '../../../../../shared/validators/custom-validators';
 import {
   debounceTime,
@@ -34,12 +34,12 @@ import {
 } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import * as AuthSelectors from '../../../../auth/login/store/login.selectors';
+import { UserProfile } from '../../../../../shared/models/profile.model';
 
 import {
   Project,
   CreateProjectDto,
   UpdateProjectDto,
-  ProjectWorker,
   ProjectStatus,
 } from '../../models/project.models';
 import * as ProjectActions from '../../store/project.actions';
@@ -54,9 +54,30 @@ export interface SearchableWorker {
   email: string;
 }
 
-interface NormalizedLocation extends google.maps.places.AutocompletePrediction {
+interface NormalizedLocation {
+  place_id: string;
+  description: string;
   mainText?: string;
   secondaryText?: string;
+  matched_substrings?: unknown[];
+  structured_formatting?: unknown;
+  terms?: unknown[];
+  types?: string[];
+}
+
+interface PredictionLike {
+  placeId?: string;
+  place_id?: string;
+  description?: string;
+  text?: string | { text: string };
+  structuredFormat?: {
+    mainText?: { text: string };
+    secondaryText?: { text: string };
+  };
+  structured_formatting?: {
+    main_text?: string;
+    secondary_text?: string;
+  };
 }
 
 interface MapAutocompleteResponse {
@@ -105,7 +126,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
   @ViewChild(MapMarker) mapMarker!: MapMarker;
 
   private readonly fb = inject(FormBuilder);
-  private readonly store = inject(Store<any>);
+  private readonly store = inject(Store);
   private readonly actions$ = inject(Actions);
   private readonly workerService = inject(WorkerService);
   private readonly projectService = inject(ProjectService);
@@ -284,7 +305,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     this.store
       .select(AuthSelectors.selectUser)
       .pipe(take(1))
-      .subscribe((user: any) => {
+      .subscribe((user: UserProfile | null) => {
         this.currentUserId = user?.id || null;
       });
 
@@ -305,12 +326,12 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       if (this.data.managerIds && this.data.managerIds.length > 0) {
         const supervisorId = this.data.managerIds[0];
         this.projectService.getProfessionals().subscribe((pros) => {
-          const supervisor = pros.find(p => p.id === supervisorId);
+          const supervisor = pros.find((p) => p.id === supervisorId);
           if (supervisor) {
             this.selectedSupervisor = {
               id: supervisor.id,
               name: supervisor.fullName || supervisor.firstName,
-              email: supervisor.email || ''
+              email: supervisor.email || '',
             };
             this.supervisorSearchControl.setValue('');
             this.projectForm.patchValue({ managerIds: [supervisor.id] });
@@ -334,29 +355,33 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     );
 
     // Listen for success actions to close dialog
-    this.actions$.pipe(
-      ofType(
-        ProjectActions.createProjectSuccess,
-        ProjectActions.updateProjectSuccess
-      ),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.dialogRef.close(true);
-    });
+    this.actions$
+      .pipe(
+        ofType(
+          ProjectActions.createProjectSuccess,
+          ProjectActions.updateProjectSuccess,
+        ),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => {
+        this.dialogRef.close(true);
+      });
 
     // Listen for failure actions to show validation errors
-    this.actions$.pipe(
-      ofType(
-        ProjectActions.createProjectFailure,
-        ProjectActions.updateProjectFailure
-      ),
-      takeUntil(this.destroy$)
-    ).subscribe(({ error }) => {
-      if (error && error.toLowerCase().includes('already exists')) {
-        this.projectForm.get('name')?.setErrors({ alreadyExists: true });
-        this.projectForm.get('name')?.markAsTouched();
-      }
-    });
+    this.actions$
+      .pipe(
+        ofType(
+          ProjectActions.createProjectFailure,
+          ProjectActions.updateProjectFailure,
+        ),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(({ error }) => {
+        if (error && error.toLowerCase().includes('already exists')) {
+          this.projectForm.get('name')?.setErrors({ alreadyExists: true });
+          this.projectForm.get('name')?.markAsTouched();
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -368,7 +393,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     if (typeof google !== 'undefined' && google.maps && google.maps.places) {
       // Always initialize legacy service as a guaranteed fallback
       this.autocompleteService = new google.maps.places.AutocompleteService();
-      
+
       // Check if the new AutocompleteSuggestion is available
       if ('AutocompleteSuggestion' in google.maps.places) {
         this.useNewAutocomplete = true;
@@ -378,9 +403,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  displayLocation(
-    location: NormalizedLocation | null,
-  ): string {
+  displayLocation(location: NormalizedLocation | null): string {
     return location ? location.description : '';
   }
 
@@ -392,23 +415,37 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     }
 
     return new Observable((observer) => {
-      const handleResults = (predictions: (google.maps.places.AutocompletePrediction | { placePrediction: unknown })[] | null) => {
+      const handleResults = (
+        predictions:
+          | (
+              | google.maps.places.AutocompletePrediction
+              | { placePrediction: unknown }
+            )[]
+          | null,
+      ) => {
         if (!predictions) {
           observer.next([]);
           observer.complete();
           return;
         }
 
-        const normalized = predictions.map((p) => {
-          const prediction: any = (p as any).placePrediction || p;
-          const description = prediction.description || (typeof prediction.text === 'string' ? prediction.text : prediction.text?.text) || '';
-          
-          let mainText = prediction.structuredFormat?.mainText?.text || 
-                         prediction.structured_formatting?.main_text;
-                         
-          let secondaryText = prediction.structuredFormat?.secondaryText?.text || 
-                             prediction.structured_formatting?.secondary_text;
- 
+        const normalized: NormalizedLocation[] = predictions.map((p: any) => {
+          const prediction = p.placePrediction || p;
+          const description =
+            prediction.description ||
+            (typeof prediction.text === 'string'
+              ? prediction.text
+              : prediction.text?.text) ||
+            '';
+
+          let mainText =
+            prediction.structuredFormat?.mainText?.text ||
+            prediction.structured_formatting?.main_text;
+
+          let secondaryText =
+            prediction.structuredFormat?.secondaryText?.text ||
+            prediction.structured_formatting?.secondary_text;
+
           // If structured formatting is missing, try to split description
           if (!mainText && description) {
             const firstComma = description.indexOf(',');
@@ -421,12 +458,15 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
           }
 
           return {
-            place_id: prediction.placeId || prediction.place_id,
+            place_id: (
+              prediction.placeId ||
+              prediction.place_id ||
+              ''
+            ).toString(),
             description: description,
-            mainText: mainText || description,
+            mainText: mainText || '',
             secondaryText: secondaryText || '',
-            ...prediction,
-          };
+          } as NormalizedLocation;
         });
 
         observer.next(normalized);
@@ -438,20 +478,29 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
           this.useNewAutocomplete &&
           'AutocompleteSuggestion' in google.maps.places
         ) {
-          const service = (google.maps.places as unknown as { AutocompleteSuggestion: unknown }).AutocompleteSuggestion as { fetchAutocompleteSuggestions: (req: { input: string }) => Promise<MapAutocompleteResponse> };
-          service.fetchAutocompleteSuggestions(
-            { input: term },
-          )
+          const service = (
+            google.maps.places as unknown as { AutocompleteSuggestion: unknown }
+          ).AutocompleteSuggestion as {
+            fetchAutocompleteSuggestions: (req: {
+              input: string;
+            }) => Promise<MapAutocompleteResponse>;
+          };
+          service
+            .fetchAutocompleteSuggestions({ input: term })
             .then((response: MapAutocompleteResponse) => {
               handleResults(response.suggestions || []);
             })
             .catch((err: { status?: number; message?: string }) => {
               // If it's a 403 (Forbidden), it means the New API is not enabled.
               // We should stop trying to use it for this session.
-              if (err.status === 403 || err.message?.includes('not been used') || err.message?.includes('disabled')) {
+              if (
+                err.status === 403 ||
+                err.message?.includes('not been used') ||
+                err.message?.includes('disabled')
+              ) {
                 this.useNewAutocomplete = false;
               }
-              
+
               console.error('New Autocomplete Error:', err);
               // Fallback to legacy
               this.fallbackToLegacy(term, handleResults);
@@ -468,12 +517,25 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  private fallbackToLegacy(term: string, callback: (results: NormalizedLocation[]) => void): void {
+  private fallbackToLegacy(
+    term: string,
+    callback: (
+      predictions:
+        | (
+            | google.maps.places.AutocompletePrediction
+            | { placePrediction: unknown }
+          )[]
+        | null,
+    ) => void,
+  ): void {
     if (!this.autocompleteService) return callback([]);
     this.autocompleteService.getPlacePredictions(
       { input: term },
       (predictions, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          predictions
+        ) {
           callback(predictions);
         } else {
           callback([]);
@@ -482,9 +544,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
     );
   }
 
-  async onLocationSelected(
-    prediction: NormalizedLocation,
-  ): Promise<void> {
+  async onLocationSelected(prediction: NormalizedLocation): Promise<void> {
     if (!prediction) return;
 
     try {
@@ -602,9 +662,11 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
           ? new Date(formValue.endDate).toISOString()
           : undefined,
         budget: formValue.budget != null ? Number(formValue.budget) : undefined,
-        progress: formValue.progress != null ? Number(formValue.progress) : undefined,
+        progress:
+          formValue.progress != null ? Number(formValue.progress) : undefined,
         latitude: formValue.latitude !== null ? formValue.latitude : undefined,
-        longitude: formValue.longitude !== null ? formValue.longitude : undefined,
+        longitude:
+          formValue.longitude !== null ? formValue.longitude : undefined,
       };
 
       this.store.dispatch(
@@ -633,7 +695,6 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
       this.store.dispatch(ProjectActions.createProject({ data: createData }));
     }
   }
-
 
   onCancel(): void {
     this.dialogRef.close();

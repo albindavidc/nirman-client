@@ -70,7 +70,7 @@ export class NewChatModalComponent {
           userId: w.id, // In workers, id is often userId but verify if needed
           name: `${w.firstName} ${w.lastName}`,
           role: w.professionalTitle || w.role || 'Worker',
-          type: (w.role?.toLowerCase() || 'worker') as any,
+          type: (w.role?.toLowerCase() || 'worker') as ChatPartner['type'],
           avatar: w.firstName.charAt(0).toUpperCase()
         }))),
         catchError(() => of([]))
@@ -82,7 +82,7 @@ export class NewChatModalComponent {
           // Ensure type is formatted consistently
           return [...vendors, ...workers].map(p => ({
             ...p,
-            type: p.type.toLowerCase() as any
+            type: p.type.toLowerCase() as ChatPartner['type']
           }));
         })
       );

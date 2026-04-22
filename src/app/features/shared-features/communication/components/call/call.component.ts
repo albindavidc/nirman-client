@@ -84,7 +84,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private setupSignaling() {
     this.subs.add(
-      this.socketService.onCallOffer().subscribe(async (data: any) => {
+      this.socketService.onCallOffer().subscribe(async (data: unknown) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           const answer = await this.webRtcService.handleOffer(payload.offer!);
@@ -98,7 +98,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subs.add(
-      this.socketService.onCallAnswer().subscribe(async (data: any) => {
+      this.socketService.onCallAnswer().subscribe(async (data: unknown) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           await this.webRtcService.handleAnswer(payload.answer!);
@@ -107,7 +107,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subs.add(
-      this.socketService.onIceCandidate().subscribe(async (data: any) => {
+      this.socketService.onIceCandidate().subscribe(async (data: unknown) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           await this.webRtcService.addIceCandidate(payload.candidate!);
@@ -116,7 +116,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subs.add(
-      this.socketService.onCallEnded().subscribe((data: any) => {
+      this.socketService.onCallEnded().subscribe((data: unknown) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           this.endCall.emit({

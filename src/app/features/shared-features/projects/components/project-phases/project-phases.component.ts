@@ -43,6 +43,13 @@ interface PhaseStats {
   notStarted: number;
 }
 
+export interface DisplayPhase extends ProjectPhase {
+  isBlocked?: boolean;
+  previousPhaseName?: string;
+  previousPhaseId?: string;
+  previousPhaseApprovalStatus?: string;
+}
+
 @Component({
   selector: 'app-project-phases',
   standalone: true,
@@ -70,7 +77,7 @@ export class ProjectPhasesComponent implements OnInit {
   private projectService = inject(ProjectService);
   private taskService = inject(TaskService);
   private notification = inject(NotificationService);
-  private store = inject(Store<any>);
+  private store = inject(Store);
 
   currentUserRole = '';
 
@@ -98,9 +105,9 @@ export class ProjectPhasesComponent implements OnInit {
     'actions',
   ];
 
-  phases$!: Observable<ProjectPhase[]>;
+  phases$!: Observable<DisplayPhase[]>;
   stats$!: Observable<PhaseStats>;
-  paginatedPhases$!: Observable<ProjectPhase[]>;
+  paginatedPhases$!: Observable<DisplayPhase[]>;
 
   currentPage = 0;
   pageSize = 5;
@@ -302,12 +309,13 @@ export class ProjectPhasesComponent implements OnInit {
     });
   }
 
-  approvePhase(phase: any): void {
+  approvePhase(phase: { id?: string; name?: string }): void {
+    if (!phase.id) return;
     this.projectPhaseService
       .approvePhase(phase.id, { approvalStatus: 'approved' })
       .subscribe({
         next: () => {
-          this.notification.success(`Phase "${phase.name}" approved successfully`);
+          this.notification.success(`Phase "${phase.name || 'Unknown'}" approved successfully`);
           this.refreshSubject.next();
         },
         error: (err) => {
@@ -317,7 +325,7 @@ export class ProjectPhasesComponent implements OnInit {
       });
   }
 
-  openRequestPreviousApproval(phase: any): void {
+  openRequestPreviousApproval(phase: ProjectPhase & { previousPhaseId?: string; previousPhaseName?: string }): void {
     const projectId = this.route.parent?.snapshot.paramMap.get('id');
     if (!projectId) return;
 

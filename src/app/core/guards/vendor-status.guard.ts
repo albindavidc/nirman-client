@@ -1,7 +1,10 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { selectAuthHydrated, selectUser } from '../../features/auth/login/store/login.selectors';
+import {
+  selectAuthHydrated,
+  selectUser,
+} from '../../features/auth/login/store/login.selectors';
 import { filter, take, switchMap, map } from 'rxjs/operators';
 
 export const VendorStatusGuard: CanActivateFn = () => {
@@ -24,9 +27,11 @@ export const VendorStatusGuard: CanActivateFn = () => {
         return true;
       }
 
-      const u = user as { vendor?: { vendorStatus?: string }, vendorStatus?: string };
-      const status = u.vendor?.vendorStatus?.toLowerCase()
-        ?? u.vendorStatus?.toLowerCase();
+      // Check for vendor status in both nested and potential flattened structures
+      const rawStatus = user.vendor?.vendorStatus || user.vendorStatus;
+      const status = (rawStatus || '').toString().trim().toLowerCase();
+
+
 
       if (status === 'approved') {
         return true;

@@ -22,6 +22,7 @@ import * as SignupActions from '../../store/signup.actions';
 import * as SignupSelectors from '../../store/signup.selectors';
 import { AuthLogoComponent } from '../../../auth-logo/auth-logo.component';
 import { CustomValidators } from '../../../../../shared/validators/custom-validators';
+import { VendorUserData } from '../../models/signup.models';
 
 @Component({
   selector: 'app-vendor-step2',
@@ -71,6 +72,7 @@ export class VendorStep2Component implements OnInit {
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
   userId$: Observable<string | null>;
+  step1Data$: Observable<VendorUserData | null>;
 
   // Chips configuration
   readonly separatorKeyCodes = [ENTER, COMMA] as const;
@@ -80,6 +82,7 @@ export class VendorStep2Component implements OnInit {
     this.loading$ = this.store.select(SignupSelectors.selectLoading);
     this.error$ = this.store.select(SignupSelectors.selectError);
     this.userId$ = this.store.select(SignupSelectors.selectUserId);
+    this.step1Data$ = this.store.select(SignupSelectors.selectStep1Data);
   }
 
   ngOnInit(): void {
@@ -131,6 +134,7 @@ export class VendorStep2Component implements OnInit {
   onSubmit(): void {
     if (this.form.valid) {
       this.userId$.pipe(take(1)).subscribe((userId) => {
+        this.step1Data$.pipe(take(1)).subscribe((step1Data) => {
         if (!userId) {
           // Redirect to step 1 if userId is missing
           this.store.dispatch(
@@ -162,9 +166,12 @@ export class VendorStep2Component implements OnInit {
                 this.productsServices.length > 0
                   ? this.productsServices
                   : undefined,
-            },
-          }),
-        );
+                contactEmail: step1Data?.email,
+                contactPhone: step1Data?.phoneNumber,
+              },
+            }),
+          );
+        });
       });
     } else {
       this.form.markAllAsTouched();

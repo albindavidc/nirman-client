@@ -53,7 +53,7 @@ const persistedState = getPersistedSignupState();
 
 export const initialSignupState: SignupState = {
   selectedAccountType: null,
-  step1Data: null,
+  step1Data: persistedState.step1Data || null,
   step2Data: null,
   userId: persistedState.userId || null,
   vendorId: persistedState.vendorId || null,

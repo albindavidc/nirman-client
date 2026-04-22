@@ -51,6 +51,8 @@ export class SignupService {
       addressState: data.addressState,
       addressZipCode: data.addressZipCode,
       productsServices: data.productsServices,
+      contactEmail: data.contactEmail,
+      contactPhone: data.contactPhone,
     });
   }
 

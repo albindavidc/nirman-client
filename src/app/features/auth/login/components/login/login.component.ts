@@ -68,12 +68,7 @@ export class LoginComponent implements OnInit {
   loginForm = this.fb.group({
     email: [
       '',
-      [
-        Validators.required,
-        Validators.email,
-        CustomValidators.noWhitespace(),
-        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
-      ],
+      [Validators.required, Validators.email, CustomValidators.noWhitespace()],
     ],
     password: ['', [Validators.required, CustomValidators.passwordStrength()]],
     rememberMe: [false],

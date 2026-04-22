@@ -23,13 +23,14 @@
 
     <!-- Completion Notes -->
     <div class="ram__field">
-      <label class="ram__label">
+      <label class="ram__label" for="completion-notes">
         <mat-icon>edit_note</mat-icon>
         Completion Notes
         <span class="ram__required">*</span>
       </label>
       <div class="ram__textarea-wrap" [class.ram__textarea-wrap--focus]="textareaFocused">
         <textarea
+          id="completion-notes"
           class="ram__textarea"
           [(ngModel)]="comments"
           (focus)="textareaFocused = true"
@@ -45,7 +46,7 @@
 
     <!-- Media Evidence -->
     <div class="ram__field">
-      <label class="ram__label">
+      <label class="ram__label" for="media-upload-input">
         <mat-icon>attach_file</mat-icon>
         Media Evidence
         <span class="ram__optional">Optional</span>
@@ -66,6 +67,7 @@
 
         <input
           type="file"
+          id="media-upload-input"
           #mediaInput
           multiple
           accept="image/jpeg,image/png,image/webp,video/mp4"

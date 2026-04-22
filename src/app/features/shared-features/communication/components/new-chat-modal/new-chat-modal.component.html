@@ -10,22 +10,22 @@
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search Professionals</mat-label>
       <mat-icon matPrefix>search</mat-icon>
-      <input 
-        matInput 
-        [(ngModel)]="searchQuery" 
-        (ngModelChange)="onSearchChange()" 
-        placeholder="Type a name or company..." 
+      <input
+        matInput
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Type a name or company..."
         autocomplete="off"
-      >
+      />
       @if (isLoading) {
         <mat-spinner matSuffix diameter="20"></mat-spinner>
       }
     </mat-form-field>
 
     <div class="vendors-list">
-      @for (partner of (partners$ | async); track partner.id) {
-        <div 
-          class="vendor-item" 
+      @for (partner of partners$ | async; track partner.id) {
+        <div
+          class="vendor-item"
           (click)="selectPartner(partner)"
           (keydown.enter)="selectPartner(partner)"
           tabindex="0"
@@ -35,8 +35,8 @@
           </div>
           <div class="vendor-info">
             <h4>{{ partner.name }}</h4>
-            <span class="vendor-category">
-              {{ partner.role }}
+            <span class="role-tag" [class]="partner.type.toLowerCase()">
+              {{ partner.type | titlecase }}
             </span>
           </div>
           <mat-icon class="action-icon">chat</mat-icon>

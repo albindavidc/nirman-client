@@ -22,6 +22,7 @@ export interface Chat {
   lastMessage: string;
   time: string;
   active: boolean;
+  otherParticipantRole?: string;
   type?: string;
   callId?: string;
   initiatorId?: string;
@@ -52,6 +53,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   
   recentChats: Chat[] = [];
   selectedChat: Chat | null = null;
+  showSidebar = true;
 
   isCalling = false;
   incomingCall: SignalingPayload | null = null;
@@ -80,15 +82,15 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
         }
       })
     );
-
     this.subs.add(
       this.socketService.onCallEnded().subscribe((data) => {
         const payload = data as SignalingPayload;
-        if (payload.callId === this.callId || (this.incomingCall && this.incomingCall.callId === payload.callId)) {
-          this.endCall();
+        if (this.incomingCall && this.incomingCall.callId === payload.callId) {
+          this.incomingCall = null;
         }
       })
     );
+
 
     this.loadMyThreads();
   }
@@ -100,20 +102,37 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
 
   loadMyThreads() {
     this.subs.add(
-      this.communicationService.getMyThreads().subscribe((threads) => {
-        this.recentChats = threads.map(t => ({
-          id: t.id,
-          threadId: t.id,
-          name: t.title || 'Direct Message',
-          participants: t.participants,
-          lastMessage: '', 
-          time: new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          active: false
-        }));
+      this.store.select(selectUser).subscribe(user => {
+        if (!user) return;
 
-        if (this.recentChats.length > 0 && !this.selectedChat) {
-          this.selectChat(this.recentChats[0]);
-        }
+        this.subs.add(
+          this.communicationService.getMyThreads().subscribe((threads) => {
+            this.recentChats = threads.map(t => {
+              const otherParticipant = t.participants.find(p => p.userId !== user.id);
+              let cleanName = t.title || 'Direct Message';
+              if (cleanName.startsWith('DM with ')) {
+                cleanName = cleanName.replace('DM with ', '');
+              }
+
+              return {
+                id: t.id,
+                threadId: t.id,
+                name: cleanName,
+                participants: t.participants,
+                lastMessage: '',
+                time: new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                active: false,
+                otherParticipantRole: otherParticipant?.role 
+                  ? otherParticipant.role.charAt(0).toUpperCase() + otherParticipant.role.slice(1).toLowerCase() 
+                  : 'User'
+              };
+            });
+
+            if (this.recentChats.length > 0 && !this.selectedChat) {
+              this.selectChat(this.recentChats[0]);
+            }
+          })
+        );
       })
     );
   }
@@ -123,6 +142,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
     chat.active = true;
     this.selectedChat = chat;
     this.activeThreadId = chat.threadId;
+    this.showSidebar = false;
   }
 
   openNewChatModal() {
@@ -209,7 +229,21 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
     this.incomingCall = null;
   }
 
-  endCall() {
+  endCall(summary?: { duration: string, type: string, endedAt: Date }) {
+    if (summary && this.selectedChat && this.activeThreadId) {
+      this.subs.add(
+        this.store.select(selectUser).subscribe(user => {
+          if (!user) return;
+          
+          const messageContent = `[CALL_LOG]:{"type":"${summary.type}","duration":"${summary.duration}"}`;
+          this.socketService.sendMessage({
+            threadId: this.activeThreadId!,
+            senderId: user.id,
+            content: messageContent
+          });
+        })
+      );
+    }
     this.isCalling = false;
     this.callId = null;
     this.isInitiator = false;

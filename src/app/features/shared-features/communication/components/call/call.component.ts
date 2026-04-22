@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { WebRtcService } from '../../services/webrtc.service';
@@ -15,13 +15,13 @@ import { Chat } from '../../communication-layout.component';
   templateUrl: './call.component.html',
   styleUrls: ['./call.component.scss']
 })
-export class CallComponent implements OnInit, OnDestroy {
+export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() chat: Chat | null = null;
   @Input() callType: 'audio' | 'video' = 'audio';
   @Input() callId: string | null = null;
   @Input() isInitiator = false;
   @Input() targetUserId: string | null = null;
-  @Output() endCall = new EventEmitter<void>();
+  @Output() endCall = new EventEmitter<{ duration: string, type: string, endedAt: Date } | void>();
 
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
@@ -38,16 +38,17 @@ export class CallComponent implements OnInit, OnDestroy {
   private seconds = 0;
   private subs = new Subscription();
 
-  async ngOnInit() {
-    this.startTimer();
-    this.isVideoOff = this.callType === 'audio';
-    
+  async ngAfterViewInit() {
     await this.setupWebRtc();
-    this.setupSignaling();
-
     if (this.isInitiator) {
       await this.initiateCall();
     }
+  }
+
+  async ngOnInit() {
+    this.startTimer();
+    this.isVideoOff = this.callType === 'audio';
+    this.setupSignaling();
   }
 
   ngOnDestroy() {
@@ -56,7 +57,9 @@ export class CallComponent implements OnInit, OnDestroy {
 
   private async setupWebRtc() {
     const stream = await this.webRtcService.getLocalStream(this.callType);
-    this.localVideo.nativeElement.srcObject = stream;
+    if (this.localVideo?.nativeElement) {
+      this.localVideo.nativeElement.srcObject = stream;
+    }
 
     this.subs.add(
       this.webRtcService.getRemoteStream().subscribe(remoteStream => {
@@ -116,7 +119,12 @@ export class CallComponent implements OnInit, OnDestroy {
       this.socketService.onCallEnded().subscribe((data) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
-          this.endCall.emit();
+          this.endCall.emit({
+            duration: this.callDuration,
+            type: this.callType,
+            endedAt: new Date()
+          });
+          this.cleanup();
         }
       })
     );
@@ -163,7 +171,14 @@ export class CallComponent implements OnInit, OnDestroy {
       this.socketService.endCall(this.callId, this.targetUserId || undefined);
       this.commService.updateCallStatus(this.callId, 'ended').subscribe();
     }
-    this.endCall.emit();
+    
+    // Emit call summary info before closing
+    this.endCall.emit({
+      duration: this.callDuration,
+      type: this.callType,
+      endedAt: new Date()
+    });
+    this.cleanup();
   }
 
   private cleanup() {

@@ -1,5 +1,5 @@
-<div class="communication-container">
-  <div class="sidebar">
+<div class="communication-container" [class.show-sidebar]="showSidebar">
+  <div class="sidebar" [class.active]="showSidebar">
     <div class="sidebar-header">
       <div class="header-title-row">
         <h2>Recent Chats</h2>
@@ -25,7 +25,7 @@
         >
           <div class="avatar-container">
             <div class="avatar">
-              <mat-icon>person</mat-icon>
+              {{chat.name.charAt(0).toUpperCase()}}
             </div>
             <div class="status-indicator"></div>
           </div>
@@ -34,21 +34,33 @@
               <span class="chat-name">{{chat.name}}</span>
               <span class="chat-time">{{chat.time}}</span>
             </div>
-            <p class="last-message">{{chat.lastMessage}}</p>
+            <div class="chat-bottom">
+              <p class="last-message">{{chat.lastMessage || 'No messages yet'}}</p>
+              <span class="role-tag" [class]="chat.otherParticipantRole?.toLowerCase()">
+                {{chat.otherParticipantRole}}
+              </span>
+            </div>
           </div>
         </div>
       }
     </div>
   </div>
 
-  <div class="main-content">
+  <div class="main-content" [class.active]="!showSidebar">
     @if (!isCalling) {
       @if (selectedChat) {
         <app-chat 
           [chat]="selectedChat"
           (onVideoCall)="startCall('video')"
-          (onVoiceCall)="startCall('audio')">
+          (onVoiceCall)="startCall('audio')"
+          (onBack)="showSidebar = true">
         </app-chat>
+      } @else {
+        <div class="no-project-state">
+          <mat-icon>chat_bubble_outline</mat-icon>
+          <h2>No Chat Selected</h2>
+          <p>Select a contact from the sidebar to start messaging</p>
+        </div>
       }
     } @else {
       <app-call 
@@ -57,7 +69,7 @@
         [callId]="callId"
         [isInitiator]="isInitiator"
         [targetUserId]="targetUserId"
-        (endCall)="endCall()">
+        (endCall)="endCall($event)">
       </app-call>
     }
     

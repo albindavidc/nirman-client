@@ -17,7 +17,7 @@ export interface ChatPartner {
   userId: string;
   name: string;
   role: string;
-  type: 'vendor' | 'worker' | 'supervisor';
+  type: 'vendor' | 'worker' | 'supervisor' | 'admin';
   avatar: string;
 }
 
@@ -70,7 +70,7 @@ export class NewChatModalComponent {
           userId: w.id, // In workers, id is often userId but verify if needed
           name: `${w.firstName} ${w.lastName}`,
           role: w.professionalTitle || w.role || 'Worker',
-          type: 'worker' as const,
+          type: (w.role?.toLowerCase() || 'worker') as any,
           avatar: w.firstName.charAt(0).toUpperCase()
         }))),
         catchError(() => of([]))
@@ -79,7 +79,11 @@ export class NewChatModalComponent {
       return forkJoin([vendors$, workers$]).pipe(
         map(([vendors, workers]) => {
           this.isLoading = false;
-          return [...vendors, ...workers];
+          // Ensure type is formatted consistently
+          return [...vendors, ...workers].map(p => ({
+            ...p,
+            type: p.type.toLowerCase() as any
+          }));
         })
       );
     })

@@ -1,3 +1,6 @@
+@use "design-system" as ds;
+@use "breakpoints" as bp;
+
 :host {
   display: block;
   width: 100%;
@@ -8,7 +11,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: #0a0a0b;
+  background: var(--surface-base);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -18,38 +21,47 @@
     flex: 1;
     width: 100%;
     height: 100%;
+    background: var(--gradient-surface);
 
     .remote-video {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      background: #121214;
+      background: var(--surface-base);
     }
 
     .local-video-wrapper {
       position: absolute;
-      top: 24px;
-      right: 24px;
-      width: 180px;
-      height: 240px;
-      border-radius: 16px;
+      top: var(--space-6);
+      right: var(--space-6);
+      width: 200px;
+      height: 260px;
+      border-radius: var(--radius-xl);
       overflow: hidden;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: #1c1c1e;
+      box-shadow: var(--glass-shadow);
+      border: 1px solid var(--glass-border-strong);
+      background: var(--glass-bg-strong);
+      backdrop-filter: var(--glass-blur-sm);
       transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
       z-index: 20;
 
+      @include bp.mobile {
+        width: 120px;
+        height: 160px;
+        top: var(--space-4);
+        right: var(--space-4);
+      }
+
       &:hover {
-        transform: scale(1.02);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+        transform: scale(1.05);
+        box-shadow: var(--glass-shadow-gold);
       }
 
       &.video-off {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at center, #2c2c2e, #1c1c1e);
+        background: var(--gradient-surface-warm);
       }
 
       .local-video {
@@ -64,91 +76,130 @@
           font-size: 48px;
           width: 48px;
           height: 48px;
-          color: rgba(255, 255, 255, 0.2);
+          color: var(--text-faint);
         }
       }
     }
 
     .call-info {
       position: absolute;
-      top: 24px;
-      left: 24px;
-      color: white;
+      top: var(--space-6);
+      left: var(--space-6);
       z-index: 10;
-      padding: 12px 20px;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: var(--space-3) var(--space-5);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur-sm);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+
+      @include bp.mobile {
+        top: var(--space-4);
+        left: var(--space-4);
+      }
 
       h3 {
         margin: 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
+        font-size: var(--text-base);
+        font-weight: var(--weight-bold);
+        background: var(--gradient-text-gold);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       .duration {
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.7);
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
         font-family: 'Roboto Mono', monospace;
+        margin-top: 2px;
       }
     }
 
     .call-controls {
       position: absolute;
-      bottom: 48px;
+      bottom: var(--space-10);
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: 24px;
-      padding: 16px 32px;
-      background: rgba(18, 18, 20, 0.7);
-      backdrop-filter: blur(20px);
-      border-radius: 48px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      gap: var(--space-6);
+      padding: var(--space-4) var(--space-8);
+      background: var(--glass-bg-strong);
+      backdrop-filter: var(--glass-blur-lg);
+      -webkit-backdrop-filter: var(--glass-blur-lg);
+      border-radius: var(--radius-full);
+      border: 1px solid var(--glass-border-strong);
+      box-shadow: var(--glass-shadow-gold);
       z-index: 30;
 
+      @include bp.mobile {
+        bottom: var(--space-6);
+        padding: var(--space-3) var(--space-6);
+        gap: var(--space-4);
+        width: auto;
+      }
+
       .control-btn {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        border: 1px solid var(--border-default);
+        background: var(--glass-bg-subtle);
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: all 0.25s ease;
 
+        @include bp.mobile {
+          width: 40px;
+          height: 40px;
+        }
+
         &:hover {
-          background: rgba(255, 255, 255, 0.15);
+          background: var(--glass-bg);
+          border-color: var(--accent-primary);
+          color: var(--accent-primary);
           transform: translateY(-2px);
         }
 
         &.active {
-          background: #ff453a;
-          color: white;
+          background: var(--md-sys-color-error-container);
+          color: var(--md-sys-color-on-error-container);
+          border-color: var(--md-sys-color-error);
         }
 
         &.hangup-btn {
-          background: #ff3b30;
-          width: 64px;
-          height: 64px;
-          box-shadow: 0 0 20px rgba(255, 59, 48, 0.4);
+          background: var(--md-sys-color-error);
+          color: var(--md-sys-color-on-error);
+          width: 56px;
+          height: 56px;
+          border: none;
+          box-shadow: 0 0 20px rgba(255, 180, 171, 0.4);
+
+          @include bp.mobile {
+            width: 48px;
+            height: 48px;
+          }
 
           &:hover {
-            background: #ff2d20;
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 59, 48, 0.6);
+            filter: brightness(1.1);
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 180, 171, 0.6);
           }
         }
 
         mat-icon {
-          font-size: 26px;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          
+          @include bp.mobile {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
         }
       }
     }

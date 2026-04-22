@@ -42,6 +42,6 @@ export class CommunicationService {
   }
 
   updateCallStatus(sessionId: string, status: string): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/calls/${sessionId}`, { status });
+    return this.http.patch<void>(`${this.apiUrl}/calls/${sessionId}/status`, { status });
   }
 }

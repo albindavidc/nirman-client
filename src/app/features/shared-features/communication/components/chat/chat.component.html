@@ -1,19 +1,30 @@
 <div class="chat-header">
   <div class="chat-user-info">
+    <button mat-icon-button class="back-btn mobile-only" (click)="goBack()" aria-label="Go back to chat list">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <div class="avatar">
-      <mat-icon>person</mat-icon>
+      {{chat?.name?.charAt(0)?.toUpperCase()}}
     </div>
     <div class="user-details">
-      <h3>{{chat?.name}}</h3>
-      <span class="status">Active now</span>
+      <div class="name-row">
+        <h3>{{chat?.name}}</h3>
+        <span class="role-tag" [class]="chat?.otherParticipantRole?.toLowerCase()">
+          {{chat?.otherParticipantRole}}
+        </span>
+      </div>
+      <span class="status">Online</span>
     </div>
   </div>
   <div class="chat-actions">
-    <button class="icon-btn" (click)="triggerVideoCall()">
+    <button class="icon-btn" (click)="triggerVideoCall()" matTooltip="Video Call">
       <mat-icon>videocam</mat-icon>
     </button>
-    <button class="icon-btn" (click)="triggerVoiceCall()">
+    <button class="icon-btn" (click)="triggerVoiceCall()" matTooltip="Voice Call">
       <mat-icon>call</mat-icon>
+    </button>
+    <button class="icon-btn" matTooltip="More Info">
+      <mat-icon>info</mat-icon>
     </button>
   </div>
 </div>
@@ -22,10 +33,23 @@
   @for (msg of messages; track msg.id) {
     <div 
       class="message" 
-      [ngClass]="{'message-me': msg.sender === 'me', 'message-them': msg.sender === 'them'}">
-      <div class="bubble">
-        {{msg.text}}
-      </div>
+      [ngClass]="{'message-me': msg.sender === 'me', 'message-them': msg.sender === 'them', 'message-call': isCallLog(msg.text)}">
+      
+      @if (isCallLog(msg.text)) {
+        <div class="call-log-bubble">
+          <div class="call-icon-circle">
+            <mat-icon>{{getCallData(msg.text)?.type === 'video' ? 'videocam' : 'call'}}</mat-icon>
+          </div>
+          <div class="call-details">
+            <span class="call-title">{{getCallData(msg.text)?.type | titlecase}} Call</span>
+            <span class="call-duration">{{getCallData(msg.text)?.duration}}</span>
+          </div>
+        </div>
+      } @else {
+        <div class="bubble">
+          {{msg.text}}
+        </div>
+      }
       <span class="timestamp">{{msg.time}}</span>
     </div>
   }

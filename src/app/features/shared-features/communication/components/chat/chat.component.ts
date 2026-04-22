@@ -17,9 +17,10 @@ import { ChatSocketMessage } from '../../models/communication.models';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() chat: { threadId: string; name: string } | null = null;
-  @Output() videoCallTriggered = new EventEmitter<void>();
-  @Output() voiceCallTriggered = new EventEmitter<void>();
+  @Input() chat: { threadId: string; name: string; otherParticipantRole?: string } | null = null;
+  @Output() onVideoCall = new EventEmitter<void>();
+  @Output() onVoiceCall = new EventEmitter<void>();
+  @Output() onBack = new EventEmitter<void>();
 
   newMessage = '';
   messages: { id: string; sender: 'me' | 'them'; text: string; time: string }[] = [];
@@ -43,8 +44,8 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
         const msg = data as ChatSocketMessage;
         if (msg.threadId === this.chat?.threadId) {
           const isMe = msg.senderId === this.currentUserId;
-          // Avoid duplicating if we just sent it
-          if (isMe) return; 
+          // Avoid duplicating regular messages, but allow system messages like call logs
+          if (isMe && !this.isCallLog(msg.content)) return; 
           
           this.messages.push({
             id: msg.id,
@@ -102,10 +103,27 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   triggerVideoCall() {
-    this.videoCallTriggered.emit();
+    this.onVideoCall.emit();
   }
 
   triggerVoiceCall() {
-    this.voiceCallTriggered.emit();
+    this.onVoiceCall.emit();
+  }
+
+  isCallLog(text: string): boolean {
+    return text.startsWith('[CALL_LOG]:');
+  }
+
+  getCallData(text: string) {
+    try {
+      const jsonStr = text.replace('[CALL_LOG]:', '');
+      return JSON.parse(jsonStr);
+    } catch {
+      return null;
+    }
+  }
+
+  goBack() {
+    this.onBack.emit();
   }
 }

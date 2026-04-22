@@ -6,11 +6,36 @@
   </div>
 
   <!-- Check In / Out Section -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Check In Card -->
-    <div
-      class="bg-[#2a2a2a] rounded-lg p-8 flex flex-col items-center justify-center border border-gray-700 relative overflow-hidden group"
-    >
+  <div class="attendance-section">
+    <!-- Overlay for "No Tasks" -->
+    @if (!isLoading && !hasTasksToday) {
+      <div class="tasks-overlay">
+        <div class="overlay-backdrop"></div>
+        <div class="overlay-content">
+          <div class="icon-box">
+            <span class="material-icons">event_busy</span>
+          </div>
+          <h2>No Tasks Assigned</h2>
+          <p>You are not assigned to any active tasks for today. Clock-in is restricted until a supervisor assigns you to a task.</p>
+        </div>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="loading-overlay">
+        <div class="loader-wrapper">
+          <div class="spinner"></div>
+          <p>Verifying assignments...</p>
+        </div>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 check-in-cards">
+      <!-- Check In Card -->
+      <div
+        class="bg-[#2a2a2a] rounded-lg p-8 flex flex-col items-center justify-center border border-gray-700 relative overflow-hidden group"
+      >
       <div class="text-center z-10">
         <h2 class="text-xl font-semibold mb-2">Check In</h2>
         <div class="text-4xl font-bold text-[#E6D5B8] mb-1">
@@ -72,6 +97,7 @@
           <span>Hours Today: {{ hoursToday | number: "1.1-1" }}</span>
         </p>
       </div>
+    </div>
     </div>
   </div>
 

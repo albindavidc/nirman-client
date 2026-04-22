@@ -60,17 +60,11 @@ export class SidebarComponent {
         ];
       } else if (role === 'worker') {
         return [
-          { label: 'Dashboard', icon: 'dashboard', route: '/worker/dashboard' },
           { label: 'My Tasks', icon: 'task_alt', route: '/worker/tasks' },
           {
             label: 'Attendance',
             icon: 'schedule',
             route: '/worker/attendance',
-          },
-          {
-            label: 'Scheduling',
-            icon: 'calendar_month',
-            route: '/worker/dashboard/scheduling',
           },
           { label: 'Communication', icon: 'chat', route: '/communication' },
         ];

@@ -43,7 +43,7 @@ export function getDefaultRouteForUser(user: UserProfile | null): string {
   }
 
   if (role === 'worker') {
-    return '/worker/dashboard';
+    return '/worker/tasks';
   }
 
   return '/';

@@ -13,7 +13,7 @@ export const DASHBOARD_ROUTES: Routes = [
   },
   {
     path: 'worker',
-    redirectTo: '/worker/dashboard',
+    redirectTo: '/worker/tasks',
     pathMatch: 'full',
   },
 ];

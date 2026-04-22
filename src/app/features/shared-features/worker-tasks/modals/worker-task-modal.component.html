@@ -3,105 +3,157 @@
   [subtitle]="data.mode === 'start' ? 'Begin working on this task' : 'Update the progress of your assigned task'"
   (closeModal)="dialogRef.close()"
 >
-  <form [formGroup]="form">
-    <!-- Common: Task Name (Readonly) -->
-    <div class="form-group mb-4">
-      <label for="taskName" class="form-label block mb-1 font-medium">Task Name</label>
-      <input
-        id="taskName"
-        class="form-input readonly w-full p-2 bg-zinc-800 border-zinc-700 rounded text-gray-400"
-        [value]="data.task.name"
-        readonly
-      />
+  <form [formGroup]="form" class="wtm-form" novalidate>
+
+    <!-- ─ Task Name (always readonly) ─────────────────────── -->
+    <div class="wtm-form__group">
+      <label for="taskName" class="wtm-form__label">
+        <mat-icon class="wtm-form__label-icon" aria-hidden="true">assignment</mat-icon>
+        Task Name
+      </label>
+      <div class="wtm-form__input-wrapper wtm-form__input-wrapper--readonly">
+        <input
+          id="taskName"
+          class="wtm-form__input"
+          [value]="data.task.name"
+          readonly
+          aria-readonly="true"
+        />
+      </div>
     </div>
 
-    <!-- Mode: Start -->
+    <!-- ─ START MODE: timestamp ────────────────────────────── -->
     @if (data.mode === 'start') {
-      <div class="form-group mb-4">
-        <label for="startTime" class="form-label block mb-1 font-medium">Start Time</label>
-        <div class="relative">
+      <div class="wtm-form__group">
+        <label for="startTime" class="wtm-form__label">
+          <mat-icon class="wtm-form__label-icon" aria-hidden="true">schedule</mat-icon>
+          Start Time
+        </label>
+        <div class="wtm-form__input-wrapper wtm-form__input-wrapper--readonly">
           <input
             id="startTime"
-            class="form-input readonly w-full p-2 bg-zinc-800 border-zinc-700 rounded text-gray-400"
+            class="wtm-form__input"
             [value]="startTime"
             readonly
+            aria-readonly="true"
           />
-          <mat-icon
-            class="input-icon absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
-            >schedule</mat-icon
-          >
+          <mat-icon class="wtm-form__trailing-icon" aria-hidden="true">access_time</mat-icon>
         </div>
       </div>
     }
 
-    <!-- Mode: Update -->
+    <!-- ─ UPDATE MODE: progress + status ──────────────────── -->
     @if (data.mode === 'update') {
-      <div class="form-group mb-4">
-        <label for="progress" class="form-label block mb-1 font-medium">Progress (%)</label>
-        <input
-          id="progress"
-          type="number"
-          class="form-input w-full p-2 bg-transparent border border-zinc-600 rounded text-white focus:border-blue-500 outline-none"
-          formControlName="progress"
-          min="0"
-          max="100"
-        />
+
+      <!-- Progress Slider + Number -->
+      <div class="wtm-form__group">
+        <label for="progress" class="wtm-form__label">
+          <mat-icon class="wtm-form__label-icon" aria-hidden="true">trending_up</mat-icon>
+          Progress
+          <span class="wtm-form__label-value">
+            {{ form.get('progress')?.value ?? 0 }}%
+          </span>
+        </label>
+        <div class="wtm-form__input-wrapper">
+          <input
+            id="progress"
+            type="number"
+            class="wtm-form__input"
+            formControlName="progress"
+            min="0"
+            max="100"
+            aria-describedby="progress-error"
+          />
+        </div>
+        <!-- Visual progress track for the update modal -->
+        <div class="wtm-form__progress-preview"
+             role="progressbar"
+             [attr.aria-valuenow]="form.get('progress')?.value"
+             aria-valuemin="0"
+             aria-valuemax="100">
+          <div class="wtm-form__progress-fill"
+               [style.width.%]="form.get('progress')?.value"
+               [ngClass]="{
+                 'wtm-form__progress-fill--active': form.get('status')?.value === 'In Progress',
+                 'wtm-form__progress-fill--completed': form.get('status')?.value === 'Completed',
+                 'wtm-form__progress-fill--delayed': form.get('status')?.value === 'Delayed' || form.get('status')?.value === 'On Hold'
+               }"></div>
+        </div>
         @if (form.get('progress')?.touched && form.get('progress')?.invalid) {
-          <small class="text-red-500">Progress must be between 0 and 100</small>
+          <p id="progress-error" class="wtm-form__error" role="alert">
+            <mat-icon aria-hidden="true">warning</mat-icon>
+            Progress must be between 0 and 100
+          </p>
         }
       </div>
 
-      <div class="form-group mb-4">
-        <label for="status" class="form-label block mb-1 font-medium">Status</label>
-        <div class="relative">
+      <!-- Status Select -->
+      <div class="wtm-form__group">
+        <label for="status" class="wtm-form__label">
+          <mat-icon class="wtm-form__label-icon" aria-hidden="true">flag</mat-icon>
+          Status
+        </label>
+        <div class="wtm-form__input-wrapper wtm-form__select-wrapper">
           <select
             id="status"
-            class="form-select w-full p-2 bg-transparent border border-zinc-600 rounded text-white appearance-none focus:border-blue-500 outline-none"
+            class="wtm-form__input wtm-form__select"
             formControlName="status"
           >
-            <option value="In Progress" class="bg-zinc-800">In Progress</option>
-            <option value="Completed" class="bg-zinc-800">Completed</option>
-            <option value="Delayed" class="bg-zinc-800">Delayed</option>
-            <option value="On Hold" class="bg-zinc-800">On Hold</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Delayed">Delayed</option>
+            <option value="On Hold">On Hold</option>
           </select>
-          <mat-icon
-            class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
-            >arrow_drop_down</mat-icon
-          >
+          <mat-icon class="wtm-form__trailing-icon" aria-hidden="true">arrow_drop_down</mat-icon>
         </div>
       </div>
     }
 
-    <!-- Common: Notes -->
-    <div class="form-group">
-      <label for="notes" class="form-label block mb-1 font-medium">
+    <!-- ─ Notes (always visible) ──────────────────────────── -->
+    <div class="wtm-form__group">
+      <label for="notes" class="wtm-form__label">
+        <mat-icon class="wtm-form__label-icon" aria-hidden="true">notes</mat-icon>
         {{ data.mode === 'start' ? 'Initial Notes' : 'Notes / Comments' }}
       </label>
-      <textarea
-        id="notes"
-        class="form-textarea w-full p-2 bg-transparent border border-zinc-600 rounded text-white min-h-[100px]"
-        formControlName="notes"
-        [placeholder]="data.mode === 'start' ? 'Add any initial observations...' : 'Add any notes...'"
-        rows="4"
-      ></textarea>
+      <div class="wtm-form__input-wrapper">
+        <textarea
+          id="notes"
+          class="wtm-form__input wtm-form__textarea"
+          formControlName="notes"
+          [placeholder]="data.mode === 'start' ? 'Add any initial observations...' : 'Add any notes or updates...'"
+          rows="4"
+          aria-describedby="notes-error"
+        ></textarea>
+      </div>
       @if (form.get('notes')?.touched && form.get('notes')?.invalid) {
-         <small class="text-red-500">Notes cannot exceed 500 characters</small>
+        <p id="notes-error" class="wtm-form__error" role="alert">
+          <mat-icon aria-hidden="true">warning</mat-icon>
+          Notes cannot exceed 500 characters
+        </p>
       }
     </div>
+
   </form>
 
-  <div actions>
-    <button mat-button (click)="dialogRef.close()" class="cancel-btn">
+  <!-- ─ Footer Actions ──────────────────────────────────────── -->
+  <div actions class="wtm-actions">
+    <button
+      class="btn btn--ghost"
+      (click)="dialogRef.close()"
+      aria-label="Cancel and close dialog"
+    >
       Cancel
     </button>
     <button
-      mat-raised-button
-      color="primary"
-      [class]="data.mode === 'start' ? 'start-btn' : 'save-btn'"
+      class="btn"
+      [class.btn--primary]="data.mode === 'start'"
+      [class.btn--secondary]="data.mode === 'update'"
       (click)="onSubmit()"
+      [attr.aria-label]="data.mode === 'start' ? 'Confirm and start task' : 'Save task progress'"
     >
-      <mat-icon>{{ data.mode === 'start' ? 'play_arrow' : 'save' }}</mat-icon>
-      {{ data.mode === 'start' ? 'Start Task' : 'Save Progress' }}
+      <mat-icon aria-hidden="true">{{ data.mode === 'start' ? 'play_arrow' : 'save' }}</mat-icon>
+      <span>{{ data.mode === 'start' ? 'Start Task' : 'Save Progress' }}</span>
     </button>
   </div>
+
 </app-shared-modal>

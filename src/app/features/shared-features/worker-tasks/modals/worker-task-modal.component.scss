@@ -1,47 +1,218 @@
-.form-label {
-  font-size: 0.875rem;
-  color: #94a3b8; /* text-zinc-400 */
+// =============================================================================
+// Worker Task Modal — Styles  (wtm- namespace)
+//
+// All values are CSS custom properties from _design-system.scss.
+// Zero hardcoded colours — replaces former Tailwind utility classes.
+// =============================================================================
+
+@use "../../../../../styles/breakpoints" as bp;
+
+:host {
+  display: contents; // Let app-shared-modal control the block context
 }
 
-.form-input, .form-select, .form-textarea {
-  background-color: transparent;
-  border-width: 1px;
-  border-color: #3f3f46; /* border-zinc-700 */
-  color: #ffffff;
-  transition: border-color 0.2s;
-
-  &:focus {
-    border-color: #3b82f6; /* focus:border-blue-500 */
-    outline: none;
-  }
-
-  &.readonly {
-    cursor: default;
-    background-color: #18181b; /* bg-zinc-900 or bg-zinc-800 from template */
-    border-color: #27272a; /* border-zinc-800 */
-    color: #71717a; /* text-zinc-500 */
-  }
-}
-
-.input-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-
-[actions] {
+// ─── Form Shell ──────────────────────────────────────────────────────────────
+.wtm-form {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 1rem;
+  flex-direction: column;
+  gap: var(--space-5);
 }
 
-.cancel-btn {
-  color: #a1a1aa; /* text-zinc-400 */
+// ─── Form Group ──────────────────────────────────────────────────────────────
+.wtm-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.start-btn, .save-btn {
+// ─── Label ───────────────────────────────────────────────────────────────────
+.wtm-form__label {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-wide);
+  user-select: none;
+
+  &-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    color: var(--accent-primary);
+  }
+
+  &-value {
+    // Live progress percentage next to the label
+    margin-left: auto;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    background: var(--gradient-text-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// ─── Input Wrapper (glass pill) ───────────────────────────────────────────────
+.wtm-form__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: var(--glass-blur-sm);
+  }
+
+  &:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-bg);
+  }
+
+  // Readonly variant — slightly dimmed to signal non-editable
+  &--readonly {
+    background: var(--surface-raised);
+    border-color: var(--border-default);
+    cursor: default;
+
+    &:focus-within {
+      border-color: var(--border-default);
+      box-shadow: none;
+    }
+  }
+
+  // Select gets padding-right for the dropdown icon
+  &.wtm-form__select-wrapper {
+    padding-right: 0; // icon handled via trailing-icon positioning
+  }
+}
+
+// ─── Shared Input / Select / Textarea ────────────────────────────────────────
+.wtm-form__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  border-radius: inherit;
+
+  // Readonly colouring — text fades to muted
+  &[readonly] {
+    color: var(--text-muted);
+    cursor: default;
+  }
+
+  // Remove browser number-input spinners
+  &[type="number"] {
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button { display: none; }
+  }
+}
+
+// Select-specific overrides
+.wtm-form__select {
+  appearance: none;
+  padding-right: var(--space-10); // space for dropdown icon
+  cursor: pointer;
+
+  option {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+  }
+}
+
+// Textarea-specific overrides
+.wtm-form__textarea {
+  resize: vertical;
+  min-height: 100px;
+  align-self: stretch;
+}
+
+// ─── Trailing Icon (clock, arrow) ────────────────────────────────────────────
+.wtm-form__trailing-icon {
+  position: absolute;
+  right: var(--space-3);
+  pointer-events: none;
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--text-muted);
+}
+
+// ─── Live Progress Preview ────────────────────────────────────────────────────
+.wtm-form__progress-preview {
+  height: 6px;
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.wtm-form__progress-fill {
+  height: 100%;
+  background: var(--gradient-gold);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+  will-change: width;
+  box-shadow: 0 0 8px var(--accent-primary-bg);
+
+  &--active {
+    background: linear-gradient(90deg, var(--accent-secondary) 0%, var(--md-sys-color-secondary-fixed-dim) 100%);
+    box-shadow: 0 0 8px var(--accent-secondary-bg);
+  }
+
+  &--completed {
+    background: linear-gradient(90deg, var(--accent-tertiary) 0%, var(--md-sys-color-tertiary-fixed-dim) 100%);
+    box-shadow: 0 0 8px var(--accent-tertiary-bg);
+  }
+
+  &--delayed {
+    background: linear-gradient(90deg, var(--status-delayed-text) 0%, var(--priority-high) 100%);
+    box-shadow: 0 0 8px var(--status-delayed-bg);
+  }
+}
+
+// ─── Validation Error ────────────────────────────────────────────────────────
+.wtm-form__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--status-delayed-text);
+  font-size: var(--text-sm);
+  margin: 0;
+
+  mat-icon {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+// ─── Footer Actions ──────────────────────────────────────────────────────────
+.wtm-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-2);
+
+  @include bp.mobile {
+    flex-direction: column-reverse;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }

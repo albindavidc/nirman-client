@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,12 @@ import { WorkerTaskModalComponent, WorkerTaskModalData } from './modals/worker-t
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+/**
+ * WorkerTasksComponent
+ * 
+ * Manages and displays tasks assigned to the current worker.
+ * Uses OnPush change detection for optimized rendering performance.
+ */
 @Component({
   selector: 'app-worker-tasks',
   standalone: true,
@@ -21,17 +27,20 @@ import { map } from 'rxjs/operators';
   ],
   templateUrl: './worker-tasks.component.html',
   styleUrl: './worker-tasks.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkerTasksComponent implements OnInit {
-  private taskService = inject(TaskService);
-  private dialog = inject(MatDialog);
+  private readonly taskService = inject(TaskService);
+  private readonly dialog = inject(MatDialog);
 
-  private tasksSubject = new BehaviorSubject<Task[]>([]);
-  tasks$ = this.tasksSubject.asObservable();
+  // State management using BehaviorSubject to drive reactive template
+  private readonly tasksSubject = new BehaviorSubject<Task[]>([]);
+  readonly tasks$ = this.tasksSubject.asObservable();
 
-  inProgressCount$: Observable<number>;
-  completedCount$: Observable<number>;
-  highPriorityCount$: Observable<number>;
+  // Derived state observables for the dashboard summary
+  readonly inProgressCount$: Observable<number>;
+  readonly completedCount$: Observable<number>;
+  readonly highPriorityCount$: Observable<number>;
 
   constructor() {
     this.inProgressCount$ = this.tasks$.pipe(
@@ -50,17 +59,23 @@ export class WorkerTasksComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadTasks();
   }
 
-  loadTasks() {
+  /**
+   * Fetches latest tasks from the service and updates the stream.
+   */
+  loadTasks(): void {
     this.taskService.getMyTasks().subscribe((tasks) => {
       this.tasksSubject.next(tasks);
     });
   }
 
-  openStartModal(task: Task) {
+  /**
+   * Opens modal to transition a task to 'In Progress'.
+   */
+  openStartModal(task: Task): void {
     const data: WorkerTaskModalData = { mode: 'start', task };
     const dialogRef = this.dialog.open(WorkerTaskModalComponent, {
       width: '500px',
@@ -81,7 +96,10 @@ export class WorkerTasksComponent implements OnInit {
     });
   }
 
-  openUpdateModal(task: Task) {
+  /**
+   * Opens modal to update task progress or completion.
+   */
+  openUpdateModal(task: Task): void {
     const data: WorkerTaskModalData = { mode: 'update', task };
     const dialogRef = this.dialog.open(WorkerTaskModalComponent, {
       width: '500px',
@@ -102,3 +120,4 @@ export class WorkerTasksComponent implements OnInit {
     });
   }
 }
+

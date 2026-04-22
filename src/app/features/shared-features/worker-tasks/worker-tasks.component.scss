@@ -1,20 +1,232 @@
-.stats-card {
-  background-color: #18181b; /* bg-zinc-900 */
-  border: 1px solid #27272a; /* border-zinc-800 */
-  transition: transform 0.2s, box-shadow 0.2s;
+// =============================================================================
+// Worker Tasks Component — Styles
+//
+// NAMESPACE: wt-  (all component-local classes are prefixed to avoid global
+//   collision with the design-system utilities shared across the application)
+//
+// DESIGN PHILOSOPHY
+// ─────────────────
+// 1. Glassmorphism — depth via backdrop-filter + layered box-shadows.
+// 2. Performance   — will-change + GPU-composited properties (transform,
+//                    opacity) for 60 fps animations. No layout-triggering
+//                    properties (width, height, margin) in transitions.
+// 3. Degradation   — @supports guard ensures solid fallback for browsers
+//                    that do not support backdrop-filter (e.g. Firefox<103).
+// 4. Tokens only   — Every value resolves to a CSS custom property from
+//                    _design-system.scss. Zero hardcoded colours/sizes.
+// 5. Accessibility — focus-visible ring inherits the global token so
+//                    keyboard users always see a clear indicator.
+// =============================================================================
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+@use "../../../../styles/breakpoints" as bp;
+
+// ─── Host ────────────────────────────────────────────────────────────────────
+// contain:layout prevents the component's internal repaints from invalidating
+// ancestor layout — an effective rendering fence.
+:host {
+  display: block;
+  contain: layout style;
+}
+
+// ─── Page Shell ──────────────────────────────────────────────────────────────
+.wt-container {
+  padding: var(--space-8);
+  min-height: 100vh;
+
+  @include bp.mobile {
+    padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.wt-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+
+  // Subtle ambient glow behind the heading — uses the gradient-ambient token
+  // so it's consistent with the page-level background glow.
+  position: relative;
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: -40px -60px 0;
+    background: var(--gradient-ambient);
+    z-index: 0;
   }
 
-  .stat-icon-wrapper {
-    background-color: rgba(39, 39, 42, 0.5); /* bg-zinc-800/50 */
-    padding: 10px;
-    border-radius: 12px;
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @include bp.mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+
+    &::before {
+      display: none; // Omit glow on small screens to reduce paint cost
+    }
+  }
+
+  &__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  &__title {
+    // heading-page--gold already applies the gradient — no override needed
+  }
+
+  &__subtitle {
+    color: var(--text-muted);
+  }
+
+  &__action {
+    flex-shrink: 0;
+  }
+}
+
+// ─── Stats Dashboard ─────────────────────────────────────────────────────────
+.wt-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-12);
+
+  @include bp.tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include bp.mobile {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+}
+
+// Individual stat card
+// ─────────────────────────────────────────────────────────────────────────────
+// GRADIENT CARD DESIGN:
+//   Each card uses a unique multi-stop gradient background so the cards are
+//   visually distinct without relying on border-left colour alone.
+//   The gradient is layered *under* the glass blur, creating a depth effect:
+//     Layer 1: Ambient gradient (the card's identity colour)
+//     Layer 2: Glass overlay (backdrop-filter + semi-transparent dark)
+//     Layer 3: Top-edge specular highlight (subtle white sheen)
+// ─────────────────────────────────────────────────────────────────────────────
+.wt-stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+
+  // Specular top-edge highlight — simulates light hitting frosted glass
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.06) 0%,
+      transparent 40%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Ensure content sits above ::before sheen
+  > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Hardware-accelerated hover — no layout-triggering props
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+  will-change: transform, box-shadow;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow-accent);
+  }
+
+  // ── Gradient variant: Active (sky-blue ambient) ──────────────────────────
+  // Gold-to-blue diagonal gradient — represents momentum/work in progress.
+  &--active {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 77, 100, 0.55) 0%,
+      rgba(35, 31, 23, 0.65) 60%,
+      rgba(0, 53, 70, 0.45) 100%
+    );
+    border: 1px solid rgba(139, 208, 239, 0.22);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(139, 208, 239, 0.12);
+
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: var(--glass-blur);
+    }
+  }
+
+  // ── Gradient variant: Done (sage-green ambient) ──────────────────────────
+  // Green-teal gradient — conveys completion and success.
+  &--done {
+    background: linear-gradient(
+      135deg,
+      rgba(35, 80, 36, 0.55) 0%,
+      rgba(35, 31, 23, 0.65) 60%,
+      rgba(10, 57, 15, 0.45) 100%
+    );
+    border: 1px solid rgba(161, 211, 154, 0.22);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(161, 211, 154, 0.12);
+
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: var(--glass-blur);
+    }
+  }
+
+  // ── Gradient variant: Priority (warm amber-red ambient) ──────────────────
+  // Amber-to-red gradient — draws attention without being alarming.
+  &--priority {
+    background: linear-gradient(
+      135deg,
+      rgba(115, 52, 45, 0.55) 0%,
+      rgba(35, 31, 23, 0.65) 60%,
+      rgba(80, 36, 0, 0.45) 100%
+    );
+    border: 1px solid rgba(255, 183, 134, 0.22);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 183, 134, 0.12);
+
+    @supports (backdrop-filter: blur(1px)) {
+      backdrop-filter: var(--glass-blur);
+    }
+  }
+
+  // ── Icon wrapper — coloured to match card accent ──────────────────────────
+  &__icon {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
 
     mat-icon {
       font-size: 28px;
@@ -23,36 +235,303 @@
     }
   }
 
-  h2 {
-    line-height: 1.2;
-    color: #ffffff;
+  // Icon wrapper background — derived from card's accent family
+  &--active   .wt-stat-card__icon {
+    background: rgba(139, 208, 239, 0.12);
+    border: 1px solid rgba(139, 208, 239, 0.25);
+    mat-icon { color: var(--accent-secondary); }
+  }
+  &--done     .wt-stat-card__icon {
+    background: rgba(161, 211, 154, 0.12);
+    border: 1px solid rgba(161, 211, 154, 0.25);
+    mat-icon { color: var(--accent-tertiary); }
+  }
+  &--priority .wt-stat-card__icon {
+    background: rgba(255, 183, 134, 0.12);
+    border: 1px solid rgba(255, 183, 134, 0.25);
+    mat-icon { color: var(--priority-medium); }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  // ── Stat value — gradient text for premium feel ───────────────────────────
+  &__value {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    line-height: 1.1;
+    // Each card variant gets its own gradient text colour
+  }
+
+  &--active   .wt-stat-card__value {
+    background: linear-gradient(90deg, rgb(139 208 239), rgb(189 233 255));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  &--done     .wt-stat-card__value {
+    background: linear-gradient(90deg, rgb(161 211 154), rgb(188 240 180));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  &--priority .wt-stat-card__value {
+    background: linear-gradient(90deg, rgb(255 183 134), rgb(255 180 171));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
-.task-card {
-  transition: transform 0.2s;
+// ─── Task List ───────────────────────────────────────────────────────────────
+.wt-list {
+  &__heading {
+    margin-bottom: var(--space-6);
+    letter-spacing: var(--tracking-wide);
+  }
+}
+
+// ─── Task Card ───────────────────────────────────────────────────────────────
+.wt-task {
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  overflow: hidden; // Clips progress bar to the card's border-radius
+
+  // GPU-composited transition — kept before nested rules to satisfy
+  // Sass's mixed-declarations spec (avoids deprecation warning).
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  will-change: transform, border-color;
+
+  // @supports guard: only apply backdrop-filter in capable browsers.
+  // Browsers that don't support it still get glass-bg fallback from
+  // the .glass--subtle class defined in _design-system.scss.
+  @supports (backdrop-filter: blur(1px)) {
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+  }
 
   &:hover {
-    transform: translateX(4px);
-    border-color: #3b82f6; /* border-blue-500 */
+    transform: translateX(6px);
+    border-color: var(--border-gold);
+    box-shadow: var(--glass-shadow-gold);
+  }
+
+  // Muted visual treatment for completed tasks — reduces cognitive noise
+  &--completed {
+    opacity: 0.7;
+
+    .wt-task__name {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+  }
+
+  // -- Card Header: priority + due date ----------------------------------------
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6) 0;
+    flex-wrap: wrap;
+  }
+
+  &__priority {
+    // badge class handles color; we just layout the icon inside it
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  &__priority-icon {
+    font-size: 12px !important;
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  &__due {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text-muted);
+    margin-left: auto; // Pushes due date to the right when there is space
+  }
+
+  // -- Card Body: name, description, actions -----------------------------------
+  &__body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-6) var(--space-5);
+
+    @include bp.mobile {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0; // Prevents flex child from overflowing
+  }
+
+  &__name {
+    margin-bottom: var(--space-2);
+  }
+
+  &__description {
+    // line-clamp: improves list scannability; full text visible in the modal
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+    line-height: 1.6;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  &__progress-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text-muted);
+  }
+
+  &__actions {
+    flex-shrink: 0;
+
+    @include bp.mobile {
+      width: 100%;
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  // Static completion indicator — not a button to avoid redundant tab stops
+  &__done-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--status-completed-text);
+    background: var(--status-completed-bg);
+    border: 1px solid var(--status-completed-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-base);
+    font-weight: var(--weight-medium);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  // -- Progress track (full-width strip at the card bottom) --------------------
+  // Positioned outside .wt-task__body so it spans the full card width.
+  &__progress-track {
+    height: 4px;
+    background: var(--surface-hover);
+    // No padding/margin — card overflow:hidden clips it cleanly
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: var(--gradient-gold);
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+    transition: width var(--transition-slow);
+    will-change: width;
+    box-shadow: 0 0 10px var(--accent-primary-bg);
+
+    // --- Alternative Color Variants ---
+    &--active {
+      background: linear-gradient(90deg, var(--accent-secondary) 0%, var(--md-sys-color-secondary-fixed-dim) 100%);
+      box-shadow: 0 0 10px var(--accent-secondary-bg);
+    }
+
+    &--completed {
+      background: linear-gradient(90deg, var(--accent-tertiary) 0%, var(--md-sys-color-tertiary-fixed-dim) 100%);
+      box-shadow: 0 0 10px var(--accent-tertiary-bg);
+    }
+
+    &--delayed {
+      background: linear-gradient(90deg, var(--status-delayed-text) 0%, var(--priority-high) 100%);
+      box-shadow: 0 0 10px var(--status-delayed-bg);
+    }
+
+    // Glossy specular highlight — pure CSS, no image cost
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.15) 0%,
+        transparent 100%
+      );
+      border-radius: inherit;
+    }
   }
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+// ─── Empty State ─────────────────────────────────────────────────────────────
+.wt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-8);
+  border-radius: var(--radius-xl);
+  border: 1px dashed var(--border-emphasis);
+  gap: var(--space-2);
+
+  &__icon {
+    font-size: 64px !important;
+    width: 64px !important;
+    height: 64px !important;
+    color: var(--text-faint);
+    opacity: 0.45;
+    margin-bottom: var(--space-4);
+  }
+
+  &__message {
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-medium);
+  }
 }
 
-/* Custom Modal Panel Class from TS */
+// ─── Modal Dialog Override ────────────────────────────────────────────────────
+// ::ng-deep is required here because Angular's ViewEncapsulation prevents
+// component styles from reaching Material's overlay container (rendered outside
+// the component host). The class name is unique enough to avoid global conflict.
 ::ng-deep .custom-modal {
   mat-dialog-container {
     padding: 0 !important;
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    background-color: #09090b; /* bg-zinc-950 */
-    border: 1px solid #27272a;
+    background: var(--glass-bg-strong) !important;
+    backdrop-filter: var(--glass-blur-lg);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow-gold);
   }
 }

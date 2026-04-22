@@ -21,7 +21,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() callId: string | null = null;
   @Input() isInitiator = false;
   @Input() targetUserId: string | null = null;
-  @Output() endCall = new EventEmitter<{ duration: string, type: string, endedAt: Date } | void>();
+  @Output() endCall = new EventEmitter<{ duration: string, type: string, endedAt: Date } | undefined>();
 
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
@@ -84,7 +84,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private setupSignaling() {
     this.subs.add(
-      this.socketService.onCallOffer().subscribe(async (data) => {
+      this.socketService.onCallOffer().subscribe(async (data: any) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           const answer = await this.webRtcService.handleOffer(payload.offer!);
@@ -98,7 +98,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subs.add(
-      this.socketService.onCallAnswer().subscribe(async (data) => {
+      this.socketService.onCallAnswer().subscribe(async (data: any) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           await this.webRtcService.handleAnswer(payload.answer!);
@@ -107,7 +107,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subs.add(
-      this.socketService.onIceCandidate().subscribe(async (data) => {
+      this.socketService.onIceCandidate().subscribe(async (data: any) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           await this.webRtcService.addIceCandidate(payload.candidate!);
@@ -116,7 +116,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subs.add(
-      this.socketService.onCallEnded().subscribe((data) => {
+      this.socketService.onCallEnded().subscribe((data: any) => {
         const payload = data as SignalingPayload;
         if (payload.callId === this.callId) {
           this.endCall.emit({

@@ -1,113 +1,199 @@
-<div class="p-6">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-white">My Assignments</h1>
-    <button mat-flat-button color="primary" (click)="loadTasks()">
-      <mat-icon>refresh</mat-icon>
-      Refresh
+<main class="wt-container" role="main">
+
+  <!--
+    ┌─ PAGE HEADER ──────────────────────────────────────────────────────────
+    │  The ambient glow behind the title reinforces the warm-gold brand tone.
+    │  The refresh button uses the design system's primary CTA to maintain
+    │  visual consistency with the rest of the application.
+    └────────────────────────────────────────────────────────────────────── -->
+  <header class="wt-header">
+    <div class="wt-header__title-group">
+      <h1 class="wt-header__title heading-page--gold">My Assignments</h1>
+      <p class="wt-header__subtitle text-body">Track, manage, and update all tasks assigned to you.</p>
+    </div>
+    <button
+      class="btn btn--primary wt-header__action"
+      (click)="loadTasks()"
+      aria-label="Refresh task list"
+    >
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      <span>Refresh</span>
     </button>
-  </div>
+  </header>
 
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <mat-card class="stats-card in-progress">
-      <mat-card-content class="flex items-center p-4">
-        <div class="stat-icon-wrapper mr-4">
-          <mat-icon color="primary">play_circle</mat-icon>
-        </div>
-        <div>
-          <p class="text-gray-400 text-sm">Active Tasks</p>
-          <h2 class="text-2xl font-bold">{{ (inProgressCount$ | async) || 0 }}</h2>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <!--
+    ┌─ STATS DASHBOARD ──────────────────────────────────────────────────────
+    │  Three glassmorphism cards give the worker an instant visual summary.
+    │  Each card uses a 4px left-border accent to semantically encode its
+    │  category without relying solely on color (WCAG 1.4.1).
+    └────────────────────────────────────────────────────────────────────── -->
+  <section class="wt-stats" aria-label="Task Statistics Summary">
+    <article class="wt-stat-card wt-stat-card--active glass">
+      <div class="wt-stat-card__icon" aria-hidden="true">
+        <mat-icon>play_circle</mat-icon>
+      </div>
+      <div class="wt-stat-card__body">
+        <p class="label-caps">Active Tasks</p>
+        <strong class="wt-stat-card__value" aria-live="polite">
+          {{ (inProgressCount$ | async) || 0 }}
+        </strong>
+      </div>
+    </article>
 
-    <mat-card class="stats-card completed">
-      <mat-card-content class="flex items-center p-4">
-        <div class="stat-icon-wrapper mr-4">
-          <mat-icon class="text-green-500">check_circle</mat-icon>
-        </div>
-        <div>
-          <p class="text-gray-400 text-sm">Completed</p>
-          <h2 class="text-2xl font-bold">{{ (completedCount$ | async) || 0 }}</h2>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <article class="wt-stat-card wt-stat-card--done glass">
+      <div class="wt-stat-card__icon" aria-hidden="true">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="wt-stat-card__body">
+        <p class="label-caps">Completed</p>
+        <strong class="wt-stat-card__value" aria-live="polite">
+          {{ (completedCount$ | async) || 0 }}
+        </strong>
+      </div>
+    </article>
 
-    <mat-card class="stats-card priority">
-      <mat-card-content class="flex items-center p-4">
-        <div class="stat-icon-wrapper mr-4">
-          <mat-icon class="text-orange-500">priority_high</mat-icon>
-        </div>
-        <div>
-          <p class="text-gray-400 text-sm">Priority Tasks</p>
-          <h2 class="text-2xl font-bold">{{ (highPriorityCount$ | async) || 0 }}</h2>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+    <article class="wt-stat-card wt-stat-card--priority glass">
+      <div class="wt-stat-card__icon" aria-hidden="true">
+        <mat-icon>priority_high</mat-icon>
+      </div>
+      <div class="wt-stat-card__body">
+        <p class="label-caps">High Priority</p>
+        <strong class="wt-stat-card__value" aria-live="polite">
+          {{ (highPriorityCount$ | async) || 0 }}
+        </strong>
+      </div>
+    </article>
+  </section>
 
-  <!-- Tasks List -->
-  <div class="space-y-4">
-    <h3 class="text-lg font-semibold text-white mb-2">My Tasks</h3>
-    
+  <!--
+    ┌─ TASK LIST ────────────────────────────────────────────────────────────
+    │  Each task is an <article> (self-contained piece of content), while the
+    │  list itself is a <section> with an aria-labelledby reference for
+    │  unambiguous landmark navigation.
+    │
+    │  The @for/@empty control flow keeps the template declarative.
+    │  task.id is the most stable track-by key available.
+    └────────────────────────────────────────────────────────────────────── -->
+  <section class="wt-list" aria-labelledby="wt-list-heading">
+    <h2 id="wt-list-heading" class="wt-list__heading heading-section">
+      Current Assignments
+    </h2>
+
     @for (task of tasks$ | async; track task.id) {
-      <mat-card class="task-card bg-zinc-900 border-zinc-800">
-        <mat-card-content class="p-4">
-          <div class="flex flex-wrap justify-between items-start gap-4">
-            <div class="flex-1 min-w-[200px]">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="px-2 py-0.5 text-xs rounded-full font-medium uppercase tracking-wider"
-                      [ngClass]="{
-                        'bg-zinc-800 text-zinc-400': task.priority === 'Low',
-                        'bg-blue-900/40 text-blue-400': task.priority === 'Medium',
-                        'bg-orange-900/40 text-orange-400': task.priority === 'High',
-                        'bg-red-900/40 text-red-400': task.priority === 'Critical'
-                      }">
-                  {{ task.priority }}
-                </span>
-                <span class="text-zinc-500 text-xs">Due: {{ (task.plannedEndDate | date:'shortDate') || 'No due date' }}</span>
-              </div>
-              <h3 class="text-lg font-bold text-white mb-2">{{ task.name }}</h3>
-              <p class="text-zinc-400 text-sm mb-4 line-clamp-2">{{ task.description || 'No description provided.' }}</p>
-              
-              <div class="flex items-center gap-4 text-xs text-zinc-500">
-                <div class="flex items-center gap-1">
-                  <mat-icon class="text-base h-4 w-4">flag</mat-icon>
-                  <span>{{ task.status }}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <mat-icon class="text-base h-4 w-4">trending_up</mat-icon>
-                  <span>{{ task.progress }}% Complete</span>
-                </div>
-              </div>
-            </div>
+      <article class="wt-task glass--subtle"
+               [class.wt-task--completed]="task.status === 'Completed'">
 
-            <div class="flex items-center gap-3 self-center">
-              @if (task.status === 'Not Started' || task.status === 'Scheduled') {
-                <button mat-raised-button color="primary" (click)="openStartModal(task)" class="bg-blue-600">
-                  <mat-icon>play_arrow</mat-icon>
-                  Start Task
-                </button>
-              } @else if (task.status !== 'Completed') {
-                <button mat-stroked-button color="primary" (click)="openUpdateModal(task)" class="border-blue-500/50">
-                  <mat-icon>edit</mat-icon>
-                  Update Progress
-                </button>
-              }
+        <!-- Task: Top row — priority chip + due date -->
+        <header class="wt-task__header">
+          <!-- Priority badge: colour + text-label satisfies WCAG 1.4.1 -->
+          <span class="badge wt-task__priority"
+                role="img"
+                [attr.aria-label]="task.priority + ' priority'"
+                [ngClass]="{
+                  'badge--neutral': task.priority === 'Low',
+                  'badge--blue':    task.priority === 'Medium',
+                  'badge--gold':    task.priority === 'High',
+                  'badge--delayed': task.priority === 'Critical'
+                }">
+            <mat-icon class="wt-task__priority-icon" aria-hidden="true">flag</mat-icon>
+            {{ task.priority }}
+          </span>
+
+          <time class="text-micro wt-task__due" [attr.datetime]="task.plannedEndDate">
+            <mat-icon class="icon-xs" aria-hidden="true">schedule</mat-icon>
+            {{ (task.plannedEndDate | date:'mediumDate') || 'No due date' }}
+          </time>
+        </header>
+
+        <!-- Task: Main content -->
+        <div class="wt-task__body">
+          <div class="wt-task__content">
+            <h3 class="wt-task__name heading-card">{{ task.name }}</h3>
+            <p class="wt-task__description text-body">
+              {{ task.description || 'No detailed description available for this task.' }}
+            </p>
+
+            <!-- Status + progress meta row -->
+            <div class="wt-task__meta">
+              <span class="badge wt-task__status"
+                    role="status"
+                    [ngClass]="{
+                      'badge--completed':   task.status === 'Completed',
+                      'badge--in-progress': task.status === 'In Progress',
+                      'badge--not-started': task.status === 'Not Started' || task.status === 'Scheduled'
+                    }">
+                {{ task.status }}
+              </span>
+
+              <span class="wt-task__progress-label text-caption">
+                <mat-icon class="icon-xs" aria-hidden="true">trending_up</mat-icon>
+                {{ task.progress }}% complete
+              </span>
             </div>
           </div>
-          
-          <!-- Progress Bar -->
-          <div class="mt-4 h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-            <div class="h-full bg-blue-600 transition-all duration-500" [style.width.%]="task.progress"></div>
+
+          <!-- Task: Action button(s) — aligned to end of card -->
+          <nav class="wt-task__actions" aria-label="Task actions">
+            @if (task.status === 'Not Started' || task.status === 'Scheduled') {
+              <button
+                class="btn btn--primary"
+                (click)="openStartModal(task)"
+                [attr.aria-label]="'Start task: ' + task.name"
+              >
+                <mat-icon aria-hidden="true">play_arrow</mat-icon>
+                <span>Start Task</span>
+              </button>
+            } @else if (task.status !== 'Completed') {
+              <button
+                class="btn btn--secondary"
+                (click)="openUpdateModal(task)"
+                [attr.aria-label]="'Update progress for: ' + task.name"
+              >
+                <mat-icon aria-hidden="true">edit</mat-icon>
+                <span>Update Progress</span>
+              </button>
+            } @else {
+              <!-- Visually confirm completion without an interactive element -->
+              <span class="wt-task__done-badge">
+                <mat-icon aria-hidden="true">task_alt</mat-icon>
+                Done
+              </span>
+            }
+          </nav>
+        </div>
+
+        <!--
+          Progress bar: role="progressbar" + aria-valuenow gives screen
+          readers the numeric value without relying on the visual fill.
+        -->
+        <div class="wt-task__progress-track"
+             role="progressbar"
+             [attr.aria-valuenow]="task.progress"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             [attr.aria-label]="task.name + ' – ' + task.progress + '% complete'">
+          <div class="wt-task__progress-fill"
+               [style.width.%]="task.progress"
+               [ngClass]="{
+                 'wt-task__progress-fill--active': task.status === 'In Progress',
+                 'wt-task__progress-fill--completed': task.status === 'Completed',
+                 'wt-task__progress-fill--delayed': task.status === 'Delayed' || task.priority === 'High' || task.priority === 'Critical'
+               }">
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+
+      </article>
     } @empty {
-      <div class="text-center py-12 bg-zinc-900/50 rounded-lg border border-zinc-800">
-        <mat-icon class="text- zinc-700 text-5xl mb-4 h-12 w-12">assignment_late</mat-icon>
-        <p class="text-zinc-500">No tasks assigned to you at the moment.</p>
+      <!--
+        Empty state: uses the global .empty-state + glass tokens so the
+        look matches every other empty view in the application.
+      -->
+      <div class="wt-empty glass--subtle" role="status" aria-live="polite">
+        <mat-icon class="wt-empty__icon" aria-hidden="true">assignment_late</mat-icon>
+        <p class="wt-empty__message">You have no active assignments at this time.</p>
+        <p class="text-caption">Tasks assigned to you will appear here.</p>
       </div>
     }
-  </div>
-</div>
+  </section>
+
+</main>

@@ -4,7 +4,12 @@
       <h1>Vendor Dashboard</h1>
       <p class="subtitle">Overview of your business performance and orders</p>
     </div>
-    <button mat-stroked-button color="primary" (click)="loadStats()" [disabled]="loading">
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="loadStats()"
+      [disabled]="loading"
+    >
       <mat-icon>refresh</mat-icon>
       Refresh
     </button>
@@ -22,7 +27,9 @@
       <mat-icon color="warn">error</mat-icon>
       <h3>Something went wrong</h3>
       <p>We couldn't load your dashboard statistics.</p>
-      <button mat-flat-button color="primary" (click)="loadStats()">Try Again</button>
+      <button mat-flat-button color="primary" (click)="loadStats()">
+        Try Again
+      </button>
     </div>
   }
 
@@ -30,31 +37,42 @@
     <div class="dashboard-content">
       <!-- Summary Cards -->
       <div class="stats-grid">
-        <mat-card class="stat-card revenue">
+        <mat-card
+          class="stat-card revenue"
+          routerLink="/vendor/purchase-orders"
+        >
           <mat-card-content>
             <div class="stat-icon">
               <mat-icon>payments</mat-icon>
             </div>
             <div class="stat-details">
               <span class="label">Total Revenue</span>
-              <span class="value">{{ stats.summary.totalRevenue | currency:'INR' }}</span>
+              <span class="value">{{
+                stats.summary.totalRevenue | currency: "INR"
+              }}</span>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="stat-card pending">
+        <mat-card
+          class="stat-card pending"
+          routerLink="/vendor/purchase-orders"
+          [queryParams]="{ filter: 'pending' }"
+        >
           <mat-card-content>
             <div class="stat-icon">
               <mat-icon>pending_actions</mat-icon>
             </div>
             <div class="stat-details">
               <span class="label">Pending Payments</span>
-              <span class="value">{{ stats.summary.pendingPayments | currency:'INR' }}</span>
+              <span class="value">{{
+                stats.summary.pendingPayments | currency: "INR"
+              }}</span>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="stat-card active">
+        <mat-card class="stat-card active" routerLink="/vendor/purchase-orders">
           <mat-card-content>
             <div class="stat-icon">
               <mat-icon>shopping_cart</mat-icon>
@@ -66,7 +84,11 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="stat-card completed">
+        <mat-card
+          class="stat-card completed"
+          routerLink="/vendor/purchase-orders"
+          [queryParams]="{ filter: 'paid' }"
+        >
           <mat-card-content>
             <div class="stat-icon">
               <mat-icon>check_circle</mat-icon>

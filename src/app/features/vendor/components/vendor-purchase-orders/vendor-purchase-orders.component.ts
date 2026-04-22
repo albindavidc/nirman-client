@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MaterialService } from '../../../shared-features/projects/services/material.service';
 import { ProjectService } from '../../../shared-features/projects/services/project.service';
 import { Project } from '../../../shared-features/projects/models/project.models';
@@ -33,7 +33,10 @@ import { forkJoin, of, catchError } from 'rxjs';
     trigger('fadeIn', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+        animate(
+          '400ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
       ]),
     ]),
   ],
@@ -43,6 +46,7 @@ export class VendorPurchaseOrdersComponent implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   purchaseOrders: PurchaseOrderResponseDto[] = [];
   filteredPurchaseOrders: PurchaseOrderResponseDto[] = [];
@@ -51,7 +55,12 @@ export class VendorPurchaseOrdersComponent implements OnInit {
   searchText = '';
 
   ngOnInit(): void {
-    this.loadAllPurchaseOrders();
+    this.route.queryParams.subscribe((params) => {
+      if (params['filter']) {
+        this.currentFilter = params['filter'].toUpperCase();
+      }
+      this.loadAllPurchaseOrders();
+    });
   }
 
   loadAllPurchaseOrders(): void {
@@ -66,10 +75,10 @@ export class VendorPurchaseOrdersComponent implements OnInit {
         }
 
         // Step 2: For each project, get POs
-        const poRequests = projects.map((p: Project) => 
+        const poRequests = projects.map((p: Project) =>
           this.materialService.getProjectPurchaseOrders(p.id).pipe(
-            catchError(() => of([])) // Handle individual project errors gracefully
-          )
+            catchError(() => of([])), // Handle individual project errors gracefully
+          ),
         );
 
         forkJoin(poRequests).subscribe({
@@ -82,22 +91,25 @@ export class VendorPurchaseOrdersComponent implements OnInit {
           error: () => {
             this.notificationService.error('Failed to load purchase orders');
             this.isLoading = false;
-          }
+          },
         });
       },
       error: () => {
         this.notificationService.error('Failed to load projects');
         this.isLoading = false;
-      }
+      },
     });
   }
 
   applyCurrentFilters(): void {
-    this.filteredPurchaseOrders = this.purchaseOrders.filter(po => {
-      const matchesStatus = this.currentFilter === 'ALL' || po.paymentStatus.toLowerCase() === this.currentFilter.toLowerCase();
-      const matchesSearch = !this.searchText || 
-                           po.poNumber.toLowerCase().includes(this.searchText.toLowerCase()) ||
-                           po.projectId.toLowerCase().includes(this.searchText.toLowerCase());
+    this.filteredPurchaseOrders = this.purchaseOrders.filter((po) => {
+      const matchesStatus =
+        this.currentFilter === 'ALL' ||
+        po.paymentStatus.toLowerCase() === this.currentFilter.toLowerCase();
+      const matchesSearch =
+        !this.searchText ||
+        po.poNumber.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        po.projectId.toLowerCase().includes(this.searchText.toLowerCase());
       return matchesStatus && matchesSearch;
     });
   }
@@ -119,7 +131,7 @@ export class VendorPurchaseOrdersComponent implements OnInit {
 
   createInvoice(po: PurchaseOrderResponseDto): void {
     this.router.navigate(['/vendor/purchase-orders', po.id, 'create-invoice'], {
-      queryParams: { projectId: po.projectId }
+      queryParams: { projectId: po.projectId },
     });
   }
 }

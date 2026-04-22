@@ -9,7 +9,7 @@ export const PROJECTS_ROUTES: Routes = [
   {
     path: '',
     canActivate: [RoleGuard],
-    data: { roles: ['admin', 'supervisor'] },
+    data: { roles: ['admin', 'supervisor', 'vendor'] },
     providers: [
       provideState('projects', projectReducer),
       provideEffects([ProjectEffects]),

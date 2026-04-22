@@ -40,23 +40,8 @@ export class SidebarComponent {
       if (role === 'vendor') {
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/vendor/dashboard' },
+          { label: 'Purchase Orders', icon: 'shopping_basket', route: '/vendor/purchase-orders' },
           { label: 'Communication', icon: 'chat', route: '/communication' },
-          {
-            label: 'Finance & Procurement',
-            icon: 'attach_money',
-            children: [
-              {
-                label: 'Procurement Request',
-                icon: 'shopping_cart',
-                route: '/vendor/dashboard/finance/procurement-request',
-              },
-              {
-                label: 'Payment Invoices',
-                icon: 'receipt',
-                route: '/vendor/dashboard/finance/invoices',
-              },
-            ],
-          },
         ];
       } else if (role === 'worker') {
         return [

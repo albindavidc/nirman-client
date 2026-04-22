@@ -1,94 +1,126 @@
-<div class="vendor-po-container p-6">
-  <div class="header mb-8 flex justify-between items-center bg-surface-container rounded-2xl p-6 shadow-lg glass-effect">
-    <div>
-      <h1 class="text-3xl font-bold text-primary mb-2 flex items-center">
-        <mat-icon class="mr-3">shopping_cart</mat-icon>
-        Purchase Orders
-      </h1>
-      <p class="text-on-surface-variant">Review and manage your incoming purchase orders and create invoices.</p>
-    </div>
-    <div class="stats flex gap-6">
-      <div class="stat-card p-4 rounded-xl bg-primary-container text-on-primary-container">
-        <span class="text-sm block opacity-80 uppercase font-semibold">Total POs</span>
-        <span class="text-2xl font-bold">{{ purchaseOrders.length }}</span>
+<div class="vendor-po-container">
+  <!-- 1. Header Hero Card -->
+  <header class="header-glass animate-slide-up">
+    <div class="title-area">
+      <div class="icon-focal-point">
+        <mat-icon>shopping_cart</mat-icon>
+      </div>
+      <div class="text-group">
+        <h1>Purchase Orders</h1>
+        <p>Review, fulfill, and bill your incoming construction orders.</p>
       </div>
     </div>
+
+    <div class="stat-badge">
+      <span class="label">Total Orders</span>
+      <span class="value">{{ purchaseOrders.length }}</span>
+    </div>
+  </header>
+
+  <!-- 2. Search & Filter Bar (Redesigned) -->
+  <div class="filters-bar animate-slide-up" style="animation-delay: 100ms;">
+    <!-- A. Search Row -->
+    <div class="search-row">
+      <div class="search-input-wrapper glass">
+        <mat-icon>search</mat-icon>
+        <input type="text"
+               (keyup)="applyFilter($event)" 
+               placeholder="Search PO Number or Project..."
+               aria-label="Search purchase orders">
+      </div>
+      <button class="search-btn" aria-label="Execute search">
+        SEARCH
+      </button>
+    </div>
+
+    <!-- B. Segmented Toggle Group -->
+    <div class="filter-toggle-group">
+      <mat-chip-listbox (change)="filterByStatus($event.value)">
+        <mat-chip-option selected value="ALL">All Orders</mat-chip-option>
+        <mat-chip-option value="pending">Pending</mat-chip-option>
+        <mat-chip-option value="paid">Paid</mat-chip-option>
+      </mat-chip-listbox>
+    </div>
   </div>
 
-  <!-- Filters -->
-  <div class="filters-bar mb-6 flex gap-4 items-center">
-    <mat-form-field appearance="outline" class="flex-1 max-w-md">
-      <mat-label>Search PO Number or Project</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. PO-2024-001">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-
-    <mat-chip-listbox (change)="filterByStatus($event.value)" class="status-filters">
-      <mat-chip-option selected value="ALL">All</mat-chip-option>
-      <mat-chip-option value="pending" color="accent">Pending</mat-chip-option>
-      <mat-chip-option value="paid" color="primary">Paid</mat-chip-option>
-    </mat-chip-listbox>
-  </div>
-
-  <!-- PO Grid -->
-  @if (filteredPurchaseOrders.length > 0) {
-    <div class="po-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (po of filteredPurchaseOrders; track po.id) {
-        <div class="po-card group" [@fadeIn]>
-          <mat-card class="h-full rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-outline-variant bg-surface-container-low">
-            <mat-card-header class="p-4 border-b border-outline-variant bg-surface-container-high">
-              <div mat-card-avatar class="bg-primary rounded-lg flex items-center justify-center text-on-primary">
+  <!-- 3. Results Section -->
+  <div class="results-panel" style="animation-delay: 200ms;">
+    @if (filteredPurchaseOrders.length > 0) {
+      <div class="po-grid animate-stagger">
+        @for (po of filteredPurchaseOrders; track po.id) {
+          <div class="po-card glass group">
+            <div class="card-header">
+              <div class="icon-box">
                 <mat-icon>receipt_long</mat-icon>
               </div>
-              <mat-card-title class="text-lg font-bold">{{ po.poNumber }}</mat-card-title>
-              <mat-card-subtitle class="text-sm flex items-center">
-                <mat-icon class="text-xs mr-1 h-3 w-3">calendar_today</mat-icon>
-                Issued: {{ po.issuedAt | date:'mediumDate' }}
-              </mat-card-subtitle>
-            </mat-card-header>
+              <div class="title-group">
+                <span class="po-number">{{ po.poNumber }}</span>
+                <span class="po-date">
+                  <mat-icon>calendar_today</mat-icon>
+                  Issued: {{ po.issuedAt | date:'mediumDate' }}
+                </span>
+              </div>
+            </div>
 
-            <mat-card-content class="p-6">
-              <div class="info-row flex justify-between mb-4">
-                <span class="text-on-surface-variant text-sm">Amount</span>
-                <span class="font-bold text-lg text-secondary">{{ po.totalAmount | currency:po.currency }}</span>
+            <div class="card-body">
+              <div class="amount-display">
+                <span class="label">Total Amount</span>
+                <span class="value">{{ po.totalAmount | currency:po.currency }}</span>
               </div>
 
-              <div class="info-row grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <span class="text-xs text-on-surface-variant block uppercase">Delivery</span>
-                  <span class="status-pill" [ngClass]="po.deliveryStatus">{{ po.deliveryStatus }}</span>
+              <div class="status-grid">
+                <div class="status-item">
+                  <span class="label">Delivery</span>
+                  <span class="badge" [ngClass]="{
+                    'badge--in-progress': po.deliveryStatus === 'pending',
+                    'badge--completed': po.deliveryStatus === 'delivered',
+                    'badge--neutral': !['pending', 'delivered'].includes(po.deliveryStatus)
+                  }">
+                    {{ po.deliveryStatus }}
+                  </span>
                 </div>
-                <div>
-                  <span class="text-xs text-on-surface-variant block uppercase">Payment</span>
-                  <span class="status-pill" [ngClass]="po.paymentStatus">{{ po.paymentStatus }}</span>
+                <div class="status-item">
+                  <span class="label">Payment Status</span>
+                  <span class="badge" [ngClass]="{
+                    'badge--delayed': po.paymentStatus === 'pending',
+                    'badge--completed': po.paymentStatus === 'paid',
+                    'badge--neutral': !['pending', 'paid'].includes(po.paymentStatus)
+                  }">
+                    {{ po.paymentStatus }}
+                  </span>
                 </div>
               </div>
 
-              <div class="project-info mt-6 p-3 rounded-lg bg-surface-container-highest border border-outline-variant">
-                <span class="text-xs text-primary font-bold block mb-1">PROJECT DETAILS</span>
-                <span class="text-sm font-medium">{{ po.projectId }}</span> <!-- Ideally should show project name -->
+              <div class="project-tag">
+                <span class="label">ASSOCIATED PROJECT</span>
+                <span class="name">{{ po.projectId }}</span>
               </div>
-            </mat-card-content>
+            </div>
 
-            <mat-card-actions class="p-4 bg-surface-container-high border-t border-outline-variant flex justify-end gap-2">
-              <button mat-button class="text-primary hover:bg-primary-container" (click)="viewDetails(po)">
-                <mat-icon>visibility</mat-icon> VIEW
+            <footer class="card-footer">
+              <button class="btn btn--secondary btn--ghost" (click)="viewDetails(po)">
+                <mat-icon>visibility</mat-icon>
+                Details
               </button>
-              <button mat-flat-button color="primary" 
+              <button class="btn btn--primary" 
                       [disabled]="po.paymentStatus === 'paid'"
                       (click)="createInvoice(po)">
-                <mat-icon>add_chart</mat-icon> CREATE INVOICE
+                <mat-icon>add_chart</mat-icon>
+                Create Invoice
               </button>
-            </mat-card-actions>
-          </mat-card>
+            </footer>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- 4. Empty State Panel -->
+      <div class="empty-state">
+        <div class="icon-container">
+          <mat-icon>inventory_2</mat-icon>
         </div>
-      }
-    </div>
-  } @else {
-    <div class="empty-state flex flex-col items-center justify-center p-20 bg-surface-container rounded-3xl border-2 border-dashed border-outline-variant grayscale">
-      <mat-icon class="text-6xl mb-4 opacity-20">inventory_2</mat-icon>
-      <h3 class="text-xl font-bold opacity-50">No Purchase Orders Found</h3>
-      <p class="text-on-surface-variant opacity-50 text-center">There are no purchase orders matching your current filters.</p>
-    </div>
-  }
+        <h3>No Purchase Orders Found</h3>
+        <p>We couldn't find any orders matching your search or filters. Adjust your criteria or refresh the page to try again.</p>
+      </div>
+    }
+  </div>
 </div>

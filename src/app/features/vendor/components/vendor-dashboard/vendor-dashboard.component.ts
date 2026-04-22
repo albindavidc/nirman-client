@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule } from '@angular/router';
 import * as echarts from 'echarts';
 import { EChartsOption } from 'echarts';
 import { VendorDashboardService } from '../../services/vendor-dashboard.service';
@@ -20,7 +21,8 @@ import { finalize } from 'rxjs';
     MatIconModule,
     MatButtonModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    RouterModule
   ],
   templateUrl: './vendor-dashboard.component.html',
   styleUrl: './vendor-dashboard.component.scss',

@@ -54,6 +54,15 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'materials',
+    canActivate: [RoleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () =>
+      import('./components/materials/material-list/material-list.component').then(
+        (m) => m.MaterialListComponent,
+      ),
+  },
+  {
     path: 'finance/invoices',
     canActivate: [RoleGuard],
     data: { roles: ['admin'] },

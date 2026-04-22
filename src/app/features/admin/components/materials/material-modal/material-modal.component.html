@@ -1,0 +1,62 @@
+<div class="modal-container">
+  <header class="modal-header">
+    <h2>{{ isEditMode ? 'Edit Material' : 'Create New Material' }}</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="modal-body">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Material Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g. Cement" />
+        <mat-error *ngIf="materialForm.get('name')?.hasError('required')">
+          Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Material Code</mat-label>
+        <input matInput formControlName="code" placeholder="e.g. CMT-001" />
+        <mat-error *ngIf="materialForm.get('code')?.hasError('required')">
+          Code is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Category</mat-label>
+        <input matInput formControlName="category" placeholder="e.g. Building Materials" />
+        <mat-error *ngIf="materialForm.get('category')?.hasError('required')">
+          Category is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Unit</mat-label>
+        <input matInput formControlName="unit" placeholder="e.g. Bag, Kg, Meter" />
+        <mat-error *ngIf="materialForm.get('unit')?.hasError('required')">
+          Unit is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description (Optional)</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Additional details about the material..."></textarea>
+    </mat-form-field>
+
+    <footer class="modal-footer">
+      <button type="button" mat-button (click)="onCancel()" [disabled]="isSubmitting">
+        Cancel
+      </button>
+      <button type="submit" mat-flat-button color="primary" [disabled]="materialForm.invalid || isSubmitting" class="submit-btn">
+        <mat-icon *ngIf="!isSubmitting">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+        <span *ngIf="!isSubmitting">{{ isEditMode ? 'Update' : 'Create' }} Material</span>
+        <span *ngIf="isSubmitting">Please wait...</span>
+      </button>
+    </footer>
+  </form>
+</div>

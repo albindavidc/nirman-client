@@ -1,0 +1,71 @@
+.modal-container {
+  padding: 24px;
+  background: var(--md-sys-color-surface);
+  border-radius: 16px;
+  color: var(--md-sys-color-on-surface);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--md-sys-color-primary);
+  }
+
+  .close-btn {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+
+    .flex-1 {
+      flex: 1;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+
+  .submit-btn {
+    border-radius: 20px;
+    padding: 0 24px;
+    height: 44px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+:host ::ng-deep {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-form-field-error-wrapper {
+    display: block;
+    padding-top: 4px;
+  }
+}

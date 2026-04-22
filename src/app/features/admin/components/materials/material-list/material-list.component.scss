@@ -1,0 +1,148 @@
+.materials-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--md-sys-color-primary);
+    margin: 0;
+  }
+
+  .subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 1.1rem;
+    margin: 8px 0 0;
+  }
+
+  .add-btn {
+    border-radius: 20px;
+    padding: 0 24px;
+    height: 48px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.glass-morphism {
+  background: rgba(var(--md-sys-color-surface-container-rgb), 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.filter-bar {
+  margin-bottom: 24px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+
+  .search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+
+    input {
+      background: transparent;
+      border: none;
+      color: var(--md-sys-color-on-surface);
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+
+      &::placeholder {
+        color: var(--md-sys-color-outline);
+      }
+    }
+  }
+}
+
+.table-container {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+  .material-table {
+    width: 100%;
+    background: transparent;
+
+    th.mat-mdc-header-cell {
+      background: rgba(var(--md-sys-color-surface-container-high-rgb), 0.8);
+      color: var(--md-sys-color-on-surface-variant);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 16px;
+    }
+
+    td.mat-mdc-cell {
+      padding: 16px;
+      color: var(--md-sys-color-on-surface);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .code-cell {
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 500;
+      color: var(--md-sys-color-secondary);
+    }
+
+    .name-cell {
+      font-weight: 500;
+    }
+
+    .category-badge {
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    tr.mat-mdc-row:hover {
+      background: rgba(var(--md-sys-color-primary-rgb), 0.05);
+    }
+  }
+}
+
+.empty-cell {
+  padding: 48px !important;
+  text-align: center;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--md-sys-color-outline);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}

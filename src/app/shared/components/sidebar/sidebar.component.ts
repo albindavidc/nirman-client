@@ -126,7 +126,17 @@ export class SidebarComponent {
               icon: 'group',
               route: '/admin/project-workers',
             },
+            {
+              label: 'Material Approvals',
+              icon: 'fact_check',
+              route: '/admin/material-approvals',
+            },
           ],
+        },
+        {
+          label: 'Materials',
+          icon: 'inventory_2',
+          route: '/admin/materials',
         },
         {
           label: 'Workforce & Labor',
@@ -169,11 +179,6 @@ export class SidebarComponent {
               label: 'Vendor Payments',
               icon: 'payments',
               route: '/vendor-payments',
-            },
-            {
-              label: 'Material Approvals',
-              icon: 'fact_check',
-              route: '/admin/material-approvals',
             },
           ],
         },

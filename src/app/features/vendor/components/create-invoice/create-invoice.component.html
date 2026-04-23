@@ -1,150 +1,474 @@
-<div class="create-invoice-container p-6 animate-fade-in">
-  <div class="header mb-8 bg-surface-container rounded-2xl p-6 shadow-lg glass-effect">
-    <button mat-icon-button (click)="goBack()" class="mb-2">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <div class="flex justify-between items-end">
-      <div>
-        <h1 class="text-3xl font-bold text-primary mb-1">Generate Invoice</h1>
+<div class="create-invoice-container" @fadeIn>
+  <!-- SECTION 1 — Page Header Card -->
+  <header class="header-glass" @slideDown>
+    <div class="title-area">
+      <button class="back-btn" (click)="goBack()" aria-label="Go back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="text-group">
+        <h1>Generate Invoice</h1>
         @if (prepData) {
-          <p class="text-on-surface-variant">Creating invoice for PO: <span class="text-secondary font-semibold">{{ prepData.poNumber }}</span></p>
+          <p>
+            Project:
+            <span class="text-gold">{{
+              prepData.projectName || "Active Project"
+            }}</span>
+            | PO: <span class="text-gold">#{{ prepData.poNumber }}</span>
+          </p>
         }
       </div>
-      @if (prepData) {
-        <div class="currency-badge p-2 px-4 rounded-full bg-secondary-container text-on-secondary-container text-sm font-bold">
-          CURRENCY: {{ prepData.currency }}
-        </div>
-      }
     </div>
-  </div>
+    @if (prepData) {
+      <div class="stat-badge">
+        <span class="label">CURRENCY</span>
+        <span class="value">{{ prepData.currency }}</span>
+      </div>
+    }
+  </header>
 
-  <div class="content card-main relative" [class.loading]="isLoading">
+  <div class="content relative" [class.loading]="isLoading">
     @if (isLoading) {
-      <mat-spinner class="absolute-center"></mat-spinner>
+      <div class="loading-overlay">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
     }
 
-    <mat-stepper linear #stepper class="rounded-2xl overflow-hidden bg-surface-container-low border border-outline-variant">
-      <!-- Step 1: Review Billable Items -->
-      <mat-step [stepControl]="itemsForm" label="Billable Items">
-        <div class="p-6">
-          <h2 class="text-xl font-bold mb-4 text-secondary">Review Recommended Items</h2>
-          <p class="text-on-surface-variant mb-6 text-sm">Below are the items and quantities that have been accepted through Goods Receipt Notes (GRNs) for this PO.</p>
+    <!-- SECTION 2 — Mat Stepper Bar -->
+    <div class="mat-stepper-wrapper">
+      <mat-stepper linear #stepper>
+        <!-- Step 1: Review Billable Items -->
+        <mat-step [stepControl]="itemsForm" label="Billable Items">
+          <div class="step-content">
+            <header class="step-header">
+              <h2>Verified Materials</h2>
+              <div class="reference-info-bar">
+                <!-- PO Issued Date pill -->
+                <div class="ref-item">
+                  <div class="ref-icon-wrap">
+                    <mat-icon class="icon-sm">calendar_today</mat-icon>
+                  </div>
+                  <div class="ref-content">
+                    <span class="ref-label">PO ISSUED</span>
+                    <span class="ref-value">{{
+                      prepData?.poIssuedAt | date : "mediumDate"
+                    }}</span>
+                  </div>
+                </div>
 
-          <div class="items-table-container rounded-xl border border-outline-variant overflow-hidden mb-6">
-            <table class="w-full text-left border-collapse">
-              <thead class="bg-surface-container-high text-xs font-bold uppercase tracking-wider text-on-surface-variant">
-                <tr>
-                  <th class="p-4">Material</th>
-                  <th class="p-4">Accepted Qty</th>
-                  <th class="p-4">Unit Price</th>
-                  <th class="p-4">Tax %</th>
-                  <th class="p-4">Total Cost</th>
-                </tr>
-              </thead>
-              <tbody class="text-sm divide-y divide-outline-variant">
-                @for (item of prepData?.billableItems; track item.materialId) {
-                  <tr class="hover:bg-surface-container transition-colors">
-                    <td class="p-4 font-medium">{{ item.materialName }}</td>
-                    <td class="p-4">{{ item.acceptedQuantity }}</td>
-                    <td class="p-4">{{ item.unitPrice | currency:prepData?.currency }}</td>
-                    <td class="p-4">{{ item.taxRate }}%</td>
-                    <td class="p-4 font-bold text-primary">{{ item.recommendedTotal | currency:prepData?.currency }}</td>
+                <!-- Vertical divider — only shown when both items exist -->
+                @if (prepData?.locationName) {
+                  <div class="ref-divider"></div>
+                }
+
+                <!-- Site location pill — only when locationName exists -->
+                @if (prepData?.locationName) {
+                  <div class="ref-item ref-item--link">
+                    <div class="ref-icon-wrap">
+                      <mat-icon class="icon-sm">location_on</mat-icon>
+                    </div>
+                    <div class="ref-content">
+                      <span class="ref-label">PROJECT SITE</span>
+                      <a
+                        [href]="prepData?.locationLink"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="ref-link"
+                        aria-label="Open project site location"
+                      >
+                        <span>{{ prepData?.locationName }}</span>
+                        <mat-icon class="icon-xs">open_in_new</mat-icon>
+                      </a>
+                    </div>
+                  </div>
+                }
+                
+                @if (prepData?.supervisorName) {
+                  <div class="ref-divider"></div>
+                  <div class="ref-item">
+                    <div class="ref-icon-wrap">
+                      <mat-icon class="icon-sm">person</mat-icon>
+                    </div>
+                    <div class="ref-content">
+                      <span class="ref-label">SUPERVISOR</span>
+                      <span class="ref-value">{{ prepData?.supervisorName }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </header>
+
+            <!-- SECTION 3 — Step 1: Billable Items Table -->
+            <div class="table-glass" [formGroup]="itemsForm">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Material / Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Tax %</th>
+                    <th>Line Total</th>
                   </tr>
-                }
-              </tbody>
-              <tfoot class="bg-surface-container-highest">
-                <tr>
-                  <td colspan="4" class="p-4 text-right font-bold uppercase text-xs">Recommended Grand Total</td>
-                  <td class="p-4 text-xl font-black text-secondary">{{ prepData?.recommendedInvoiceTotal | currency:prepData?.currency }}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+                </thead>
+                <tbody formArrayName="items">
+                  @for (
+                    itemGroup of items.controls;
+                    track itemGroup;
+                    let i = $index
+                  ) {
+                    <tr [formGroupName]="i">
+                      <td>
+                        <div class="material-cell">
+                          <mat-icon class="icon-md text-gold opacity-60"
+                            >inventory_2</mat-icon
+                          >
+                          <div class="material-info">
+                            <span class="material-name">
+                              {{
+                                itemGroup.get("materialName")?.value ||
+                                  "Material Name Unavailable"
+                              }}
+                            </span>
+                            @if (itemGroup.get("materialCode")?.value) {
+                              <span class="material-code">
+                                {{ itemGroup.get("materialCode")?.value }}
+                              </span>
+                            }
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <mat-form-field
+                          appearance="outline"
+                          class="table-input qty-input"
+                        >
+                          <input
+                            matInput
+                            type="number"
+                            formControlName="acceptedQuantity"
+                          />
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field
+                          appearance="outline"
+                          class="table-input"
+                        >
+                          <input
+                            matInput
+                            type="number"
+                            formControlName="unitPrice"
+                          />
+                          <span matPrefix>{{ prepData?.currency }}</span>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <mat-form-field
+                          appearance="outline"
+                          class="table-input"
+                        >
+                          <input
+                            matInput
+                            type="number"
+                            formControlName="taxRate"
+                          />
+                          <span matSuffix>%</span>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        {{
+                          itemGroup.getRawValue().totalItemCost
+                            | currency: prepData?.currency
+                        }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr class="total-row">
+                    <td colspan="5">
+                      <div class="footer-breakdown">
+                        <div class="breakdown-item">
+                          <span class="label">SUBTOTAL:</span>
+                          <span class="value">{{
+                            subTotal | currency: prepData?.currency
+                          }}</span>
+                        </div>
+                        <div class="breakdown-item">
+                          <span class="label">EST. TAX:</span>
+                          <span class="value">{{
+                            taxAmount | currency: prepData?.currency
+                          }}</span>
+                        </div>
+                        <div class="breakdown-item grand-total">
+                          <span class="label">ESTIMATED TOTAL:</span>
+                          <span class="value">{{
+                            totalAmount | currency: prepData?.currency
+                          }}</span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
 
-          <div class="flex justify-end">
-            <button mat-flat-button color="primary" matStepperNext class="px-8 py-2 text-lg rounded-xl">
-              CONFIRM ITEMS <mat-icon class="ml-2">arrow_forward</mat-icon>
-            </button>
+            <div class="actions-row">
+              <button class="btn btn--primary btn--large" matStepperNext>
+                PROCEED TO DETAILS <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
           </div>
-        </div>
-      </mat-step>
+        </mat-step>
 
-      <!-- Step 2: Invoice Details -->
-      <mat-step [stepControl]="detailsForm" label="Invoice Details">
-        <form [formGroup]="detailsForm" class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div class="form-section">
-              <h3 class="text-sm font-bold text-primary uppercase mb-4 tracking-widest">General Information</h3>
-              
-              <mat-form-field appearance="outline" class="w-full mb-2">
-                <mat-label>Invoice Number</mat-label>
-                <input matInput formControlName="invoiceNumber" placeholder="INV-2024-XXX">
-                @if (detailsForm.get('invoiceNumber')?.hasError('required')) {
-                  <mat-error>Invoice number is required</mat-error>
-                }
+        <!-- Step 2: Invoice Details -->
+        <mat-step [stepControl]="detailsForm" label="Financial Setup">
+          <form [formGroup]="detailsForm" class="step-content">
+            <!-- SECTION 4 — Step 2: Financial Setup Form -->
+            <div class="form-grid">
+              <div class="form-section">
+                <div class="form-section-label">
+                  <mat-icon>info</mat-icon>
+                  <span>GENERAL INFORMATION</span>
+                </div>
+
+                <div class="form-fields">
+                  <mat-form-field appearance="outline" class="glass-input">
+                    <mat-label>Official Invoice Number</mat-label>
+                    <input
+                      matInput
+                      formControlName="invoiceNumber"
+                      placeholder="e.g. INV-2024-001"
+                    />
+                    <mat-icon matPrefix>receipt</mat-icon>
+                    @if (
+                      detailsForm.get("invoiceNumber")?.hasError("required")
+                    ) {
+                      <mat-error>Invoice number is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="glass-input">
+                    <mat-label>Payment Due Date</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      formControlName="dueDate"
+                    />
+                    <mat-datepicker-toggle
+                      matIconSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    @if (detailsForm.get("dueDate")?.hasError("required")) {
+                      <mat-error>Please select a valid due date</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <div class="form-section-label">
+                  <mat-icon>attach_file</mat-icon>
+                  <span>SUPPORTING DOCUMENTS</span>
+                </div>
+                <div
+                  class="upload-zone"
+                  (click)="triggerFileInput()"
+                  (dragover)="onDragOver($event)"
+                  (dragleave)="onDragLeave($event)"
+                  (drop)="onDrop($event)"
+                  [class.drag-over]="isDragOver"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Upload PDF Invoice"
+                  (keydown.enter)="triggerFileInput()"
+                >
+                  <!-- Hidden native file input -->
+                  <input
+                    #fileInput
+                    type="file"
+                    accept=".pdf"
+                    style="display: none"
+                    (change)="onFileSelected($event)"
+                    aria-hidden="true"
+                  />
+
+                  <mat-icon
+                    class="upload-icon"
+                    [attr.data-uploaded]="uploadedFile ? true : null"
+                  >
+                    {{ uploadedFile ? "check_circle" : "cloud_upload" }}
+                  </mat-icon>
+                  <span class="upload-text">
+                    {{
+                      uploadedFile ? uploadedFile.name : "Upload PDF Invoice"
+                    }}
+                  </span>
+                  <span class="upload-hint">
+                    {{
+                      uploadedFile
+                        ? "Click to replace file"
+                        : "Attach your official generated invoice file (Max 5MB) - Optional"
+                    }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section-label">
+              <mat-icon>account_balance</mat-icon>
+              <span>AUTOMATED FINANCIAL CALCULATION</span>
+            </div>
+
+            <div class="financial-panel">
+              <mat-form-field appearance="outline" class="glass-input">
+                <mat-label>Subtotal (Excl. Tax)</mat-label>
+                <input
+                  matInput
+                  [value]="subTotal | currency: prepData?.currency"
+                  readonly
+                />
+                <mat-icon matSuffix>payments</mat-icon>
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Due Date</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="dueDate">
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-                @if (detailsForm.get('dueDate')?.hasError('required')) {
-                  <mat-error>Due date is required</mat-error>
-                }
+              <mat-form-field appearance="outline" class="glass-input">
+                <mat-label>Aggregate Tax</mat-label>
+                <input
+                  matInput
+                  [value]="taxAmount | currency: prepData?.currency"
+                  readonly
+                />
+                <mat-icon matSuffix>account_balance_wallet</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field
+                appearance="outline"
+                class="glass-input highlight-gold"
+              >
+                <mat-label>Grand Total Payable</mat-label>
+                <input
+                  matInput
+                  [value]="totalAmount | currency: prepData?.currency"
+                  readonly
+                />
+                <mat-icon matSuffix>stars</mat-icon>
               </mat-form-field>
             </div>
 
-            <div class="form-section">
-              <h3 class="text-sm font-bold text-primary uppercase mb-4 tracking-widest">Attachments</h3>
-              <div class="upload-vibe p-8 rounded-2xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center bg-surface-container-high hover:border-primary transition-all cursor-pointer group">
-                <mat-icon class="text-5xl opacity-30 mb-2 group-hover:text-primary group-hover:opacity-100 transition-all">cloud_upload</mat-icon>
-                <span class="text-sm font-medium opacity-50 group-hover:opacity-100">Click or drag PDF invoice here</span>
-                <span class="text-xs opacity-30 mt-1">Max 5MB (Simulated)</span>
+            <div class="financial-note">
+              <mat-icon>info</mat-icon>
+              <span
+                >Financials are computed based on pre-negotiated rates and
+                verified site receipts.</span
+              >
+            </div>
+
+            <div class="actions-row pt-8-custom">
+              <button
+                class="btn btn--secondary btn-back-special"
+                matStepperPrevious
+              >
+                <mat-icon>arrow_back</mat-icon> REVISE ITEMS
+              </button>
+              <button class="btn btn--primary btn--large" matStepperNext>
+                REVIEW SUMMARY <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- Step 3: Review & Submit -->
+        <mat-step label="Review & Send">
+          <div class="step-content">
+            <!-- SECTION 5 — Step 3: Review & Send Summary -->
+            <div class="summary-glass">
+              <div class="summary-header">
+                <div class="invoice-meta">
+                  <span class="label-caps">LEGAL IDENTIFIER</span>
+                  <h3>
+                    #{{ detailsForm.get("invoiceNumber")?.value || "PENDING" }}
+                  </h3>
+
+                  <div class="linked-context">
+                    <div class="context-item">
+                      <mat-icon>business</mat-icon>
+                      <div class="context-info">
+                        <span class="ctx-label">PROJECT SITE</span>
+                        <a
+                          [href]="prepData?.locationLink"
+                          target="_blank"
+                          class="ctx-link"
+                        >
+                          {{ prepData?.projectName || "Linked Project" }}
+                          <mat-icon class="icon-xs">open_in_new</mat-icon>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="context-item">
+                      <mat-icon>person</mat-icon>
+                      <div class="context-info">
+                        <span class="ctx-label">VERIFIED BY</span>
+                        <span class="ctx-value">{{
+                          prepData?.supervisorName || "Project Supervisor"
+                        }}</span>
+                      </div>
+                    </div>
+                    <div class="context-item">
+                      <mat-icon>event_available</mat-icon>
+                      <div class="context-info">
+                        <span class="ctx-label">ORDER ISSUED</span>
+                        <span class="ctx-value">{{
+                          prepData?.poIssuedAt | date: "longDate"
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="due-tag">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span
+                    >Due for payment on:
+                    <span class="text-gold">{{
+                      detailsForm.get("dueDate")?.value | date: "longDate"
+                    }}</span></span
+                  >
+                </div>
+              </div>
+              <div class="amount-meta">
+                <span class="label-caps">FINAL SETTLEMENT AMOUNT</span>
+                <h2>{{ totalAmount | currency: prepData?.currency }}</h2>
+              </div>
+
+              <div class="info-strip">
+                <mat-icon>verified_user</mat-icon>
+                <span
+                  >Consolidated invoice verified for
+                  <span class="highlight-white"
+                    >{{ prepData?.grnReferences?.length }} site deliveries</span
+                  >
+                  and
+                  <span class="highlight-white"
+                    >{{ prepData?.billableItems?.length }} material
+                    categories</span
+                  >.</span
+                >
               </div>
             </div>
-          </div>
 
-          <div class="flex justify-between">
-            <button mat-button matStepperPrevious>BACK</button>
-            <button mat-flat-button color="primary" matStepperNext class="px-8 py-2 text-lg rounded-xl">
-              FINAL REVIEW <mat-icon class="ml-2">checklist</mat-icon>
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- Step 3: Review & Submit -->
-      <mat-step label="Review & Submit">
-        <div class="p-6">
-          <div class="summary-card bg-surface-container p-8 rounded-2xl border border-primary/20 mb-8 shadow-inner">
-            <div class="flex justify-between items-start mb-6">
-              <div>
-                <h3 class="text-2xl font-bold mb-1">{{ detailsForm.get('invoiceNumber')?.value }}</h3>
-                <span class="text-sm text-on-surface-variant">Due on: {{ detailsForm.get('dueDate')?.value | date:'longDate' }}</span>
-              </div>
-              <div class="text-right">
-                <span class="block text-xs uppercase opacity-50 font-bold mb-1">TOTAL PAYABLE</span>
-                <span class="text-4xl font-black text-secondary">{{ prepData?.recommendedInvoiceTotal | currency:prepData?.currency }}</span>
-              </div>
-            </div>
-            
-            <div class="divider h-[1px] bg-outline-variant w-full mb-6"></div>
-
-            <div class="flex items-center gap-2 text-primary font-bold">
-              <mat-icon size="small">info</mat-icon>
-              <span class="text-sm">This invoice covers items across {{ prepData?.grnReferences?.length }} GRNs.</span>
+            <div class="actions-row">
+              <button class="btn btn--secondary" matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon> BACK TO DETAILS
+              </button>
+              <button
+                class="btn btn--primary btn--large"
+                (click)="submitInvoice()"
+              >
+                SUBMIT OFFICIAL INVOICE <mat-icon>send</mat-icon>
+              </button>
             </div>
           </div>
-
-          <div class="flex justify-between">
-            <button mat-button matStepperPrevious>BACK</button>
-            <button mat-flat-button color="primary" class="px-12 py-3 text-xl font-bold rounded-2xl shadow-xl hover:scale-105 transition-all" (click)="submitInvoice()">
-              SUBMIT INVOICE <mat-icon class="ml-2">send</mat-icon>
-            </button>
-          </div>
-        </div>
-      </mat-step>
-    </mat-stepper>
+        </mat-step>
+      </mat-stepper>
+    </div>
   </div>
 </div>

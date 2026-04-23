@@ -1,144 +1,211 @@
 @if (invoice(); as inv) {
-<div class="detail-container p-6">
-  <div class="header mb-8 flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <button mat-icon-button routerLink="/admin/finance/invoices" class="back-btn">
+<div class="invoice-detail-container">
+  <!-- SECTION 1 — Page Header -->
+  <div class="invoice-detail__header">
+    <div class="invoice-detail__header-left">
+      <button
+        mat-icon-button
+        class="invoice-detail__back-btn"
+        routerLink="/admin/finance/invoices"
+        aria-label="Back to invoices"
+      >
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <div>
-        <h1 class="text-3xl font-bold text-white mb-1">Invoice Detail</h1>
-        <p class="text-gray-400">#{{ inv.invoiceNumber }} &bull; {{ inv.projectName || 'General Project' }}</p>
+      <div class="invoice-detail__title-group">
+        <h1 class="invoice-detail__title">Invoice Detail</h1>
+        <p class="invoice-detail__subtitle">
+          <span class="invoice-detail__invoice-ref"
+            >#{{ inv.invoiceNumber }}</span
+          >
+          &bull;
+          {{ inv.projectName || "General Project" }}
+        </p>
       </div>
     </div>
-    
-    <div class="flex gap-4">
-      <mat-chip-listbox>
-         <mat-chip [color]="getStatusColor(inv.status)" selected>{{ inv.status | titlecase }}</mat-chip>
-      </mat-chip-listbox>
+
+    <div class="invoice-detail__header-actions">
+      <!-- SECTION 2 — Status Badge -->
+      <span class="status-badge" [ngClass]="getStatusBadgeClass(inv.status)">
+        {{ inv.status | titlecase }}
+      </span>
+
+      <!-- SECTION 3 — Pay Balance Button -->
       @if (canPay(inv.status)) {
-        <button 
-          mat-flat-button 
-          color="primary" 
-          (click)="openPaymentDialog()"
-          class="pay-btn-large"
+      <button
+        class="invoice-detail__pay-btn"
+        (click)="openPaymentDialog()"
+        aria-label="Pay invoice balance"
+      >
+        <mat-icon class="icon-sm">payments</mat-icon>
+        <span>Pay Balance</span>
+        <span class="invoice-detail__pay-amount"
+          >({{ inv.total | currency : inv.currency }})</span
         >
-          <mat-icon>payments</mat-icon>
-          Pay Balance ({{ inv.total | currency: inv.currency }})
-        </button>
+      </button>
       }
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Summary Card -->
-    <mat-card class="glass-card lg:col-span-2">
-      <mat-card-header>
-        <mat-card-title>Billable Items</mat-card-title>
-      </mat-card-header>
-      <mat-card-content class="p-0">
-         <table mat-table [dataSource]="inv.items || []" class="items-table">
-            <ng-container matColumnDef="material">
-              <th mat-header-cell *matHeaderCellDef>Material ID</th>
-              <td mat-cell *matCellDef="let item">{{ item.materialId }}</td>
-            </ng-container>
+  <div class="invoice-detail__body">
+    <!-- SECTION 4 — Billable Items Table Card -->
+    <div class="invoice-detail__card">
+      <div class="invoice-detail__card-header">
+        <h2 class="invoice-detail__card-title">Billable Items</h2>
+      </div>
+      <div class="invoice-detail__table-wrap">
+        <table
+          mat-table
+          [dataSource]="inv.items || []"
+          class="invoice-detail__items-table"
+        >
+          <ng-container matColumnDef="material">
+            <th mat-header-cell *matHeaderCellDef>Material ID</th>
+            <td
+              mat-cell
+              *matCellDef="let item"
+              class="invoice-detail__cell--mono"
+            >
+              {{ item.materialId }}
+            </td>
+          </ng-container>
 
-            <ng-container matColumnDef="quantity">
-              <th mat-header-cell *matHeaderCellDef>Quantity</th>
-              <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
-            </ng-container>
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Quantity</th>
+            <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+          </ng-container>
 
-            <ng-container matColumnDef="price">
-              <th mat-header-cell *matHeaderCellDef>Unit Price</th>
-              <td mat-cell *matCellDef="let item">{{ item.unitPrice | currency: inv.currency }}</td>
-            </ng-container>
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Unit Price</th>
+            <td
+              mat-cell
+              *matCellDef="let item"
+              class="invoice-detail__cell--mono"
+            >
+              {{ item.unitPrice | currency : inv.currency }}
+            </td>
+          </ng-container>
 
-            <ng-container matColumnDef="tax">
-              <th mat-header-cell *matHeaderCellDef>Tax</th>
-              <td mat-cell *matCellDef="let item">{{ item.taxRate * 100 }}%</td>
-            </ng-container>
+          <ng-container matColumnDef="tax">
+            <th mat-header-cell *matHeaderCellDef>Tax</th>
+            <td mat-cell *matCellDef="let item">{{ item.taxRate * 100 }}%</td>
+          </ng-container>
 
-            <ng-container matColumnDef="total">
-              <th mat-header-cell *matHeaderCellDef>Subtotal</th>
-              <td mat-cell *matCellDef="let item" class="font-semibold">
-                {{ item.totalItemCost | currency: inv.currency }}
-              </td>
-            </ng-container>
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+            <td
+              mat-cell
+              *matCellDef="let item"
+              class="invoice-detail__cell--subtotal"
+            >
+              {{ item.totalItemCost | currency : inv.currency }}
+            </td>
+          </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="itemColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: itemColumns;"></tr>
-         </table>
+          <tr mat-header-row *matHeaderRowDef="itemColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: itemColumns"></tr>
+        </table>
+      </div>
 
-         <div class="totals-section p-6">
-            <div class="flex justify-between mb-2">
-              <span class="text-gray-400">Taxable Amount:</span>
-              <span class="text-white">{{ inv.amount | currency: inv.currency }}</span>
-            </div>
-            <div class="flex justify-between mb-2">
-              <span class="text-gray-400">Total Tax:</span>
-              <span class="text-white">{{ inv.tax | currency: inv.currency }}</span>
-            </div>
-            <mat-divider class="my-4"></mat-divider>
-            <div class="flex justify-between items-center">
-              <span class="text-xl font-bold text-white">Grand Total:</span>
-              <span class="text-2xl font-bold text-primary">{{ inv.total | currency: inv.currency }}</span>
-            </div>
-         </div>
-      </mat-card-content>
-    </mat-card>
+      <div class="invoice-detail__totals">
+        <div class="invoice-detail__totals-row">
+          <span class="label-caps">Taxable Amount</span>
+          <span class="invoice-detail__totals-value">{{
+            inv.amount | currency : inv.currency
+          }}</span>
+        </div>
+        <div class="invoice-detail__totals-row">
+          <span class="label-caps">Total Tax</span>
+          <span class="invoice-detail__totals-value">{{
+            inv.tax | currency : inv.currency
+          }}</span>
+        </div>
+        <div class="invoice-detail__divider"></div>
+        <div
+          class="invoice-detail__totals-row invoice-detail__totals-row--grand"
+        >
+          <span class="invoice-detail__grand-label">Grand Total</span>
+          <span class="invoice-detail__grand-value">{{
+            inv.total | currency : inv.currency
+          }}</span>
+        </div>
+      </div>
+    </div>
 
-    <!-- Sidebar Cards -->
-    <div class="flex flex-col gap-6">
-      <!-- Vendor & PO Info -->
-      <mat-card class="glass-card">
-        <mat-card-header>
-          <mat-card-title>Information</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="pt-4">
-          <div class="info-item mb-4">
-            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Vendor</span>
-            <span class="text-white font-medium">{{ inv.vendorName }}</span>
+    <div class="flex-col-gap-6">
+      <!-- SECTION 5 — Information Sidebar Card -->
+      <div class="invoice-detail__card">
+        <div class="invoice-detail__card-header">
+          <h2 class="invoice-detail__card-title">Information</h2>
+        </div>
+        <div class="invoice-detail__info-body">
+          <div class="invoice-detail__info-item">
+            <span class="label-caps">Vendor</span>
+            <span class="invoice-detail__info-value">{{ inv.vendorName }}</span>
           </div>
-          <div class="info-item mb-4">
-            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Purchase Order</span>
-            <span class="text-white font-medium">#{{ inv.poId }}</span>
+          <div class="invoice-detail__info-item">
+            <span class="label-caps">Purchase Order</span>
+            <span
+              class="invoice-detail__info-value invoice-detail__info-value--mono"
+              >#{{ inv.poId }}</span
+            >
           </div>
-          <div class="info-item mb-4">
-            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Created At</span>
-            <span class="text-white font-medium">{{ inv.createdAt | date:'mediumDate' }}</span>
+          <div class="invoice-detail__info-item">
+            <span class="label-caps">Created At</span>
+            <span class="invoice-detail__info-value">{{
+              inv.createdAt | date : "mediumDate"
+            }}</span>
           </div>
-          <div class="info-item">
-            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Due Date</span>
-            <span class="text-warn font-medium">{{ inv.dueDate | date:'mediumDate' }}</span>
+          <div class="invoice-detail__info-item">
+            <span class="label-caps">Due Date</span>
+            <span
+              class="invoice-detail__info-value invoice-detail__info-value--due"
+              >{{ inv.dueDate | date : "mediumDate" }}</span
+            >
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
 
-      <!-- Attachments -->
-      <mat-card class="glass-card">
-        <mat-card-header>
-          <mat-card-title>Attachments</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="pt-4">
+      <!-- SECTION 6 — Attachments Card -->
+      <div class="invoice-detail__card">
+        <div class="invoice-detail__card-header">
+          <h2 class="invoice-detail__card-title">Attachments</h2>
+        </div>
+        <div class="invoice-detail__attachments-body">
           @if (!inv.attachments?.length) {
-            <div class="text-gray-500 text-sm py-4 italic">
-              No files attached to this invoice.
-            </div>
+          <div class="invoice-detail__attachments-empty">
+            <mat-icon class="icon-md">attach_file</mat-icon>
+            <span>No files attached to this invoice.</span>
+          </div>
           } @else {
+          <div class="invoice-detail__attachment-list">
             @for (att of inv.attachments; track att.fileUrl) {
-              <div class="attachment-list">
-                <a [href]="att.fileUrl" target="_blank" class="attachment-item flex items-center p-3 rounded-lg hover:bg-white/5 transition-all gap-3">
-                  <mat-icon class="text-primary">insert_drive_file</mat-icon>
-                  <div class="flex-1 overflow-hidden">
-                    <p class="text-sm text-gray-200 truncate mb-0">{{ att.fileName }}</p>
-                    <span class="text-xs text-gray-500">{{ att.fileSize | number:'1.0-0' }} bytes</span>
-                  </div>
-                  <mat-icon class="text-gray-600 text-sm">open_in_new</mat-icon>
-                </a>
+            <a
+              [href]="att.fileUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="invoice-detail__attachment-item"
+              [attr.aria-label]="'Download ' + att.fileName"
+            >
+              <mat-icon class="icon-md invoice-detail__attachment-icon"
+                >insert_drive_file</mat-icon
+              >
+              <div class="invoice-detail__attachment-meta">
+                <span class="invoice-detail__attachment-name">{{
+                  att.fileName
+                }}</span>
+                <span class="invoice-detail__attachment-size"
+                  >{{ att.fileSize | number : "1.0-0" }} bytes</span
+                >
               </div>
+              <mat-icon class="icon-sm invoice-detail__attachment-external"
+                >open_in_new</mat-icon
+              >
+            </a>
             }
+          </div>
           }
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     </div>
   </div>
 </div>

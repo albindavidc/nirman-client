@@ -18,19 +18,19 @@
   </header>
 
   <!-- 2. Search & Filter Bar (Redesigned) -->
-  <div class="filters-bar animate-slide-up" style="animation-delay: 100ms;">
+  <div class="filters-bar animate-slide-up" style="animation-delay: 100ms">
     <!-- A. Search Row -->
     <div class="search-row">
       <div class="search-input-wrapper glass">
         <mat-icon>search</mat-icon>
-        <input type="text"
-               (keyup)="applyFilter($event)" 
-               placeholder="Search PO Number or Project..."
-               aria-label="Search purchase orders">
+        <input
+          type="text"
+          (keyup)="applyFilter($event)"
+          placeholder="Search PO Number or Project..."
+          aria-label="Search purchase orders"
+        />
       </div>
-      <button class="search-btn" aria-label="Execute search">
-        SEARCH
-      </button>
+      <button class="search-btn" aria-label="Execute search">SEARCH</button>
     </div>
 
     <!-- B. Segmented Toggle Group -->
@@ -44,70 +44,140 @@
   </div>
 
   <!-- 3. Results Section -->
-  <div class="results-panel" style="animation-delay: 200ms;">
+  <div class="results-panel" style="animation-delay: 200ms">
     @if (filteredPurchaseOrders.length > 0) {
       <div class="po-grid animate-stagger">
         @for (po of filteredPurchaseOrders; track po.id) {
           <div class="po-card glass group">
             <div class="card-header">
-              <div class="icon-box">
-                <mat-icon>receipt_long</mat-icon>
+              <div class="header-main">
+                <div class="icon-box">
+                  <mat-icon>receipt_long</mat-icon>
+                </div>
+                <div class="title-info">
+                  <div class="po-row">
+                    <span class="po-number">{{ po.poNumber }}</span>
+                    <span class="project-name">{{
+                      po.projectName || "General Project"
+                    }}</span>
+                  </div>
+                  <span class="po-date">
+                    <mat-icon>calendar_today</mat-icon>
+                    Issued: {{ po.issuedAt | date: "mediumDate" }}
+                  </span>
+                </div>
               </div>
-              <div class="title-group">
-                <span class="po-number">{{ po.poNumber }}</span>
-                <span class="po-date">
-                  <mat-icon>calendar_today</mat-icon>
-                  Issued: {{ po.issuedAt | date:'mediumDate' }}
-                </span>
+              <div class="status-badge-group">
+                <span
+                  class="badge badge--sm"
+                  [ngClass]="{
+                    'badge--in-progress': po.deliveryStatus === 'pending',
+                    'badge--completed': po.deliveryStatus === 'delivered',
+                  }"
+                  >{{ po.deliveryStatus }}</span
+                >
               </div>
             </div>
 
             <div class="card-body">
-              <div class="amount-display">
-                <span class="label">Total Amount</span>
-                <span class="value">{{ po.totalAmount | currency:po.currency }}</span>
-              </div>
-
-              <div class="status-grid">
-                <div class="status-item">
-                  <span class="label">Delivery</span>
-                  <span class="badge" [ngClass]="{
-                    'badge--in-progress': po.deliveryStatus === 'pending',
-                    'badge--completed': po.deliveryStatus === 'delivered',
-                    'badge--neutral': !['pending', 'delivered'].includes(po.deliveryStatus)
-                  }">
-                    {{ po.deliveryStatus }}
-                  </span>
+              <div class="info-columns">
+                <!-- Column 1: Project Metadata -->
+                <div class="info-column">
+                  <div class="meta-item">
+                    <mat-icon>person_outline</mat-icon>
+                    <div class="meta-content">
+                      <span class="meta-label">SUPERVISOR</span>
+                      <span class="meta-value">{{
+                        po.supervisorName || "Unassigned"
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="meta-item mt-4">
+                    <mat-icon>place</mat-icon>
+                    <div class="meta-content">
+                      <span class="meta-label">LOCATION</span>
+                      <span
+                        class="meta-value location-link"
+                        *ngIf="po.locationLink"
+                      >
+                        {{ po.locationName || "Project Site" }}
+                        <a
+                          [href]="po.locationLink"
+                          target="_blank"
+                          class="map-link"
+                        >
+                          <mat-icon>open_in_new</mat-icon>
+                        </a>
+                      </span>
+                      <span class="meta-value" *ngIf="!po.locationLink"
+                        >Not Specified</span
+                      >
+                    </div>
+                  </div>
                 </div>
-                <div class="status-item">
-                  <span class="label">Payment Status</span>
-                  <span class="badge" [ngClass]="{
-                    'badge--delayed': po.paymentStatus === 'pending',
-                    'badge--completed': po.paymentStatus === 'paid',
-                    'badge--neutral': !['pending', 'paid'].includes(po.paymentStatus)
-                  }">
-                    {{ po.paymentStatus }}
-                  </span>
-                </div>
-              </div>
 
-              <div class="project-tag">
-                <span class="label">ASSOCIATED PROJECT</span>
-                <span class="name">{{ po.projectId }}</span>
+                <!-- Column 2: Items & Financials -->
+                <div class="info-column pricing-column">
+                  <div class="materials-list">
+                    @for (item of po.items.slice(0, 3); track item.id) {
+                      <div class="material-row">
+                        <div class="material-info">
+                          <span class="material-name text-truncate">{{
+                            item.materialName
+                          }}</span>
+                          <span class="material-qty"
+                            >{{ item.quantity }} {{ item.unit }}</span
+                          >
+                        </div>
+                        <span class="material-price">{{
+                          item.totalItemCost
+                            | currency: po.currency : "symbol" : "1.0-2"
+                        }}</span>
+                      </div>
+                    }
+                    @if (po.items.length > 3) {
+                      <div class="more-indicator">
+                        + {{ po.items.length - 3 }} more materials
+                      </div>
+                    }
+                  </div>
+                  <div class="grand-total mt-4">
+                    <span class="total-label">ORDER TOTAL</span>
+                    <span class="total-value">{{
+                      po.totalAmount | currency: po.currency
+                    }}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
             <footer class="card-footer">
-              <button class="btn btn--secondary btn--ghost" (click)="viewDetails(po)">
-                <mat-icon>visibility</mat-icon>
-                Details
-              </button>
-              <button class="btn btn--primary" 
-                      [disabled]="po.paymentStatus === 'paid'"
-                      (click)="createInvoice(po)">
-                <mat-icon>add_chart</mat-icon>
-                Create Invoice
-              </button>
+              <div class="payment-status">
+                <mat-icon
+                  [ngClass]="
+                    po.paymentStatus === 'paid'
+                      ? 'status-paid'
+                      : 'status-pending'
+                  "
+                >
+                  {{
+                    po.paymentStatus === "paid"
+                      ? "check_circle"
+                      : "pending_actions"
+                  }}
+                </mat-icon>
+                <span>{{ po.paymentStatus | uppercase }}</span>
+              </div>
+              <div class="actions">
+                <button
+                  class="btn btn--primary btn--sm"
+                  [disabled]="po.paymentStatus === 'paid'"
+                  (click)="createInvoice(po)"
+                >
+                  <mat-icon>add_chart</mat-icon>
+                  Invoice
+                </button>
+              </div>
             </footer>
           </div>
         }
@@ -119,7 +189,10 @@
           <mat-icon>inventory_2</mat-icon>
         </div>
         <h3>No Purchase Orders Found</h3>
-        <p>We couldn't find any orders matching your search or filters. Adjust your criteria or refresh the page to try again.</p>
+        <p>
+          We couldn't find any orders matching your search or filters. Adjust
+          your criteria or refresh the page to try again.
+        </p>
       </div>
     }
   </div>

@@ -1,73 +1,1334 @@
+@use "design-system" as ds;
+@use "breakpoints" as bp;
+
 .create-invoice-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
+  min-height: 100vh;
+  padding: var(--space-6);
+  padding-bottom: var(--space-12);
 }
 
-.glass-effect {
-  background: rgba(35, 31, 23, 0.7) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.absolute-center {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-}
-
-.loading {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-::ng-deep {
-  .mat-horizontal-stepper-header-container {
-    padding: 24px 24px 0 !important;
-  }
-  
-  .mat-step-header .mat-step-label {
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 12px;
+// SECTION 1 — Page Header Card
+// ------------------------------------------------------------
+.header-glass {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-8);
+  margin-bottom: var(--space-8);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow-gold);
+  position: relative;
+  overflow: hidden;
+  @supports (backdrop-filter: blur(var(--glass-blur))) {
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
   }
 
-  .mat-stepper-horizontal-line {
-    border-top-color: var(--md-sys-color-outline-variant) !important;
+  // Ambient top-edge highlight
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight) 0%,
+      transparent 40%
+    );
+    pointer-events: none;
+  }
+
+  // Title area
+  .title-area {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  // Back button
+  .back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-emphasis);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      background var(--transition-base),
+      border-color var(--transition-base),
+      color var(--transition-base);
+
+    &:hover {
+      background: var(--accent-primary-bg);
+      border-color: var(--border-gold);
+      color: var(--accent-primary);
+    }
+
+    .mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  // Title text group
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    background: var(--gradient-text-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 var(--space-1) 0;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  p {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin: 0;
+
+    .text-gold {
+      color: var(--accent-primary);
+      font-weight: var(--weight-semibold);
+      font-family: var(--font-mono);
+    }
+  }
+
+  // Currency stat badge
+  .stat-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    padding: var(--space-4) var(--space-6);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glow-accent);
+
+    .label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      margin-bottom: var(--space-1);
+    }
+
+    .value {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      color: var(--accent-primary);
+      letter-spacing: var(--tracking-wide);
+      font-family: var(--font-mono);
+    }
   }
 }
 
-.items-table-container {
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+// SECTION 2 — Mat Stepper Bar
+// ------------------------------------------------------------
+.mat-stepper-wrapper {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--glass-shadow);
+  @supports (backdrop-filter: blur(var(--glass-blur-sm))) {
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+  }
 }
 
-.upload-vibe {
+.mat-stepper-horizontal {
+  background: transparent !important;
+}
+
+// Step header
+.mat-step-header {
+  background: transparent !important;
+  padding: var(--space-3) var(--space-4) !important;
+  border-radius: var(--radius-md) !important;
+  transition: background var(--transition-base) !important;
+
   &:hover {
-    background: rgba(233, 193, 108, 0.05) !important;
-    border-color: var(--md-sys-color-primary) !important;
+    background: var(--accent-primary-bg) !important;
+  }
+
+  // Step number circle — default
+  .mat-step-icon {
+    background: var(--surface-active) !important;
+    color: var(--text-muted) !important;
+    border: 1px solid var(--border-emphasis) !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: var(--text-sm) !important;
+    font-weight: var(--weight-bold) !important;
+  }
+
+  // Active step circle — gold gradient
+  .mat-step-icon-selected {
+    background: var(--gradient-gold) !important;
+    color: var(--md-sys-color-on-primary) !important;
+    border: none !important;
+    box-shadow: 0 0 12px rgba(233, 193, 108, 0.35) !important;
+  }
+
+  // Completed step circle — subtle gold
+  .mat-step-icon-state-done,
+  .mat-step-icon-state-edit {
+    background: var(--accent-primary-bg) !important;
+    color: var(--accent-primary) !important;
+    border: 1px solid var(--border-gold) !important;
+  }
+
+  // Step label
+  .mat-step-label {
+    color: var(--text-muted) !important;
+    font-size: var(--text-xs) !important;
+    font-weight: var(--weight-semibold) !important;
+    text-transform: uppercase !important;
+    letter-spacing: var(--tracking-wider) !important;
+  }
+
+  .mat-step-label-selected {
+    color: var(--accent-primary) !important;
   }
 }
 
-.summary-card {
+// Connector line between steps
+.mat-stepper-horizontal-line {
+  border-top-color: var(--border-emphasis) !important;
+  border-top-width: 1px !important;
+  flex: 1 !important;
+  margin: 0 var(--space-2) !important;
+}
+
+// Remove default stepper body background
+.mat-horizontal-stepper-content {
+  background: transparent !important;
+}
+
+.mat-horizontal-content-container {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+// SECTION 3 — Step 1: Billable Items Table
+// ------------------------------------------------------------
+.step-content {
+  padding: var(--space-8);
+  background: transparent;
+}
+
+// Step heading
+.step-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+
+  h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    background: var(--gradient-text-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin: 0 0 var(--space-2) 0;
+  }
+
+  p {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+}
+
+// Table glass wrapper — fixes overflow and adds depth
+.table-glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden; // ← critical: clips table to rounded corners
+  box-shadow: var(--glass-shadow);
+  width: 100%;
+  margin-bottom: var(--space-8);
+  @supports (backdrop-filter: blur(var(--glass-blur-sm))) {
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; // ← prevents overflow
+  }
+
+  // Column widths — Optimized for numeric inputs
+  th:nth-child(1) {
+    width: 45%;
+  } // Material
+  th:nth-child(2) {
+    width: 10%;
+  } // Accepted Qty
+  th:nth-child(3) {
+    width: 18%;
+  } // Unit Price
+  th:nth-child(4) {
+    width: 12%;
+  } // Tax %
+  th:nth-child(5) {
+    width: 15%;
+  } // Total
+
+  thead tr {
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--glass-border-strong);
+  }
+
+  th {
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    text-align: left;
+
+    &:nth-child(2),
+    &:nth-child(3),
+    &:nth-child(4) {
+      text-align: center;
+    }
+
+    &:last-child {
+      text-align: right;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background var(--transition-fast);
+
+    &:hover {
+      background: var(--glass-bg-subtle);
+    }
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  td {
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    vertical-align: middle;
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+    &:nth-child(3),
+    &:nth-child(4) {
+      text-align: center;
+      .table-input {
+        margin: 0 auto;
+      } // Center the form field in the cell
+    }
+
+    &:last-child {
+      text-align: right;
+      font-weight: var(--weight-bold);
+      color: var(--accent-primary);
+      font-family: var(--font-mono);
+    }
+  }
+
+  // Material name cell
+  .material-name {
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+  }
+
+  // Inline table inputs (unit price / tax)
+  // BUG FIX — Double/Triple Border on Table Inline Inputs
+  // ── STEP 1 — TABLE INLINE INPUTS ────────────────────────────
+  // These live INSIDE .table-glass (border-radius: var(--radius-lg))
+  // So inner inputs use: var(--radius-md) per nesting formula
+  .table-input {
+    // Remove default mat-form-field margin/padding that distorts sizing
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none !important; // removes bottom hint/error space
+    }
+
+    .mat-mdc-text-field-wrapper {
+      border-radius: var(--radius-md) !important; // 12px — nested inside 16px panel
+      padding: 0 var(--space-3) !important;
+      height: 40px !important; // consistent fixed height across all table inputs
+      display: flex !important;
+      align-items: center !important;
+      background: var(--glass-bg-subtle) !important;
+    }
+
+    // Apply radius to all three notched outline segments
+    .mdc-notched-outline__leading {
+      border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
+      width: var(--radius-md) !important; // match radius value exactly
+      border-color: var(--border-default) !important;
+    }
+    .mdc-notched-outline__notch {
+      border-radius: 0 !important;
+      border-color: var(--border-default) !important;
+    }
+    .mdc-notched-outline__trailing {
+      border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+      border-color: var(--border-default) !important;
+    }
+
+    &.mat-focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--border-gold) !important;
+      }
+      .mdc-notched-outline {
+        box-shadow: var(--shadow-glow-accent) !important;
+      }
+    }
+
+    input {
+      height: 40px !important;
+      padding: 0 !important;
+      font-size: var(--text-base) !important;
+      font-family: var(--font-mono) !important;
+      color: var(--text-primary) !important;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+    }
+  }
+
+  // ── Column-specific widths ──────────────────────────────
+  // Quantity column — compact, number only
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 120px !important;
+    min-width: 120px !important;
+
+    .table-input {
+      width: 100px !important;
+      margin: 0 auto;
+
+      .mat-mdc-text-field-wrapper {
+        width: 100px !important;
+      }
+    }
+  }
+
+  // Unit Price column — wider to accommodate currency prefix + number
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 180px !important;
+    min-width: 180px !important;
+
+    .table-input {
+      width: 160px !important;
+      margin: 0 auto;
+
+      .mat-mdc-text-field-wrapper {
+        width: 160px !important;
+      }
+
+      // Currency prefix alignment
+      .mat-mdc-form-field-text-prefix {
+        color: var(--text-muted) !important;
+        font-size: var(--text-sm) !important;
+        font-family: var(--font-mono) !important;
+        padding-right: var(--space-1) !important;
+        align-self: center;
+      }
+    }
+  }
+
+  // Tax % column — compact, matches quantity width
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 120px !important;
+    min-width: 120px !important;
+
+    .table-input {
+      width: 100px !important;
+      margin: 0 auto;
+
+      .mat-mdc-text-field-wrapper {
+        width: 100px !important;
+      }
+
+      // % suffix alignment
+      .mat-mdc-form-field-text-suffix {
+        color: var(--text-muted) !important;
+        font-size: var(--text-sm) !important;
+        padding-left: var(--space-1) !important;
+        align-self: center;
+      }
+    }
+  }
+
+  // Total footer row
+  tfoot .total-row {
+    background: var(--glass-bg-strong);
+    border-top: 1px solid var(--glass-border-strong);
+
+    td {
+      padding: var(--space-4) var(--space-5);
+    }
+
+    .footer-breakdown {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+    }
+
+    .breakdown-item {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+
+      .label {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-widest);
+        font-weight: var(--weight-semibold);
+      }
+
+      .value {
+        font-size: var(--text-md);
+        font-weight: var(--weight-bold);
+        font-family: var(--font-mono);
+        color: var(--text-secondary);
+      }
+
+      &.grand-total {
+        .label {
+          color: var(--accent-primary);
+        }
+        .value {
+          font-size: var(--text-xl);
+          color: var(--accent-primary);
+          text-shadow: var(--shadow-glow-accent);
+        }
+      }
+    }
+  }
+}
+
+// Proceed button — aligned right, consistent size
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+
+  .btn--large {
+    height: 48px;
+    padding: 0 var(--space-8);
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    border-radius: var(--radius-md); // ← fix: was pill-shaped, now consistent
+  }
+}
+
+// SECTION 4 — Step 2: Financial Setup Form
+// ------------------------------------------------------------
+// Two-column form grid
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Section label with icon
+.form-section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--accent-primary);
+  }
+
+  span {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+}
+
+// Glass form fields — consistent with design system
+// BUG 2 — Let ONLY the mdc-notched-outline handle the focus border
+  // ── STEP 2 — GENERAL INFORMATION FORM INPUTS ────────────────
+  // These live INSIDE .form-section which has no border container
+  // Top-level inputs: use var(--radius-md) = 12px directly
+  .glass-input {
+    width: 100% !important;
+
+    .mat-mdc-text-field-wrapper {
+      border-radius: var(--radius-md) !important; // 12px
+      height: 52px !important; // comfortable touch target
+      display: flex !important;
+      align-items: center !important;
+      background: var(--glass-bg) !important;
+      backdrop-filter: var(--glass-blur-sm) !important;
+      -webkit-backdrop-filter: var(--glass-blur-sm) !important;
+    }
+
+    // Radius on all three outline segments
+    .mdc-notched-outline__leading {
+      border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
+      width: var(--radius-md) !important;
+      border-color: var(--border-default) !important;
+    }
+    .mdc-notched-outline__notch {
+      border-radius: 0 !important;
+      border-color: var(--border-default) !important;
+    }
+    .mdc-notched-outline__trailing {
+      border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+      border-color: var(--border-default) !important;
+    }
+
+    &.mat-focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--border-gold) !important;
+      }
+      .mat-mdc-text-field-wrapper {
+        box-shadow:
+          0 0 0 1px var(--border-gold),
+          var(--shadow-glow-accent) !important;
+      }
+    }
+
+    // Label positioning fix after radius change
+    .mat-mdc-floating-label {
+      color: var(--text-muted) !important;
+    }
+
+    input {
+      color: var(--text-primary) !important;
+      caret-color: var(--accent-primary) !important;
+      font-size: var(--text-base) !important;
+    }
+
+    // Prefix icon sizing and alignment
+    .mat-mdc-form-field-icon-prefix .mat-icon {
+      color: var(--text-muted) !important;
+      font-size: 18px !important;
+      width: 18px !important;
+      height: 18px !important;
+      margin-right: var(--space-2) !important;
+    }
+  }
+
+// Upload zone — glassmorphism dashed panel
+// BUG 1 — Upload zone interactive states
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-10) var(--space-6);
+  background: var(--glass-bg-subtle);
+  border: 2px dashed var(--glass-border-strong);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base);
+  height: 100%;
+  min-height: 160px;
+
+  // Drag-over active state
+  &.drag-over {
+    background: var(--accent-primary-bg) !important;
+    border-color: var(--border-gold) !important;
+
+    .upload-icon {
+      color: var(--accent-primary) !important;
+      transform: translateY(-4px) scale(1.1);
+    }
+  }
+
+  // Uploaded/success state
+  &:has(.upload-icon[data-uploaded]) {
+    border-color: var(--status-completed-border) !important;
+    background: var(--status-completed-bg) !important;
+
+    .upload-icon {
+      color: var(--status-completed-text) !important;
+    }
+
+    .upload-text {
+      color: var(--status-completed-text) !important;
+      font-weight: var(--weight-semibold) !important;
+    }
+  }
+
+  // Keyboard focus ring
+  &:focus-visible {
+    outline: 2px solid var(--accent-primary) !important;
+    outline-offset: 2px !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  &:hover:not(.drag-over) {
+    background: var(--accent-primary-bg);
+    border-color: var(--border-gold);
+
+    .upload-icon {
+      color: var(--accent-primary);
+      transform: translateY(-3px);
+    }
+  }
+
+  .upload-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--text-muted);
+    transition:
+      color var(--transition-base),
+      transform var(--transition-base);
+  }
+
+  .upload-text {
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    color: var(--text-secondary);
+  }
+
+  .upload-hint {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    text-align: center;
+  }
+}
+
+// Financial calculation glass panel
+  // ── STEP 2 — FINANCIAL CALCULATION PANEL INPUTS ───────────
+  // These live INSIDE .financial-panel (border-radius: var(--radius-lg))
+  // Apply nesting formula: inner = 16px − (16px / 2) = 8px = var(--radius-sm)
+  .financial-panel {
+    border-radius: var(--radius-lg) !important; // outer = 16px
+
+    // Three-column equal layout
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1.2fr !important; // Grand Total slightly wider
+    gap: var(--space-5) !important;
+    padding: var(--space-5) !important;
+    background: var(--glass-bg-strong) !important;
+    border: 1px solid var(--glass-border) !important;
+
+    .glass-input {
+      width: 100% !important;
+
+      .mat-mdc-text-field-wrapper {
+        // Nested inside 16px panel → use var(--radius-sm) = 8px
+        border-radius: var(--radius-sm) !important;
+        height: 48px !important;
+        background: var(--glass-bg-subtle) !important;
+      }
+
+      .mdc-notched-outline__leading {
+        border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
+        width: var(--radius-sm) !important;
+        border-color: var(--border-default) !important;
+      }
+      .mdc-notched-outline__notch {
+        border-radius: 0 !important;
+        border-color: var(--border-default) !important;
+      }
+      .mdc-notched-outline__trailing {
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+        border-color: var(--border-default) !important;
+      }
+
+      &.mat-focused {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--border-gold) !important;
+        }
+      }
+
+      input {
+        font-family: var(--font-mono) !important;
+        font-size: var(--text-base) !important;
+        color: var(--text-secondary) !important;
+      }
+    }
+
+    // Grand Total field — visually elevated
+    // Outer panel is var(--radius-lg), grand total gets var(--radius-md)
+    // to stand out slightly above the other two fields
+    .glass-input.highlight-gold {
+      .mat-mdc-text-field-wrapper {
+        border-radius: var(--radius-md) !important; // slightly larger = more emphasis
+        background: rgba(91, 67, 0, 0.25) !important;
+        box-shadow: var(--shadow-glow-accent) !important;
+      }
+
+      .mdc-notched-outline__leading {
+        border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
+        width: var(--radius-md) !important;
+        border-color: var(--glass-border-strong) !important;
+      }
+      .mdc-notched-outline__notch {
+        border-color: var(--glass-border-strong) !important;
+      }
+      .mdc-notched-outline__trailing {
+        border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+        border-color: var(--glass-border-strong) !important;
+      }
+
+      input {
+        color: var(--accent-primary) !important;
+        font-weight: var(--weight-bold) !important;
+        font-size: var(--text-md) !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+// Disclaimer note
+.financial-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0.7;
+  margin-top: var(--space-3);
+
+  .mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// SECTION 5 — Step 3: Review & Send Summary
+// ------------------------------------------------------------
+// Summary glass card
+.summary-glass {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--glass-shadow-gold);
+  margin-bottom: var(--space-8);
+  position: relative;
+  overflow: hidden;
+  @supports (backdrop-filter: blur(var(--glass-blur))) {
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 223, 158, 0.05) 0%,
+      transparent 50%
+    );
+    pointer-events: none;
+  }
+}
+
+// Summary header — two-column, wraps on mobile
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap; // ← fix overflow clipping
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+
+  .invoice-meta {
+    flex: 1;
+    min-width: 200px;
+
+    .label-caps {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      opacity: 0.7;
+    }
+
+    h3 {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      color: var(--text-primary);
+      margin: var(--space-1) 0 var(--space-4) 0;
+      font-family: var(--font-mono);
+      letter-spacing: var(--tracking-wide);
+    }
+
+    .linked-context {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-2);
+
+      .context-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+
+        .mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: var(--accent-primary);
+          opacity: 0.8;
+        }
+
+        .context-info {
+          display: flex;
+          flex-direction: column;
+
+          .ctx-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: var(--tracking-widest);
+            font-weight: var(--weight-bold);
+          }
+
+          .ctx-value,
+          .ctx-link {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            font-weight: var(--weight-semibold);
+          }
+
+          .ctx-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            transition: color var(--transition-fast);
+
+            &:hover {
+              color: var(--accent-secondary);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .due-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+
+    .mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+    }
+    .text-gold {
+      color: var(--accent-primary);
+      font-weight: var(--weight-semibold);
+    }
+  }
+
+  // Amount block — right side
+  .amount-meta {
+    text-align: right;
+    flex-shrink: 0;
+
+    .label-caps {
+      font-size: var(--text-xs);
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      opacity: 0.85;
+    }
+
+    h2 {
+      // Fix: was too small — now prominent display size
+      font-size: clamp(var(--text-2xl), 4vw, 3.5rem);
+      font-weight: var(--weight-bold);
+      background: var(--gradient-text-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: var(--space-2) 0 0 0;
+      font-family: var(--font-mono);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      text-shadow: none; // gradient replaces text-shadow
+    }
+  }
+}
+
+// Info strip — verified delivery count
+.info-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+
+  .mat-icon {
+    color: var(--status-completed-text);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .text-white {
+    color: var(--text-primary);
+    font-weight: var(--weight-semibold);
+  }
+}
+
+// Submit + Back actions row
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  flex-wrap: wrap;
+
+  .btn--secondary {
+    height: 48px;
+    padding: 0 var(--space-6);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-emphasis);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    transition:
+      background var(--transition-base),
+      border-color var(--transition-base),
+      color var(--transition-base);
+
+    &:hover {
+      background: var(--glass-bg-strong);
+      border-color: var(--border-gold);
+      color: var(--text-primary);
+    }
+  }
+
+  .btn--primary.btn--large {
+    height: 48px;
+    padding: 0 var(--space-8);
+    background: var(--gradient-gold);
+    color: var(--md-sys-color-on-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(233, 193, 108, 0.25);
+    transition:
+      box-shadow var(--transition-base),
+      filter var(--transition-base),
+      transform var(--transition-fast);
+
+    &:hover {
+      box-shadow: var(--shadow-glow-gold);
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 8, 5, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+}
+
+// Layout & Typography Helpers (No Tailwind)
+.material-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  .material-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .material-name {
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .material-code {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+}
+
+// ============================================================
+// REFERENCE INFO BAR — Step 1 Billable Items
+// Glassmorphism pill container with metadata ref items
+// ============================================================
+
+.reference-info-bar {
+  // Glass pill container
+  display: inline-flex;
+  align-items: center;
+  gap: 0; // gap handled by items and divider
+  padding: var(--space-2) var(--space-4);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full); // full pill shape
+  box-shadow: var(--glass-shadow);
+  margin-top: var(--space-4);
+
+  // Top-edge highlight shimmer
   position: relative;
   overflow: hidden;
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--md-sys-color-primary);
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+
+  // Responsive — stack vertically on mobile
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: var(--radius-lg);
+    gap: var(--space-3);
+    width: 100%;
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
+// ── Vertical divider between ref items ──────────────────────
+.ref-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border-emphasis);
+  margin: 0 var(--space-4);
+  flex-shrink: 0;
+  align-self: center;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    height: 1px;
+    margin: 0;
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+// ── Individual ref item ──────────────────────────────────────
+.ref-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-base);
+
+  &:hover {
+    background: var(--accent-primary-bg);
+  }
+}
+
+// ── Icon wrapper — small glowing circle ─────────────────────
+.ref-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-primary-bg);
+  border: 1px solid var(--glass-border);
+  flex-shrink: 0;
+  transition:
+    background var(--transition-base),
+    box-shadow var(--transition-base);
+
+  .mat-icon {
+    color: var(--accent-primary) !important;
+  }
+
+  .ref-item:hover & {
+    background: var(--glass-bg-strong);
+    box-shadow: var(--shadow-glow-accent);
+  }
+}
+
+// ── Label + value stacked vertically inside each item ───────
+.ref-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ref-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: 1;
+}
+
+.ref-value {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-wide);
+}
+
+// ── Site link — override browser default, use design tokens ─
+.ref-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--accent-primary) !important; // override browser blue
+  text-decoration: none !important; // remove underline
+  line-height: 1.2;
+  transition:
+    color var(--transition-base),
+    text-shadow var(--transition-base);
+
+  // Suppress browser default link styles completely
+  &:visited,
+  &:active {
+    color: var(--accent-primary) !important;
+  }
+
+  &:hover {
+    color: var(--md-sys-color-on-primary-container) !important;
+    text-shadow: var(--shadow-glow-accent);
+
+    .mat-icon {
+      transform: translate(1px, -1px);
+    }
+  }
+
+  .mat-icon {
+    color: inherit !important;
+    transition: transform var(--transition-base);
+  }
+}
+
+.qty-cell {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.pt-8-custom {
+  padding-top: var(--space-8);
+}
+
+.btn-back-special {
+  margin-right: auto;
+}
+
+.highlight-white {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
 }

@@ -60,13 +60,17 @@ export class AdminInvoiceDetailComponent implements OnInit {
     });
   }
 
-  getStatusColor(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'paid': return 'primary';
-      case 'pending': return 'accent';
-      case 'partially_paid': return 'warn';
-      default: return '';
-    }
+  getStatusBadgeClass(status: string): string {
+    const map: Record<string, string> = {
+      pending: "status-badge--pending",
+      paid: "status-badge--paid",
+      approved: "status-badge--approved",
+      overdue: "status-badge--overdue",
+      rejected: "status-badge--rejected",
+      draft: "status-badge--draft",
+      blocked: "status-badge--blocked",
+    };
+    return map[status?.toLowerCase()] ?? "status-badge--draft";
   }
 
   canPay(status: string): boolean {

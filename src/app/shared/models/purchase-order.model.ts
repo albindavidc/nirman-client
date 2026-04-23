@@ -48,4 +48,5 @@ export interface PurchaseOrderItemResponseDto {
   unitPrice: number;
   taxRate: number;
   totalItemCost: number;
+  unit?: string;
 }

@@ -40,7 +40,7 @@
         @if (data.request.status === 'pending') {
           <div class="action-form">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Search Vendor (Optional)</mat-label>
+              <mat-label>Search Vendor (Required for PO)</mat-label>
               <mat-icon matPrefix class="text-zinc-400 mr-2">search</mat-icon>
               <input
                 matInput
@@ -101,7 +101,7 @@
               <button 
                 mat-flat-button 
                 class="approve-btn"
-                [disabled]="submitting()"
+                [disabled]="submitting() || !selectedVendorId"
                 (click)="onApprove()"
               >
                 <mat-icon>check</mat-icon> Approve Request

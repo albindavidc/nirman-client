@@ -15,6 +15,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { trigger, transition, style, animate } from '@angular/animations';
 import { forkJoin, of, catchError } from 'rxjs';
 
+export interface EnrichedPurchaseOrder extends PurchaseOrderResponseDto {
+  projectName?: string;
+  supervisorName?: string;
+  locationName?: string;
+  locationLink?: string;
+}
+
 @Component({
   selector: 'app-vendor-purchase-orders',
   standalone: true,
@@ -48,8 +55,8 @@ export class VendorPurchaseOrdersComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  purchaseOrders: PurchaseOrderResponseDto[] = [];
-  filteredPurchaseOrders: PurchaseOrderResponseDto[] = [];
+  purchaseOrders: EnrichedPurchaseOrder[] = [];
+  filteredPurchaseOrders: EnrichedPurchaseOrder[] = [];
   isLoading = false;
   currentFilter = 'ALL';
   searchText = '';
@@ -74,17 +81,60 @@ export class VendorPurchaseOrdersComponent implements OnInit {
           return;
         }
 
-        // Step 2: For each project, get POs
-        const poRequests = projects.map((p: Project) =>
-          this.materialService.getProjectPurchaseOrders(p.id).pipe(
-            catchError(() => of([])), // Handle individual project errors gracefully
-          ),
+        // Step 2: For each project, get POs AND Materials
+        const projectDataRequests = projects.map((p: Project) =>
+          forkJoin({
+            pos: this.materialService.getProjectPurchaseOrders(p.id).pipe(catchError(() => of([]))),
+            materials: this.materialService.getProjectMaterials(p.id).pipe(catchError(() => of([])))
+          })
         );
 
-        forkJoin(poRequests).subscribe({
-          next: (allPoResults: PurchaseOrderResponseDto[][]) => {
-            // Step 3: Flatten results and store
-            this.purchaseOrders = allPoResults.flat();
+        forkJoin(projectDataRequests).subscribe({
+          next: (results: any[]) => {
+            const enrichedPos: EnrichedPurchaseOrder[] = [];
+
+            results.forEach((res, index) => {
+              const project = projects[index];
+              const projectMaterials = res.materials;
+
+              res.pos.forEach((po: PurchaseOrderResponseDto) => {
+                const enriched: EnrichedPurchaseOrder = { ...po };
+                enriched.projectName = project.name;
+
+                // Enrich items with material names and units from project materials
+                enriched.items = po.items.map(item => {
+                  const material = projectMaterials.find((m: any) => m.id === item.materialId);
+                  return {
+                    ...item,
+                    materialName: material?.name || item.materialName || 'Material',
+                    unit: (material as any)?.unit || 'units'
+                  };
+                });
+
+                // Find Supervisor name
+                const supervisorWorker = project.workers?.find(
+                  (w) => w.role.toLowerCase() === 'supervisor',
+                );
+                if (supervisorWorker) {
+                  const member = project.teamMembers?.find(
+                    (m) => m.id === supervisorWorker.userId,
+                  );
+                  enriched.supervisorName = member?.name || 'Assigned Supervisor';
+                } else if (project.managerIds && project.managerIds.length > 0) {
+                  enriched.supervisorName = 'Project Manager';
+                }
+
+                // Location Details
+                if (project.latitude && project.longitude) {
+                  enriched.locationName = project.description?.substring(0, 30) || 'Project Site';
+                  enriched.locationLink = `https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`;
+                }
+
+                enrichedPos.push(enriched);
+              });
+            });
+
+            this.purchaseOrders = enrichedPos;
             this.applyCurrentFilters();
             this.isLoading = false;
           },
@@ -124,12 +174,12 @@ export class VendorPurchaseOrdersComponent implements OnInit {
     this.applyCurrentFilters();
   }
 
-  viewDetails(po: PurchaseOrderResponseDto): void {
+  viewDetails(po: EnrichedPurchaseOrder): void {
     // Currently no detail page, could open a dialog or navigate
     this.notificationService.info(`Viewing details for ${po.poNumber}`);
   }
 
-  createInvoice(po: PurchaseOrderResponseDto): void {
+  createInvoice(po: EnrichedPurchaseOrder): void {
     this.router.navigate(['/vendor/purchase-orders', po.id, 'create-invoice'], {
       queryParams: { projectId: po.projectId },
     });

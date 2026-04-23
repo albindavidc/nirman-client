@@ -1,28 +1,278 @@
+@use "design-system" as ds;
+@use "breakpoints" as bp;
+
+// SECTION 1 — Dialog surface
 .stripe-dialog {
-  background: #1e1e1e;
-  border-radius: 20px;
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-lg) !important;
+  -webkit-backdrop-filter: var(--glass-blur-lg) !important;
+  border: 1px solid var(--glass-border-strong) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--glass-shadow-gold) !important;
+  color: var(--text-primary) !important;
+  position: relative;
+  overflow: hidden;
+
+  // Top-edge shimmer — matches .glass system
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight) 0%,
+      transparent 40%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Ensure content sits above shimmer
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .stripe-dialog__inner {
+    padding: var(--space-6);
+  }
 }
 
-.stripe-input {
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  transition: all 0.2s ease;
+// SECTION 2 — Dialog header
+.stripe-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
 }
 
-.stripe-input-focus {
-  border-color: #bb86fc;
-  background: rgba(187, 134, 252, 0.03);
-  box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.1);
+.stripe-dialog__title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  background: var(--gradient-text-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: var(--tracking-wide);
 }
 
-.pay-submit-btn {
-  height: 56px;
-  border-radius: 28px;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+.stripe-dialog__close {
+  color: var(--text-muted) !important;
+  border-radius: var(--radius-sm) !important;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base) !important;
+
+  &:hover:not([disabled]) {
+    background: var(--glass-bg-subtle) !important;
+    color: var(--accent-primary) !important;
+  }
+
+  &[disabled] {
+    opacity: 0.38 !important;
+  }
+}
+
+// SECTION 3 — Invoice summary card
+.stripe-dialog__summary {
+  background: var(--glass-bg-subtle);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  margin-bottom: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stripe-dialog__summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Invoice number — monospace gold, matching invoice-number-cell pattern
+.stripe-dialog__invoice-number {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--accent-primary);
+  letter-spacing: var(--tracking-wide);
+}
+
+// Payable amount — hero value
+.stripe-dialog__amount {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+}
+
+// SECTION 4 — Card input field
+.stripe-dialog__field-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  margin-left: var(--space-1);
+}
+
+.stripe-dialog__card-input {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-4) var(--space-4) !important;
+  margin-bottom: var(--space-8);
+  transition: border-color var(--transition-base) !important;
+  min-height: 44px;
+
+  // Stripe mounts an iframe here — style the wrapper only
+  &:focus-within {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 3px var(--accent-primary-bg) !important;
+  }
+}
+
+// SECTION 5 — Error state
+.stripe-dialog__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--approval-rejected-bg);
+  border: 1px solid var(--approval-rejected-border);
+  color: var(--approval-rejected-text);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-4);
+
+  .mat-icon {
+    color: var(--approval-rejected-text) !important;
+    flex-shrink: 0;
+  }
+}
+
+// SECTION 6 — Submit button
+.stripe-dialog__submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 48px;
+  background: var(--gradient-gold) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border: none !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--text-base) !important;
+  font-weight: var(--weight-semibold) !important;
+  letter-spacing: var(--tracking-wide) !important;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(233, 193, 108, 0.25) !important;
+  transition:
+    box-shadow var(--transition-base),
+    filter var(--transition-base),
+    transform var(--transition-fast) !important;
+
+  .mat-icon {
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
+  &:hover:not([disabled]) {
+    box-shadow: var(--shadow-glow-gold) !important;
+    filter: brightness(1.08) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active:not([disabled]) {
+    transform: scale(0.98) !important;
+  }
+
+  &[disabled] {
+    opacity: 0.38 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+  }
+
+  // Processing state — subtle pulse
+  &--processing {
+    animation: gold-pulse 1.6s ease-in-out infinite !important;
+  }
+}
+
+.stripe-dialog__spinner {
+  --mdc-circular-progress-active-indicator-color: var(--md-sys-color-on-primary) !important;
+  flex-shrink: 0;
+}
+
+@keyframes gold-pulse {
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(233, 193, 108, 0.25);
+  }
+  50% {
+    box-shadow: var(--shadow-glow-gold);
+  }
+}
+
+// SECTION 7 — Security footer
+.stripe-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: var(--tracking-wide);
+}
+
+.stripe-dialog__lock-icon {
+  color: var(--accent-primary) !important;
+  opacity: 0.6;
+}
+
+// SECTION 8 — Responsive
+.stripe-dialog {
+  @include bp.tablet {
+    border-radius: var(--radius-lg) !important;
+
+    .stripe-dialog__inner {
+      padding: var(--space-5);
+    }
+  }
+
+  @include bp.mobile {
+    border-radius: var(--radius-md) !important;
+
+    .stripe-dialog__inner {
+      padding: var(--space-4);
+    }
+
+    .stripe-dialog__amount {
+      font-size: var(--text-xl);
+    }
+
+    .stripe-dialog__submit-btn {
+      height: 44px !important;
+    }
+  }
+
+  @include bp.small-mobile {
+    border-radius: var(--radius-sm) !important;
+
+    .stripe-dialog__inner {
+      padding: var(--space-3);
+    }
+
+    .stripe-dialog__title {
+      font-size: var(--text-lg);
+    }
+  }
 }
 
 ::ng-deep .stripe-dialog-container {

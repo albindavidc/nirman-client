@@ -45,10 +45,11 @@ export class MaterialApprovalService {
   approveRequest(
     id: string,
     comments?: string,
+    vendorId?: string,
   ): Observable<MaterialRequestResponseDto> {
     return this.http.patch<MaterialRequestResponseDto>(
       `${this.apiUrl}/requests/${id}/approve`,
-      { comments },
+      { comments, vendorId },
     );
   }
 
@@ -59,6 +60,16 @@ export class MaterialApprovalService {
     return this.http.patch<MaterialRequestResponseDto>(
       `${this.apiUrl}/requests/${id}/reject`,
       { reason },
+    );
+  }
+
+  setRequestVendor(
+    id: string,
+    vendorId: string,
+  ): Observable<MaterialRequestResponseDto> {
+    return this.http.patch<MaterialRequestResponseDto>(
+      `${this.apiUrl}/requests/${id}/vendor`,
+      { vendorId },
     );
   }
 

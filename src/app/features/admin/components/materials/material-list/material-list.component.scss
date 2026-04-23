@@ -34,6 +34,61 @@
   }
 }
 
+.management-tabs {
+  margin-top: 2rem;
+
+  ::ng-deep .mat-mdc-tab-header {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px 12px 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  ::ng-deep .mat-mdc-tab-labels {
+    padding: 0 1rem;
+  }
+
+  ::ng-deep .mat-mdc-tab {
+    height: 56px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+}
+
+.tab-content {
+  padding-top: 1.5rem;
+}
+
+.project-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .p-name {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .p-ref {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+  &.approved { background: rgba(76, 175, 80, 0.2); color: #4caf50; border: 1px solid rgba(76, 175, 80, 0.3); }
+  &.rejected { background: rgba(244, 67, 54, 0.2); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.3); }
+}
+
 .glass-morphism {
   background: rgba(var(--md-sys-color-surface-container-rgb), 0.6);
   backdrop-filter: blur(12px);

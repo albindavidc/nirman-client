@@ -14,7 +14,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import {
+  map,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  shareReplay,
+} from 'rxjs/operators';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {
   Material,
@@ -91,6 +98,13 @@ export class ProjectMaterialsComponent implements OnInit {
     'status',
     'actions',
   ];
+  requestColumns: string[] = [
+    'requestNumber',
+    'material',
+    'quantity',
+    'requiredBy',
+    'status',
+  ];
 
   // Pagination
   currentPage = 0;
@@ -110,7 +124,10 @@ export class ProjectMaterialsComponent implements OnInit {
 
   project$: Observable<Project | undefined> = this.route.parent!.paramMap.pipe(
     map((params) => params.get('id')),
-    switchMap((id) => (id ? this.projectService.getProjectById(id) : [])),
+    switchMap((id) =>
+      id ? this.projectService.getProjectById(id) : of(undefined),
+    ),
+    shareReplay(1),
   );
 
   materials$: Observable<Material[]> = combineLatest([
@@ -118,7 +135,10 @@ export class ProjectMaterialsComponent implements OnInit {
     this.refresh$,
   ]).pipe(
     map(([params]) => params.get('id')),
-    switchMap((id) => (id ? this.materialService.getProjectMaterials(id) : [])),
+    switchMap((id) =>
+      id ? this.materialService.getProjectMaterials(id) : of([]),
+    ),
+    shareReplay(1),
   );
 
   projectRequests$: Observable<MaterialRequest[]> = combineLatest([
@@ -129,58 +149,79 @@ export class ProjectMaterialsComponent implements OnInit {
     switchMap((id) =>
       id ? this.materialService.getProjectRequests(id) : of([]),
     ),
+    shareReplay(1),
+  );
+
+  flattenedRequests$ = this.projectRequests$.pipe(
+    map((requests) =>
+      requests.flatMap((req) =>
+        req.items.map((item) => ({
+          ...item,
+          requestNumber: req.requestNumber,
+          requiredDate: req.requiredDate,
+          status: req.status,
+          priority: req.priority,
+        })),
+      ),
+    ),
   );
 
   filteredMaterials$: Observable<Material[]> = combineLatest([
-    this.materials$,
-    this.projectRequests$,
+    this.materials$.pipe(startWith([])),
+    this.projectRequests$.pipe(startWith([])),
     this.searchControl.valueChanges.pipe(startWith('')),
   ]).pipe(
     map(([materials, requests, search]) => {
+      const searchStr = (search || '').toLowerCase();
+
       // Enrich materials with request status
-      const enriched = materials.map((m) => {
-        const hasPendingRequest = requests.some(
-          (r) =>
-            r.status === 'pending' &&
-            r.items.some(
+      const enriched = materials.map((m: Material) => {
+        const hasActiveRequest = (requests || []).some(
+          (r: MaterialRequest) =>
+            (r.status === 'pending' || r.status === 'approved') &&
+            r.items?.some(
               (item: MaterialRequestItem) => item.materialId === m.id,
             ),
         );
         return {
           ...m,
-          status: hasPendingRequest ? 'requested' : m.status,
+          status: hasActiveRequest ? 'requested' : m.status,
         };
       });
 
       let filtered = enriched;
       if (this.currentFilter !== 'all') {
         filtered = filtered.filter(
-          (m) =>
+          (m: any) =>
             m.status === this.currentFilter ||
             (this.currentFilter === 'pending' && m.status === 'requested'),
         );
       }
-      if (search) {
-        const term = search.toLowerCase();
+      if (searchStr) {
         filtered = filtered.filter(
-          (m) =>
-            m.name.toLowerCase().includes(term) ||
-            m.code.toLowerCase().includes(term) ||
-            m.category.toLowerCase().includes(term),
+          (m: any) =>
+            (m.name || '').toLowerCase().includes(searchStr) ||
+            (m.code || '').toLowerCase().includes(searchStr) ||
+            (m.category || '').toLowerCase().includes(searchStr),
         );
       }
       return filtered;
     }),
   );
 
-  stats$ = this.materials$.pipe(
-    map((materials) => ({
-      sufficientStock: materials.filter((m) => m.status === 'in_stock').length,
-      lowStock: materials.filter((m) => m.status === 'low_stock').length,
-      criticalStock: materials.filter((m) => m.status === 'out_of_stock')
-        .length,
-      pendingDelivery: 0,
-    })),
+  stats$ = combineLatest([this.materials$, this.projectRequests$]).pipe(
+    map(([materials, requests]) => {
+      // Active requests include both those awaiting approval and those already approved but not yet fulfilled
+      return {
+        lowStock: materials.filter((m) => m.status === 'low_stock').length,
+        criticalStock: materials.filter((m) => m.status === 'out_of_stock')
+          .length,
+        pendingRequests: (requests || []).filter((r) => r.status === 'pending')
+          .length,
+        approvedRequests: (requests || []).filter((r) => r.status === 'approved')
+          .length,
+      };
+    }),
   );
 
   totalValue$ = this.materials$.pipe(
@@ -355,49 +396,52 @@ export class ProjectMaterialsComponent implements OnInit {
   }
 
   openRequestModal() {
-    this.materials$.pipe(take(1)).subscribe((materials) => {
-      const dialogRef = this.dialog.open(RequestMaterialModalComponent, {
-        width: '720px',
-        maxWidth: '95vw',
-        panelClass: 'glass-dialog',
-        data: {
-          materials,
-          projectId: this.route.parent!.snapshot.paramMap.get('id'),
-        },
-      });
+    combineLatest([this.materials$, this.projectRequests$])
+      .pipe(take(1))
+      .subscribe(([materials, requests]) => {
+        const dialogRef = this.dialog.open(RequestMaterialModalComponent, {
+          width: '720px',
+          maxWidth: '95vw',
+          panelClass: 'glass-dialog',
+          data: {
+            materials,
+            requests,
+            projectId: this.route.parent!.snapshot.paramMap.get('id'),
+          },
+        });
 
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          const projectId = this.route.parent!.snapshot.paramMap.get('id');
-          if (projectId) {
-            const requestDto = {
-              projectId,
-              priority: result.priority,
-              deliveryLocation: result.deliveryLocation || undefined,
-              deliveryLatitude: result.deliveryLatitude || undefined,
-              deliveryLongitude: result.deliveryLongitude || undefined,
-              requiredDate: result.requiredDate,
-              items: [
-                {
-                  materialId: result.materialId,
-                  quantityRequested: result.quantityRequested,
-                  unit: result.unit,
-                  purpose: result.purpose,
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            const projectId = this.route.parent!.snapshot.paramMap.get('id');
+            if (projectId) {
+              const requestDto = {
+                projectId,
+                priority: result.priority,
+                deliveryLocation: result.deliveryLocation || undefined,
+                deliveryLatitude: result.deliveryLatitude || undefined,
+                deliveryLongitude: result.deliveryLongitude || undefined,
+                requiredDate: result.requiredDate,
+                items: [
+                  {
+                    materialId: result.materialId,
+                    quantityRequested: result.quantityRequested,
+                    unit: result.unit,
+                    purpose: result.purpose,
+                  },
+                ],
+              };
+
+              this.materialService.createRequest(requestDto).subscribe({
+                next: () => {
+                  // Success - could add a notification here
+                  this.refresh$.next();
                 },
-              ],
-            };
-
-            this.materialService.createRequest(requestDto).subscribe({
-              next: () => {
-                // Success - could add a notification here
-                this.refresh$.next();
-              },
-              error: (err) =>
-                console.error('Failed to create material request:', err),
-            });
+                error: (err) =>
+                  console.error('Failed to create material request:', err),
+              });
+            }
           }
-        }
+        });
       });
-    });
   }
 }

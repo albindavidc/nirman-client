@@ -8,10 +8,12 @@
         </div>
         <div>
           <h1>Project Material Management</h1>
-          <p class="text-secondary">{{ (project$ | async)?.name || "Project" }} • PRJ-2024-001</p>
+          <p class="text-secondary">
+            {{ (project$ | async)?.name || "Project" }} • PRJ-2024-001
+          </p>
         </div>
       </div>
-      
+
       <div class="header-actions">
         @if (canAddMaterial) {
           <button class="btn btn--primary" (click)="openAddModal()">
@@ -40,7 +42,7 @@
         <mat-icon>update</mat-icon>
         <div class="meta-content">
           <span class="meta-label">Last Updated</span>
-          <span class="meta-value">{{ today | date:'mediumDate' }}</span>
+          <span class="meta-value">{{ today | date: "mediumDate" }}</span>
         </div>
       </div>
       <div class="metadata-item">
@@ -54,7 +56,9 @@
         <mat-icon>payments</mat-icon>
         <div class="meta-content">
           <span class="meta-label">Total Value</span>
-          <span class="meta-value">{{ totalValue$ | async | currency:'INR' }}</span>
+          <span class="meta-value">{{
+            totalValue$ | async | currency: "INR"
+          }}</span>
         </div>
       </div>
     </div>
@@ -71,22 +75,14 @@
       <div class="tab-content">
         <!-- Stats Grid -->
         <div class="stats-grid">
-          <div class="glass stat-card sufficient">
-            <div class="stat-icon-wrapper">
-              <mat-icon>check_circle</mat-icon>
-            </div>
-            <div class="stat-content">
-              <span class="stat-value">{{ (stats$ | async)?.sufficientStock || 0 }}</span>
-              <span class="stat-label">Sufficient</span>
-            </div>
-          </div>
-
           <div class="glass stat-card low-stock">
             <div class="stat-icon-wrapper">
               <mat-icon>warning</mat-icon>
             </div>
             <div class="stat-content">
-              <span class="stat-value">{{ (stats$ | async)?.lowStock || 0 }}</span>
+              <span class="stat-value">{{
+                (stats$ | async)?.lowStock || 0
+              }}</span>
               <span class="stat-label">Low Stock</span>
             </div>
           </div>
@@ -96,7 +92,9 @@
               <mat-icon>error_outline</mat-icon>
             </div>
             <div class="stat-content">
-              <span class="stat-value">{{ (stats$ | async)?.criticalStock || 0 }}</span>
+              <span class="stat-value">{{
+                (stats$ | async)?.criticalStock || 0
+              }}</span>
               <span class="stat-label">Critical</span>
             </div>
           </div>
@@ -106,8 +104,22 @@
               <mat-icon>pending_actions</mat-icon>
             </div>
             <div class="stat-content">
-              <span class="stat-value">{{ (stats$ | async)?.pendingDelivery || 0 }}</span>
-              <span class="stat-label">Pending</span>
+              <span class="stat-value">{{
+                (stats$ | async)?.pendingRequests || 0
+              }}</span>
+              <span class="stat-label">Pending Requests</span>
+            </div>
+          </div>
+
+          <div class="glass stat-card approved">
+            <div class="stat-icon-wrapper">
+              <mat-icon>fact_check</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-value">{{
+                (stats$ | async)?.approvedRequests || 0
+              }}</span>
+              <span class="stat-label">Approved Requests</span>
             </div>
           </div>
         </div>
@@ -117,9 +129,11 @@
           <div class="filter-group">
             <mat-icon class="filter-icon">filter_list</mat-icon>
             <span class="filter-label">Filter:</span>
-            <mat-chip-listbox [value]="currentFilter" (change)="setFilter($event.value)">
+            <mat-chip-listbox
+              [value]="currentFilter"
+              (change)="setFilter($event.value)"
+            >
               <mat-chip-option value="all">All</mat-chip-option>
-              <mat-chip-option value="in_stock">Sufficient</mat-chip-option>
               <mat-chip-option value="low_stock">Low Stock</mat-chip-option>
               <mat-chip-option value="out_of_stock">Critical</mat-chip-option>
               <mat-chip-option value="pending">Requested</mat-chip-option>
@@ -191,7 +205,7 @@
                     ></div>
                   </div>
                   <span class="progress-label"
-                    >{{ getStockPercentage(element) | number : "1.0-0" }}%
+                    >{{ getStockPercentage(element) | number: "1.0-0" }}%
                     Capacity</span
                   >
                 </div>
@@ -203,7 +217,7 @@
               <th mat-header-cell *matHeaderCellDef>Unit Price</th>
               <td mat-cell *matCellDef="let element">
                 <span class="text-secondary">{{
-                  element.unitPrice | currency : "INR"
+                  element.unitPrice | currency: "INR"
                 }}</span>
               </td>
             </ng-container>
@@ -212,7 +226,10 @@
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matHeaderCellDef="let element">
-                <div class="status-badge" [ngClass]="getStatusClass(element.status)">
+                <div
+                  class="status-badge"
+                  [ngClass]="getStatusClass(element.status)"
+                >
                   <mat-icon>{{ getStatusIcon(element.status) }}</mat-icon>
                   <span>{{ getStatusLabel(element.status) }}</span>
                 </div>
@@ -276,11 +293,83 @@
 
     <mat-tab>
       <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">pending_actions</mat-icon>
+        <span>Material Requests</span>
+      </ng-template>
+      <div class="tab-content">
+        <div class="table-container glass-morphism">
+          <table
+            mat-table
+            [dataSource]="flattenedRequests$"
+            class="materials-table"
+          >
+            <ng-container matColumnDef="requestNumber">
+              <th mat-header-cell *matHeaderCellDef>Request #</th>
+              <td mat-cell *matCellDef="let element" class="code-cell">
+                {{ element.requestNumber }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="material">
+              <th mat-header-cell *matHeaderCellDef>Material</th>
+              <td mat-cell *matCellDef="let element">
+                <div class="material-info">
+                  <span class="name">{{ element.materialName }}</span>
+                  <span class="code">{{ element.materialCode }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Quantity</th>
+              <td mat-cell *matCellDef="let element">
+                <span class="quantity-badge"
+                  >{{ element.quantityRequested }} {{ element.unit }}</span
+                >
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="requiredBy">
+              <th mat-header-cell *matHeaderCellDef>Required By</th>
+              <td mat-cell *matCellDef="let element">
+                {{ element.requiredDate | date: "MMM d, y" }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let element">
+                <span class="status-badge" [class]="element.status">{{
+                  element.status | titlecase
+                }}</span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="requestColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: requestColumns"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell empty-cell" colspan="5">
+                <div class="empty-state">
+                  <mat-icon>assignment_late</mat-icon>
+                  <p>No material requests found for this project.</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
         <mat-icon class="tab-icon">shopping_cart</mat-icon>
         <span>Purchase Orders</span>
       </ng-template>
       <div class="tab-content">
-        <app-project-purchase-orders [projectId]="(project$ | async)?.id || ''"></app-project-purchase-orders>
+        <app-project-purchase-orders
+          [projectId]="(project$ | async)?.id || ''"
+        ></app-project-purchase-orders>
       </div>
     </mat-tab>
   </mat-tab-group>

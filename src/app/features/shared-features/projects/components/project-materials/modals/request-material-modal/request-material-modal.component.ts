@@ -16,7 +16,17 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { GoogleMapsModule, MapMarker, GoogleMap } from '@angular/google-maps';
-import { Observable, map, startWith, of, catchError, finalize, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import {
+  Observable,
+  map,
+  startWith,
+  of,
+  catchError,
+  finalize,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+} from 'rxjs';
 import { Material } from '../../../../models/material.model';
 import { MasterMaterialService } from '../../../../../../admin/services/master-material.service';
 import { MasterMaterial } from '../../../../../../admin/models/master-material.model';
@@ -41,7 +51,7 @@ import { CustomValidators } from '../../../../../../../shared/validators/custom-
     MatProgressBarModule,
     GoogleMapsModule,
     SharedModalComponent,
-],
+  ],
   templateUrl: './request-material-modal.component.html',
   styleUrl: './request-material-modal.component.scss',
 })
@@ -81,29 +91,44 @@ export class RequestMaterialModalComponent implements OnInit {
     deliveryLocation: ['', [Validators.maxLength(200)]],
     deliveryLatitude: [null as number | null],
     deliveryLongitude: [null as number | null],
-    purpose: ['', [Validators.required, Validators.maxLength(500), CustomValidators.noWhitespace()]],
+    purpose: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(500),
+        CustomValidators.noWhitespace(),
+      ],
+    ],
   });
 
-  public data = inject<{ materials: Material[]; projectId: string }>(MAT_DIALOG_DATA);
+  public data = inject<{
+    materials: Material[];
+    requests: any[];
+    projectId: string;
+  }>(MAT_DIALOG_DATA);
   filteredLocations$!: Observable<any[]>;
 
-  private autocompleteService: google.maps.places.AutocompleteService | null = null;
+  private autocompleteService: google.maps.places.AutocompleteService | null =
+    null;
 
   ngOnInit(): void {
     this.isLoading.set(true);
     // Load from master catalog first
-    this.masterMaterialService.getAll().pipe(
-      catchError(() => of([])),
-      finalize(() => this.isLoading.set(false))
-    ).subscribe((masterMaterials: MasterMaterial[]) => {
-      if (masterMaterials.length > 0) {
-        this.materials = masterMaterials;
-      } else {
-        // Fallback to project materials if master catalog is empty or fails
-        this.materials = this.data?.materials || [];
-      }
-      this.setupFilter();
-    });
+    this.masterMaterialService
+      .getAll()
+      .pipe(
+        catchError(() => of([])),
+        finalize(() => this.isLoading.set(false)),
+      )
+      .subscribe((masterMaterials: MasterMaterial[]) => {
+        if (masterMaterials.length > 0) {
+          this.materials = masterMaterials;
+        } else {
+          // Fallback to project materials if master catalog is empty or fails
+          this.materials = this.data?.materials || [];
+        }
+        this.setupFilter();
+      });
 
     this.initAutocompleteService();
     this.setupLocationFilter();
@@ -118,27 +143,37 @@ export class RequestMaterialModalComponent implements OnInit {
   }
 
   private setupLocationFilter(): void {
-    this.filteredLocations$ = this.form.get('deliveryLocation')!.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(term => this.filterLocations(term as string || ''))
-    );
+    this.filteredLocations$ = this.form
+      .get('deliveryLocation')!
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((term) => this.filterLocations((term as string) || '')),
+      );
   }
 
   private filterLocations(term: string): Observable<any[]> {
     if (!term || typeof term !== 'string' || term.length < 3) return of([]);
-    return new Observable(observer => {
-      this.autocompleteService?.getPlacePredictions({ input: term }, (predictions, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-          observer.next(predictions.map(p => ({
-            place_id: p.place_id,
-            description: p.description
-          })));
-        } else {
-          observer.next([]);
-        }
-        observer.complete();
-      });
+    return new Observable((observer) => {
+      this.autocompleteService?.getPlacePredictions(
+        { input: term },
+        (predictions, status) => {
+          if (
+            status === google.maps.places.PlacesServiceStatus.OK &&
+            predictions
+          ) {
+            observer.next(
+              predictions.map((p) => ({
+                place_id: p.place_id,
+                description: p.description,
+              })),
+            );
+          } else {
+            observer.next([]);
+          }
+          observer.complete();
+        },
+      );
     });
   }
 
@@ -160,7 +195,7 @@ export class RequestMaterialModalComponent implements OnInit {
     this.zoom = 15;
     this.form.patchValue({
       deliveryLatitude: lat,
-      deliveryLongitude: lng
+      deliveryLongitude: lng,
     });
   }
 
@@ -181,9 +216,7 @@ export class RequestMaterialModalComponent implements OnInit {
       startWith(this.form.get('materialName')?.value || ''),
       map((value) => {
         const name =
-          typeof value === 'string'
-            ? value
-            : (value as any)?.name || '';
+          typeof value === 'string' ? value : (value as any)?.name || '';
         return name ? this._filter(name) : this.materials.slice();
       }),
     );
@@ -195,7 +228,7 @@ export class RequestMaterialModalComponent implements OnInit {
       materialId: '',
       materialCode: '',
       category: '',
-      unit: ''
+      unit: '',
     });
     this.selectedMaterial = null;
     this.setupFilter();
@@ -208,7 +241,7 @@ export class RequestMaterialModalComponent implements OnInit {
         material.name.toLowerCase().includes(filterValue) ||
         material.code.toLowerCase().includes(filterValue) ||
         material.category.toLowerCase().includes(filterValue) ||
-        material.unit.toLowerCase().includes(filterValue)
+        material.unit.toLowerCase().includes(filterValue),
     );
   }
 
@@ -218,20 +251,35 @@ export class RequestMaterialModalComponent implements OnInit {
 
   onMaterialSelected(event: { option: { value: any } }): void {
     const selected = event.option.value;
-    
+
     // Check if this material (by code) already exists in the project
-    const projectMaterial = this.data.materials.find(m => m.code === selected.code);
-    
+    const projectMaterial = this.data.materials.find(
+      (m) => m.code === selected.code,
+    );
+
     // Use project material if found, otherwise use master material (may need backend instantiation)
     this.selectedMaterial = projectMaterial || selected;
-    
+
     this.form.patchValue({
       materialId: this.selectedMaterial?.id,
       materialName: selected.name, // Keep the display name
       materialCode: selected.code,
       category: selected.category,
-      unit: selected.unit
+      unit: selected.unit,
     });
+  }
+
+  isAlreadyRequested(material: any): boolean {
+    if (!material || !this.data.requests) return false;
+    return this.data.requests.some(
+      (req) =>
+        req.status === 'pending' &&
+        req.items.some(
+          (item: any) =>
+            item.materialId === material.id ||
+            item.materialCode === material.code,
+        ),
+    );
   }
 
   onSubmit() {

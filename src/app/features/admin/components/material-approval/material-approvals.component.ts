@@ -20,8 +20,9 @@ import { debounceTime, distinctUntilChanged, Subject, take } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../../auth/login/store/login.selectors';
 import { Role } from '../../../../shared/models/profile.model';
-import { CreatePurchaseOrderDto } from '../../../../shared/models/purchase-order.model';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { VendorService } from '../../../vendor/services/vendor.service';
+import { Vendor } from '../../../vendor/models/vendor.models';
 
 @Component({
   selector: 'app-material-approvals',
@@ -43,6 +44,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 })
 export class MaterialApprovalsComponent implements OnInit {
   private readonly approvalService = inject(MaterialApprovalService);
+  private readonly vendorService = inject(VendorService);
   private readonly notificationService = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly store = inject(Store);
@@ -60,6 +62,7 @@ export class MaterialApprovalsComponent implements OnInit {
 
   requests = signal<MaterialRequestResponseDto[]>([]);
   filteredRequests = signal<MaterialRequestResponseDto[]>([]);
+  vendors = signal<Vendor[]>([]);
   totalRequests = signal<number>(0);
   searchQuery = '';
   private searchSubject = new Subject<string>();
@@ -68,6 +71,7 @@ export class MaterialApprovalsComponent implements OnInit {
     this.checkRole();
     this.loadStats();
     this.loadRequests();
+    this.loadVendors();
 
     this.searchSubject
       .pipe(debounceTime(300), distinctUntilChanged())
@@ -97,6 +101,12 @@ export class MaterialApprovalsComponent implements OnInit {
     });
   }
 
+  loadVendors(): void {
+    this.vendorService.getVendors({ status: 'approved', limit: 100 }).subscribe((res) => {
+      this.vendors.set(res.vendors);
+    });
+  }
+
   onSearchChange(val: string): void {
     this.searchSubject.next(val);
   }
@@ -120,7 +130,7 @@ export class MaterialApprovalsComponent implements OnInit {
   openRequestDetail(request: MaterialRequestResponseDto): void {
     const dialogRef = this.dialog.open(MaterialRequestActionDialogComponent, {
       width: '800px',
-      data: { request },
+      data: { request, vendors: this.vendors() },
       panelClass: 'material-request-dialog',
     });
 
@@ -132,54 +142,4 @@ export class MaterialApprovalsComponent implements OnInit {
     });
   }
 
-  convertToPO(request: MaterialRequestResponseDto, event: MouseEvent): void {
-    event.stopPropagation();
-
-    if (!request.vendor_id && this.isAdmin) {
-      this.notificationService.warn(
-        'No preferred vendor found for this request. Please review the request detail.',
-      );
-      return;
-    }
-
-    const dto: CreatePurchaseOrderDto = {
-      id: crypto.randomUUID(),
-      projectId: request.project_id,
-      vendorId: request.vendor_id || '', // Fallback for safety
-      materialRequestId: request.id,
-      currency: 'INR',
-      expectedDeliveryDate: new Date(
-        new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
-      ).toISOString(), // 1 week from now
-      items: request.items.map((item) => ({
-        materialId: item.material_id,
-        quantity: item.quantity_requested,
-        unitPrice: 0, // Admin will likely need to update this or it comes from a quote
-        taxRate: 0.18, // Default GST
-      })),
-      termsCondition: 'Standard payment terms apply.',
-    };
-
-    if (
-      confirm(
-        `Are you sure you want to convert Request ${request.request_number} to a Purchase Order?`,
-      )
-    ) {
-      this.approvalService
-        .createPurchaseOrder(request.project_id, dto)
-        .subscribe({
-          next: () => {
-            this.notificationService.success(
-              `Purchase Order created successfully for ${request.request_number}`,
-            );
-            this.loadRequests();
-            this.loadStats();
-          },
-          error: (err) => {
-            this.notificationService.error('Failed to create Purchase Order');
-            console.error(err);
-          },
-        });
-    }
-  }
 }

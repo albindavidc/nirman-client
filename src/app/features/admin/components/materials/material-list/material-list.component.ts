@@ -5,12 +5,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
 import { MasterMaterialService } from '../../../services/master-material.service';
+import { MaterialApprovalService } from '../../../services/material-approval.service';
+import { MaterialRequestStatus } from '../../../../../shared/models/material-request.model';
 import { MasterMaterial } from '../../../models/master-material.model';
 import { MaterialModalComponent } from '../material-modal/material-modal.component';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-material-list',
@@ -22,6 +27,8 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
     MatTableModule,
     MatDialogModule,
     MatTooltipModule,
+    MatTabsModule,
+    MatProgressBarModule,
     FormsModule,
   ],
   templateUrl: './material-list.component.html',
@@ -29,18 +36,23 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 })
 export class MaterialListComponent implements OnInit {
   private readonly materialService = inject(MasterMaterialService);
+  private readonly approvalService = inject(MaterialApprovalService);
   private readonly notificationService = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
 
   materials = signal<MasterMaterial[]>([]);
   filteredMaterials = signal<MasterMaterial[]>([]);
+  requestedMaterials = signal<any[]>([]);
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
   displayedColumns: string[] = ['code', 'name', 'category', 'unit', 'actions'];
+  requestColumns: string[] = ['project', 'material', 'quantity', 'requiredBy', 'status', 'actions'];
 
   ngOnInit(): void {
     this.loadMaterials();
+    this.loadRequestedMaterials();
 
     this.searchSubject
       .pipe(debounceTime(300), distinctUntilChanged())
@@ -57,6 +69,24 @@ export class MaterialListComponent implements OnInit {
         this.notificationService.error('Failed to load materials');
         console.error(err);
       },
+    });
+  }
+
+  loadRequestedMaterials(): void {
+    this.approvalService.getApprovals({ status: MaterialRequestStatus.PENDING, page: 1, limit: 100 }).subscribe({
+      next: (res) => {
+        const flattened = res.data.flatMap(request => 
+          request.items.map(item => ({
+            ...item,
+            projectId: request.project_id,
+            projectName: request.project_name,
+            requiredDate: request.required_date,
+            status: request.status,
+            requestNumber: request.request_number
+          }))
+        );
+        this.requestedMaterials.set(flattened);
+      }
     });
   }
 
@@ -107,5 +137,9 @@ export class MaterialListComponent implements OnInit {
         },
       });
     }
+  }
+  
+  navigateToApproval(): void {
+    this.router.navigate(['/admin/material-approvals']);
   }
 }

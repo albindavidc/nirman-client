@@ -1,70 +1,61 @@
 <div class="materials-container">
-  <!-- Page Header -->
-  <div class="page-header">
-    <div class="header-left">
+  <!-- Page Header Info Block -->
+  <div class="glass glass--strong header-info-card">
+    <div class="header-main-row">
       <div class="title-section">
-        <mat-icon class="title-icon">inventory_2</mat-icon>
+        <div class="title-icon-wrapper">
+          <mat-icon class="title-icon">inventory_2</mat-icon>
+        </div>
         <div>
           <h1>Project Material Management</h1>
-          <p>{{ (project$ | async)?.name || "Project" }} • PRJ-2024-001</p>
+          <p class="text-secondary">{{ (project$ | async)?.name || "Project" }} • PRJ-2024-001</p>
         </div>
       </div>
+      
+      <div class="header-actions">
+        @if (canAddMaterial) {
+          <button class="btn btn--primary" (click)="openAddModal()">
+            <mat-icon>add</mat-icon>
+            <span>Add Material</span>
+          </button>
+        }
+        @if (currentUserRole !== "admin") {
+          <button class="btn btn--secondary" (click)="openRequestModal()">
+            <mat-icon>shopping_cart</mat-icon>
+            <span>Request Material</span>
+          </button>
+        }
+      </div>
     </div>
-    <div class="header-actions">
-      @if (canAddMaterial) {
-        <button class="action-btn-primary" (click)="openAddModal()">
-          <mat-icon>add</mat-icon>
-          <span>Add Material</span>
-        </button>
-      }
-      @if (currentUserRole !== "admin") {
-        <button class="action-btn-secondary" (click)="openRequestModal()">
-          <mat-icon>shopping_cart</mat-icon>
-          <span>Request Material</span>
-        </button>
-      }
-      <!-- export button hidden according to requirement -->
-      @if (showExportButton) {
-        <button class="export-btn">
-          <mat-icon>download</mat-icon>
-          <span>Export Report</span>
-        </button>
-      }
-    </div>
-  </div>
 
-  <!-- Project Info Bar -->
-  <div class="info-bar">
-    <div class="info-item">
-      <mat-icon>person</mat-icon>
-      <div>
-        <span class="info-label">Supervisor</span>
-        <span class="info-value">John Supervisor</span>
+    <div class="header-metadata-grid">
+      <div class="metadata-item">
+        <mat-icon>account_circle</mat-icon>
+        <div class="meta-content">
+          <span class="meta-label">Supervisor</span>
+          <span class="meta-value">John Doe</span>
+        </div>
       </div>
-    </div>
-    <div class="info-item">
-      <mat-icon>calendar_today</mat-icon>
-      <div>
-        <span class="info-label">Last Updated</span>
-        <span class="info-value">{{ today | date: "MMM d, yyyy" }}</span>
+      <div class="metadata-item">
+        <mat-icon>update</mat-icon>
+        <div class="meta-content">
+          <span class="meta-label">Last Updated</span>
+          <span class="meta-value">{{ today | date:'mediumDate' }}</span>
+        </div>
       </div>
-    </div>
-    <div class="info-item">
-      <mat-icon>category</mat-icon>
-      <div>
-        <span class="info-label">Total Materials</span>
-        <span class="info-value"
-          >{{ (materials$ | async)?.length || 0 }} Items</span
-        >
+      <div class="metadata-item">
+        <mat-icon>inventory</mat-icon>
+        <div class="meta-content">
+          <span class="meta-label">Total Materials</span>
+          <span class="meta-value">48 Items</span>
+        </div>
       </div>
-    </div>
-    <div class="info-item">
-      <mat-icon>bar_chart</mat-icon>
-      <div>
-        <span class="info-label">Total Value</span>
-        <span class="info-value">{{
-          totalValue$ | async | currency: "INR" : "symbol" : "1.0-0"
-        }}</span>
+      <div class="metadata-item gold">
+        <mat-icon>payments</mat-icon>
+        <div class="meta-content">
+          <span class="meta-label">Total Value</span>
+          <span class="meta-value">{{ totalValue$ | async | currency:'INR' }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -80,20 +71,18 @@
       <div class="tab-content">
         <!-- Stats Grid -->
         <div class="stats-grid">
-          <div class="stat-card green">
-            <div class="stat-icon">
+          <div class="glass stat-card sufficient">
+            <div class="stat-icon-wrapper">
               <mat-icon>check_circle</mat-icon>
             </div>
             <div class="stat-content">
-              <span class="stat-value">{{
-                (stats$ | async)?.sufficientStock || 0
-              }}</span>
-              <span class="stat-label">Sufficient Stock</span>
+              <span class="stat-value">{{ (stats$ | async)?.sufficientStock || 0 }}</span>
+              <span class="stat-label">Sufficient</span>
             </div>
           </div>
 
-          <div class="stat-card amber">
-            <div class="stat-icon">
+          <div class="glass stat-card low-stock">
+            <div class="stat-icon-wrapper">
               <mat-icon>warning</mat-icon>
             </div>
             <div class="stat-content">
@@ -102,27 +91,23 @@
             </div>
           </div>
 
-          <div class="stat-card red">
-            <div class="stat-icon">
-              <mat-icon>error</mat-icon>
+          <div class="glass stat-card critical">
+            <div class="stat-icon-wrapper">
+              <mat-icon>error_outline</mat-icon>
             </div>
             <div class="stat-content">
-              <span class="stat-value">{{
-                (stats$ | async)?.criticalStock || 0
-              }}</span>
-              <span class="stat-label">Critical/Out of Stock</span>
+              <span class="stat-value">{{ (stats$ | async)?.criticalStock || 0 }}</span>
+              <span class="stat-label">Critical</span>
             </div>
           </div>
 
-          <div class="stat-card blue">
-            <div class="stat-icon">
-              <mat-icon>local_shipping</mat-icon>
+          <div class="glass stat-card pending">
+            <div class="stat-icon-wrapper">
+              <mat-icon>pending_actions</mat-icon>
             </div>
             <div class="stat-content">
-              <span class="stat-value">{{
-                (stats$ | async)?.pendingDelivery || 0
-              }}</span>
-              <span class="stat-label">Pending Delivery</span>
+              <span class="stat-value">{{ (stats$ | async)?.pendingDelivery || 0 }}</span>
+              <span class="stat-label">Pending</span>
             </div>
           </div>
         </div>
@@ -132,176 +117,159 @@
           <div class="filter-group">
             <mat-icon class="filter-icon">filter_list</mat-icon>
             <span class="filter-label">Filter:</span>
-            <div class="filter-chips">
-              <button
-                class="filter-chip"
-                [class.active]="currentFilter === 'all'"
-                (click)="setFilter('all')"
-              >
-                All
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="currentFilter === 'in_stock'"
-                (click)="setFilter('in_stock')"
-              >
-                Sufficient
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="currentFilter === 'low_stock'"
-                (click)="setFilter('low_stock')"
-              >
-                Low
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="currentFilter === 'out_of_stock'"
-                (click)="setFilter('out_of_stock')"
-              >
-                Critical
-              </button>
-              <button
-                class="filter-chip"
-                [class.active]="currentFilter === 'pending'"
-                (click)="setFilter('pending')"
-              >
-                Pending
-              </button>
-            </div>
+            <mat-chip-listbox [value]="currentFilter" (change)="setFilter($event.value)">
+              <mat-chip-option value="all">All</mat-chip-option>
+              <mat-chip-option value="in_stock">Sufficient</mat-chip-option>
+              <mat-chip-option value="low_stock">Low Stock</mat-chip-option>
+              <mat-chip-option value="out_of_stock">Critical</mat-chip-option>
+              <mat-chip-option value="pending">Requested</mat-chip-option>
+            </mat-chip-listbox>
           </div>
-          <div class="search-container">
+
+          <div class="search-wrapper">
             <mat-icon class="search-icon">search</mat-icon>
             <input
-              [formControl]="searchControl"
               type="text"
-              placeholder="Search materials..."
               class="search-input"
+              placeholder="Search by name, code or category..."
+              [formControl]="searchControl"
             />
           </div>
         </div>
 
-        <!-- Materials Table -->
-        <div class="table-section">
+        <!-- Table Section -->
+        <div class="table-container">
           <table
             mat-table
-            [dataSource]="(filteredMaterials$ | async) || []"
+            [dataSource]="filteredMaterials$"
             class="materials-table"
+            multiTemplateDataRows
           >
             <!-- Material Column -->
             <ng-container matColumnDef="material">
-              <th mat-header-cell *matHeaderCellDef>MATERIAL</th>
+              <th mat-header-cell *matHeaderCellDef>Material</th>
               <td mat-cell *matCellDef="let element">
                 <div class="material-info">
                   <span class="material-name">{{ element.name }}</span>
-                  <span class="material-code"
-                    >{{ element.code }} • {{ element.category }}</span
-                  >
+                  <span class="material-code">{{ element.code }}</span>
                 </div>
               </td>
             </ng-container>
 
             <!-- Required Column -->
             <ng-container matColumnDef="required">
-              <th mat-header-cell *matHeaderCellDef>REQUIRED</th>
+              <th mat-header-cell *matHeaderCellDef>Requirement</th>
               <td mat-cell *matCellDef="let element">
-                <span class="quantity">{{ element.reorderLevel || 0 }}</span>
+                <div class="stock-cell">
+                  <span class="quantity">{{ element.reorderLevel || 0 }}</span>
+                  <span class="unit">{{ element.unit }}</span>
+                </div>
               </td>
             </ng-container>
 
-            <!-- Received Column -->
+            <!-- Stock Column (Received) -->
             <ng-container matColumnDef="received">
-              <th mat-header-cell *matHeaderCellDef>RECEIVED</th>
+              <th mat-header-cell *matHeaderCellDef>Current Stock</th>
               <td mat-cell *matCellDef="let element">
-                <span class="quantity received">{{
-                  element.totalReceived || 0
-                }}</span>
-                @if (element.totalReceived) {
-                  <mat-icon class="trend-icon up">trending_up</mat-icon>
-                }
+                <div class="stock-cell">
+                  <span class="quantity">{{ element.currentStock }}</span>
+                  <span class="unit">{{ element.unit }}</span>
+                </div>
               </td>
             </ng-container>
 
             <!-- Used Column -->
             <ng-container matColumnDef="used">
-              <th mat-header-cell *matHeaderCellDef>USED</th>
+              <th mat-header-cell *matHeaderCellDef>Stock Status</th>
               <td mat-cell *matCellDef="let element">
-                <span class="quantity used">{{ element.totalUsed || 0 }}</span>
-                @if (element.wastage) {
-                  <span class="wastage">(+{{ element.wastage }} waste)</span>
-                }
+                <div class="progress-cell">
+                  <div class="progress-bg">
+                    <div
+                      class="progress-fill"
+                      [style.width.%]="getStockPercentage(element)"
+                      [ngClass]="getProgressClass(element)"
+                    ></div>
+                  </div>
+                  <span class="progress-label"
+                    >{{ getStockPercentage(element) | number : "1.0-0" }}%
+                    Capacity</span
+                  >
+                </div>
               </td>
             </ng-container>
 
             <!-- Remaining Column -->
             <ng-container matColumnDef="remaining">
-              <th mat-header-cell *matHeaderCellDef>REMAINING</th>
+              <th mat-header-cell *matHeaderCellDef>Unit Price</th>
               <td mat-cell *matCellDef="let element">
-                <span class="quantity remaining">{{
-                  (element.totalReceived || 0) - (element.totalUsed || 0)
+                <span class="text-secondary">{{
+                  element.unitPrice | currency : "INR"
                 }}</span>
               </td>
             </ng-container>
 
             <!-- Status Column -->
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>STATUS</th>
-              <td mat-cell *matCellDef="let element">
-                <span class="status-badge" [ngClass]="getStatusClass(element.status)">
-                  <mat-icon class="status-icon">{{
-                    getStatusIcon(element.status)
-                  }}</mat-icon>
-                  {{ getStatusLabel(element.status) }}
-                </span>
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matHeaderCellDef="let element">
+                <div class="status-badge" [ngClass]="getStatusClass(element.status)">
+                  <mat-icon>{{ getStatusIcon(element.status) }}</mat-icon>
+                  <span>{{ getStatusLabel(element.status) }}</span>
+                </div>
               </td>
             </ng-container>
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let element">
-                <div class="action-buttons">
+                <div class="action-buttons" (click)="$event.stopPropagation()">
                   <button
-                    class="action-btn edit-btn"
-                    (click)="openEditModal(element); $event.stopPropagation()"
+                    class="action-btn"
+                    (click)="openUpdateStockModal(element)"
+                    matTooltip="Update Stock"
                   >
-                    <mat-icon class="edit-icon">edit</mat-icon>
+                    <mat-icon>inventory</mat-icon>
+                  </button>
+                  <button
+                    class="action-btn"
+                    (click)="openEditModal(element)"
+                    matTooltip="Edit Material"
+                  >
+                    <mat-icon>edit</mat-icon>
                   </button>
                   <button
                     class="action-btn delete-btn"
-                    (click)="deleteMaterial(element); $event.stopPropagation()"
+                    (click)="deleteMaterial(element)"
+                    matTooltip="Delete"
                   >
-                    <mat-icon class="delete-icon">delete</mat-icon>
+                    <mat-icon>delete</mat-icon>
                   </button>
                 </div>
               </td>
             </ng-container>
 
+            <!-- Header and Row Declarations -->
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr
               mat-row
-              *matRowDef="let row; columns: displayedColumns"
+              *matRowDef="let element; columns: displayedColumns"
               class="material-row"
+              [class.expanded-row]="expandedElement === element"
+              (click)="toggleRow(element)"
             ></tr>
           </table>
 
-          @if ((filteredMaterials$ | async)?.length === 0) {
-            <div class="empty-state">
-              <mat-icon>inventory_2</mat-icon>
-              <p>No materials found.</p>
-            </div>
-          }
-          <!-- Paginator -->
-          @if ((filteredMaterials$ | async)?.length) {
+          <div class="paginator-container">
             <mat-paginator
               [length]="totalMaterials"
               [pageSize]="pageSize"
-              [pageSizeOptions]="[5, 10, 25]"
-              [pageIndex]="currentPage"
+              [pageSizeOptions]="[5, 10, 25, 100]"
               (page)="onPageChange($event)"
-              showFirstLastButtons
-            ></mat-paginator>
-          }
+              aria-label="Select page"
+            >
+            </mat-paginator>
+          </div>
         </div>
       </div>
     </mat-tab>
@@ -309,7 +277,7 @@
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">shopping_cart</mat-icon>
-        <span>Procurement (PO)</span>
+        <span>Purchase Orders</span>
       </ng-template>
       <div class="tab-content">
         <app-project-purchase-orders [projectId]="(project$ | async)?.id || ''"></app-project-purchase-orders>

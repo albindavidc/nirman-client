@@ -1,0 +1,169 @@
+<app-shared-modal
+  [title]="isEditMode ? 'Edit Material' : 'Add New Material'"
+  [subtitle]="
+    isEditMode
+      ? 'Update material details and properties'
+      : 'Register a new material to the project catalog'
+  "
+  (closeModal)="onCancel()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col h-full">
+    <div class="form-grid py-4">
+      <!-- Basic Info Section -->
+      <div class="section-title">Basic Information</div>
+
+      <div class="row">
+        <mat-form-field appearance="outline" class="flex-2">
+          <mat-label>Material Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="e.g. UltraTech Cement"
+          />
+          @if (form.get("name")?.hasError("required")) {
+            <mat-error>Material name is required</mat-error>
+          }
+          @if (form.get("name")?.hasError("minlength")) {
+            <mat-error>Name must be at least 3 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Material Code</mat-label>
+          <input matInput formControlName="code" placeholder="e.g. CMT-001" />
+          @if (!isEditMode) {
+            <mat-hint>Unique identifier (Cannot be changed later)</mat-hint>
+          }
+          @if (form.get("code")?.hasError("required")) {
+            <mat-error>Code is required</mat-error>
+          }
+          @if (form.get("code")?.hasError("pattern")) {
+            <mat-error>Invalid format (e.g., MAT-001)</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="row">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="category">
+            @for (cat of categories; track cat) {
+              <mat-option [value]="cat">{{ cat }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get("category")?.hasError("required")) {
+            <mat-error>Category is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Unit</mat-label>
+          <mat-select formControlName="unit">
+            @for (u of units; track u) {
+              <mat-option [value]="u">{{ u }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get("unit")?.hasError("required")) {
+            <mat-error>Unit is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="2"
+          placeholder="Detailed description of the material..."
+        ></textarea>
+        @if (form.get("description")?.hasError("maxlength")) {
+          <mat-error>Description cannot exceed 500 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Inventory Details Section -->
+      <div class="section-title">Inventory Settings</div>
+
+      <div class="row three-col">
+        <mat-form-field appearance="outline">
+          <mat-label>Unit Price (₹)</mat-label>
+          <input matInput type="number" formControlName="unitPrice" min="0" />
+          @if (form.get("unitPrice")?.hasError("min")) {
+            <mat-error>Price cannot be negative</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Reorder Level</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="reorderLevel"
+            min="0"
+          />
+          @if (form.get("reorderLevel")?.hasError("min")) {
+            <mat-error>Level cannot be negative</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            @for (s of statuses; track s.value) {
+              <mat-option [value]="s.value">{{ s.label }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get("status")?.hasError("required")) {
+            <mat-error>Status is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="row">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Storage Location</mat-label>
+          <input
+            matInput
+            formControlName="storageLocation"
+            placeholder="e.g. Warehouse A, Rack 3"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Preferred Supplier</mat-label>
+          <mat-select formControlName="preferredSupplierId">
+            <mat-option [value]="null">Select Supplier (Optional)</mat-option>
+            @for (vendor of vendors; track vendor.id) {
+              <mat-option [value]="vendor.id">{{
+                vendor.companyName
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Technical Specifications</mat-label>
+        <textarea
+          matInput
+          formControlName="specifications"
+          rows="2"
+          placeholder="Grade, dimensions, or technical specs..."
+        ></textarea>
+      </mat-form-field>
+    </div>
+
+    <div actions class="flex justify-end gap-2 w-full">
+      <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || (isEditMode && form.pristine)"
+      >
+        {{ isEditMode ? "Save Changes" : "Add Material" }}
+      </button>
+    </div>
+  </form>
+</app-shared-modal>

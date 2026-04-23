@@ -12,7 +12,7 @@ export interface Material {
   reorderLevel?: number;
   storageLocation?: string;
   preferredSupplierId?: string;
-  status: 'in_stock' | 'low_stock' | 'out_of_stock';
+  status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'requested';
   createdAt: string;
   updatedAt: string;
   // UI extended fields
@@ -82,8 +82,9 @@ export interface MaterialRequest {
   requestedBy: string;
   items: MaterialRequestItem[];
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  purpose?: string;
   deliveryLocation?: string;
+  deliveryLatitude?: number;
+  deliveryLongitude?: number;
   requiredDate: string;
   status: 'pending' | 'approved' | 'rejected' | 'fulfilled' | 'cancelled';
   approvedBy?: string;
@@ -99,5 +100,7 @@ export interface CreateMaterialRequestDto {
   items: MaterialRequestItem[];
   priority?: 'low' | 'medium' | 'high' | 'urgent';
   deliveryLocation?: string;
+  deliveryLatitude?: number;
+  deliveryLongitude?: number;
   requiredDate: string;
 }

@@ -10,18 +10,24 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from '../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { Material, MaterialTransaction } from '../../models/material.model';
+import {
+  Material,
+  MaterialTransaction,
+  MaterialRequest,
+  MaterialRequestItem,
+} from '../../models/material.model';
 import { Project } from '../../models/project.models';
 import { MaterialService } from '../../services/material.service';
 import { ProjectService } from '../../services/project.service';
-import { AddMaterialModalComponent } from './modals/add-material-modal.component';
-import { EditMaterialModalComponent } from './modals/edit-material-modal.component';
-import { RequestMaterialModalComponent } from './modals/request-material-modal.component';
-import { UpdateStockModalComponent } from './modals/update-stock-modal.component';
+import { MaterialModalComponent } from './modals/material-modal/material-modal.component';
+import { RequestMaterialModalComponent } from './modals/request-material-modal/request-material-modal.component';
+import { UpdateStockModalComponent } from './modals/update-stock-modal/update-stock-modal.component';
 import { ProjectPurchaseOrdersComponent } from './purchase-orders/project-purchase-orders.component';
 
 @Component({
@@ -38,6 +44,8 @@ import { ProjectPurchaseOrdersComponent } from './purchase-orders/project-purcha
     MatPaginatorModule,
     ReactiveFormsModule,
     MatTabsModule,
+    MatTooltipModule,
+    MatDialogModule,
     ProjectPurchaseOrdersComponent,
   ],
   host: {
@@ -113,14 +121,44 @@ export class ProjectMaterialsComponent implements OnInit {
     switchMap((id) => (id ? this.materialService.getProjectMaterials(id) : [])),
   );
 
+  projectRequests$: Observable<MaterialRequest[]> = combineLatest([
+    this.route.parent!.paramMap,
+    this.refresh$,
+  ]).pipe(
+    map(([params]) => params.get('id')),
+    switchMap((id) =>
+      id ? this.materialService.getProjectRequests(id) : of([]),
+    ),
+  );
+
   filteredMaterials$: Observable<Material[]> = combineLatest([
     this.materials$,
+    this.projectRequests$,
     this.searchControl.valueChanges.pipe(startWith('')),
   ]).pipe(
-    map(([materials, search]) => {
-      let filtered = materials;
+    map(([materials, requests, search]) => {
+      // Enrich materials with request status
+      const enriched = materials.map((m) => {
+        const hasPendingRequest = requests.some(
+          (r) =>
+            r.status === 'pending' &&
+            r.items.some(
+              (item: MaterialRequestItem) => item.materialId === m.id,
+            ),
+        );
+        return {
+          ...m,
+          status: hasPendingRequest ? 'requested' : m.status,
+        };
+      });
+
+      let filtered = enriched;
       if (this.currentFilter !== 'all') {
-        filtered = filtered.filter((m) => m.status === this.currentFilter);
+        filtered = filtered.filter(
+          (m) =>
+            m.status === this.currentFilter ||
+            (this.currentFilter === 'pending' && m.status === 'requested'),
+        );
       }
       if (search) {
         const term = search.toLowerCase();
@@ -169,6 +207,8 @@ export class ProjectMaterialsComponent implements OnInit {
         return 'low';
       case 'out_of_stock':
         return 'critical';
+      case 'requested':
+        return 'pending';
       default:
         return '';
     }
@@ -182,6 +222,8 @@ export class ProjectMaterialsComponent implements OnInit {
         return 'warning';
       case 'out_of_stock':
         return 'error';
+      case 'requested':
+        return 'history';
       default:
         return 'help';
     }
@@ -195,6 +237,8 @@ export class ProjectMaterialsComponent implements OnInit {
         return 'Low Stock';
       case 'out_of_stock':
         return 'Critical';
+      case 'requested':
+        return 'Requested';
       default:
         return status;
     }
@@ -234,8 +278,10 @@ export class ProjectMaterialsComponent implements OnInit {
   }
 
   openAddModal() {
-    const dialogRef = this.dialog.open(AddMaterialModalComponent, {
-      width: '600px',
+    const dialogRef = this.dialog.open(MaterialModalComponent, {
+      width: '640px',
+      maxWidth: '95vw',
+      panelClass: 'glass-dialog',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -253,8 +299,10 @@ export class ProjectMaterialsComponent implements OnInit {
   }
 
   openEditModal(material: Material) {
-    const dialogRef = this.dialog.open(EditMaterialModalComponent, {
-      width: '600px',
+    const dialogRef = this.dialog.open(MaterialModalComponent, {
+      width: '640px',
+      maxWidth: '95vw',
+      panelClass: 'glass-dialog',
       data: { material },
     });
 
@@ -293,6 +341,7 @@ export class ProjectMaterialsComponent implements OnInit {
   openUpdateStockModal(material: Material) {
     const dialogRef = this.dialog.open(UpdateStockModalComponent, {
       width: '520px',
+      panelClass: 'glass-dialog',
       data: { material },
     });
 
@@ -308,8 +357,13 @@ export class ProjectMaterialsComponent implements OnInit {
   openRequestModal() {
     this.materials$.pipe(take(1)).subscribe((materials) => {
       const dialogRef = this.dialog.open(RequestMaterialModalComponent, {
-        width: '600px',
-        data: { materials },
+        width: '720px',
+        maxWidth: '95vw',
+        panelClass: 'glass-dialog',
+        data: {
+          materials,
+          projectId: this.route.parent!.snapshot.paramMap.get('id'),
+        },
       });
 
       dialogRef.afterClosed().subscribe((result) => {
@@ -320,6 +374,8 @@ export class ProjectMaterialsComponent implements OnInit {
               projectId,
               priority: result.priority,
               deliveryLocation: result.deliveryLocation || undefined,
+              deliveryLatitude: result.deliveryLatitude || undefined,
+              deliveryLongitude: result.deliveryLongitude || undefined,
               requiredDate: result.requiredDate,
               items: [
                 {
@@ -336,7 +392,8 @@ export class ProjectMaterialsComponent implements OnInit {
                 // Success - could add a notification here
                 this.refresh$.next();
               },
-              error: (err) => console.error('Failed to create material request:', err)
+              error: (err) =>
+                console.error('Failed to create material request:', err),
             });
           }
         }

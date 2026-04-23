@@ -15,7 +15,7 @@ export class MasterMaterialService {
   private readonly http = inject(HttpClient);
   private readonly configService = inject(ConfigService);
 
-  private readonly apiUrl = `${this.configService.apiBaseUrl}/api/v1/admin/materials`;
+  private readonly apiUrl = `${this.configService.apiBaseUrl}/api/v1/materials/catalog`;
 
   getAll(): Observable<MasterMaterial[]> {
     return this.http.get<MasterMaterial[]>(this.apiUrl);

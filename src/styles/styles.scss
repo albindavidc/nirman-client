@@ -116,8 +116,20 @@ body {
 }
 
 // Dialog overlay
-.cdk-overlay-dark-backdrop {
-  background: rgba(0, 0, 0, 0.6);
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  background: rgba(17, 14, 7, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+// Select panel glassmorphism
+.mat-mdc-select-panel {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-lg) !important;
+  -webkit-backdrop-filter: var(--glass-blur-lg) !important;
+  border: 1px solid var(--glass-border-strong) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-md) !important;
 }
 
 // Zero-padding dialog — used by worker group modals that self-manage layout

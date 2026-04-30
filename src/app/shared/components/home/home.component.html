@@ -1,240 +1,731 @@
-<div class="home-container">
-  <!-- Skip to main content link for accessibility -->
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+<!-- ═══ NAVBAR ═══ -->
+<nav
+  class="navbar"
+  [class.scrolled]="isScrolled()"
+  role="navigation"
+  aria-label="Main navigation"
+>
+  <div class="nav-inner">
+    <a class="nav-brand" routerLink="/">
+      <img src="assets/logo.svg" alt="Nirman Logo" class="nav-logo-img" />
+      <span class="nav-wordmark">Nirman</span>
+    </a>
 
-  <!-- Navbar -->
-  <header class="navbar" role="banner">
-    <div class="logo">
-      <div class="logo-container">
-        <img src="assets/logo.svg" alt="Nirman Logo" class="icon" />
-      </div>
-      <span class="text">Nirman</span>
-    </div>
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="#features" aria-label="Navigate to Features section">Features</a>
-      <a
-        href="#features-detail"
-        aria-label="Navigate to Features in Detail section"
-        >Features in Detail</a
-      >
-    </nav>
-    <div class="auth-buttons">
-      <button class="btn-text" aria-label="Sign in to your account" (click)="navigateToLogin()">
+    <ul class="nav-links">
+      <li><a (click)="scrollTo('features')">Features</a></li>
+      <li><a (click)="scrollTo('how-it-works')">How it Works</a></li>
+      <li><a (click)="scrollTo('testimonials')">Testimonials</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn btn--ghost" (click)="navigateToLogin()">
         Sign In
       </button>
-      <button
-        class="btn-primary"
-        aria-label="Get started with Nirman"
-        (click)="navigateToSignup()"
-      >
+      <button class="btn btn--primary nav-cta" (click)="navigateToSignup()">
+        Get Started
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6 12l4-4-4-4" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button
+      class="btn btn-icon-sm mobile-toggle"
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle mobile menu"
+      style="display: none"
+    >
+      <mat-icon>{{ mobileMenuOpen() ? "close" : "menu" }}</mat-icon>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Navigation Overlay (Aligned with design) -->
+<div class="mobile-nav" [class.open]="mobileMenuOpen()">
+  <div class="mobile-nav-content">
+    <a (click)="scrollTo('features'); toggleMobileMenu()">Features</a>
+    <a (click)="scrollTo('how-it-works'); toggleMobileMenu()">How it Works</a>
+    <a (click)="scrollTo('testimonials'); toggleMobileMenu()">Testimonials</a>
+    <div class="mobile-actions">
+      <button class="btn btn--ghost full-width" (click)="navigateToLogin()">
+        Sign In
+      </button>
+      <button class="btn btn--primary full-width" (click)="navigateToSignup()">
         Get Started
       </button>
     </div>
-  </header>
+  </div>
+</div>
 
-  <!-- Hero Section -->
-  <section class="hero" id="main-content">
-    <div class="hero-content">
-      <div class="trust-badge" role="status" aria-label="Trust badge">
-        <span class="lightning-icon" aria-hidden="true">⚡</span> Trusted by
-        500+ construction companies
-      </div>
-      <h1>Construction Management Simplified & Powerful</h1>
-      <p class="subtext">
-        Transform your construction projects with real-time collaboration, smart
-        workflows, and complete visibility across all your sites.
-      </p>
-      <div class="hero-actions">
-        <button
-          class="btn-large"
-          aria-label="Sign up for Nirman"
-          (click)="navigateToSignup()"
-        >
-          Signup <span aria-hidden="true">➝</span>
-        </button>
-      </div>
+<main class="landing-content">
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" role="region" aria-labelledby="hero-title">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
 
-      <div class="stats-grid" role="region" aria-label="Nirman statistics">
-        <div class="stat-item">
-          <h3>500+</h3>
-          <p>Active Projects</p>
+    <div class="container">
+      <div class="hero-inner">
+        <div class="trust-pill">
+          <span class="trust-pill-dot"></span>
+          Trusted by 500+ construction companies
         </div>
-        <div class="stat-item">
-          <h3>10K+</h3>
-          <p>Daily Users</p>
+
+        <h1 id="hero-title" class="hero-headline">
+          <span class="line-1">Construction Management</span>
+          <span class="line-2 heading-page--gold">Simplified & Powerful</span>
+        </h1>
+
+        <p class="hero-sub">
+          Transform your construction projects with real-time collaboration,
+          smart workflows, and complete visibility across all your sites.
+        </p>
+
+        <div class="hero-cta">
+          <button class="btn btn--primary btn-lg" (click)="navigateToSignup()">
+            Get Started Free →
+          </button>
         </div>
-        <div class="stat-item">
-          <h3>99.9%</h3>
-          <p>Uptime</p>
+
+        <!-- Dynamic Stats Strip -->
+        <div class="stats-strip">
+          <ng-container
+            *ngFor="let stat of stats; let i = index; let last = last"
+          >
+            <div class="stat-item">
+              <span class="stat-num">{{ stat.current }}{{ stat.suffix }}</span>
+              <span class="stat-label">{{ stat.label }}</span>
+            </div>
+            <div class="stat-divider" *ngIf="!last"></div>
+          </ng-container>
         </div>
-        <div class="stat-item">
-          <h3>24/7</h3>
-          <p>Support</p>
+
+        <div class="scroll-hint">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path d="M12 5v14M5 13l7 7 7-7" />
+          </svg>
         </div>
       </div>
     </div>
-
-    <button
-      class="scroll-indicator"
-      aria-label="Scroll down to see more content"
-      type="button"
-    >
-      <span aria-hidden="true">↓</span>
-    </button>
   </section>
 
-  <!-- Value Proposition Section -->
-  <section class="value-prop" aria-labelledby="value-prop-heading">
-    <h2 id="value-prop-heading">
-      Everything you need to manage
-      <span class="highlight-underline">construction projects</span>
-    </h2>
-    <p class="section-subtext">
-      Powerful features designed specifically for construction teams
-    </p>
-  </section>
-
-  <!-- Features Grid -->
+  <!-- ═══ FEATURES ═══ -->
   <section
-    class="features-grid"
     id="features"
-    aria-labelledby="features-heading"
+    class="section section-bg-base"
+    role="region"
+    aria-labelledby="features-title"
   >
-    <h2 id="features-heading" class="sr-only">Key Features</h2>
-    <article class="feature-card">
-      <div class="icon-box blue" aria-hidden="true">📊</div>
-      <h3>Project Management</h3>
-      <p>
-        Complete oversight of projects, sites, phases, and tasks with real-time
-        progress tracking.
-      </p>
-    </article>
-    <article class="feature-card">
-      <div class="icon-box purple" aria-hidden="true">👷</div>
-      <h3>Workforce & Labor</h3>
-      <p>
-        Track attendance, schedule shifts, and monitor productivity across all
-        your sites.
-      </p>
-    </article>
-    <article class="feature-card">
-      <div class="icon-box orange" aria-hidden="true">💬</div>
-      <h3>Communication Hub</h3>
-      <p>
-        Centralized messaging system for seamless team collaboration and
-        updates.
-      </p>
-    </article>
-    <article class="feature-card">
-      <div class="icon-box green" aria-hidden="true">💰</div>
-      <h3>Finance & Procurement</h3>
-      <p>
-        Manage materials, procurement, payments, and vendor relations in one
-        platform.
-      </p>
-    </article>
-    <article class="feature-card">
-      <div class="icon-box blue-light" aria-hidden="true">📝</div>
-      <h3>Phase Approvals</h3>
-      <p>
-        Streamlined approval workflows with quality checklists and evidence
-        documentation.
-      </p>
-    </article>
-    <article class="feature-card">
-      <div class="icon-box red" aria-hidden="true">📈</div>
-      <h3>Real-time Analytics</h3>
-      <p>
-        Powerful insights and reporting to make data-driven decisions instantly.
-      </p>
-    </article>
+    <div class="mesh-blob mesh-blob--1"></div>
+    <div class="mesh-blob mesh-blob--2"></div>
+    <div class="container">
+      <!-- Section header: 3-column grid: rotated label | big heading | desc paragraph -->
+      <header
+        class="section-header-band reveal"
+        aria-labelledby="features-title"
+      >
+        <div class="section-header-grid">
+          <!-- Col 1: vertical label -->
+          <div class="section-label-col" aria-hidden="true">
+            <span>PLATFORM FEATURES</span>
+          </div>
+
+          <!-- Col 2: two-tone heading -->
+          <h2 class="section-heading" id="features-title">
+            <span class="section-heading__line1"
+              >Everything you need to manage</span
+            >
+            <span class="section-heading__line2 gradient-text"
+              >construction projects</span
+            >
+          </h2>
+
+          <!-- Col 3: description -->
+          <p class="section-desc">
+            Powerful features designed specifically for construction teams to
+            streamline workflows and ensure project success.
+          </p>
+        </div>
+      </header>
+
+      <div class="features-grid bento-grid">
+        <!-- Card 1 (Span 2 Cols) -->
+        <div class="feature-card reveal bento-span-2">
+          <div class="fc-icon gold">
+            <svg
+              class="icon-gold"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <path d="M3 3h18v18H3V3zm6 6h6m-6 4h6m-6 4h4"></path>
+            </svg>
+          </div>
+          <h3 class="fc-title">Project Management</h3>
+          <p class="fc-desc">
+            Track timelines, milestones and critical path delivery with
+            real-time updates and automated alerts.
+          </p>
+          <span class="fc-learn">Learn more →</span>
+        </div>
+
+        <!-- Card 2 (Standard) -->
+        <div class="feature-card reveal">
+          <div class="fc-icon blue">
+            <svg
+              class="icon-blue"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm14 14v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="fc-title">Workforce & Labor</h3>
+          <p class="fc-desc">
+            Manage site teams, attendance and performance metrics with precision
+            using geo-fencing and smart tracking.
+          </p>
+          <span class="fc-learn">Learn more →</span>
+        </div>
+
+        <!-- Card 3 (Span 2 Rows) -->
+        <div class="feature-card reveal bento-span-row-2">
+          <div class="fc-icon green">
+            <svg
+              class="icon-green"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="fc-title">Communication Hub</h3>
+          <p class="fc-desc">
+            Centralized messaging and document sharing for all sites and office
+            teams with instant notifications. Connect office teams with site
+            supervisors in real-time to resolve issues faster than ever before.
+          </p>
+          <span class="fc-learn">Learn more →</span>
+        </div>
+
+        <!-- Card 4 (Span 2 Cols) -->
+        <div class="feature-card reveal bento-span-2">
+          <div class="fc-icon gold">
+            <svg
+              class="icon-gold"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path d="M2 5h20v14H2V5zm0 5h20"></path>
+            </svg>
+          </div>
+          <h3 class="fc-title">Finance & Procurement</h3>
+          <p class="fc-desc">
+            Control budgets, purchase orders and vendor payments in one unified
+            dashboard with real-time tracking.
+          </p>
+          <span class="fc-learn">Learn more →</span>
+        </div>
+
+        <!-- Card 5 (Standard) -->
+        <div class="feature-card reveal">
+          <div class="fc-icon blue">
+            <svg
+              class="icon-blue"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="fc-title">Phase Approvals</h3>
+          <p class="fc-desc">
+            Digital sign-offs for critical construction stages ensure
+            compliance, quality control, and accountability.
+          </p>
+          <span class="fc-learn">Learn more →</span>
+        </div>
+
+        <!-- Card 6 (Standard) -->
+        <div class="feature-card reveal">
+          <div class="fc-icon green">
+            <svg
+              class="icon-green"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path d="M18 20V10M12 20V4M6 20V14"></path>
+            </svg>
+          </div>
+          <h3 class="fc-title">Real-time Analytics</h3>
+          <p class="fc-desc">
+            Data-driven insights into project health, ROI, and resource
+            allocation across your entire portfolio.
+          </p>
+          <span class="fc-learn">Learn more →</span>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- Bottom CTA / Transition -->
-  <section class="bottom-cta" aria-labelledby="cta-heading">
-    <h2 id="cta-heading">Intuitive interface, powerful capabilities</h2>
-    <h1>
-      <span class="highlight-underline">One Platform.</span>
-      <span class="highlight-underline">Complete Control.</span>
-    </h1>
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section
+    id="how-it-works"
+    class="section section-bg-raised"
+    role="region"
+    aria-labelledby="how-it-works-title"
+  >
+    <div class="mesh-blob mesh-blob--3"></div>
+    <div class="container">
+      <!-- Section header: 3-column grid: rotated label | big heading | desc paragraph -->
+      <header
+        class="section-header-band reveal"
+        aria-labelledby="how-it-works-title"
+      >
+        <div class="section-header-grid">
+          <!-- Col 1: vertical label -->
+          <div class="section-label-col" aria-hidden="true">
+            <span>HOW IT WORKS</span>
+          </div>
 
-    <p class="description">
-      See how Nirman brings all your construction management needs together
-      Everything you need to manage construction projects from start to finish
+          <!-- Col 2: two-tone heading -->
+          <h2 class="section-heading" id="how-it-works-title">
+            <span class="section-heading__line1">One Platform.</span>
+            <span class="section-heading__line2 gradient-text"
+              >Complete Control.</span
+            >
+          </h2>
+
+          <!-- Col 3: description -->
+          <p class="section-desc">
+            See how Nirman brings all your construction management needs
+            together — from project kick-off to final handover.
+          </p>
+        </div>
+      </header>
+
+      <div class="detail-grid bento-grid">
+        <!-- Detail Card 1 -->
+        <div class="detail-card reveal bento-span-2">
+          <div class="dc-inner">
+            <div class="dc-top">
+              <div class="dc-icon-sq gold">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M9 9h6M9 13h6M9 17h4" />
+                </svg>
+              </div>
+              <span class="badge badge-gold badge-pill">Core Platform</span>
+            </div>
+            <h3 class="dc-title">Project Management</h3>
+            <p class="dc-desc">
+              End-to-end oversight of project lifecycles with intelligent
+              scheduling and resource tracking.
+            </p>
+            <div class="dc-divider"></div>
+            <ul class="checklist">
+              <li
+                class="checklist-item"
+                *ngFor="
+                  let item of [
+                    'Gantt charts & dependency tracking',
+                    'Site-wise progress monitoring',
+                    'Critical path automated alerts',
+                  ]
+                "
+              >
+                <span class="ci-icon"
+                  ><svg viewBox="0 0 10 10">
+                    <path
+                      d="M1.5 5l2.5 2.5 5-5"
+                      stroke="rgb(161 211 154)"
+                      stroke-width="1.5"
+                      fill="none"
+                      stroke-linecap="round"
+                    /></svg
+                ></span>
+                <span class="ci-text">{{ item }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Detail Card 2 -->
+        <div class="detail-card reveal">
+          <div class="dc-inner">
+            <div class="dc-top">
+              <div class="dc-icon-sq blue">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path
+                    d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+                  />
+                </svg>
+              </div>
+              <span class="badge badge-blue badge-pill">Resource Mgmt</span>
+            </div>
+            <h3 class="dc-title">Workforce & Labor</h3>
+            <p class="dc-desc">
+              Optimize labor allocation and ensure site safety compliance across
+              your entire workforce.
+            </p>
+            <div class="dc-divider"></div>
+            <ul class="checklist">
+              <li
+                class="checklist-item"
+                *ngFor="
+                  let item of [
+                    'Dynamic labor skill matching',
+                    'Attendance via geo-fencing',
+                    'Safety certification tracking',
+                  ]
+                "
+              >
+                <span class="ci-icon"
+                  ><svg viewBox="0 0 10 10">
+                    <path
+                      d="M1.5 5l2.5 2.5 5-5"
+                      stroke="rgb(161 211 154)"
+                      stroke-width="1.5"
+                      fill="none"
+                      stroke-linecap="round"
+                    /></svg
+                ></span>
+                <span class="ci-text">{{ item }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Detail Card 3 -->
+        <div class="detail-card reveal">
+          <div class="dc-inner">
+            <div class="dc-top">
+              <div class="dc-icon-sq green">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                  />
+                </svg>
+              </div>
+              <span class="badge badge-green badge-pill">Collaboration</span>
+            </div>
+            <h3 class="dc-title">Communication Hub</h3>
+            <p class="dc-desc">
+              Connect office teams with site supervisors in real-time to resolve
+              issues faster than ever before.
+            </p>
+            <div class="dc-divider"></div>
+            <ul class="checklist">
+              <li
+                class="checklist-item"
+                *ngFor="
+                  let item of [
+                    'Instant site-to-office reports',
+                    'Drawing & blueprint versioning',
+                    'Daily site diary automation',
+                  ]
+                "
+              >
+                <span class="ci-icon"
+                  ><svg viewBox="0 0 10 10">
+                    <path
+                      d="M1.5 5l2.5 2.5 5-5"
+                      stroke="rgb(161 211 154)"
+                      stroke-width="1.5"
+                      fill="none"
+                      stroke-linecap="round"
+                    /></svg
+                ></span>
+                <span class="ci-text">{{ item }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Detail Card 4 -->
+        <div class="detail-card reveal bento-span-2">
+          <div class="dc-inner">
+            <div class="dc-top">
+              <div class="dc-icon-sq gold">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <path d="M2 10h20" />
+                </svg>
+              </div>
+              <span class="badge badge-gold badge-pill">Financial Control</span>
+            </div>
+            <h3 class="dc-title">Finance & Procurement</h3>
+            <p class="dc-desc">
+              Strict budget controls and automated procurement workflows to
+              protect your margins from day one.
+            </p>
+            <div class="dc-divider"></div>
+            <ul class="checklist">
+              <li
+                class="checklist-item"
+                *ngFor="
+                  let item of [
+                    'PO-to-invoice reconciliation',
+                    'Vendor performance ratings',
+                    'Real-time budget vs actuals',
+                  ]
+                "
+              >
+                <span class="ci-icon"
+                  ><svg viewBox="0 0 10 10">
+                    <path
+                      d="M1.5 5l2.5 2.5 5-5"
+                      stroke="rgb(161 211 154)"
+                      stroke-width="1.5"
+                      fill="none"
+                      stroke-linecap="round"
+                    /></svg
+                ></span>
+                <span class="ci-text">{{ item }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TESTIMONIALS ═══ -->
+  <section
+    id="testimonials"
+    class="section section-bg-base"
+    role="region"
+    aria-labelledby="testimonials-title"
+  >
+    <div class="mesh-blob mesh-blob--4"></div>
+    <div class="container">
+      <div class="testimonials-label reveal">Trusted by Industry Leaders</div>
+
+      <div class="marquee-outer reveal">
+        <div class="marquee-track">
+          <ul class="marquee-list">
+            <li
+              *ngFor="
+                let logo of [
+                  'APEX BUILD',
+                  'TERRANOVA',
+                  'SKYLINE CO',
+                  'VANTAGE GRP',
+                  'MERIDIAN',
+                  'IRONSTONE',
+                ]
+              "
+            >
+              {{ logo }}
+            </li>
+          </ul>
+          <ul class="marquee-list" aria-hidden="true">
+            <li
+              *ngFor="
+                let logo of [
+                  'APEX BUILD',
+                  'TERRANOVA',
+                  'SKYLINE CO',
+                  'VANTAGE GRP',
+                  'MERIDIAN',
+                  'IRONSTONE',
+                ]
+              "
+            >
+              {{ logo }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="tcard reveal">
+          <span class="tcard-quote">&ldquo;</span>
+          <p class="tcard-text">
+            Nirman has completely transformed how we handle site inspections.
+            What used to take hours of paperwork is now done in minutes on a
+            tablet.
+          </p>
+          <div class="tcard-author">
+            <div class="tcard-avatar">JD</div>
+            <div>
+              <div class="tcard-name">James Dalton</div>
+              <div class="tcard-role">Project Director, Apex Build</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tcard tcard--featured reveal">
+          <div class="tcard-badge">Most Popular</div>
+          <span class="tcard-quote">&ldquo;</span>
+          <p class="tcard-text">
+            The financial visibility Nirman provides is unparalleled. We caught
+            budget overruns three weeks earlier than our previous system
+            allowed.
+          </p>
+          <div class="tcard-author">
+            <div class="tcard-avatar">SC</div>
+            <div>
+              <div class="tcard-name">Sarah Chen</div>
+              <div class="tcard-role">CFO, Terranova Infrastructure</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tcard reveal">
+          <span class="tcard-quote">&ldquo;</span>
+          <p class="tcard-text">
+            Coordinating 15 active sites was a nightmare before Nirman. Now, I
+            have a single pane of glass for my entire portfolio of projects.
+          </p>
+          <div class="tcard-author">
+            <div class="tcard-avatar">RM</div>
+            <div>
+              <div class="tcard-name">Robert Miller</div>
+              <div class="tcard-role">Operations Manager, Skyline Co</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="cta-section" role="region" aria-labelledby="cta-title">
+    <div class="section-label-row reveal" style="margin-bottom: 0">
+      <span class="section-label">Get Started Today</span>
+    </div>
+    <h2 id="cta-title" class="cta-title reveal">
+      Ready to transform your<br />
+      <span class="gradient-text">construction workflow?</span>
+    </h2>
+    <p class="cta-sub reveal">
+      Join 500+ construction companies who trust Nirman to deliver projects on
+      time and on budget.
+    </p>
+    <div class="cta-actions reveal">
+      <button class="btn btn--primary btn-lg" (click)="navigateToSignup()">
+        Get Started Free →
+      </button>
+      <button class="btn btn--secondary btn-lg">Book a Demo</button>
+    </div>
+    <p class="cta-note reveal">
+      No credit card required · Free 14-day trial · Cancel anytime
     </p>
   </section>
+</main>
 
-  <!-- Detailed Features List (2x2 Grid roughly based on image) -->
-  <section
-    class="detailed-features"
-    id="features-detail"
-    aria-labelledby="detailed-features-heading"
-  >
-    <h2 id="detailed-features-heading" class="sr-only">Detailed Features</h2>
-    <article class="detail-card">
-      <div class="icon-header" aria-hidden="true">📂</div>
-      <h3>Project Management</h3>
-      <p>
-        Centralize projects, sites, phases, tasks, and milestones. Track
-        progress with visual timelines and Gantt charts.
-      </p>
-      <ul>
-        <li>Projects & Project Sites</li>
-        <li>Phases & Phase Approvals</li>
-        <li>Tasks & Task Dependencies</li>
-        <li>Drawings & Drawing Reviews</li>
-        <li>RFI Management</li>
-      </ul>
-    </article>
-    <article class="detail-card">
-      <div class="icon-header" aria-hidden="true">👥</div>
-      <h3>Workforce & Labor</h3>
-      <p>
-        Manage your entire workforce with attendance tracking, scheduling, and
-        real-time productivity insights.
-      </p>
-      <ul>
-        <li>Labor Roster</li>
-        <li>Attendance Tracking</li>
-        <li>Asset Scheduling</li>
-        <li>Productivity Analytics</li>
-        <li>Geo-fencing & Check-ins</li>
-      </ul>
-    </article>
-    <article class="detail-card">
-      <div class="icon-header" aria-hidden="true">💬</div>
-      <h3>Communication</h3>
-      <p>
-        Keep everyone connected with integrated messaging, notifications, and
-        real-time collaboration tools.
-      </p>
-      <ul>
-        <li>Team Messaging</li>
-        <li>Push Notifications</li>
-        <li>Document Sharing</li>
-        <li>Activity Feeds</li>
-        <li>&#64;Mentions & Comments</li>
-      </ul>
-    </article>
-    <article class="detail-card">
-      <div class="icon-header" aria-hidden="true">💲</div>
-      <h3>Finance & Procurement</h3>
-      <p>
-        Control costs, manage vendors, and streamline procurement from purchase
-        orders to payments.
-      </p>
-      <ul>
-        <li>Material Catalog</li>
-        <li>Procurement Requests</li>
-        <li>Purchase Orders</li>
-        <li>Payment Approvals</li>
-        <li>Vendor Payments</li>
-        <li>Goods Receipts</li>
-      </ul>
-    </article>
-  </section>
+<!-- ═══ FOOTER ═══ -->
+<footer class="main-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <img
+            src="assets/logo.svg"
+            alt="Nirman Logo"
+            class="footer-logo-img"
+          />
+          <span class="footer-logo-word">Nirman</span>
+        </div>
+        <p class="footer-tagline">Construction Management Simplified</p>
+        <div class="social-row">
+          <a class="social-btn" href="#" aria-label="LinkedIn"
+            ><span>in</span></a
+          >
+          <a class="social-btn" href="#" aria-label="Twitter/X"
+            ><span>𝕏</span></a
+          >
+          <a class="social-btn" href="#" aria-label="GitHub"><span>gh</span></a>
+        </div>
+        <p class="copyright-desk">© 2025 Nirman. All rights reserved.</p>
+      </div>
 
-  <footer class="footer" role="contentinfo">
-    <p>© 2025 Nirman. All rights reserved.</p>
-  </footer>
-</div>
+      <div>
+        <span class="footer-col-label">Product</span>
+        <ul class="footer-links">
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <span class="footer-col-label">Company</span>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <span class="footer-col-label">Legal</span>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>Made with ♥ for construction teams</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <span>·</span>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>

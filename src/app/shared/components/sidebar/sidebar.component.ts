@@ -40,7 +40,11 @@ export class SidebarComponent {
       if (role === 'vendor') {
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/vendor/dashboard' },
-          { label: 'Purchase Orders', icon: 'shopping_basket', route: '/vendor/purchase-orders' },
+          {
+            label: 'Purchase Orders',
+            icon: 'shopping_basket',
+            route: '/vendor/purchase-orders',
+          },
           { label: 'Communication', icon: 'chat', route: '/communication' },
         ];
       } else if (role === 'worker') {
@@ -61,55 +65,16 @@ export class SidebarComponent {
             route: '/supervisor/dashboard',
           },
           {
-            label: 'Project Management',
-            icon: 'folder_open',
-            children: [
-              {
-                label: 'Projects',
-                icon: 'work',
-                route: '/supervisor/projects',
-              },
-            ],
+            label: 'Projects',
+            icon: 'work',
+            route: '/supervisor/projects',
           },
           {
-            label: 'Workforce & Labor',
-            icon: 'engineering',
-            children: [
-              {
-                label: 'Verify Attendance',
-                icon: 'fact_check',
-                route: '/supervisor/verify-attendance',
-              },
-            ],
+            label: 'Payment Approvals',
+            icon: 'approval',
+            route: '/supervisor/finance/approvals',
           },
           { label: 'Communication', icon: 'chat', route: '/communication' },
-          {
-            label: 'Progress & Reports',
-            icon: 'trending_up',
-            children: [
-              {
-                label: 'Daily Reports',
-                icon: 'assignment',
-                route: '/supervisor/reports',
-              },
-            ],
-          },
-          {
-            label: 'Finance & Procurement',
-            icon: 'payments',
-            children: [
-              {
-                label: 'Purchase Order',
-                icon: 'description',
-                route: '/supervisor/finance/purchase-orders',
-              },
-              {
-                label: 'Payment Approvals',
-                icon: 'approval',
-                route: '/supervisor/finance/approvals',
-              },
-            ],
-          },
         ];
       }
 
@@ -148,7 +113,11 @@ export class SidebarComponent {
               icon: 'storefront',
               route: '/vendor-management',
             },
-            { label: 'Payment Invoices', icon: 'receipt', route: '/admin/finance/invoices' },
+            {
+              label: 'Payment Invoices',
+              icon: 'receipt',
+              route: '/admin/finance/invoices',
+            },
           ],
         },
       ];

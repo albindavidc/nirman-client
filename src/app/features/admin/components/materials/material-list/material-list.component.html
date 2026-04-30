@@ -1,78 +1,263 @@
-<div class="materials-container">
-  <header class="page-header">
-    <div class="title-group">
-      <h1>Material Management</h1>
-      <p class="subtitle">Manage the global catalog</p>
-    </div>
-    <button mat-flat-button color="primary" class="add-btn" (click)="openMaterialModal()">
-      <mat-icon>add</mat-icon>
-      Create New Material
-    </button>
-  </header>
+<div class="materials-page-wrapper">
+  <!-- 1. PAGE HEADER HERO -->
+  <div class="page-header glass--strong">
 
-  <div class="tab-content">
-    <div class="filter-bar glass-morphism">
-      <div class="search-box">
-        <mat-icon>search</mat-icon>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
+    <!-- ROW 1: Title + CTA -->
+    <div class="page-header__top">
+
+      <div class="page-header__title-group">
+        <h1 class="page-header__title heading-page--gold">
+          Material Management
+        </h1>
+        <p class="page-header__subtitle text-body">
+          Manage the global catalog
+        </p>
+      </div>
+
+      <button 
+        class="btn btn--primary"
+        (click)="openMaterialModal()">
+        <mat-icon>add_circle</mat-icon>
+        Create New Material
+      </button>
+
+    </div>
+
+    <!-- DIVIDER between rows -->
+    <div class="page-header__divider"></div>
+
+    <!-- ROW 2: KPI Pills -->
+    <div class="page-header__stats">
+
+      <div class="page-header__kpi">
+        <mat-icon class="page-header__kpi-icon">inventory_2</mat-icon>
+        <span class="page-header__kpi-label">Total Materials:</span>
+        <span class="page-header__kpi-value">{{ totalMaterials() }}</span>
+      </div>
+
+      <div class="page-header__kpi">
+        <mat-icon class="page-header__kpi-icon">category</mat-icon>
+        <span class="page-header__kpi-label">Categories:</span>
+        <span class="page-header__kpi-value">{{ categoriesCount() }}</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 2. TOOLBAR / FILTER BAR -->
+  <div class="glass toolbar-panel">
+    <div class="toolbar-content">
+      <div class="search-field">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input 
+          type="text" 
+          [ngModel]="searchQuery()" 
           (ngModelChange)="onSearchChange($event)"
           placeholder="Search by name, code, or category..."
+          class="search-input"
         />
       </div>
+
+      <div class="filter-controls">
+        <mat-form-field appearance="outline" class="glass--subtle filter-select">
+          <mat-select [value]="selectedCategory()" (selectionChange)="onCategoryChange($event.value)">
+            <mat-option *ngFor="let cat of uniqueCategories()" [value]="cat">
+              {{ cat }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="glass--subtle filter-select">
+          <mat-select [value]="selectedUnit()" (selectionChange)="onUnitChange($event.value)">
+            <mat-option *ngFor="let unit of uniqueUnits()" [value]="unit">
+              {{ unit }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="view-toggle-group">
+          <button 
+            class="btn--icon" 
+            [class.active]="viewMode() === 'grid'"
+            (click)="toggleViewMode('grid')"
+            matTooltip="Grid View"
+          >
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button 
+            class="btn--icon" 
+            [class.active]="viewMode() === 'list'"
+            (click)="toggleViewMode('list')"
+            matTooltip="List View"
+          >
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="table-container glass-morphism">
-      <table mat-table [dataSource]="filteredMaterials()" class="material-table">
-        <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef> Code </th>
-          <td mat-cell *matCellDef="let element" class="code-cell"> {{element.code}} </td>
-        </ng-container>
+  <!-- 3. RESULTS SUMMARY BAR -->
+  <div class="results-summary">
+    <span class="text-caption">
+      Showing {{ filteredMaterials().length }} of {{ totalMaterials() }} materials
+    </span>
+    <div class="sort-control">
+      <span class="text-caption">Sort by:</span>
+      <button [matMenuTriggerFor]="sortMenu" class="sort-trigger">
+        <span class="text-caption text-gold weight-medium">Name</span>
+        <mat-icon class="icon-xs text-gold">expand_more</mat-icon>
+      </button>
+      <mat-menu #sortMenu="matMenu" class="glass--frosted">
+        <button mat-menu-item (click)="sortMaterials({active: 'name', direction: 'asc'})">Name</button>
+        <button mat-menu-item (click)="sortMaterials({active: 'code', direction: 'asc'})">Code</button>
+        <button mat-menu-item (click)="sortMaterials({active: 'category', direction: 'asc'})">Category</button>
+      </mat-menu>
+    </div>
+  </div>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Name </th>
-          <td mat-cell *matCellDef="let element" class="name-cell"> {{element.name}} </td>
-        </ng-container>
+  <!-- 4. DATA TABLE / CARD LIST -->
+  <div class="content-container">
+    <ng-container *ngIf="!isMobile() && viewMode() === 'list'; else cardView">
+      <div class="glass--strong table-wrapper">
+        <table mat-table [dataSource]="filteredMaterials()" matSort (matSortChange)="sortMaterials($event)">
+          <!-- CODE -->
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="label-caps"> Code </th>
+            <td mat-cell *matCellDef="let m">
+              <span class="code-pill text-mono">{{ m.code }}</span>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="category">
-          <th mat-header-cell *matHeaderCellDef> Category </th>
-          <td mat-cell *matCellDef="let element">
-            <span class="category-badge">{{element.category}}</span>
-          </td>
-        </ng-container>
+          <!-- NAME -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="label-caps"> Name </th>
+            <td mat-cell *matCellDef="let m">
+              <div class="name-column">
+                <span class="material-name">{{ m.name }}</span>
+                <span class="material-desc text-xs truncate">{{ m.description }}</span>
+              </div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="unit">
-          <th mat-header-cell *matHeaderCellDef> Unit </th>
-          <td mat-cell *matCellDef="let element"> {{element.unit}} </td>
-        </ng-container>
+          <!-- CATEGORY -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="label-caps"> Category </th>
+            <td mat-cell *matCellDef="let m">
+              <span class="badge" [ngClass]="{
+                'badge--blue': m.category === 'Building Material',
+                'badge--green': m.category === 'Electrical',
+                'badge--gold': m.category === 'Finishing',
+                'badge--purple': m.category === 'Structural'
+              }">{{ m.category }}</span>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef> Actions </th>
-          <td mat-cell *matCellDef="let element">
-            <div class="action-buttons">
-              <button mat-icon-button color="primary" (click)="openMaterialModal(element)" matTooltip="Edit Material">
+          <!-- UNIT -->
+          <ng-container matColumnDef="unit">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="label-caps"> Unit </th>
+            <td mat-cell *matCellDef="let m">
+              <div class="unit-pill">
+                <mat-icon class="icon-xs text-muted">scale</mat-icon>
+                <span class="text-caption">{{ m.unit }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- ACTIONS -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="label-caps"> Actions </th>
+            <td mat-cell *matCellDef="let m">
+              <div class="row-actions">
+                <button class="btn--icon edit-btn" (click)="openMaterialModal(m)" matTooltip="Edit">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="btn--icon delete-btn" (click)="deleteMaterial(m)" matTooltip="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index" 
+              class="stagger-row" [style.animation-delay]="i * 60 + 'ms'">
+          </tr>
+
+          <!-- Empty State within Table -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="5">
+              <div class="empty-state-container">
+                <mat-icon class="empty-icon">inventory_2</mat-icon>
+                <h3 class="text-secondary">No materials found</h3>
+                <p class="text-muted">Try adjusting your search or filters</p>
+                <button class="btn btn--secondary" (click)="onSearchChange('')">Clear Filters</button>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </ng-container>
+
+    <!-- CARD VIEW (Mobile & Grid Toggle) -->
+    <ng-template #cardView>
+      <div class="card-grid">
+        <div *ngFor="let m of filteredMaterials(); let i = index" 
+             class="glass card-item stagger-row" 
+             [style.animation-delay]="i * 60 + 'ms'">
+          <div class="card-header">
+            <span class="code-pill text-mono">{{ m.code }}</span>
+            <span class="badge" [ngClass]="{
+              'badge--blue': m.category === 'Building Material',
+              'badge--green': m.category === 'Electrical',
+              'badge--gold': m.category === 'Finishing',
+              'badge--purple': m.category === 'Structural'
+            }">{{ m.category }}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="text-primary weight-semibold">{{ m.name }}</h3>
+            <p class="material-desc text-xs text-muted truncate">{{ m.description }}</p>
+          </div>
+          <div class="card-footer">
+            <div class="unit-pill">
+              <span class="text-muted text-xs">Unit:</span>
+              <span class="text-secondary text-sm">{{ m.unit }}</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn--icon edit-btn" (click)="openMaterialModal(m)">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button color="warn" (click)="deleteMaterial(element)" matTooltip="Delete Material">
+              <button class="btn--icon delete-btn" (click)="deleteMaterial(m)">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty-cell" colspan="5">
-            <div class="empty-state">
-              <mat-icon>inventory_2</mat-icon>
-              <p>No materials found matching "{{searchQuery}}"</p>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
+          </div>
+        </div>
+        
+        <!-- Empty State for Grid -->
+        <div *ngIf="filteredMaterials().length === 0" class="empty-state-grid">
+          <mat-icon class="empty-icon">inventory_2</mat-icon>
+          <h3 class="text-secondary">No materials found</h3>
+          <p class="text-muted">Try adjusting your search or filters</p>
+          <button class="btn btn--secondary" (click)="onSearchChange('')">Clear Filters</button>
+        </div>
+      </div>
+    </ng-template>
   </div>
+
+  <!-- 6. PAGINATION FOOTER -->
+  <footer class="glass--subtle pagination-bar">
+    <div class="pagination-left">
+      <span class="text-caption">Showing {{ filteredMaterials().length }} items</span>
+    </div>
+    <div class="pagination-center">
+      <button class="btn--icon" disabled><mat-icon>chevron_left</mat-icon></button>
+      <button class="btn--icon active">1</button>
+      <button class="btn--icon" disabled><mat-icon>chevron_right</mat-icon></button>
+    </div>
+    <div class="pagination-right">
+      <span class="text-caption">Rows per page: 10</span>
+    </div>
+  </footer>
 </div>

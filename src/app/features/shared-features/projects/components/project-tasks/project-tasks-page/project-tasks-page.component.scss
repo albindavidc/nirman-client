@@ -596,7 +596,7 @@
 /* Table */
 .table-header-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1.5fr 1fr 100px;
+  grid-template-columns: 2fr 1.2fr 1.2fr 110px 1.5fr 1fr 100px;
   padding: 1rem 1.5rem;
   color: var(--md-sys-color-on-surface-variant);
   font-size: 0.75rem;
@@ -619,7 +619,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1.5fr 1fr 100px;
+  grid-template-columns: 2fr 1.2fr 1.2fr 110px 1.5fr 1fr 100px;
   padding: 1rem 1.5rem;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.02);
@@ -743,11 +743,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 8px;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   mat-icon {
     font-size: 14px;
@@ -783,9 +785,9 @@
     color-mix(in srgb, var(--md-sys-color-error) 20%, transparent);
 }
 .status-pending {
-  background: var(--md-sys-color-surface-container-high);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--md-sys-color-on-surface-variant);
-  border: 1px solid var(--md-sys-color-outline-variant);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
 /* Progress Bar */

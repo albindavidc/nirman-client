@@ -6,8 +6,10 @@ import { TaskDependency } from '../../../models/project.models';
 import { ProjectPhaseService } from '../../../services/project-phase.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Observable, switchMap, map, shareReplay } from 'rxjs';
+import { Observable, switchMap, map, shareReplay, combineLatest, of } from 'rxjs';
 import { format, differenceInDays } from 'date-fns';
+import { TaskDependencyService } from '../../../../../tasks/services/task-dependency.service';
+import { TaskDependencies, TaskDependency as DetailedDependency } from '../../../../../tasks/models/task-dependency.model';
 
 @Component({
   selector: 'app-task-details-page',
@@ -21,13 +23,15 @@ export class TaskDetailsPageComponent implements OnInit {
   private router = inject(Router);
   private taskService = inject(TaskService);
   private phaseService = inject(ProjectPhaseService);
+  private taskDependencyService = inject(TaskDependencyService);
 
   taskId = '';
   projectId = '';
 
   task$: Observable<Task> | undefined;
   phaseName$: Observable<string> | undefined;
-  dependencies$: Observable<TaskDependency[]> | undefined;
+  dependencies$: Observable<TaskDependencies> | undefined;
+  isBlocked$: Observable<boolean> | undefined;
 
   ngOnInit() {
     // Use paramMap observable for better reactivity when navigating between tasks
@@ -62,17 +66,48 @@ export class TaskDetailsPageComponent implements OnInit {
     );
 
     // Fetch dependencies
-    this.dependencies$ = this.taskService
-      .getProjectDependencies(this.projectId)
-      .pipe(
-        map((deps) =>
-          deps.filter(
-            (d) =>
-              d.successorTaskId === this.taskId ||
-              d.predecessorTaskId === this.taskId,
-          ),
-        ),
-      );
+    this.dependencies$ = this.taskDependencyService.getTaskDependencies(this.taskId);
+
+    // Blocking logic
+    this.isBlocked$ = combineLatest([
+      this.task$,
+      this.dependencies$
+    ]).pipe(
+      map(([task, deps]) => {
+        const status = task.status.toLowerCase().replace(/_/g, ' ');
+        if (status === 'completed' || status === 'done') return false;
+
+        return deps.predecessors.some(dep => {
+          const predStatus = (dep.predecessorStatus || '').toLowerCase().replace(/_/g, ' ');
+          
+          if (dep.type === 'FS') {
+            return predStatus !== 'completed' && predStatus !== 'done';
+          }
+          if (dep.type === 'SS') {
+            return predStatus === 'not started' || predStatus === 'todo';
+          }
+          if (dep.type === 'FF') {
+            // Successor can be in progress, but blocked from completion
+            // We'll mark as blocked if any FF predecessor is not done
+            return predStatus !== 'completed' && predStatus !== 'done';
+          }
+          if (dep.type === 'SF') {
+            return predStatus === 'not started' || predStatus === 'todo';
+          }
+          return false;
+        });
+      })
+    );
+  }
+
+  getDependencyTypeName(type: string): string {
+    const types: Record<string, string> = {
+      'FS': 'Finish-to-Start',
+      'SS': 'Start-to-Start',
+      'FF': 'Finish-to-Finish',
+      'SF': 'Start-to-Finish'
+    };
+    return types[type] || type;
   }
 
   getDaysTaken(task: Task): number {

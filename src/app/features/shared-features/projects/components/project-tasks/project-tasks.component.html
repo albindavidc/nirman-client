@@ -150,6 +150,55 @@
       </td>
     </ng-container>
 
+    <!-- Dependencies Column -->
+    <ng-container matColumnDef="dependencies">
+      <th mat-header-cell *matHeaderCellDef class="text-gray-400">
+        DEPENDENCIES
+      </th>
+      <td mat-cell *matCellDef="let task">
+        @if (task.predecessors && task.predecessors.length > 0) {
+          <div class="flex flex-wrap gap-1">
+            @for (dep of task.predecessors; track dep.id) {
+              <span
+                class="px-1.5 py-0.5 rounded text-[9px] font-bold border flex items-center gap-1"
+                [matTooltip]="'Predecessor: ' + dep.predecessorTaskId + ' (Type: ' + dep.type + ')'"
+                [ngStyle]="{
+                  'background-color':
+                    dep.type === 'FS'
+                      ? 'rgba(59, 130, 246, 0.1)'
+                      : dep.type === 'SS'
+                        ? 'rgba(34, 197, 94, 0.1)'
+                        : dep.type === 'FF'
+                          ? 'rgba(249, 115, 22, 0.1)'
+                          : 'rgba(168, 85, 247, 0.1)',
+                  'color':
+                    dep.type === 'FS'
+                      ? '#60a5fa'
+                      : dep.type === 'SS'
+                        ? '#4ade80'
+                        : dep.type === 'FF'
+                          ? '#fb923c'
+                          : '#c084fc',
+                  'border-color':
+                    dep.type === 'FS'
+                      ? 'rgba(59, 130, 246, 0.3)'
+                      : dep.type === 'SS'
+                        ? 'rgba(34, 197, 94, 0.3)'
+                        : dep.type === 'FF'
+                          ? 'rgba(249, 115, 22, 0.3)'
+                          : 'rgba(168, 85, 247, 0.3)'
+                }"
+              >
+                {{ dep.type }}
+              </span>
+            }
+          </div>
+        } @else {
+          <span class="text-gray-600 text-[10px]">—</span>
+        }
+      </td>
+    </ng-container>
+
     <!-- Dates Column -->
     <ng-container matColumnDef="dates">
       <th mat-header-cell *matHeaderCellDef class="text-gray-400">DATES</th>

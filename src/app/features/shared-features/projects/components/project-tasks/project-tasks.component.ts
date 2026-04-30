@@ -49,6 +49,7 @@ export class ProjectTasksComponent implements OnInit {
     'status',
     'priority',
     'assignee',
+    'dependencies',
     'dates',
     'progress',
     'actions',

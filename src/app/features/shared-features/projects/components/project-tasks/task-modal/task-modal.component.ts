@@ -41,6 +41,7 @@ import {
   TaskAssignmentInput,
 } from '../../../services/task.service';
 import { NotificationService } from '../../../../../../core/services/notification.service';
+import { TaskDependencyService } from '../../../../../tasks/services/task-dependency.service';
 
 export interface TaskModalData {
   mode: 'create' | 'edit';
@@ -81,6 +82,7 @@ export class TaskModalComponent implements OnInit {
   public data = inject<TaskModalData>(MAT_DIALOG_DATA);
   private notification = inject(NotificationService);
   private destroyRef = inject(DestroyRef);
+  private taskDependencyService = inject(TaskDependencyService);
 
   taskForm!: FormGroup;
   isSubmitting = false;
@@ -220,7 +222,7 @@ export class TaskModalComponent implements OnInit {
 
       if (phaseId && this.mode === 'create') {
         this.loadWorkerGroups(phaseId);
-        this.loadPhaseTasks(phaseId);
+        this.loadProjectTasks();
       }
     });
   }
@@ -234,7 +236,7 @@ export class TaskModalComponent implements OnInit {
         if (phaseId) {
           this.loadWorkerGroups(phaseId);
           this.updatePhaseDates(phaseId);
-          this.loadPhaseTasks(phaseId);
+          this.loadProjectTasks();
         } else {
           this.workerGroups = [];
           this.workers = [];
@@ -322,8 +324,8 @@ export class TaskModalComponent implements OnInit {
     (this.taskForm.get('dependencies') as FormArray).removeAt(index);
   }
 
-  private loadPhaseTasks(phaseId: string): void {
-    this.taskService.getPhaseTasks(phaseId).subscribe((tasks) => {
+  private loadProjectTasks(): void {
+    this.taskService.getProjectTasks(this.data.projectId).subscribe((tasks) => {
       // Exclude current task in edit mode to prevent self-dependency
       this.phaseTasks = tasks.filter((t) => t.id !== this.data.task?.id);
     });
@@ -550,6 +552,7 @@ export class TaskModalComponent implements OnInit {
           this.populateInitialAssignments();
         }
         if (this.mode === 'edit' && this.data.task) {
+          this.loadProjectTasks();
           this.populateInitialDependencies();
         }
       });
@@ -767,14 +770,14 @@ export class TaskModalComponent implements OnInit {
     // 1. Delete removed dependencies
     existingDeps.forEach((oldDep: any) => {
       if (!currentDeps.some((d: any) => d.id === oldDep.id)) {
-        observables.push(this.taskService.removeDependency(oldDep.id));
+        observables.push(this.taskDependencyService.deleteDependency(oldDep.id));
       }
     });
 
     // 2. Add new dependencies
     currentDeps.forEach((newDep: any) => {
       if (!newDep.id) {
-        observables.push(this.taskService.addDependency({
+        observables.push(this.taskDependencyService.createDependency(this.taskForm.get('phaseId')?.value, {
           successorTaskId: taskId,
           predecessorTaskId: newDep.predecessorTaskId,
           type: newDep.type,

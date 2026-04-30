@@ -302,15 +302,31 @@
                     >
                       <path d="M 0 0 L 10 5 L 0 10 Z" fill="#f59e0b" />
                     </marker>
+
+                    <!-- Type Specific Markers -->
+                    <marker id="marker-FS" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3b82f6" />
+                    </marker>
+                    <marker id="marker-SS" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#22c55e" />
+                    </marker>
+                    <marker id="marker-FF" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#f97316" />
+                    </marker>
+                    <marker id="marker-SF" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#a855f7" />
+                    </marker>
                   </defs>
                   @for (task of filteredTasks; track task.id) {
-                    @for (depId of task.dependencies; track depId) {
+                    @for (dep of (task.dependencyDetails ?? []); track dep.predecessorTaskId) {
                       <path
-                        [attr.d]="getDependencyPath(task, depId)"
-                        stroke="#3b82f6"
-                        stroke-width="2.5"
+                        [attr.d]="getDependencyPath(task, dep.predecessorTaskId)"
+                        [attr.stroke]="getDependencyColor(dep.type)"
+                        stroke-width="2"
                         fill="none"
-                        marker-end="url(#arrowhead)"
+                        [attr.marker-end]="'url(#marker-' + dep.type + ')'"
+                        class="dependency-path"
+                        [class.hovered]="hoveredTaskId === task.id || hoveredTaskId === dep.predecessorTaskId"
                       />
                     }
                   }
@@ -337,6 +353,7 @@
 
       <!-- Legend -->
       <div class="legend-section">
+        <!-- Row 1: Task Statuses -->
         <div class="legend-items">
           <div class="legend-item">
             <span class="legend-color completed"></span>
@@ -353,6 +370,27 @@
           <div class="legend-item">
             <span class="legend-color delayed"></span>
             <span>Delayed</span>
+          </div>
+        </div>
+
+        <!-- Row 2: Dependency Types -->
+        <div class="dependency-legend">
+          <span class="legend-title">Dependency Types:</span>
+          <div class="legend-item">
+            <span class="type-dot fs"></span>
+            <span>FS (Finish-to-Start)</span>
+          </div>
+          <div class="legend-item">
+            <span class="type-dot ss"></span>
+            <span>SS (Start-to-Start)</span>
+          </div>
+          <div class="legend-item">
+            <span class="type-dot ff"></span>
+            <span>FF (Finish-to-Finish)</span>
+          </div>
+          <div class="legend-item">
+            <span class="type-dot sf"></span>
+            <span>SF (Start-to-Finish)</span>
           </div>
         </div>
       </div>
@@ -408,7 +446,7 @@
           </mat-form-field>
 
           <mat-form-field class="full-width" appearance="outline">
-            <mat-label>Dependencies</mat-label>
+            <mat-label>Predecessor Tasks</mat-label>
             <mat-select [(ngModel)]="editingTask.dependencies" multiple>
               @for (t of ganttTasks; track t.id) {
                 <mat-option [value]="t.id" [disabled]="t.id === editingTask.id">
@@ -417,6 +455,33 @@
               }
             </mat-select>
           </mat-form-field>
+
+          <!-- Dependency Details Section -->
+          @if (editingTask.dependencies && editingTask.dependencies.length > 0) {
+            <div class="dependency-details-grid full-width">
+              <p class="section-subtitle">Configure Dependencies</p>
+              @for (predId of editingTask.dependencies; track predId) {
+                <div class="dep-detail-row">
+                  <span class="dep-task-name">{{ getTaskName(predId) }}</span>
+                  
+                  <mat-form-field appearance="outline" class="dep-type-select">
+                    <mat-label>Type</mat-label>
+                    <mat-select [(ngModel)]="getDependencyDetail(predId).type">
+                      <mat-option value="FS">FS — Finish to Start</mat-option>
+                      <mat-option value="SS">SS — Start to Start</mat-option>
+                      <mat-option value="FF">FF — Finish to Finish</mat-option>
+                      <mat-option value="SF">SF — Start to Finish</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="dep-lag-input">
+                    <mat-label>Lag (days)</mat-label>
+                    <input matInput type="number" [(ngModel)]="getDependencyDetail(predId).lagTime" min="0" />
+                  </mat-form-field>
+                </div>
+              }
+            </div>
+          }
 
           <mat-form-field class="full-width" appearance="outline">
             <mat-label>Start Date</mat-label>

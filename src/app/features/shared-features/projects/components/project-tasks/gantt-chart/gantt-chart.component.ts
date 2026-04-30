@@ -29,6 +29,8 @@ import {
   TaskService,
 } from '../../../services/task.service';
 import { TaskDependency, ProjectPhase } from '../../../models/project.models';
+import { DependencyType, DEP_TYPE_COLORS, DEP_TYPE_LABELS } from '../../../../../tasks/models/task-dependency.model';
+import { TaskDependencyService } from '../../../../../tasks/services/task-dependency.service';
 
 // Interface for internal Gantt Task (extending the service Task or mapping to it)
 export interface GanttTask {
@@ -44,6 +46,11 @@ export interface GanttTask {
   startDate?: string;
   endDate?: string;
   originalTask?: Task;
+  dependencyDetails?: {
+    predecessorTaskId: string;
+    type: string;
+    lagTime: number;
+  }[];
 }
 
 export interface GanttWeek {
@@ -171,6 +178,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
 
   private dialog = inject(MatDialog);
   private taskService = inject(TaskService);
+  private taskDependencyService = inject(TaskDependencyService);
 
   constructor() {
     // Initialize to start of current week (Sunday)
@@ -267,7 +275,12 @@ export class GanttChartComponent implements OnInit, OnChanges {
         endDate: t.plannedEndDate
           ? new Date(t.plannedEndDate).toISOString()
           : undefined,
-        dependencies: t.predecessors?.map((p) => p.predecessorTaskId) || [], // Map from backend
+        dependencies: t.predecessors?.map((p) => p.predecessorTaskId) || [],
+        dependencyDetails: t.predecessors?.map((p) => ({
+          predecessorTaskId: p.predecessorTaskId,
+          type: p.type,
+          lagTime: p.lagTime,
+        })) || [],
         originalTask: t,
       };
     });
@@ -679,7 +692,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
     const task = this.ganttTasks.find((t) => t.id === this.editingTask.id);
     if (!task || !task.originalTask) return;
 
-    // Recalculate duration if dates changed (assuming editingTask has dates bound)
+    // Recalculate duration if dates changed
     let duration = this.editingTask.duration;
     if (this.editingTask.startDate && this.editingTask.endDate) {
       const start = new Date(this.editingTask.startDate);
@@ -688,7 +701,6 @@ export class GanttChartComponent implements OnInit, OnChanges {
       duration = Math.max(1, Math.ceil(diff / (1000 * 3600 * 24)));
     }
 
-    // Auto-update color based on status
     const color = this.getColorForStatus(this.editingTask.status);
 
     const payload: Partial<CreateTaskDto> = {
@@ -710,6 +722,9 @@ export class GanttChartComponent implements OnInit, OnChanges {
         .updateTask(this.editingTask.originalTask.id, payload)
         .subscribe({
           next: (updated) => {
+            // Handle Dependencies Update
+            this.syncDependencies();
+
             const idx = this.ganttTasks.findIndex(
               (t) => t.id === this.editingTask.id,
             );
@@ -727,6 +742,59 @@ export class GanttChartComponent implements OnInit, OnChanges {
           error: (err) => console.error('Failed to update task', err),
         });
     }
+  }
+
+  private syncDependencies() {
+    if (!this.editingTask.id || !this.editingTask.originalTask) return;
+    const taskId = this.editingTask.id;
+    const phaseId = this.editingTask.originalTask.phaseId;
+    
+    const oldDeps = this.editingTask.originalTask.predecessors || [];
+    const newDeps = this.editingTask.dependencyDetails || [];
+    
+    // 1. Identify removed dependencies
+    const removed = oldDeps.filter(
+      old => !newDeps.some(n => n.predecessorTaskId === old.predecessorTaskId)
+    );
+    
+    // 2. Identify new or changed dependencies
+    const toUpdate = newDeps.filter(
+      n => !oldDeps.some(old => 
+        old.predecessorTaskId === n.predecessorTaskId && 
+        old.type === n.type && 
+        old.lagTime === n.lagTime
+      )
+    );
+
+    // Call API for each
+    removed.forEach(dep => {
+      if (dep.id) {
+        this.taskDependencyService.deleteDependency(dep.id).subscribe();
+      }
+    });
+
+    toUpdate.forEach(dep => {
+      // If it existed but type/lag changed, we delete and recreate 
+      // (simplest for now unless we add an update endpoint)
+      const existing = oldDeps.find(o => o.predecessorTaskId === dep.predecessorTaskId);
+      if (existing && existing.id) {
+        this.taskDependencyService.deleteDependency(existing.id).subscribe(() => {
+          this.taskDependencyService.createDependency(phaseId, {
+            predecessorTaskId: dep.predecessorTaskId,
+            successorTaskId: taskId,
+            type: dep.type as any,
+            lagTime: dep.lagTime
+          }).subscribe();
+        });
+      } else {
+        this.taskDependencyService.createDependency(phaseId, {
+          predecessorTaskId: dep.predecessorTaskId,
+          successorTaskId: taskId,
+          type: dep.type as any,
+          lagTime: dep.lagTime
+        }).subscribe();
+      }
+    });
   }
 
   addTask() {
@@ -845,5 +913,30 @@ export class GanttChartComponent implements OnInit, OnChanges {
             L ${(fromR + toL) / 2}% ${startY} 
             L ${(fromR + toL) / 2}% ${endY} 
             L ${toL}% ${endY}`;
+  }
+
+  getDependencyColor(type: string): string {
+    return (DEP_TYPE_COLORS as any)[type] ?? '#3b82f6';
+  }
+
+  getTaskName(taskId: string): string {
+    return this.ganttTasks.find((t) => t.id === taskId)?.name ?? taskId;
+  }
+
+  getDependencyDetail(predId: string): { predecessorTaskId: string; type: string; lagTime: number } {
+    if (!this.editingTask.dependencyDetails) {
+      this.editingTask.dependencyDetails = [];
+    }
+    
+    let detail = this.editingTask.dependencyDetails.find(
+      (d) => d.predecessorTaskId === predId
+    );
+    
+    if (!detail) {
+      detail = { predecessorTaskId: predId, type: 'FS', lagTime: 0 };
+      this.editingTask.dependencyDetails.push(detail);
+    }
+    
+    return detail;
   }
 }

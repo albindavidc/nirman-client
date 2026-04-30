@@ -17,6 +17,19 @@
       </div>
     </div>
 
+    <!-- Blocked Banner -->
+    @if (isBlocked$ | async) {
+      <div class="blocked-banner">
+        <div class="banner-content">
+          <mat-icon>lock</mat-icon>
+          <div class="text">
+            <h4>Task is Blocked</h4>
+            <p>This task cannot proceed until its predecessors satisfy the dependency rules.</p>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Stats Grid -->
     <div class="stats-grid">
       <div class="stat-card">
@@ -168,7 +181,70 @@
           </div>
         </div>
 
-        <!-- Activity (Bonus, simple mock for now) -->
+        <!-- Dependencies Section -->
+        <div class="card dependencies-card" *ngIf="dependencies$ | async as deps">
+          <div class="card-header">
+            <h3>Task Dependencies</h3>
+          </div>
+          
+          <div class="dep-container">
+            <!-- Predecessors -->
+            <div class="dep-section">
+              <div class="section-header">
+                <mat-icon class="icon-sm">arrow_back</mat-icon>
+                <span>Predecessors (Blocks This Task)</span>
+              </div>
+              <div class="dep-list">
+                @for (dep of deps.predecessors; track dep.id) {
+                  <div class="dep-item">
+                    <div class="dep-main">
+                      <span class="dep-name">{{ dep.predecessorTaskName }}</span>
+                      <span class="dep-type" [ngClass]="dep.type">{{ getDependencyTypeName(dep.type) }}</span>
+                    </div>
+                    <div class="dep-meta">
+                      <span class="status-dot" [ngClass]="dep.predecessorStatus?.toLowerCase() || ''"></span>
+                      <span class="status-text">{{ dep.predecessorStatus }}</span>
+                      @if (dep.lagTime > 0) {
+                        <span class="lag">+{{ dep.lagTime }}d lag</span>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (deps.predecessors.length === 0) {
+                  <div class="empty-state">No predecessors defined</div>
+                }
+              </div>
+            </div>
+
+            <!-- Successors -->
+            <div class="dep-section">
+              <div class="section-header">
+                <mat-icon class="icon-sm">arrow_forward</mat-icon>
+                <span>Successors (Blocked By This Task)</span>
+              </div>
+              <div class="dep-list">
+                @for (dep of deps.successors; track dep.id) {
+                  <div class="dep-item">
+                    <div class="dep-main">
+                      <span class="dep-name">{{ dep.successorTaskName }}</span>
+                      <span class="dep-type" [ngClass]="dep.type">{{ getDependencyTypeName(dep.type) }}</span>
+                    </div>
+                    <div class="dep-meta">
+                      @if (dep.lagTime > 0) {
+                        <span class="lag">+{{ dep.lagTime }}d lag</span>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (deps.successors.length === 0) {
+                  <div class="empty-state">No successor tasks</div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity -->
         <div class="card activity-card">
           <div class="card-header">
             <h3>Task Activity</h3>
@@ -185,9 +261,9 @@
                 <div class="desc">Task is currently {{ task.status }}</div>
               </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
+  </div>
   }
 </div>

@@ -90,7 +90,7 @@ export class MaterialModalComponent implements OnInit {
       next: (response: { vendors: Vendor[] }) => {
         this.vendors = response.vendors;
       },
-      error: (err: any) => console.error('Failed to load vendors:', err),
+      error: (err: Error) => console.error('Failed to load vendors:', err),
     });
   }
 

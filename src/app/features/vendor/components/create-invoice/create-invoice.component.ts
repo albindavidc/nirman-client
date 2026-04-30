@@ -1,6 +1,20 @@
-import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormArray,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Subject } from 'rxjs';
 import { startWith, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -13,13 +27,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MaterialService } from '../../../shared-features/projects/services/material.service';
-import { ProjectService } from '../../../shared-features/projects/services/project.service';
-import { Project } from '../../../shared-features/projects/models/project.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { InvoicePrepResponseDto, CreateInvoiceDto } from '../../../../shared/models/invoice.model';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {
+  InvoicePrepResponseDto,
+  CreateInvoiceDto,
+  InvoiceBillableItem,
+} from '../../../../shared/models/invoice.model';
 
 @Component({
   selector: 'app-create-invoice',
@@ -42,29 +56,34 @@ import { catchError } from 'rxjs/operators';
     trigger('fadeIn', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+        animate(
+          '400ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
       ]),
     ]),
     trigger('slideDown', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(-20px)' }),
-        animate('500ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' })),
+        animate(
+          '500ms cubic-bezier(0.16, 1, 0.3, 1)',
+          style({ opacity: 1, transform: 'translateY(0)' }),
+        ),
       ]),
     ]),
   ],
 })
-export class CreateInvoiceComponent implements OnInit {
+export class CreateInvoiceComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly materialService = inject(MaterialService);
-  private readonly projectService = inject(ProjectService); // New injection
   private readonly notificationService = inject(NotificationService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
-  
+
   poId = '';
   projectId = '';
   prepData?: InvoicePrepResponseDto;
@@ -118,17 +137,20 @@ export class CreateInvoiceComponent implements OnInit {
 
   loadPrepData(): void {
     this.isLoading = true;
-    
+
     // The backend now provides full context (Project, Supervisor, PO Metadata) in a single call
-    this.materialService.getInvoicePrepData(this.projectId, this.poId)
+    this.materialService
+      .getInvoicePrepData(this.projectId, this.poId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (prep) => {
           this.prepData = prep;
-          
+
           // Build one FormGroup per billable item
           if (prep.billableItems?.length) {
-            const itemGroups = prep.billableItems.map(item => this.buildItemGroup(item));
+            const itemGroups = prep.billableItems.map((item) =>
+              this.buildItemGroup(item),
+            );
             this.itemsForm.setControl('items', this.fb.array(itemGroups));
           }
 
@@ -137,60 +159,78 @@ export class CreateInvoiceComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: (err) => {
-          this.notificationService.error('Failed to load invoice preparation data');
+          this.notificationService.error(
+            'Failed to load invoice preparation data',
+          );
           this.isLoading = false;
           console.error('Invoice Prep Error:', err);
-        }
+        },
       });
   }
 
   // BUG 1 — Reactive auto-calculation in itemsForm initialization
-  private buildItemGroup(item: any): FormGroup {
+  private buildItemGroup(item: InvoiceBillableItem): FormGroup {
     const group = this.fb.group({
       materialId: [item.materialId],
       materialName: [item.materialName || 'Material Name Unavailable'],
       materialCode: [item.materialCode || ''], // BUG 2 — Added material code
-      acceptedQuantity: [item.acceptedQuantity || 0, [Validators.required, Validators.min(1)]],
-      unitPrice: [item.unitPrice ?? 0, [Validators.required, Validators.min(0)]],
-      taxRate: [item.taxRate ?? 0, [Validators.required, Validators.min(0), Validators.max(100)]],
+      acceptedQuantity: [
+        item.acceptedQuantity || 0,
+        [Validators.required, Validators.min(1)],
+      ],
+      unitPrice: [
+        item.unitPrice ?? 0,
+        [Validators.required, Validators.min(0)],
+      ],
+      taxRate: [
+        item.taxRate ?? 0,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
       totalItemCost: [{ value: 0, disabled: true }], // computed, not user-editable
     });
 
     // Subscribe to unitPrice, taxRate AND acceptedQuantity changes simultaneously
     combineLatest([
-      group.get('unitPrice')!.valueChanges.pipe(startWith(group.get('unitPrice')!.value)),
-      group.get('taxRate')!.valueChanges.pipe(startWith(group.get('taxRate')!.value)),
-      group.get('acceptedQuantity')!.valueChanges.pipe(startWith(group.get('acceptedQuantity')!.value)),
+      group
+        .get('unitPrice')!
+        .valueChanges.pipe(startWith(group.get('unitPrice')!.value)),
+      group
+        .get('taxRate')!
+        .valueChanges.pipe(startWith(group.get('taxRate')!.value)),
+      group
+        .get('acceptedQuantity')!
+        .valueChanges.pipe(startWith(group.get('acceptedQuantity')!.value)),
     ])
-    .pipe(
-      takeUntil(this.destroy$),
-      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
-    )
-    .subscribe(([price, tax, qtyVal]) => {
-      const qty = parseFloat(qtyVal) || 0;
-      const unitPrice = parseFloat(price) || 0;
-      const taxRate = parseFloat(tax) || 0;
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      )
+      .subscribe(([price, tax, qtyVal]) => {
+        const qty = parseFloat(String(qtyVal || 0)) || 0;
+        const unitPrice = parseFloat(String(price || 0)) || 0;
+        const taxRate = parseFloat(String(tax || 0)) || 0;
 
-      // Formula: total = qty × unitPrice × (1 + taxRate / 100)
-      const subtotal = qty * unitPrice;
-      const taxAmount = subtotal * (taxRate / 100);
-      const totalCost = parseFloat((subtotal + taxAmount).toFixed(2));
+        // Formula: total = qty × unitPrice × (1 + taxRate / 100)
+        const subtotal = qty * unitPrice;
+        const taxAmount = subtotal * (taxRate / 100);
+        const totalCost = parseFloat((subtotal + taxAmount).toFixed(2));
 
-      // Patch silently — emitEvent: false prevents infinite loop
-      group.get('totalItemCost')!.setValue(totalCost, { emitEvent: false });
+        // Patch silently — emitEvent: false prevents infinite loop
+        group.get('totalItemCost')!.setValue(totalCost, { emitEvent: false });
 
-      // Trigger grand total recalculation
-      this.recalculateTotals();
+        // Trigger grand total recalculation
+        this.recalculateTotals();
 
-      // Trigger change detection manually
-      this.cdr.markForCheck();
-    });
+        // Trigger change detection manually
+        this.cdr.markForCheck();
+      });
 
     return group;
   }
 
   submitInvoice(): void {
-    if (this.detailsForm.invalid || this.itemsForm.invalid || !this.prepData) return;
+    if (this.detailsForm.invalid || this.itemsForm.invalid || !this.prepData)
+      return;
 
     this.isLoading = true;
     const createDto: CreateInvoiceDto = {
@@ -199,12 +239,13 @@ export class CreateInvoiceComponent implements OnInit {
       vendorId: this.prepData.vendorId,
       currency: this.prepData.currency,
       dueDate: this.detailsForm.value.dueDate,
-      items: this.items.value.map((item: any) => ({
+      items: this.items.value.map((item: InvoiceBillableItem) => ({
         materialId: item.materialId,
         quantity: item.acceptedQuantity,
         unitPrice: item.unitPrice,
         taxRate: item.taxRate,
-        totalItemCost: item.acceptedQuantity * item.unitPrice * (1 + item.taxRate / 100),
+        totalItemCost:
+          item.acceptedQuantity * item.unitPrice * (1 + item.taxRate / 100),
       })),
       attachments: [],
       subTotal: this.subTotal,
@@ -219,7 +260,9 @@ export class CreateInvoiceComponent implements OnInit {
         this.router.navigate(['/vendor/purchase-orders']);
       },
       error: (err) => {
-        this.notificationService.error(err.error?.message || 'Failed to submit invoice');
+        this.notificationService.error(
+          err.error?.message || 'Failed to submit invoice',
+        );
         this.isLoading = false;
       },
     });
@@ -230,7 +273,7 @@ export class CreateInvoiceComponent implements OnInit {
     let subtotal = 0;
     let taxTotal = 0;
 
-    this.items.controls.forEach(group => {
+    this.items.controls.forEach((group) => {
       const qty = group.get('acceptedQuantity')!.value ?? 0;
       const unitPrice = parseFloat(group.get('unitPrice')!.value) || 0;
       const taxRate = parseFloat(group.get('taxRate')!.value) || 0;
@@ -248,11 +291,14 @@ export class CreateInvoiceComponent implements OnInit {
     this.totalAmount = parseFloat((subtotal + taxTotal).toFixed(2));
 
     // Sync into detailsForm so Step 2 financial fields also stay live
-    this.detailsForm.patchValue({
-      subTotal: this.subTotal,
-      taxAmount: this.taxAmount,
-      totalAmount: this.totalAmount,
-    }, { emitEvent: false });
+    this.detailsForm.patchValue(
+      {
+        subTotal: this.subTotal,
+        taxAmount: this.taxAmount,
+        totalAmount: this.totalAmount,
+      },
+      { emitEvent: false },
+    );
 
     this.cdr.markForCheck();
   }

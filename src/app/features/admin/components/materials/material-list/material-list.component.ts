@@ -17,6 +17,19 @@ import { NotificationService } from '../../../../../core/services/notification.s
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 
+export interface FlattenedRequestItem {
+  id: string;
+  materialId: string;
+  materialName: string;
+  quantity_requested: number;
+  unit: string;
+  projectId: string;
+  projectName: string;
+  requiredDate: string;
+  status: string;
+  requestNumber: string;
+}
+
 @Component({
   selector: 'app-material-list',
   standalone: true,
@@ -43,7 +56,7 @@ export class MaterialListComponent implements OnInit {
 
   materials = signal<MasterMaterial[]>([]);
   filteredMaterials = signal<MasterMaterial[]>([]);
-  requestedMaterials = signal<any[]>([]);
+  requestedMaterials = signal<FlattenedRequestItem[]>([]);
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
@@ -77,12 +90,17 @@ export class MaterialListComponent implements OnInit {
       next: (res) => {
         const flattened = res.data.flatMap(request => 
           request.items.map(item => ({
-            ...item,
+            id: item.id,
+            materialId: item.material_id,
+            materialName: item.material_name,
+            quantity_requested: item.quantity_requested,
+            unit: item.unit,
             projectId: request.project_id,
             projectName: request.project_name,
             requiredDate: request.required_date,
             status: request.status,
-            requestNumber: request.request_number
+            requestNumber: request.request_number,
+            purpose: item.purpose
           }))
         );
         this.requestedMaterials.set(flattened);

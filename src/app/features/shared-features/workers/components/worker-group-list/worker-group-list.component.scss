@@ -299,6 +299,23 @@
   }
 }
 
+.archived-toggle-wrapper {
+  margin-left: auto;
+  padding-right: 8px;
+
+  @include mobile {
+    margin-left: 0;
+    padding: 8px 0;
+  }
+
+  .toggle-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-left: 8px;
+  }
+}
+
 // ─── Cards Grid ───────────────────────────────────────────────────────────────
 .card-grid {
   display: grid;
@@ -333,14 +350,32 @@
   }
 
   &.inactive {
-    opacity: 0.6;
-    filter: grayscale(0.4);
+    opacity: 0.7;
+    background: rgba(35, 31, 23, 0.5);
+    border-color: rgba(153, 143, 128, 0.1);
+    
+    .group-name {
+      color: var(--md-sys-color-outline);
+    }
+
+    .group-description {
+      opacity: 0.6;
+    }
+
+    .card-chips, .card-footer-info {
+      opacity: 0.5;
+    }
 
     .btn-action-icon.toggle-status {
       opacity: 1 !important;
-      background: rgba(233, 193, 108, 0.15);
-      color: var(--md-sys-color-primary);
-      border-color: var(--md-sys-color-primary);
+      background: rgba(139, 208, 239, 0.1);
+      color: var(--md-sys-color-secondary);
+      border-color: var(--md-sys-color-secondary);
+    }
+    
+    &:hover {
+      opacity: 0.9;
+      background: rgba(35, 31, 23, 0.7);
     }
   }
 }

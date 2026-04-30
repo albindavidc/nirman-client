@@ -48,3 +48,8 @@ export const selectSearchTerm = createSelector(
   selectWorkerGroupState,
   (state) => state.searchTerm,
 );
+
+export const selectIncludeArchived = createSelector(
+  selectWorkerGroupState,
+  (state) => state.includeArchived,
+);

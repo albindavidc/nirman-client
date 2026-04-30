@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../../../../core/services/config.service';
-import { ChatThreadResponseDto, ChatMessageResponseDto, CallSessionResponseDto, CreateChatThreadDto } from '../models/communication.models';
+import { ChatThreadResponseDto, ChatMessageResponseDto, CallSessionResponseDto, CreateChatThreadDto, ChatThreadListItem } from '../models/communication.models';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +13,10 @@ export class CommunicationService {
 
   private get apiUrl() {
     return `${this.configService.apiUrl}/communication`;
+  }
+
+  getThreadList(): Observable<ChatThreadListItem[]> {
+    return this.http.get<ChatThreadListItem[]>(`${this.apiUrl}/threads-list`);
   }
 
   getProjectThreads(projectId: string): Observable<ChatThreadResponseDto[]> {
@@ -29,6 +33,14 @@ export class CommunicationService {
 
   createThread(dto: CreateChatThreadDto): Observable<ChatThreadResponseDto> {
     return this.http.post<ChatThreadResponseDto>(`${this.apiUrl}/threads`, dto);
+  }
+
+  deleteThread(threadId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/threads/${threadId}`);
+  }
+
+  markThreadAsRead(threadId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/threads/${threadId}/read`, {});
   }
 
   // --- Calls ---

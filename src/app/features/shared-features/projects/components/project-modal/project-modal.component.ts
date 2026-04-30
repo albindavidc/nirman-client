@@ -66,6 +66,7 @@ interface NormalizedLocation {
 }
 
 interface PredictionLike {
+  placePrediction?: any;
   placeId?: string;
   place_id?: string;
   description?: string;
@@ -429,7 +430,7 @@ export class ProjectModalComponent implements OnInit, OnDestroy {
           return;
         }
 
-        const normalized: NormalizedLocation[] = predictions.map((p: any) => {
+        const normalized: NormalizedLocation[] = predictions.map((p: PredictionLike) => {
           const prediction = p.placePrediction || p;
           const description =
             prediction.description ||

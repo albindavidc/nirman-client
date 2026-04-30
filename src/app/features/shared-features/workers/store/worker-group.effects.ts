@@ -24,8 +24,8 @@ export class WorkerGroupEffects {
   loadGroups$ = createEffect(() =>
     this.actions$.pipe(
       ofType(WorkerGroupActions.loadGroups),
-      switchMap(({ trade, search }) =>
-        this.service.getGroups(trade, undefined, search).pipe(
+      switchMap(({ trade, search, includeArchived }) =>
+        this.service.getGroups(trade, undefined, search, undefined, undefined, includeArchived).pipe(
           map((groups) => WorkerGroupActions.loadGroupsSuccess({ groups })),
           catchError((error) =>
             of(WorkerGroupActions.loadGroupsFailure({ error })),
@@ -173,6 +173,54 @@ export class WorkerGroupEffects {
     ),
   );
 
+  archiveGroup$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(WorkerGroupActions.archiveGroup),
+      mergeMap(({ id }) =>
+        this.service.archiveGroup(id).pipe(
+          map((group) => {
+            this.snackBar.open(`"${group.name}" has been archived`, 'Close', {
+              duration: 3000,
+            });
+            return WorkerGroupActions.archiveGroupSuccess({ group });
+          }),
+          catchError((error) => {
+            this.snackBar.open(
+              error?.error?.message ?? 'Failed to archive group',
+              'Close',
+              { duration: 3000 },
+            );
+            return of(WorkerGroupActions.archiveGroupFailure({ error }));
+          }),
+        ),
+      ),
+    ),
+  );
+
+  restoreGroup$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(WorkerGroupActions.restoreGroup),
+      mergeMap(({ id }) =>
+        this.service.restoreGroup(id).pipe(
+          map((group) => {
+            this.snackBar.open(`"${group.name}" has been restored`, 'Close', {
+              duration: 3000,
+            });
+            return WorkerGroupActions.restoreGroupSuccess({ group });
+          }),
+          catchError((error) => {
+            this.snackBar.open(
+              error?.error?.message ?? 'Failed to restore group',
+              'Close',
+              { duration: 3000 },
+            );
+            return of(WorkerGroupActions.restoreGroupFailure({ error }));
+          }),
+        ),
+      ),
+    ),
+  );
+
   /**
    * Automatically refresh the groups list in the background after any change
    */
@@ -184,17 +232,21 @@ export class WorkerGroupEffects {
         WorkerGroupActions.deleteGroupSuccess,
         WorkerGroupActions.addMemberSuccess,
         WorkerGroupActions.removeMemberSuccess,
+        WorkerGroupActions.archiveGroupSuccess,
+        WorkerGroupActions.restoreGroupSuccess,
       ),
       // Pull current filters from the store to maintain the user's view
       withLatestFrom(
         this.store.select(WorkerGroupSelectors.selectTradeFilter),
         this.store.select(WorkerGroupSelectors.selectSearchTerm),
+        this.store.select(WorkerGroupSelectors.selectIncludeArchived),
       ),
       // We trigger a silent loadGroups without a spinner
-      map(([, trade, search]) =>
+      map(([, trade, search, includeArchived]) =>
         WorkerGroupActions.loadGroups({
           trade,
           search,
+          includeArchived,
           silent: true,
         }),
       ),

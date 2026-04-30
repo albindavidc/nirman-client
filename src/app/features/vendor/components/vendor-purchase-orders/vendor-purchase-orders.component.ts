@@ -10,8 +10,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MaterialService } from '../../../shared-features/projects/services/material.service';
 import { ProjectService } from '../../../shared-features/projects/services/project.service';
 import { Project } from '../../../shared-features/projects/models/project.models';
+import { Material } from '../../../shared-features/projects/models/material.model';
 import { PurchaseOrderResponseDto } from '../../../../shared/models/purchase-order.model';
 import { NotificationService } from '../../../../core/services/notification.service';
+
+/** Alias kept for clarity within this component */
+type ProjectMaterial = Material;
 import { trigger, transition, style, animate } from '@angular/animations';
 import { forkJoin, of, catchError } from 'rxjs';
 
@@ -90,7 +94,7 @@ export class VendorPurchaseOrdersComponent implements OnInit {
         );
 
         forkJoin(projectDataRequests).subscribe({
-          next: (results: any[]) => {
+          next: (results: { pos: PurchaseOrderResponseDto[]; materials: ProjectMaterial[] }[]) => {
             const enrichedPos: EnrichedPurchaseOrder[] = [];
 
             results.forEach((res, index) => {
@@ -103,11 +107,11 @@ export class VendorPurchaseOrdersComponent implements OnInit {
 
                 // Enrich items with material names and units from project materials
                 enriched.items = po.items.map(item => {
-                  const material = projectMaterials.find((m: any) => m.id === item.materialId);
+                  const material = projectMaterials.find((m: ProjectMaterial) => m.id === item.materialId);
                   return {
                     ...item,
                     materialName: material?.name || item.materialName || 'Material',
-                    unit: (material as any)?.unit || 'units'
+                    unit: material?.unit || 'units'
                   };
                 });
 

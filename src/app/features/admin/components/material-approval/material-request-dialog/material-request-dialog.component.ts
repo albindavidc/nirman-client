@@ -15,7 +15,6 @@ import { MaterialApprovalService } from '../../../services/material-approval.ser
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { MaterialRequestResponseDto } from '../../../../../shared/models/material-request.model';
 import { Vendor } from '../../../../vendor/models/vendor.models';
-import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-material-request-dialog',
@@ -58,11 +57,12 @@ export class MaterialRequestActionDialogComponent {
     );
   });
 
-  displayVendor(vendor: any): string {
+  displayVendor(vendor: Vendor | string): string {
+    if (typeof vendor === 'string') return vendor;
     return vendor?.companyName || '';
   }
 
-  onVendorSelected(event: any): void {
+  onVendorSelected(event: { option: { value: Vendor } }): void {
     const vendor = event.option.value;
     this.selectedVendorId = vendor.id;
   }

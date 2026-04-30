@@ -15,7 +15,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { GoogleMapsModule, MapMarker, GoogleMap } from '@angular/google-maps';
+import { GoogleMapsModule } from '@angular/google-maps';
 import {
   Observable,
   map,
@@ -27,11 +27,16 @@ import {
   distinctUntilChanged,
   switchMap,
 } from 'rxjs';
-import { Material } from '../../../../models/material.model';
+import { Material, MaterialRequest } from '../../../../models/material.model';
 import { MasterMaterialService } from '../../../../../../admin/services/master-material.service';
 import { MasterMaterial } from '../../../../../../admin/models/master-material.model';
 import { SharedModalComponent } from '../../../../../../../shared/components/shared-modal/shared-modal.component';
 import { CustomValidators } from '../../../../../../../shared/validators/custom-validators';
+
+export interface LocationPrediction {
+  place_id: string;
+  description: string;
+}
 
 @Component({
   selector: 'app-request-material-modal',
@@ -103,10 +108,10 @@ export class RequestMaterialModalComponent implements OnInit {
 
   public data = inject<{
     materials: Material[];
-    requests: any[];
+    requests: MaterialRequest[];
     projectId: string;
   }>(MAT_DIALOG_DATA);
-  filteredLocations$!: Observable<any[]>;
+  filteredLocations$!: Observable<LocationPrediction[]>;
 
   private autocompleteService: google.maps.places.AutocompleteService | null =
     null;
@@ -152,7 +157,7 @@ export class RequestMaterialModalComponent implements OnInit {
       );
   }
 
-  private filterLocations(term: string): Observable<any[]> {
+  private filterLocations(term: string): Observable<LocationPrediction[]> {
     if (!term || typeof term !== 'string' || term.length < 3) return of([]);
     return new Observable((observer) => {
       this.autocompleteService?.getPlacePredictions(
@@ -177,7 +182,7 @@ export class RequestMaterialModalComponent implements OnInit {
     });
   }
 
-  async onLocationSelected(prediction: any): Promise<void> {
+  async onLocationSelected(prediction: LocationPrediction): Promise<void> {
     if (!prediction) return;
     this.form.patchValue({ deliveryLocation: prediction.description });
     const geocoder = new google.maps.Geocoder();
@@ -245,11 +250,11 @@ export class RequestMaterialModalComponent implements OnInit {
     );
   }
 
-  displayFn(material: any): string {
+  displayFn(material: Material | MasterMaterial | null): string {
     return material?.name || '';
   }
 
-  onMaterialSelected(event: { option: { value: any } }): void {
+  onMaterialSelected(event: { option: { value: Material | MasterMaterial } }): void {
     const selected = event.option.value;
 
     // Check if this material (by code) already exists in the project
@@ -269,13 +274,13 @@ export class RequestMaterialModalComponent implements OnInit {
     });
   }
 
-  isAlreadyRequested(material: any): boolean {
+  isAlreadyRequested(material: Material | MasterMaterial): boolean {
     if (!material || !this.data.requests) return false;
     return this.data.requests.some(
       (req) =>
         req.status === 'pending' &&
         req.items.some(
-          (item: any) =>
+          (item: { materialId?: string; materialCode?: string }) =>
             item.materialId === material.id ||
             item.materialCode === material.code,
         ),

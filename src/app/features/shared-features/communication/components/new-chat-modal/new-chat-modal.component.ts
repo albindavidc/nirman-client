@@ -10,7 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { VendorService } from '../../../../vendor/services/vendor.service';
 import { WorkerService } from '../../../../shared-features/workers/services/worker.service';
 import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map, withLatestFrom } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { selectUser } from '../../../../auth/login/store/login.selectors';
 
 export interface ChatPartner {
   id: string;
@@ -41,6 +43,7 @@ export class NewChatModalComponent {
   private readonly dialogRef = inject(MatDialogRef<NewChatModalComponent>);
   private readonly vendorService = inject(VendorService);
   private readonly workerService = inject(WorkerService);
+  private readonly store = inject(Store);
 
   searchQuery = '';
   private searchSubject = new BehaviorSubject<string>('');
@@ -65,25 +68,35 @@ export class NewChatModalComponent {
       );
 
       const workers$ = this.workerService.getWorkers(1, 10, undefined, query).pipe(
-        map(res => res.data.map(w => ({
-          id: w.id,
-          userId: w.id, // In workers, id is often userId but verify if needed
-          name: `${w.firstName} ${w.lastName}`,
-          role: w.professionalTitle || w.role || 'Worker',
-          type: (w.role?.toLowerCase() || 'worker') as ChatPartner['type'],
-          avatar: w.firstName.charAt(0).toUpperCase()
-        }))),
+        map(res => res.data.map(w => {
+          const type = (w.role?.toLowerCase() || 'worker') as ChatPartner['type'];
+          const isUserAdmin = type === 'admin';
+          const displayName = (w.firstName && w.lastName) ? `${w.firstName} ${w.lastName}` : w.email;
+          return {
+            id: w.id,
+            userId: w.id, 
+            name: isUserAdmin ? displayName : `${w.firstName} ${w.lastName}`,
+            role: w.professionalTitle || w.role || 'Worker',
+            type,
+            avatar: (isUserAdmin ? displayName : w.firstName).charAt(0).toUpperCase()
+          };
+        })),
         catchError(() => of([]))
       );
 
       return forkJoin([vendors$, workers$]).pipe(
-        map(([vendors, workers]) => {
+        withLatestFrom(this.store.select(selectUser)),
+        map(([[vendors, workers], currentUser]) => {
           this.isLoading = false;
-          // Ensure type is formatted consistently
-          return [...vendors, ...workers].map(p => ({
+          
+          // Combine and clean up partners
+          const allPartners = [...vendors, ...workers].map(p => ({
             ...p,
             type: p.type.toLowerCase() as ChatPartner['type']
           }));
+
+          // Filter out current user to avoid self-messaging
+          return allPartners.filter(p => p.userId !== currentUser?.id);
         })
       );
     })

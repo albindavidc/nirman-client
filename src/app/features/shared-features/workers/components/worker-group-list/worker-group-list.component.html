@@ -47,6 +47,16 @@
       </select>
       <mat-icon class="select-chevron">expand_more</mat-icon>
     </div>
+
+    <div class="archived-toggle-wrapper">
+      <mat-slide-toggle
+        [checked]="includeArchived$ | async"
+        (change)="toggleArchived($event)"
+        color="warn"
+      >
+        <span class="toggle-label">Show Archived</span>
+      </mat-slide-toggle>
+    </div>
   </div>
 
   <!-- ─── Loading ───────────────────────────────────────────────────────── -->
@@ -83,9 +93,11 @@
             <div class="card-header">
               <div class="title-row">
                 <h3 class="group-name">{{ group.name || 'Untitled Group' }}</h3>
-                <mat-icon class="status-icon" [class.active]="!!group.isActive"
-                  >check_circle</mat-icon
-                >
+                @if (group.isActive) {
+                  <mat-icon class="status-icon active">check_circle</mat-icon>
+                } @else {
+                  <app-archive-badge [isActive]="group.isActive"></app-archive-badge>
+                }
               </div>
               <p class="group-description">{{ group.description || 'No description provided' }}</p>
             </div>
@@ -140,7 +152,7 @@
 
             <!-- Actions -->
             <div class="card-actions">
-              <button class="btn-manage" (click)="openManageModal(group)">
+              <button class="btn-manage" (click)="openManageModal(group)" [disabled]="!group.isActive">
                 <mat-icon>manage_accounts</mat-icon>
                 Manage
               </button>
@@ -148,6 +160,7 @@
               <button
                 class="btn-action-icon edit"
                 (click)="openEditModal(group)"
+                [disabled]="!group.isActive"
               >
                 <mat-icon>edit</mat-icon>
               </button>
@@ -156,10 +169,10 @@
                 class="btn-action-icon toggle-status"
                 [class.active]="group.isActive"
                 (click)="toggleGroupStatus(group)"
-                [matTooltip]="group.isActive ? 'Deactivate Group' : 'Activate Group'"
+                [matTooltip]="group.isActive ? 'Archive Group' : 'Restore Group'"
               >
                 <mat-icon>{{
-                  group.isActive ? "toggle_on" : "toggle_off"
+                  group.isActive ? "archive" : "unarchive"
                 }}</mat-icon>
               </button>
             </div>

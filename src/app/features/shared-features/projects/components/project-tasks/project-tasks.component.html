@@ -56,11 +56,13 @@
               'bg-green-900/30 text-green-400 border-green-800':
                 task.status?.toLowerCase() === 'completed',
               'bg-blue-900/30 text-blue-400 border-blue-800':
-                task.status?.toLowerCase() === 'in_progress' || task.status?.toLowerCase() === 'in progress',
+                task.status?.toLowerCase() === 'in_progress' ||
+                task.status?.toLowerCase() === 'in progress',
               'bg-red-900/30 text-red-400 border-red-800':
                 task.status?.toLowerCase() === 'delayed',
               'bg-gray-800 text-gray-400 border-gray-700':
-                task.status?.toLowerCase() === 'not_started' || task.status?.toLowerCase() === 'not started',
+                task.status?.toLowerCase() === 'not_started' ||
+                task.status?.toLowerCase() === 'not started',
             }"
           >
             {{ formatEnum(task.status) }}
@@ -82,7 +84,10 @@
         <div class="inline-flex items-center gap-1.5">
           <mat-icon
             class="icon-sm"
-            [class.text-red-500]="task.priority?.toLowerCase() === 'high' || task.priority?.toLowerCase() === 'critical'"
+            [class.text-red-500]="
+              task.priority?.toLowerCase() === 'high' ||
+              task.priority?.toLowerCase() === 'critical'
+            "
             [class.text-yellow-500]="task.priority?.toLowerCase() === 'medium'"
             [class.text-green-500]="task.priority?.toLowerCase() === 'low'"
           >
@@ -103,24 +108,44 @@
       <td mat-cell *matCellDef="let task">
         @if (task.assignments && task.assignments.length > 0) {
           <div class="flex items-center -space-x-2">
-            @for (assignment of task.assignments.slice(0, 3); track assignment.id) {
+            @for (
+              assignment of task.assignments.slice(0, 3);
+              track assignment.id
+            ) {
               <div
                 class="w-6 h-6 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-white cursor-help"
-                [style.background-color]="assignment.workerGroupId ? '#6366f1' : '#3b82f6'"
-                [matTooltip]="assignment.userId ? (assignment.user?.firstName + ' ' + assignment.user?.lastName) : assignment.workerGroup?.name"
+                [style.background-color]="
+                  assignment.workerGroupId ? '#6366f1' : '#3b82f6'
+                "
+                [matTooltip]="
+                  assignment.userId
+                    ? assignment.user?.firstName +
+                      ' ' +
+                      assignment.user?.lastName
+                    : assignment.workerGroup?.name
+                "
               >
-                {{ assignment.userId ? assignment.user?.firstName?.[0] : assignment.workerGroup?.name?.[0] }}
+                {{
+                  assignment.userId
+                    ? assignment.user?.firstName?.[0]
+                    : assignment.workerGroup?.name?.[0]
+                }}
               </div>
             }
             @if (task.assignments.length > 3) {
-              <div class="w-6 h-6 rounded-full border-2 border-slate-900 bg-gray-700 flex items-center justify-center text-[10px] font-bold text-white cursor-help"
-                   [matTooltip]="(task.assignments.length - 3) + ' more assignments'">
+              <div
+                class="w-6 h-6 rounded-full border-2 border-slate-900 bg-gray-700 flex items-center justify-center text-[10px] font-bold text-white cursor-help"
+                [matTooltip]="task.assignments.length - 3 + ' more assignments'"
+              >
                 +{{ task.assignments.length - 3 }}
               </div>
             }
           </div>
         } @else {
-          <span class="text-gray-500 italic text-[10px] uppercase tracking-wider">Unassigned</span>
+          <span
+            class="text-gray-500 italic text-[10px] uppercase tracking-wider"
+            >Unassigned</span
+          >
         }
       </td>
     </ng-container>
@@ -173,12 +198,16 @@
               <mat-icon>edit</mat-icon>
               <span>Edit</span>
             </button>
-            <button mat-menu-item class="text-red-500" (click)="deleteTask(task)">
+            <button
+              mat-menu-item
+              class="text-red-500"
+              (click)="deleteTask(task)"
+            >
               <mat-icon class="text-red-500">delete</mat-icon>
               <span>Delete</span>
             </button>
           } @else {
-             <button mat-menu-item disabled>
+            <button mat-menu-item disabled>
               <mat-icon>lock</mat-icon>
               <span>No Actions Available</span>
             </button>

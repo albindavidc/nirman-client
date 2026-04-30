@@ -13,7 +13,13 @@
           {{chat?.otherParticipantRole}}
         </span>
       </div>
-      <span class="status">Online</span>
+      @if (chat?.otherParticipantIsOnline) {
+        <span class="status online">Online</span>
+      } @else if (chat?.otherParticipantLastSeenAt) {
+        <span class="status">Last seen {{ chat?.otherParticipantLastSeenAt | date:'short' }}</span>
+      } @else {
+        <span class="status">Offline</span>
+      }
     </div>
   </div>
   <div class="chat-actions">
@@ -46,6 +52,9 @@
           </div>
         </div>
       } @else {
+        @if (msg.sender === 'them' && chat?.projectId) {
+          <span class="sender-name">{{msg.senderName}}</span>
+        }
         <div class="bubble">
           {{msg.text}}
         </div>
@@ -56,9 +65,6 @@
 </div>
 
 <div class="chat-footer">
-  <button class="attachment-btn">
-    <mat-icon>attach_file</mat-icon>
-  </button>
   <div class="input-wrapper">
     <input 
       type="text" 

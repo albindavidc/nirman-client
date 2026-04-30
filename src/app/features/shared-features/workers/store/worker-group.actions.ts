@@ -9,7 +9,12 @@ import {
 // ─── Load Groups ─────────────────────────────────────────────────────────────
 export const loadGroups = createAction(
   '[WorkerGroup] Load Groups',
-  props<{ trade?: TradeType; search?: string; silent?: boolean }>(),
+  props<{
+    trade?: TradeType;
+    search?: string;
+    includeArchived?: boolean;
+    silent?: boolean;
+  }>(),
 );
 export const loadGroupsSuccess = createAction(
   '[WorkerGroup] Load Groups Success',
@@ -109,8 +114,35 @@ export const removeMemberFailure = createAction(
   props<{ error: unknown }>(),
 );
 
-// ─── Select Group ─────────────────────────────────────────────────────────────
 export const selectGroup = createAction(
   '[WorkerGroup] Select Group',
   props<{ group: WorkerGroup | null }>(),
+);
+
+// ─── Archive Group ─────────────────────────────────────────────────────────────
+export const archiveGroup = createAction(
+  '[WorkerGroup] Archive Group',
+  props<{ id: string }>(),
+);
+export const archiveGroupSuccess = createAction(
+  '[WorkerGroup] Archive Group Success',
+  props<{ group: WorkerGroup }>(),
+);
+export const archiveGroupFailure = createAction(
+  '[WorkerGroup] Archive Group Failure',
+  props<{ error: unknown }>(),
+);
+
+// ─── Restore Group ─────────────────────────────────────────────────────────────
+export const restoreGroup = createAction(
+  '[WorkerGroup] Restore Group',
+  props<{ id: string }>(),
+);
+export const restoreGroupSuccess = createAction(
+  '[WorkerGroup] Restore Group Success',
+  props<{ group: WorkerGroup }>(),
+);
+export const restoreGroupFailure = createAction(
+  '[WorkerGroup] Restore Group Failure',
+  props<{ error: unknown }>(),
 );

@@ -41,6 +41,7 @@ export interface WorkerGroupState {
   total: number;
   tradeFilter?: TradeType;
   searchTerm?: string;
+  includeArchived: boolean;
 }
 
 export interface CreateWorkerGroupDto {

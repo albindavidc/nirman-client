@@ -31,6 +31,12 @@ input.mat-mdc-input-element {
   display: block;
 }
 
+.section-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
 .progress-section {
   margin-bottom: 24px;
   padding: 16px;
@@ -87,6 +93,37 @@ input.mat-mdc-input-element {
   .mat-mdc-form-field-label {
     top: 22px !important;
   }
+}
+
+.dependency-row {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(var(--md-sys-color-surface-container-highest-rgb), 0.5) !important;
+    border-color: var(--md-sys-color-primary, #6750A4);
+  }
+
+  .mat-mdc-form-field {
+    margin-bottom: 0;
+  }
+}
+
+.add-dep-btn {
+  font-size: 11px;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+  
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+}
+
+.no-deps-hint {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 [actions] {

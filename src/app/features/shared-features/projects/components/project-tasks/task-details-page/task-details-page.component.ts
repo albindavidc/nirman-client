@@ -31,7 +31,7 @@ export class TaskDetailsPageComponent implements OnInit {
 
   ngOnInit() {
     // Use paramMap observable for better reactivity when navigating between tasks
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       this.taskId = params.get('taskId') || '';
       // Project ID is in the parent route (:id)
       this.projectId = this.route.parent?.snapshot.paramMap.get('id') || '';

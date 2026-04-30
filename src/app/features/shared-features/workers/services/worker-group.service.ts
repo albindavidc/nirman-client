@@ -23,6 +23,7 @@ export class WorkerGroupService {
     search?: string,
     projectId?: string,
     phaseId?: string,
+    includeArchived: boolean = false,
   ): Observable<WorkerGroup[]> {
     let params = new HttpParams();
 
@@ -31,6 +32,8 @@ export class WorkerGroupService {
     if (search) params = params.set('search', search);
     if (projectId) params = params.set('projectId', projectId);
     if (phaseId) params = params.set('phaseId', phaseId);
+    if (includeArchived)
+      params = params.set('includeArchived', String(includeArchived));
 
     return this.http.get<WorkerGroup[]>(this.apiUrl, { params });
   }
@@ -61,5 +64,13 @@ export class WorkerGroupService {
     return this.http.delete<WorkerGroup>(
       `${this.apiUrl}/${groupId}/workers/${workerId}`,
     );
+  }
+
+  archiveGroup(id: string): Observable<WorkerGroup> {
+    return this.http.patch<WorkerGroup>(`${this.apiUrl}/${id}/archive`, {});
+  }
+
+  restoreGroup(id: string): Observable<WorkerGroup> {
+    return this.http.patch<WorkerGroup>(`${this.apiUrl}/${id}/restore`, {});
   }
 }

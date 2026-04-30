@@ -138,32 +138,6 @@ export class SidebarComponent {
           icon: 'inventory_2',
           route: '/admin/materials',
         },
-        {
-          label: 'Workforce & Labor',
-          icon: 'engineering',
-          children: [
-            {
-              label: 'Labor Roster',
-              icon: 'group',
-              route: '/admin/labor-roster',
-            },
-            {
-              label: 'Attendance Tracking',
-              icon: 'schedule',
-              route: '/attendance',
-            },
-            {
-              label: 'Work Scheduling',
-              icon: 'calendar_month',
-              route: '/scheduling',
-            },
-            {
-              label: 'Productivity',
-              icon: 'trending_up',
-              route: '/productivity',
-            },
-          ],
-        },
         { label: 'Communication', icon: 'chat', route: '/communication' },
         {
           label: 'Finance & Procurement',
@@ -175,11 +149,6 @@ export class SidebarComponent {
               route: '/vendor-management',
             },
             { label: 'Payment Invoices', icon: 'receipt', route: '/admin/finance/invoices' },
-            {
-              label: 'Vendor Payments',
-              icon: 'payments',
-              route: '/vendor-payments',
-            },
           ],
         },
       ];

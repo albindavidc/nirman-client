@@ -2,6 +2,10 @@ export interface ThreadParticipantDto {
   id: string;
   userId: string;
   role: string;
+  name?: string;
+  email?: string;
+  isOnline?: boolean;
+  lastSeenAt?: string;
   joinedAt: string;
   isActive: boolean;
 }
@@ -14,6 +18,20 @@ export interface ChatThreadResponseDto {
   createdAt: string;
   updatedAt: string;
   participants: ThreadParticipantDto[];
+}
+
+export interface LastMessagePreview {
+  content: string;
+  senderName: string;
+  sentAt: string | Date;
+}
+
+export interface ChatThreadListItem {
+  threadId: string;
+  title: string;
+  participantRole: string;
+  unreadCount: number;
+  lastMessage: LastMessagePreview | null;
 }
 
 export interface CreateChatThreadDto {
@@ -44,6 +62,8 @@ export interface ChatMessageResponseDto {
   id: string;
   threadId: string;
   senderId: string;
+  senderName?: string;
+  senderEmail?: string;
   content: string;
   replyToId?: string;
   attachments?: MessageAttachmentDto[];
@@ -80,6 +100,8 @@ export interface ChatSocketMessage {
   id: string;
   threadId: string;
   senderId: string;
+  senderName?: string;
+  senderEmail?: string;
   content: string;
   createdAt: string;
 }

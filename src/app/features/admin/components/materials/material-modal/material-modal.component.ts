@@ -12,7 +12,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MasterMaterialService } from '../../../services/master-material.service';
-import { MasterMaterial } from '../../../models/master-material.model';
 import { NotificationService } from '../../../../../core/services/notification.service';
 
 @Component({

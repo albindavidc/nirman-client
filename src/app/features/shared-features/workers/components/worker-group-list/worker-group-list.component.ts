@@ -24,7 +24,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -44,6 +47,8 @@ import {
   WorkerGroupModalComponent,
   WorkerGroupModalData,
 } from '../worker-group-modal/worker-group-modal.component';
+import { ArchiveBadgeComponent } from '../../../../../shared/components/archive-badge/archive-badge.component';
+import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-worker-group-list',
@@ -60,6 +65,10 @@ import {
     MatDialogModule,
     MatProgressSpinnerModule,
     MatChipsModule,
+    MatSelectModule,
+    ArchiveBadgeComponent,
+    MatSlideToggleModule,
+    MatMenuModule,
   ],
   templateUrl: './worker-group-list.component.html',
   styleUrl: './worker-group-list.component.scss',
@@ -103,6 +112,7 @@ export class WorkerGroupListComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean>;
   total$: Observable<number>;
   activeCount$: Observable<number>;
+  includeArchived$: Observable<boolean>;
 
   tradeControl = new FormControl<TradeType | ''>('');
   searchTerm = '';
@@ -120,6 +130,9 @@ export class WorkerGroupListComponent implements OnInit, OnDestroy {
     this.activeCount$ = this.store.select(
       WorkerGroupSelectors.selectActiveGroupsCount,
     );
+    this.includeArchived$ = this.store.select(
+      WorkerGroupSelectors.selectIncludeArchived,
+    );
   }
 
   ngOnInit(): void {
@@ -135,11 +148,12 @@ export class WorkerGroupListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadGroups(): void {
+  loadGroups(includeArchived?: boolean): void {
     this.store.dispatch(
       WorkerGroupActions.loadGroups({
         trade: (this.tradeControl.value as TradeType) || undefined,
         search: this.searchTerm || undefined,
+        includeArchived,
       }),
     );
   }
@@ -197,14 +211,57 @@ export class WorkerGroupListComponent implements OnInit, OnDestroy {
       });
   }
 
+  toggleArchived(event: any): void {
+    this.loadGroups(event.checked);
+  }
+
+  onArchive(group: WorkerGroup): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Archive Worker Group',
+        message: `Are you sure you want to archive "${group.name}"? It will no longer appear in active listings but all data will be preserved.`,
+        confirmButtonText: 'Archive',
+        confirmButtonColor: 'warn',
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.store.dispatch(WorkerGroupActions.archiveGroup({ id: group.id }));
+        }
+      });
+  }
+
+  onRestore(group: WorkerGroup): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Restore Worker Group',
+        message: `Are you sure you want to restore "${group.name}"? It will become active and visible in all listings again.`,
+        confirmButtonText: 'Restore',
+        confirmButtonColor: 'primary',
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.store.dispatch(WorkerGroupActions.restoreGroup({ id: group.id }));
+        }
+      });
+  }
+
   toggleGroupStatus(group: WorkerGroup): void {
-    const newStatus = !group.isActive;
-    this.store.dispatch(
-      WorkerGroupActions.updateGroup({
-        id: group.id,
-        dto: { isActive: newStatus },
-      }),
-    );
+    // This method is now replaced by onArchive/onRestore but keeping for compatibility if needed
+    if (group.isActive) {
+      this.onArchive(group);
+    } else {
+      this.onRestore(group);
+    }
   }
 
   toggleShowAllMembers(groupId: string): void {

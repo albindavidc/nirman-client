@@ -17,13 +17,14 @@ import { ChatSocketMessage } from '../../models/communication.models';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() chat: { threadId: string; name: string; otherParticipantRole?: string } | null = null;
+  @Input() chat: { threadId: string; name: string; projectId?: string | null; otherParticipantRole?: string; otherParticipantIsOnline?: boolean; otherParticipantLastSeenAt?: string; } | null = null;
   @Output() videoCall = new EventEmitter<void>();
   @Output() voiceCall = new EventEmitter<void>();
   @Output() back = new EventEmitter<void>();
+  @Output() read = new EventEmitter<string>();
 
   newMessage = '';
-  messages: { id: string; sender: 'me' | 'them'; text: string; time: string }[] = [];
+  messages: { id: string; sender: 'me' | 'them'; text: string; time: string; senderName?: string }[] = [];
   
   private socketService = inject(SocketService);
   private communicationService = inject(CommunicationService);
@@ -51,8 +52,15 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
             id: msg.id,
             sender: 'them',
             text: msg.content,
-            time: new Date(msg.createdAt || new Date()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            time: new Date(msg.createdAt || new Date()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            senderName: msg.senderName
           });
+          // Mark as read immediately if it's the active chat
+          if (this.chat?.threadId) {
+            this.communicationService.markThreadAsRead(this.chat.threadId).subscribe(() => {
+              this.read.emit(this.chat!.threadId);
+            });
+          }
         }
       })
     );
@@ -77,8 +85,13 @@ export class ChatComponent implements OnInit, OnDestroy, OnChanges {
           id: m.id,
           sender: m.senderId === this.currentUserId ? 'me' : 'them',
           text: m.content,
-          time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          senderName: m.senderName
         }));
+        // Mark thread as read once messages are loaded
+        this.communicationService.markThreadAsRead(threadId).subscribe(() => {
+          this.read.emit(threadId);
+        });
       })
     );
   }

@@ -41,7 +41,8 @@ export interface Task {
   actualHours?: number | null;
   assignments?: TaskAssignment[];
   color?: string | null;
-  dependencies?: string[]; // IDs of predecessor tasks
+  predecessors?: TaskDependency[];
+  successors?: TaskDependency[];
 }
 
 export interface CreateTaskDto {
@@ -111,11 +112,16 @@ export class TaskService {
   }
 
   addDependency(dto: CreateTaskDependencyDto): Observable<TaskDependency> {
-    return this.http.post<TaskDependency>(`${this.apiUrl}/dependencies`, dto);
+    return this.http.post<TaskDependency>(
+      `${this.configService.apiUrl}/task-dependencies`,
+      dto,
+    );
   }
 
   removeDependency(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/dependencies/${id}`);
+    return this.http.delete<void>(
+      `${this.configService.apiUrl}/task-dependencies/${id}`,
+    );
   }
 
   getPhaseDependencies(phaseId: string): Observable<TaskDependency[]> {

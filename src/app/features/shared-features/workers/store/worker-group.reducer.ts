@@ -13,6 +13,7 @@ export const initialWorkerGroupState: WorkerGroupState = {
   total: 0,
   tradeFilter: undefined,
   searchTerm: undefined,
+  includeArchived: false,
 };
 
 const standardizeGroup = (g: WorkerGroup): WorkerGroup => ({
@@ -29,12 +30,13 @@ export const workerGroupReducer = createReducer(
   initialWorkerGroupState,
 
   // ─── Load Groups ────────────────────────────────────────────────────────────
-  on(WorkerGroupActions.loadGroups, (state, { trade, search, silent }) => ({
+  on(WorkerGroupActions.loadGroups, (state, { trade, search, includeArchived, silent }) => ({
     ...state,
     listLoading: !silent,
     error: null,
     tradeFilter: trade,
     searchTerm: search,
+    includeArchived: includeArchived ?? state.includeArchived,
   })),
   on(WorkerGroupActions.loadGroupsSuccess, (state, { groups }) => ({
     ...state,
@@ -201,5 +203,34 @@ export const workerGroupReducer = createReducer(
   on(WorkerGroupActions.selectGroup, (state, { group }) => ({
     ...state,
     selectedGroup: group ? standardizeGroup(group) : null,
+  })),
+
+  // ─── Archive / Restore ──────────────────────────────────────────────────────
+  on(WorkerGroupActions.archiveGroup, WorkerGroupActions.restoreGroup, (state) => ({
+    ...state,
+    actionLoading: true,
+    error: null,
+  })),
+  on(WorkerGroupActions.archiveGroupSuccess, WorkerGroupActions.restoreGroupSuccess, (state, { group }) => {
+    const standardized = standardizeGroup(group);
+    return {
+      ...state,
+      actionLoading: false,
+      groups: state.groups.map((g) =>
+        g.id === standardized.id ? standardized : g,
+      ),
+      selectedGroup:
+        state.selectedGroup?.id === standardized.id
+          ? standardized
+          : state.selectedGroup,
+    };
+  }),
+  on(WorkerGroupActions.archiveGroupFailure, WorkerGroupActions.restoreGroupFailure, (state, { error }) => ({
+    ...state,
+    actionLoading: false,
+    error:
+      (error as ApiError)?.error?.message ??
+      (error as ApiError)?.message ??
+      'Unknown error',
   })),
 );

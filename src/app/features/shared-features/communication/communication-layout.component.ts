@@ -5,24 +5,35 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ChatComponent } from './components/chat/chat.component';
 import { CallComponent } from './components/call/call.component';
+import { ChatContextMenuComponent } from './components/chat-context-menu/chat-context-menu.component';
+import { DeleteChatDialogComponent } from './components/delete-chat-dialog/delete-chat-dialog.component';
 import { Store } from '@ngrx/store';
 
 import { CommunicationService } from './services/communication.service';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { HostListener, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef } from '@angular/core';
 import { NewChatModalComponent } from './components/new-chat-modal/new-chat-modal.component';
 import { selectUser } from '../../auth/login/store/login.selectors';
 import { ThreadParticipantDto, SignalingPayload } from './models/communication.models';
+import { isUserOnline } from '../../../core/utils/presence.util';
 
 export interface Chat {
   id: string;
   threadId: string;
   name: string;
+  projectId?: string | null;
   participants: ThreadParticipantDto[];
   lastMessage: string;
+  lastMessageSender?: string;
   time: string;
   active: boolean;
+  unreadCount?: number;
   otherParticipantRole?: string;
+  otherParticipantIsOnline?: boolean;
+  otherParticipantLastSeenAt?: string;
   type?: string;
   callId?: string;
   initiatorId?: string;
@@ -35,6 +46,8 @@ export interface Chat {
     CommonModule,
     ChatComponent,
     CallComponent,
+    ChatContextMenuComponent,
+    DeleteChatDialogComponent,
     FormsModule,
     MatIconModule,
     MatDialogModule,
@@ -47,6 +60,8 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   private communicationService = inject(CommunicationService);
   private socketService = inject(SocketService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   activeThreadId: string | null = null;
   searchQuery = '';
@@ -63,6 +78,12 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   targetUserId: string | null = null;
   
   projectId: string | null = null;
+  
+  // Context Menu & Deletion
+  contextMenu: { x: number; y: number; threadId: string } | null = null;
+  showConfirmDialog = false;
+  pendingDeleteThreadId: string | null = null;
+
   private subs = new Subscription();
 
   ngOnInit() {
@@ -93,6 +114,15 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
 
 
     this.loadMyThreads();
+    this.listenForNewMessages();
+  }
+
+  listenForNewMessages() {
+    this.subs.add(
+      this.socketService.onNewMessage().subscribe(() => {
+        this.loadMyThreads();
+      })
+    );
   }
 
   ngOnDestroy() {
@@ -106,25 +136,29 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
         if (!user) return;
 
         this.subs.add(
-          this.communicationService.getMyThreads().subscribe((threads) => {
+          this.communicationService.getThreadList().subscribe((threads) => {
             this.recentChats = threads.map(t => {
-              const otherParticipant = t.participants.find(p => p.userId !== user.id);
               let cleanName = t.title || 'Direct Message';
               if (cleanName.startsWith('DM with ')) {
                 cleanName = cleanName.replace('DM with ', '');
               }
 
               return {
-                id: t.id,
-                threadId: t.id,
+                id: t.threadId,
+                threadId: t.threadId,
                 name: cleanName,
-                participants: t.participants,
-                lastMessage: '',
-                time: new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                active: false,
-                otherParticipantRole: otherParticipant?.role 
-                  ? otherParticipant.role.charAt(0).toUpperCase() + otherParticipant.role.slice(1).toLowerCase() 
-                  : 'User'
+                participants: [], // Not needed for sidebar list mapping
+                lastMessage: this.formatLastMessage(t.lastMessage?.content || ''),
+                lastMessageSender: t.lastMessage?.senderName,
+                unreadCount: t.unreadCount,
+                time: t.lastMessage?.sentAt 
+                  ? new Date(t.lastMessage.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  : '',
+                active: t.threadId === this.activeThreadId,
+                otherParticipantRole: t.participantRole
+                  ? t.participantRole.charAt(0).toUpperCase() + t.participantRole.slice(1).toLowerCase()
+                  : 'User',
+                otherParticipantIsOnline: false, // Will be updated if we add presence to ThreadListItemDto
               };
             });
 
@@ -140,9 +174,107 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   selectChat(chat: Chat) {
     this.recentChats.forEach(c => c.active = false);
     chat.active = true;
+    chat.unreadCount = 0; // Optimistically clear unread count
     this.selectedChat = chat;
     this.activeThreadId = chat.threadId;
     this.showSidebar = false;
+    this.cdr.markForCheck();
+  }
+
+  onChatRead(threadId: string) {
+    const chat = this.recentChats.find(c => c.threadId === threadId);
+    if (chat && chat.unreadCount && chat.unreadCount > 0) {
+      chat.unreadCount = 0;
+      this.cdr.markForCheck();
+    }
+  }
+
+  formatLastMessage(content: string): string {
+    if (!content) return 'No messages yet';
+    
+    if (content.startsWith('[CALL_LOG]:')) {
+      try {
+        const jsonStr = content.replace('[CALL_LOG]:', '');
+        const data = JSON.parse(jsonStr);
+        const type = data.type === 'video' ? 'Video Call' : 'Voice Call';
+        return `${type} • ${data.duration}`;
+      } catch {
+        return 'Call Ended';
+      }
+    }
+    return content;
+  }
+
+  onRightClick(event: MouseEvent, threadId: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Viewport edge detection
+    const menuWidth = 160;
+    const menuHeight = 60;
+    const x = event.clientX + menuWidth > window.innerWidth
+      ? event.clientX - menuWidth
+      : event.clientX;
+    const y = event.clientY + menuHeight > window.innerHeight
+      ? event.clientY - menuHeight
+      : event.clientY;
+
+    this.contextMenu = { x, y, threadId };
+  }
+
+  @HostListener('document:click')
+  @HostListener('document:contextmenu')
+  closeContextMenu(): void {
+    this.contextMenu = null;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.contextMenu = null;
+    this.showConfirmDialog = false;
+  }
+
+  onDeleteClicked(): void {
+    if (!this.contextMenu) return;
+    this.pendingDeleteThreadId = this.contextMenu.threadId;
+    this.contextMenu = null;
+    this.showConfirmDialog = true;
+  }
+
+  onDeleteConfirmed(): void {
+    if (!this.pendingDeleteThreadId) return;
+    
+    const threadId = this.pendingDeleteThreadId;
+    this.showConfirmDialog = false;
+    this.pendingDeleteThreadId = null;
+
+    // Optimistic UI Update
+    const previousThreads = [...this.recentChats];
+    this.recentChats = this.recentChats.filter(t => t.threadId !== threadId);
+    
+    // If deleted thread was selected, deselect or select next
+    if (this.selectedChat?.threadId === threadId) {
+      this.selectedChat = this.recentChats.length > 0 ? this.recentChats[0] : null;
+      this.activeThreadId = this.selectedChat?.threadId || null;
+    }
+    
+    this.cdr.markForCheck();
+
+    this.communicationService.deleteThread(threadId)
+      .pipe(take(1))
+      .subscribe({
+        error: () => {
+          // Rollback on failure
+          this.recentChats = previousThreads;
+          this.cdr.markForCheck();
+          // Optionally show error toast here if a toast service is available
+        }
+      });
+  }
+
+  onDeleteCancelled(): void {
+    this.showConfirmDialog = false;
+    this.pendingDeleteThreadId = null;
   }
 
   openNewChatModal() {

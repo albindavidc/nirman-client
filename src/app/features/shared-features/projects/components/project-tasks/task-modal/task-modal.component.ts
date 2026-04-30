@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, of, Observable } from 'rxjs';
 import {
   FormArray,
   FormBuilder,
@@ -88,6 +89,13 @@ export class TaskModalComponent implements OnInit {
   workers: ProjectWorkerWithUser[] = [];
   workerGroups: WorkerGroup[] = [];
   phases: ProjectPhase[] = [];
+  phaseTasks: Task[] = [];
+  dependencyTypes = [
+    { value: 'FS', label: 'Finish-to-Start (FS)' },
+    { value: 'SS', label: 'Start-to-Start (SS)' },
+    { value: 'FF', label: 'Finish-to-Finish (FF)' },
+    { value: 'SF', label: 'Start-to-Finish (SF)' },
+  ];
 
   projectStartDate: Date | null = null;
   projectEndDate: Date | null = null;
@@ -177,6 +185,7 @@ export class TaskModalComponent implements OnInit {
         estimatedHours: [task?.estimatedHours || null, [Validators.min(0)]],
         actualHours: [task?.actualHours || null, [Validators.min(0)]],
         color: [task?.color || '#3b82f6'],
+        dependencies: this.fb.array([]),
       },
       {
         validators: [
@@ -208,12 +217,12 @@ export class TaskModalComponent implements OnInit {
       if (phaseId && this.mode === 'edit') {
         this.loadWorkerGroups(phaseId, false);
       }
-    });
 
-    const phaseId = this.taskForm.get('phaseId')?.value;
-    if (phaseId && this.mode === 'create') {
-      this.loadWorkerGroups(phaseId);
-    }
+      if (phaseId && this.mode === 'create') {
+        this.loadWorkerGroups(phaseId);
+        this.loadPhaseTasks(phaseId);
+      }
+    });
   }
 
   private setupFilters(): void {
@@ -225,6 +234,7 @@ export class TaskModalComponent implements OnInit {
         if (phaseId) {
           this.loadWorkerGroups(phaseId);
           this.updatePhaseDates(phaseId);
+          this.loadPhaseTasks(phaseId);
         } else {
           this.workerGroups = [];
           this.workers = [];
@@ -291,6 +301,32 @@ export class TaskModalComponent implements OnInit {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  get dependencyControls() {
+    return (this.taskForm.get('dependencies') as FormArray).controls;
+  }
+
+  addDependencyRow(): void {
+    const deps = this.taskForm.get('dependencies') as FormArray;
+    deps.push(
+      this.fb.group({
+        predecessorTaskId: ['', Validators.required],
+        type: ['FS', Validators.required],
+        lagTime: [0, [Validators.min(0)]],
+      }),
+    );
+  }
+
+  removeDependencyRow(index: number): void {
+    (this.taskForm.get('dependencies') as FormArray).removeAt(index);
+  }
+
+  private loadPhaseTasks(phaseId: string): void {
+    this.taskService.getPhaseTasks(phaseId).subscribe((tasks) => {
+      // Exclude current task in edit mode to prevent self-dependency
+      this.phaseTasks = tasks.filter((t) => t.id !== this.data.task?.id);
+    });
   }
 
   private updateAssignmentsArray(): void {
@@ -513,7 +549,29 @@ export class TaskModalComponent implements OnInit {
         if (this.mode === 'edit' && this.data.task?.assignments) {
           this.populateInitialAssignments();
         }
+        if (this.mode === 'edit' && this.data.task) {
+          this.populateInitialDependencies();
+        }
       });
+  }
+
+  private populateInitialDependencies(): void {
+    const task = this.data.task;
+    if (!task?.predecessors) return;
+
+    const depsArray = this.taskForm.get('dependencies') as FormArray;
+    if (!depsArray || depsArray.length > 0) return;
+
+    task.predecessors.forEach((d: any) => {
+      depsArray.push(
+        this.fb.group({
+          id: [d.id], // hidden field for existing deps
+          predecessorTaskId: [d.predecessorTaskId, Validators.required],
+          type: [d.type, Validators.required],
+          lagTime: [d.lagTime, [Validators.min(0)]],
+        }),
+      );
+    });
   }
 
 
@@ -640,9 +698,11 @@ export class TaskModalComponent implements OnInit {
 
     if (this.mode === 'create') {
       this.taskService.createTask(dto as CreateTaskDto).subscribe({
-        next: () => {
-          this.isSubmitting = false;
-          this.dialogRef.close(true);
+        next: (newTask) => {
+          this.saveDependencies(newTask.id).subscribe(() => {
+            this.isSubmitting = false;
+            this.dialogRef.close(true);
+          });
         },
         error: (err) => {
           console.error('Error creating task:', err);
@@ -657,8 +717,10 @@ export class TaskModalComponent implements OnInit {
       if (!this.data.task) return;
       this.taskService.updateTask(this.data.task.id, dto).subscribe({
         next: (updatedTask) => {
-          this.isSubmitting = false;
-          this.dialogRef.close(updatedTask);
+          this.saveDependencies(updatedTask.id).subscribe(() => {
+            this.isSubmitting = false;
+            this.dialogRef.close(updatedTask);
+          });
         },
         error: (err) => {
           console.error('Error updating task:', err);
@@ -682,5 +744,47 @@ export class TaskModalComponent implements OnInit {
       (g.workers || []).some((w) => w.userId === userId),
     );
     return group ? group.name : '';
+  }
+
+  private saveDependencies(taskId: string): Observable<any[]> {
+    const deps = this.taskForm.get('dependencies')?.value || [];
+    const observables: Observable<any>[] = [];
+
+    // Simple strategy: remove all current and re-add all, or diff.
+    // For now, let's handle new ones. 
+    // If it's edit mode, we might need a more robust sync.
+    
+    // For simplicity in this demo/MVP, we'll just handle creating new ones 
+    // and assume existing ones are kept (backend doesn't delete them unless requested).
+    
+    // Wait, the UI allows adding/removing. 
+    // If an item has an 'id', it exists. If not, it's new.
+    // If an item was removed from the FormArray, we should delete it.
+    
+    const existingDeps = this.data.task?.predecessors || [];
+    const currentDeps = deps;
+    
+    // 1. Delete removed dependencies
+    existingDeps.forEach((oldDep: any) => {
+      if (!currentDeps.some((d: any) => d.id === oldDep.id)) {
+        observables.push(this.taskService.removeDependency(oldDep.id));
+      }
+    });
+
+    // 2. Add new dependencies
+    currentDeps.forEach((newDep: any) => {
+      if (!newDep.id) {
+        observables.push(this.taskService.addDependency({
+          successorTaskId: taskId,
+          predecessorTaskId: newDep.predecessorTaskId,
+          type: newDep.type,
+          lagTime: newDep.lagTime
+        }));
+      }
+    });
+
+    if (observables.length === 0) return of([]);
+    
+    return forkJoin(observables);
   }
 }

@@ -192,14 +192,14 @@ export class ProjectMaterialsComponent implements OnInit {
       let filtered = enriched;
       if (this.currentFilter !== 'all') {
         filtered = filtered.filter(
-          (m: any) =>
+          (m: Material & { status: string }) =>
             m.status === this.currentFilter ||
             (this.currentFilter === 'pending' && m.status === 'requested'),
         );
       }
       if (searchStr) {
         filtered = filtered.filter(
-          (m: any) =>
+          (m: Material & { status: string }) =>
             (m.name || '').toLowerCase().includes(searchStr) ||
             (m.code || '').toLowerCase().includes(searchStr) ||
             (m.category || '').toLowerCase().includes(searchStr),

@@ -375,6 +375,57 @@
       </mat-form-field>
     }
 
+    <!-- Dependencies -->
+    <div class="section-divider mt-6 mb-4"></div>
+    <div class="section-header flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <mat-icon class="text-amber-500">link</mat-icon>
+        <span class="section-label font-bold text-white tracking-wide uppercase text-xs">Task Dependencies</span>
+      </div>
+      <button mat-stroked-button type="button" size="small" (click)="addDependencyRow()" class="add-dep-btn">
+        <mat-icon>add</mat-icon> Add Dependency
+      </button>
+    </div>
+
+    <div formArrayName="dependencies" class="dependencies-container mb-6">
+      @if (dependencyControls.length === 0) {
+        <div class="no-deps-hint p-4 text-center border border-dashed border-gray-700 rounded-lg">
+          <span class="text-gray-500 text-xs italic">No dependencies defined for this task.</span>
+        </div>
+      }
+
+      @for (dep of dependencyControls; track $index; let i = $index) {
+        <div [formGroupName]="i" class="dependency-row flex items-center gap-3 p-3 mb-2 bg-slate-800/40 border border-gray-800 rounded-lg">
+          <mat-form-field appearance="outline" class="flex-grow dense-form-field">
+            <mat-label>Predecessor Task</mat-label>
+            <mat-select formControlName="predecessorTaskId">
+              @for (t of phaseTasks; track t.id) {
+                <mat-option [value]="t.id">{{ t.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-32 dense-form-field">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+              @for (type of dependencyTypes; track type.value) {
+                <mat-option [value]="type.value">{{ type.value }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-24 dense-form-field">
+            <mat-label>Lag (d)</mat-label>
+            <input matInput type="number" formControlName="lagTime" min="0">
+          </mat-form-field>
+
+          <button mat-icon-button type="button" color="warn" (click)="removeDependencyRow(i)" class="remove-dep-btn">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
     <!-- Actions -->
     <div actions>
       <button

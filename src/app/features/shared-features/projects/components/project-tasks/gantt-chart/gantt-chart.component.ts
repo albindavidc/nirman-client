@@ -267,7 +267,7 @@ export class GanttChartComponent implements OnInit, OnChanges {
         endDate: t.plannedEndDate
           ? new Date(t.plannedEndDate).toISOString()
           : undefined,
-        dependencies: t.dependencies || [], // Map from backend
+        dependencies: t.predecessors?.map((p) => p.predecessorTaskId) || [], // Map from backend
         originalTask: t,
       };
     });

@@ -25,6 +25,18 @@ export interface InvoicePrepResponseDto {
   recommendedInvoiceTotal: number;
 }
 
+export interface InvoiceBillableItem {
+  materialId: string;
+  materialName: string;
+  materialCode?: string;
+  orderedQuantity: number;
+  acceptedQuantity: number;
+  unitPrice: number;
+  taxRate: number;
+  totalItemCost?: number;
+  recommendedTotal?: number;
+}
+
 export interface CreateInvoiceItemDto {
   materialId: string;
   quantity: number;

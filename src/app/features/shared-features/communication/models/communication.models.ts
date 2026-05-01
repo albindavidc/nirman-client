@@ -32,6 +32,8 @@ export interface ChatThreadListItem {
   participantRole: string;
   unreadCount: number;
   lastMessage: LastMessagePreview | null;
+  isOnline?: boolean;
+  lastSeenAt?: string | null;
 }
 
 export interface CreateChatThreadDto {

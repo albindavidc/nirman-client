@@ -87,7 +87,6 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
 
   ngOnInit() {
-    this.socketService.initSockets();
 
     this.subs.add(
       this.socketService.onIncomingCall().subscribe((data) => {
@@ -115,6 +114,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
 
     this.loadMyThreads();
     this.listenForNewMessages();
+    this.listenForPresenceChanges();
   }
 
   listenForNewMessages() {
@@ -125,9 +125,24 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
     );
   }
 
+  listenForPresenceChanges() {
+    this.subs.add(
+      this.socketService.onUserStatusChanged().subscribe((data) => {
+        // Find if this user is a participant in any of our recent chats
+        // Note: Our current Chat interface doesn't store all participant IDs easily, 
+        // but we can check the 'selectedChat' or refresh the list.
+        // For a smoother experience, we'll just trigger a refresh or find the match.
+        this.recentChats.forEach(chat => {
+           // We'd need to know which participant this is. 
+           // For now, let's just refresh the list to keep it simple and accurate.
+           this.loadMyThreads();
+        });
+      })
+    );
+  }
+
   ngOnDestroy() {
     this.subs.unsubscribe();
-    this.socketService.disconnect();
   }
 
   loadMyThreads() {
@@ -138,15 +153,10 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
         this.subs.add(
           this.communicationService.getThreadList().subscribe((threads) => {
             this.recentChats = threads.map(t => {
-              let cleanName = t.title || 'Direct Message';
-              if (cleanName.startsWith('DM with ')) {
-                cleanName = cleanName.replace('DM with ', '');
-              }
-
               return {
                 id: t.threadId,
                 threadId: t.threadId,
-                name: cleanName,
+                name: t.title || 'Direct Message',
                 participants: [], // Not needed for sidebar list mapping
                 lastMessage: this.formatLastMessage(t.lastMessage?.content || ''),
                 lastMessageSender: t.lastMessage?.senderName,
@@ -158,7 +168,8 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
                 otherParticipantRole: t.participantRole
                   ? t.participantRole.charAt(0).toUpperCase() + t.participantRole.slice(1).toLowerCase()
                   : 'User',
-                otherParticipantIsOnline: false, // Will be updated if we add presence to ThreadListItemDto
+                otherParticipantIsOnline: t.isOnline || false,
+                otherParticipantLastSeenAt: t.lastSeenAt || undefined,
               };
             });
 

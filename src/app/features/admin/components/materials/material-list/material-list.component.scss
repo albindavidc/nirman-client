@@ -462,18 +462,14 @@
   .row-actions {
     display: flex;
     gap: var(--space-1);
-    opacity: 0;
-    transform: translateX(10px);
+    opacity: 1;
+    transform: translateX(0);
     transition: all var(--transition-base);
 
     .edit-btn:hover { color: var(--accent-primary); }
     .delete-btn:hover { color: var(--status-delayed-text); }
   }
 
-  .mat-mdc-row:hover .row-actions {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 // 5. CARD GRID (Mobile/View Toggle)

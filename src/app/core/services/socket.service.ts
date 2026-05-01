@@ -78,6 +78,12 @@ export class SocketService {
     });
   }
 
+  onUserStatusChanged(): Observable<{ userId: string, isOnline: boolean }> {
+    return new Observable(observer => {
+      this.chatSocket?.on('userStatusChanged', (data: { userId: string, isOnline: boolean }) => observer.next(data));
+    });
+  }
+
   // --- Call Methods ---
   startCall(payload: { threadId: string, type: 'audio'|'video', targetUserId: string, callId: string }) {
     this.callSocket?.emit('startCall', payload);

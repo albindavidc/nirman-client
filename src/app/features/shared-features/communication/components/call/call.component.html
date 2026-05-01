@@ -1,7 +1,23 @@
 <div class="call-overlay">
   <div class="video-container">
+    <!-- Waiting / Ringing UI -->
+    @if (!isConnected) {
+      <div class="waiting-ui">
+        <div class="avatar-large">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="waiting-text">
+          <h2>{{chat?.name}}</h2>
+          <div class="status-pill">
+            <div class="status-dot pulsing"></div>
+            <span>{{ isInitiator ? 'Calling...' : 'Connecting...' }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Remote Video (Large) -->
-    <video #remoteVideo class="remote-video" autoplay playsinline></video>
+    <video #remoteVideo class="remote-video" [class.hidden]="!isConnected" autoplay playsinline></video>
     
     <!-- Local Video (Small Overlay) -->
     <div class="local-video-wrapper" [class.video-off]="isVideoOff">
@@ -13,11 +29,13 @@
       }
     </div>
 
-    <!-- Call Info Overlay -->
-    <div class="call-info">
-      <h3>{{chat?.name}}</h3>
-      <span class="duration">{{callDuration}}</span>
-    </div>
+    <!-- Call Info Overlay (Show after connection) -->
+    @if (isConnected) {
+      <div class="call-info">
+        <h3>{{chat?.name}}</h3>
+        <span class="duration">{{callDuration}}</span>
+      </div>
+    }
 
     <!-- Call Controls -->
     <div class="call-controls">

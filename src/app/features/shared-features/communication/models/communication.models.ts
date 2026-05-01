@@ -97,6 +97,7 @@ export interface SignalingPayload {
   type?: 'audio' | 'video';
   targetUserId?: string;
   initiatorId?: string;
+  senderId?: string;
 }
 
 export interface ChatSocketMessage {

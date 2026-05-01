@@ -33,6 +33,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
   callDuration = '00:00';
   isMuted = false;
   isVideoOff = false;
+  isConnected = false;
 
   private timer: ReturnType<typeof setInterval> | undefined;
   private seconds = 0;
@@ -40,9 +41,6 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async ngAfterViewInit() {
     await this.setupWebRtc();
-    if (this.isInitiator) {
-      await this.initiateCall();
-    }
   }
 
   async ngOnInit() {
@@ -65,6 +63,7 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
       this.webRtcService.getRemoteStream().subscribe(remoteStream => {
         if (remoteStream && this.remoteVideo) {
           this.remoteVideo.nativeElement.srcObject = remoteStream;
+          this.isConnected = true;
         }
       })
     );
@@ -83,6 +82,17 @@ export class CallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private setupSignaling() {
+    // Initiator waits for acceptance
+    if (this.isInitiator) {
+      this.subs.add(
+        this.socketService.onCallAccepted().subscribe(async (data: any) => {
+          if (data.callId === this.callId) {
+            await this.initiateCall();
+          }
+        })
+      );
+    }
+
     this.subs.add(
       this.socketService.onCallOffer().subscribe(async (data: unknown) => {
         const payload = data as SignalingPayload;

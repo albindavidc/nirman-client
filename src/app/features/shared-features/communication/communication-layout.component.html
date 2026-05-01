@@ -70,55 +70,19 @@
   </div>
 
   <div class="main-content" [class.active]="!showSidebar">
-    @if (!isCalling) {
-      @if (selectedChat) {
-        <app-chat
-          [chat]="selectedChat"
-          (videoCall)="startCall('video')"
-          (voiceCall)="startCall('audio')"
-          (back)="showSidebar = true"
-          (read)="onChatRead($event)"
-        >
-        </app-chat>
-      } @else {
-        <div class="no-project-state">
-          <mat-icon>chat_bubble_outline</mat-icon>
-          <h2>No Chat Selected</h2>
-          <p>Select a contact from the sidebar to start messaging</p>
-        </div>
-      }
-    } @else {
-      <app-call
+    @if (selectedChat) {
+      <app-chat
         [chat]="selectedChat"
-        [callType]="callType"
-        [callId]="callId"
-        [isInitiator]="isInitiator"
-        [targetUserId]="targetUserId"
-        (endCall)="endCall($event)"
+        (videoCall)="startCall('video')"
+        (voiceCall)="startCall('audio')"
+        (back)="showSidebar = true"
       >
-      </app-call>
-    }
-
-    <!-- Incoming Call Overlay -->
-    @if (incomingCall && !isCalling) {
-      <div class="incoming-call-overlay">
-        <div class="incoming-call-box">
-          <div class="incoming-call-header">
-            <div class="status-dot pulsing"></div>
-            <h3>Incoming {{ incomingCall.type }} call</h3>
-          </div>
-          <p>{{ selectedChat?.name }} is calling you...</p>
-          <div class="incoming-actions">
-            <button class="accept-btn" (click)="acceptCall()">
-              <mat-icon>call</mat-icon>
-              Accept
-            </button>
-            <button class="reject-btn" (click)="rejectCall()">
-              <mat-icon>call_end</mat-icon>
-              Decline
-            </button>
-          </div>
-        </div>
+      </app-chat>
+    } @else {
+      <div class="no-project-state">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <h2>No Chat Selected</h2>
+        <p>Select a contact from the sidebar to start messaging</p>
       </div>
     }
   </div>

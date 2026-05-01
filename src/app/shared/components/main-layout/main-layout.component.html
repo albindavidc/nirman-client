@@ -5,5 +5,50 @@
     [class.expanded]="layoutService.isSidebarCollapsed()"
   >
     <router-outlet></router-outlet>
+
+    <!-- Global Call UI -->
+    @if (callState.isCalling$ | async) {
+      <app-call
+        [chat]="callState.selectedChat"
+        [callType]="callState.callType"
+        [callId]="callState.callId"
+        [isInitiator]="callState.isInitiator"
+        [targetUserId]="callState.targetUserId"
+        (endCall)="callState.endCall()"
+      >
+      </app-call>
+    }
   </main>
+
+  <!-- Modern Incoming Call (Floating Island) -->
+  @if (callState.incomingCall$ | async; as incoming) {
+    @if (!(callState.isCalling$ | async)) {
+      <div class="floating-island-container">
+        <div class="floating-island">
+          <div class="island-content">
+            <div class="caller-avatar">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="caller-info">
+              <span class="label">Incoming {{ incoming.type }} call</span>
+              <div class="name-row">
+                <span class="name">{{ callState.callerName || incoming.initiatorId }}</span>
+                @if (callState.callerRole) {
+                  <span class="role-badge">{{ callState.callerRole }}</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="island-actions">
+            <button class="action-btn accept" (click)="callState.acceptCall()">
+              <mat-icon>call</mat-icon>
+            </button>
+            <button class="action-btn reject" (click)="callState.rejectCall()">
+              <mat-icon>call_end</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
 </div>

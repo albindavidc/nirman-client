@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { io, Socket } from 'socket.io-client';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, Subject } from 'rxjs';
 import { ConfigService } from './config.service';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../features/auth/login/store/login.selectors';
@@ -15,6 +15,15 @@ export class SocketService {
   private store = inject(Store);
   private chatSocket!: Socket;
   private callSocket!: Socket;
+
+  // Dedicated subjects for persistent event streaming
+  private incomingCallSubject = new Subject<any>();
+  private callAcceptedSubject = new Subject<any>();
+  private callOfferSubject = new Subject<any>();
+  private callAnswerSubject = new Subject<any>();
+  private iceCandidateSubject = new Subject<any>();
+  private callEndedSubject = new Subject<any>();
+  private callRejectedSubject = new Subject<any>();
 
   initSockets() {
     if (isPlatformBrowser(this.platformId)) {
@@ -39,7 +48,8 @@ export class SocketService {
     if (!this.chatSocket) {
       this.chatSocket = io(`${backendUrl}/chat`, {
         withCredentials: true,
-        query: { userId }
+        query: { userId },
+        transports: ['websocket', 'polling']
       });
     }
 
@@ -49,21 +59,63 @@ export class SocketService {
       
       this.callSocket = io(`${backendUrl}/call`, {
         withCredentials: true,
-        query: { userId }
+        query: { userId },
+        transports: ['websocket', 'polling']
+      });
+
+      this.callSocket.on('connect', () => {
+        console.log('[SocketService] Connected to call namespace');
+        this.registerUser(userId);
+      });
+
+      // Attach global listeners that push to subjects
+      this.callSocket.on('call:incoming', (data) => {
+        console.log('[SocketService] Received call:incoming', data);
+        this.incomingCallSubject.next(data);
+      });
+
+      this.callSocket.on('call:accepted', (data) => {
+        console.log('[SocketService] Received call:accepted', data);
+        this.callAcceptedSubject.next(data);
+      });
+
+      this.callSocket.on('call:offer', (data) => {
+        console.log('[SocketService] Received call:offer', data);
+        this.callOfferSubject.next(data);
+      });
+
+      this.callSocket.on('call:answer', (data) => {
+        console.log('[SocketService] Received call:answer', data);
+        this.callAnswerSubject.next(data);
+      });
+
+      this.callSocket.on('call:ice-candidate', (data) => {
+        this.iceCandidateSubject.next(data);
+      });
+
+      this.callSocket.on('call:ended', (data) => {
+        console.log('[SocketService] Received call:ended', data);
+        this.callEndedSubject.next(data);
+      });
+
+      this.callSocket.on('call:rejected', (data) => {
+        console.log('[SocketService] Received call:rejected', data);
+        this.callRejectedSubject.next(data);
       });
     }
   }
 
-  disconnect() {
-    if (this.chatSocket) {
-      this.chatSocket.disconnect();
-    }
-    if (this.callSocket) {
-      this.callSocket.disconnect();
-    }
+  registerUser(userId: string) {
+    console.log(`[SocketService] Registering user ${userId}`);
+    this.callSocket?.emit('user:register', { userId });
   }
 
-  // --- Chate Methods ---
+  disconnect() {
+    if (this.chatSocket) this.chatSocket.disconnect();
+    if (this.callSocket) this.callSocket.disconnect();
+  }
+
+  // --- Chat Methods ---
   joinThread(threadId: string) {
     this.chatSocket?.emit('joinThread', { threadId });
   }
@@ -85,58 +137,61 @@ export class SocketService {
   }
 
   // --- Call Methods ---
-  startCall(payload: { threadId: string, type: 'audio'|'video', targetUserId: string, callId: string }) {
-    this.callSocket?.emit('startCall', payload);
+  initiateCall(payload: { threadId: string, type: 'audio'|'video', targetUserId: string, callId: string, callerName?: string, callerRole?: string }) {
+    console.log('[SocketService] Emitting call:initiate', payload);
+    this.callSocket?.emit('call:initiate', payload);
   }
 
   offerCall(payload: { callId: string, offer: unknown, targetUserId: string }) {
-    this.callSocket?.emit('offer', payload);
+    this.callSocket?.emit('call:offer', payload);
   }
 
   answerCall(payload: { callId: string, answer: unknown, targetUserId: string }) {
-    this.callSocket?.emit('answer', payload);
+    this.callSocket?.emit('call:answer', payload);
   }
 
   sendIceCandidate(payload: { callId: string, candidate: unknown, targetUserId: string }) {
-    this.callSocket?.emit('iceCandidate', payload);
+    this.callSocket?.emit('call:ice-candidate', payload);
   }
 
   endCall(callId: string, targetUserId?: string) {
-    this.callSocket?.emit('endCall', { callId, targetUserId });
+    this.callSocket?.emit('call:end', { callId, targetUserId });
   }
 
   rejectCall(payload: { callId: string, targetUserId: string }) {
-    this.callSocket?.emit('rejectCall', payload);
+    this.callSocket?.emit('call:reject', payload);
   }
 
-  // Call Event Listeners
-  onIncomingCall(): Observable<unknown> {
-    return new Observable((observer: Observer<unknown>) => {
-      this.callSocket?.on('incomingCall', (data) => observer.next(data));
-    });
+  acceptCall(payload: { callId: string, targetUserId: string }) {
+    this.callSocket?.emit('call:accept', payload);
   }
 
-  onCallOffer(): Observable<unknown> {
-    return new Observable((observer: Observer<unknown>) => {
-      this.callSocket?.on('offer', (data) => observer.next(data));
-    });
+  // Call Event Listeners - Now returning persistent observables
+  onIncomingCall(): Observable<any> {
+    return this.incomingCallSubject.asObservable();
   }
 
-  onCallAnswer(): Observable<unknown> {
-    return new Observable((observer: Observer<unknown>) => {
-      this.callSocket?.on('answer', (data) => observer.next(data));
-    });
+  onCallAccepted(): Observable<any> {
+    return this.callAcceptedSubject.asObservable();
   }
 
-  onIceCandidate(): Observable<unknown> {
-    return new Observable((observer: Observer<unknown>) => {
-      this.callSocket?.on('iceCandidate', (data) => observer.next(data));
-    });
+  onCallOffer(): Observable<any> {
+    return this.callOfferSubject.asObservable();
   }
 
-  onCallEnded(): Observable<unknown> {
-    return new Observable((observer: Observer<unknown>) => {
-      this.callSocket?.on('callEnded', (data) => observer.next(data));
-    });
+  onCallAnswer(): Observable<any> {
+    return this.callAnswerSubject.asObservable();
+  }
+
+  onIceCandidate(): Observable<any> {
+    return this.iceCandidateSubject.asObservable();
+  }
+
+  onCallEnded(): Observable<any> {
+    return this.callEndedSubject.asObservable();
+  }
+
+  onCallRejected(): Observable<any> {
+    return this.callRejectedSubject.asObservable();
   }
 }

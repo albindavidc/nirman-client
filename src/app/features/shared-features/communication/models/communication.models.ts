@@ -34,6 +34,7 @@ export interface ChatThreadListItem {
   lastMessage: LastMessagePreview | null;
   isOnline?: boolean;
   lastSeenAt?: string | null;
+  otherParticipantId?: string;
 }
 
 export interface CreateChatThreadDto {

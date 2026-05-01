@@ -34,6 +34,7 @@ export interface Chat {
   otherParticipantRole?: string;
   otherParticipantIsOnline?: boolean;
   otherParticipantLastSeenAt?: string;
+  otherParticipantId?: string;
   type?: string;
   callId?: string;
   initiatorId?: string;
@@ -170,6 +171,7 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
                   : 'User',
                 otherParticipantIsOnline: t.isOnline || false,
                 otherParticipantLastSeenAt: t.lastSeenAt || undefined,
+                otherParticipantId: t.otherParticipantId,
               };
             });
 
@@ -310,39 +312,30 @@ export class CommunicationLayoutComponent implements OnInit, OnDestroy {
 
   async startCall(type: 'audio' | 'video') {
     const chat = this.selectedChat;
-    if (!chat || !chat.participants) return;
+    if (!chat || !chat.otherParticipantId) {
+      console.warn('Cannot start call: Selected chat or target participant ID missing');
+      return;
+    }
 
-    // Find the other participant for 1v1
-    // For now, we assume the first participant that isn't the current user is the target
-    // We should ideally have the currentUser injected or available from state
-    this.subs.add(
-      this.store.select(selectUser).subscribe(user => {
-        if (!user) return;
-        
-        const otherParticipant = chat.participants.find((p) => p.userId !== user.id);
-        if (!otherParticipant) return;
+    this.targetUserId = chat.otherParticipantId;
+    this.callType = type;
+    this.isInitiator = true;
 
-        this.targetUserId = otherParticipant.userId;
-        this.callType = type;
-        this.isInitiator = true;
-
-        this.communicationService.startCall({
-          threadId: chat.threadId,
-          type: type,
-          projectId: this.projectId || undefined
-        }).subscribe(session => {
-          this.callId = session.id;
-          this.isCalling = true;
-          
-          this.socketService.startCall({
-            threadId: chat.threadId,
-            type,
-            targetUserId: this.targetUserId!,
-            callId: this.callId // Pass the call session ID
-          });
-        });
-      })
-    );
+    this.communicationService.startCall({
+      threadId: chat.threadId,
+      type: type,
+      projectId: this.projectId || undefined
+    }).subscribe(session => {
+      this.callId = session.id;
+      this.isCalling = true;
+      
+      this.socketService.startCall({
+        threadId: chat.threadId,
+        type,
+        targetUserId: this.targetUserId!,
+        callId: this.callId // Pass the call session ID
+      });
+    });
   }
 
   acceptCall() {

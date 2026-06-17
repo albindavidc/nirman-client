@@ -8,11 +8,11 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Copy package files and pnpm config
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install all dependencies
-RUN pnpm install --frozen-lockfile
+# Use hoisted node_modules layout for Angular CLI builder resolution
+RUN echo "node-linker=hoisted" > .npmrc && pnpm install
 
 # ================================
 # Stage 2: Development
@@ -23,11 +23,11 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Copy package files and pnpm config
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Use hoisted layout so Angular CLI can resolve @ngx-env/builder
+RUN echo "node-linker=hoisted" > .npmrc && pnpm install
 
 # Copy all source files
 COPY . .
@@ -38,7 +38,7 @@ EXPOSE 4200
 # Start Angular dev server with hot reload
 # --host 0.0.0.0 allows access from outside container
 # --poll ensures file changes are detected in Docker
-CMD ["pnpm", "start", "--host", "0.0.0.0", "--poll", "2000"]
+CMD ["pnpm", "exec", "ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
 
 # ================================
 # Stage 3: Builder
@@ -51,7 +51,8 @@ WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
-COPY package.json pnpm-lock.yaml ./
+COPY --from=deps /app/.npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Copy source code
 COPY . .

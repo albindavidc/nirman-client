@@ -80,12 +80,6 @@ export class WorkerAddEditModalComponent implements OnInit {
           Validators.pattern(
             /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
           ),
-          CustomValidators.emailDomain([
-            'gmail.com',
-            'yahoo.com',
-            'outlook.com',
-            'hotmail.com',
-          ]),
         ],
       ],
       phone: ['', [Validators.required, CustomValidators.indianMobile()]],

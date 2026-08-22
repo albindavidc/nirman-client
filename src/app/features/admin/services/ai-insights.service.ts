@@ -22,7 +22,7 @@ export interface ProcurementForecastState {
 export class AiInsightsService {
   private http = inject(HttpClient);
   // Connects to our backend: /api/v1/ai
-  private apiUrl = `${environment.apiUrl}/ai`;
+  private apiUrl = `${environment.api.baseUrl}/api/${environment.api.version}/ai`;
 
   askProcurementAssistant(query: string): Observable<{ answer: string }> {
     // Backend expects { query: string }

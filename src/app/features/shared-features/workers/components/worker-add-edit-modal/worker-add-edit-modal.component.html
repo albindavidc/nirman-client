@@ -21,6 +21,12 @@
           @if (form.get("firstName")?.hasError("minlength")) {
             <mat-error>Min 2 characters</mat-error>
           }
+          @if (form.get("firstName")?.hasError("nameFormat")) {
+            <mat-error>Only letters, spaces, hyphens allowed</mat-error>
+          }
+          @if (form.get("firstName")?.hasError("whitespace")) {
+            <mat-error>Cannot be empty spaces</mat-error>
+          }
         </mat-form-field>
       </div>
       <div class="form-field">
@@ -38,6 +44,12 @@
           }
           @if (form.get("lastName")?.hasError("minlength")) {
             <mat-error>Min 2 characters</mat-error>
+          }
+          @if (form.get("lastName")?.hasError("nameFormat")) {
+            <mat-error>Only letters, spaces, hyphens allowed</mat-error>
+          }
+          @if (form.get("lastName")?.hasError("whitespace")) {
+            <mat-error>Cannot be empty spaces</mat-error>
           }
         </mat-form-field>
       </div>

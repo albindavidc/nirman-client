@@ -1,0 +1,57 @@
+<div class="assistant-container">
+  <div class="header">
+    <div class="avatar-glow">
+      <mat-icon class="ai-icon">smart_toy</mat-icon>
+    </div>
+    <div class="header-text">
+      <h3>Procurement Assistant</h3>
+      <p>Powered by RAG & Gemini</p>
+    </div>
+  </div>
+
+  <div class="chat-history" #scrollContainer>
+    @if (chatHistory().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">chat</mat-icon>
+        <p>Ask me anything about past material prices, vendor reliability, or outstanding POs.</p>
+      </div>
+    }
+
+    @for (msg of chatHistory(); track $index) {
+      <div class="message-wrapper" [class.user]="msg.role === 'user'" [class.ai]="msg.role === 'ai'">
+        @if (msg.role === 'ai') {
+          <mat-icon class="msg-avatar">auto_awesome</mat-icon>
+        }
+        <div class="bubble">
+          {{ msg.content }}
+        </div>
+      </div>
+    }
+    
+    @if (isLoading()) {
+      <div class="message-wrapper ai loading-indicator">
+        <mat-icon class="msg-avatar">auto_awesome</mat-icon>
+        <div class="bubble typing-bubble">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    }
+  </div>
+  
+  <div class="input-area">
+    <div class="input-wrapper">
+      <input 
+        type="text" 
+        [(ngModel)]="currentQuery" 
+        placeholder="Ask about material pricing or vendor history..." 
+        (keyup.enter)="ask()"
+        [disabled]="isLoading()"
+      >
+      <button mat-icon-button class="send-btn" (click)="ask()" [disabled]="isLoading() || !currentQuery.trim()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

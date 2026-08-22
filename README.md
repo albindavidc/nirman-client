@@ -1,60 +1,84 @@
-# Nirman
+# Nirman - Frontend 🏗️
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.12.
+Nirman is an enterprise-grade construction management and procurement platform. This frontend application provides tailored dashboards for Admins, Vendors, and Workers, facilitating real-time communication, project tracking, and AI-driven procurement insights.
 
-## Development server
+## 🚀 Tech Stack & Core Libraries
 
-To start a local development server, run:
+- **Framework:** Angular 18+ (Standalone Components, Signals)
+- **State Management:** NgRx
+- **UI & Styling:** Angular Material, SCSS (Glassmorphism & Dark-Neutral Theme)
+- **Data Visualization:** ECharts, DHTMLX Gantt (Project Timelines)
+- **File Management:** FilePond (Document & Image Uploads)
+- **Mapping & Location:** Google Maps API
+- **Payments:** Stripe Elements
+- **Real-time & Comm:** Socket.io-client
+- **Deployment:** Vercel
 
-```bash
-ng serve
+## 📂 Project Architecture
+
+The application follows a highly scalable **Feature-based Architecture**:
+
+```
+src/
+├── app/
+│   ├── core/           # Singleton services, interceptors, guards, and app-wide configs
+│   ├── shared/         # Reusable UI components, pipes, directives, and models
+│   ├── features/       # Feature modules (Domain-driven)
+│   │   ├── admin/      # Admin dashboard, AI Insights, Project Management
+│   │   ├── vendor/     # Vendor portal, Purchase Orders, Quotations
+│   │   ├── worker/     # Worker attendance, tasks, and scheduling
+│   │   └── auth/       # Authentication (Login, OTP, Signup workflows)
+│   └── store/          # NgRx State (Actions, Reducers, Effects, Selectors)
+├── assets/             # Static assets (images, icons)
+├── environments/       # Environment variables (dev, prod)
+└── styles/             # Global SCSS, theme variables, and mixins
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## ✨ Key Features
 
-## Code scaffolding
+- **Role-Based Dashboards:** Distinct experiences for Admins, Supervisors, Vendors, and Workers.
+- **AI Procurement Assistant:** Integrated Retrieval-Augmented Generation (RAG) chat powered by Gemini.
+- **Financial Forecasting:** AI-driven cash flow analysis, budget utilization metrics, and strategic recommendations.
+- **Project Tracking:** Interactive Gantt charts for construction milestones.
+- **Real-Time Updates:** WebSockets for live notifications and chat.
+- **Secure File Handling:** Upload and manage architectural drawings and invoices.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🛠️ Setup & Installation
 
+### Prerequisites
+- Node.js (v18+)
+- PNPM or NPM
+- Angular CLI
+
+### 1. Clone & Install
 ```bash
-ng generate component component-name
+# Navigate to the frontend directory
+cd nirman/front-end
+
+# Install dependencies
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
+### 2. Environment Configuration
+Create a `environment.ts` and `environment.prod.ts` inside `src/environments/`:
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000/api/v1',
+  socketUrl: 'http://localhost:3000',
+  stripePublicKey: 'pk_test_...',
+  googleMapsApiKey: 'AIza...'
+};
 ```
 
-## Building
-
-To build the project run:
-
+### 3. Run Development Server
 ```bash
-ng build
+npm start
+# The app will be available at http://localhost:4200/
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# nirman-angular
+## 📏 Coding Standards & Best Practices
+- **Standalone Components:** All new components must be standalone (`standalone: true`).
+- **Reactivity:** Favor Angular Signals (`signal`, `computed`, `effect`) for local component state.
+- **Styling:** Use CSS variables and BEM conventions within modular SCSS. Ensure responsive layouts.
+- **Services:** All API calls must return strongly typed `Observable<T>` matching the Backend DTOs.

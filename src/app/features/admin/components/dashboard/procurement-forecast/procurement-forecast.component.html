@@ -1,0 +1,69 @@
+<div class="forecast-container">
+  <div class="header">
+    <div class="title-group">
+      <div class="icon-glow">
+        <mat-icon>insights</mat-icon>
+      </div>
+      <div>
+        <h2>AI Financial Forecast</h2>
+        <p>Real-time cash flow analysis & strategy</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="loadForecast()" [disabled]="isLoading()" class="refresh-btn">
+      <mat-icon [class.spin]="isLoading()">refresh</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Analyzing financials...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-stroked-button color="primary" (click)="loadForecast()">Try Again</button>
+    </div>
+  } @else if (forecast()) {
+    <div class="content fade-in">
+      
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <span class="label">Total Budget</span>
+          <span class="value">{{ forecast()!.totalBudget | currency:'INR' }}</span>
+        </div>
+        <div class="metric-card warn">
+          <span class="label">Cash Outflow Risk</span>
+          <span class="value">{{ forecast()!.projectCashOutFlow | currency:'INR' }}</span>
+        </div>
+        <div class="metric-card accent">
+          <span class="label">Budget Utilized</span>
+          <span class="value">{{ forecast()!.budgetUtilizationPercentage }}%</span>
+          <div class="progress-bar">
+            <div class="fill" [style.width.%]="forecast()!.budgetUtilizationPercentage"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="recommendations-section">
+        <div class="rec-header">
+          <mat-icon class="ai-star">auto_awesome</mat-icon>
+          <h3>AI Strategic Recommendations</h3>
+        </div>
+        <ul class="rec-list">
+          @for (rec of forecast()!.recommendations; track $index) {
+            <li>
+              <mat-icon class="bullet-icon">check_circle</mat-icon>
+              <span>{{ rec }}</span>
+            </li>
+          }
+        </ul>
+        <div class="timestamp">
+          Analyzed on {{ forecast()!.analysisDate | date:'medium' }}
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Background Gradient - Derived from M3 Surface colors -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#231F17" /> <!-- surface-container -->
+      <stop offset="100%" stop-color="#110E07" /> <!-- surface-container-lowest -->
+    </linearGradient>
+    
+    <!-- Accent Gradient - Derived from M3 Primary color -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5D48D" /> <!-- slightly lighter primary -->
+      <stop offset="100%" stop-color="#E9C16C" /> <!-- primary -->
+    </linearGradient>
+
+    <!-- Pillar Gradient - Derived from M3 On-Surface colors -->
+    <linearGradient id="onSurfaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EBE1D4" /> <!-- on-surface -->
+      <stop offset="100%" stop-color="#D0C5B4" /> <!-- on-surface-variant -->
+    </linearGradient>
+
+    <!-- Deep shadow for elevation -->
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded Square Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Monogram -->
+  <g filter="url(#dropShadow)" transform="translate(116, 126)">
+    <!-- Left Pillar -->
+    <rect x="0" y="0" width="70" height="260" rx="4" fill="url(#onSurfaceGrad)" />
+    
+    <!-- Right Pillar -->
+    <rect x="210" y="0" width="70" height="260" rx="4" fill="url(#onSurfaceGrad)" />
+
+    <!-- Diagonal (Primary Color) -->
+    <polygon points="0,0 70,0 280,260 210,260" fill="url(#primaryGrad)" />
+
+    <!-- Top Right Accent Block -->
+    <rect x="210" y="0" width="70" height="70" rx="4" fill="url(#primaryGrad)" />
+  </g>
+</svg>
